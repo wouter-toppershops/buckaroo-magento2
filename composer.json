@@ -1,0 +1,23 @@
+{
+    "name": "tig/buckaroo",
+    "description": "TIG Magento 2 Buckaroo extension",
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0",
+        "magento/magento-composer-installer": "*"
+    },
+    "type": "magento2-module",
+    "license": ["CC BY-NC-ND 3.0 NL"],
+    "authors": [{
+        "name": "TIG",
+        "email": "servicedesk@tig.nl"
+    }],
+    "minimum-stability": "dev",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Tig\\Buckaroo\\": ""
+        }
+    }
+}
