@@ -38,44 +38,28 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace Tig\Buckaroo\Model\Method;
-
-use Magento\Framework\DataObject;
-use Magento\Quote\Api\Data\CartInterface;
+namespace TIG\Buckaroo\Model\Method;
 
 class Ideal extends \Magento\Payment\Model\Method\AbstractMethod
 {
-    /**
-     * Assign data to info model instance
-     *
-     * @param DataObject|mixed $data
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function assignData(DataObject $data)
-    {
-        return $this;
-    }
+    const PAYMENT_METHOD_CHECKMO_CODE = 'tig_buckaroo_ideal';
 
     /**
-     * Validate payment method information object
+     * Payment method code
      *
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * @var string
      */
-    public function validate()
-    {
-        return $this;
-    }
+    protected $_code = self::PAYMENT_METHOD_CHECKMO_CODE;
 
     /**
-     * Check whether there are CC types set in configuration
-     *
-     * @param CartInterface|null $quote
-     * @return bool
+     * @var string
      */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        return $this->getConfigData('cctypes', $quote ? $quote->getStoreId() : null) && parent::isAvailable($quote);
-    }
+    protected $_formBlockType = 'TIG\Buckaroo\Block\Form\Ideal';
+
+    /**
+     * Availability option
+     *
+     * @var bool
+     */
+    protected $_isOffline = true;
 }

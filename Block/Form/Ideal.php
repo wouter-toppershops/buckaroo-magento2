@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<!--
+<?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,23 +37,14 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-    <system>
-        <section id="payment">
-            <group id="tig_buckaroo_section" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Buckaroo</label>
-                <comment><![CDATA[Buckaroo payment methods.]]></comment>
-                <attribute type="expanded">1</attribute>
-                <fieldset_css>complex tig_buckaroo-section</fieldset_css>
-                <group id="tig_buckaroo" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Enable Buckaroo</label>
-                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>payment/tig_buckaroo_ideal/active</config_path>
-                    </field>
-                </group>
-            </group>
-        </section>
-    </system>
-</config>
+namespace TIG\Buckaroo\Block\Form;
+
+class Ideal extends \Magento\Payment\Block\Form
+{
+    /**
+     * Checkmo template
+     *
+     * @var string
+     */
+    protected $_template = 'TIG_Buckaroo::form/ideal.phtml';
+}
