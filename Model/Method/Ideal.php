@@ -40,16 +40,19 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-class Ideal extends \Magento\Payment\Model\Method\AbstractMethod
+use Magento\Payment\Model\InfoInterface;
+use Magento\Payment\Model\Method\AbstractMethod;
+
+class Ideal extends AbstractMethod
 {
-    const PAYMENT_METHOD_CHECKMO_CODE = 'tig_buckaroo_ideal';
+    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
 
     /**
      * Payment method code
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_CHECKMO_CODE;
+    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
 
     /**
      * @var string
@@ -57,9 +60,75 @@ class Ideal extends \Magento\Payment\Model\Method\AbstractMethod
     protected $_formBlockType = 'TIG\Buckaroo\Block\Form\Ideal';
 
     /**
-     * Availability option
-     *
      * @var bool
      */
-    protected $_isOffline = true;
+    protected $_isGateway               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canCapture              = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canCapturePartial       = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canRefund               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canVoid                 = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canUseInternal          = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canUseCheckout          = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canSaveCc               = false;
+
+    /**
+     * @var bool
+     */
+    protected $_canRefundInvoicePartial = true;
+
+    /**
+     * @param InfoInterface $payment
+     * @param float         $amount
+     *
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function authorize(InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
+
+    /**
+     * @param InfoInterface $payment
+     * @param float         $amount
+     *
+     * @return $this
+     */
+    public function capture(InfoInterface $payment, $amount)
+    {
+        return $this;
+    }
 }

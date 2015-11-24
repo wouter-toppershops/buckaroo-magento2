@@ -49,6 +49,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_ideal</group>
+                <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_ideal>
         </payment>
     </default>
