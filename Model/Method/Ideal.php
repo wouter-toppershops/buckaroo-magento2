@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -98,11 +97,6 @@ class Ideal extends AbstractMethod
      * @var bool
      */
     protected $_canUseCheckout          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canSaveCc               = false;
 
     /**
      * @var bool
