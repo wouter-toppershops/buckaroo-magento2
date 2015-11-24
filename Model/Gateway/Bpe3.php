@@ -1,4 +1,5 @@
 <?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -36,93 +37,25 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Gateway;
 
-namespace TIG\Buckaroo\Model\Method;
+use TIG\Buckaroo\Model\GatewayInterface;
 
-use TIG\Buckaroo\Model\Gateway\Transaction;
-
-class Ideal extends AbstractMethod
+class Bpe3 implements GatewayInterface
 {
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
 
-    /**
-     * Payment method code
-     *
-     * @var string
-     */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
-
-    /**
-     * @var string
-     */
-    protected $_formBlockType = 'TIG\Buckaroo\Block\Form\Ideal';
-
-    /**
-     * @var bool
-     */
-    protected $_isGateway               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canAuthorize            = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapture              = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapturePartial       = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefund               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canVoid                 = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseInternal          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseCheckout          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefundInvoicePartial = true;
-
-    /**
-     * @return null|Transaction
-     */
-    protected function _getCaptureTransaction()
+    public function capture(Transaction $transaction)
     {
-        // TODO: Implement _getCaptureTransaction() method.
+        // TODO: Implement capture() method.
     }
 
-    /**
-     * @return null|Transaction
-     */
-    protected function _getAuthorizeTransaction()
+    public function authorize(Transaction $transaction)
     {
-        // TODO: Implement _getAuthorizeTransaction() method.
+        // TODO: Implement authorize() method.
     }
 
-    /**
-     * @return null|Transaction
-     */
-    protected function _getRefundTransaction()
+    public function refund(Transaction $transaction)
     {
-        // TODO: Implement _getRefundTransaction() method.
+        // TODO: Implement refund() method.
     }
 }

@@ -1,4 +1,5 @@
-<?php
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -36,93 +37,7 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-
-namespace TIG\Buckaroo\Model\Method;
-
-use TIG\Buckaroo\Model\Gateway\Transaction;
-
-class Ideal extends AbstractMethod
-{
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
-
-    /**
-     * Payment method code
-     *
-     * @var string
-     */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
-
-    /**
-     * @var string
-     */
-    protected $_formBlockType = 'TIG\Buckaroo\Block\Form\Ideal';
-
-    /**
-     * @var bool
-     */
-    protected $_isGateway               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canAuthorize            = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapture              = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapturePartial       = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefund               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canVoid                 = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseInternal          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseCheckout          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefundInvoicePartial = true;
-
-    /**
-     * @return null|Transaction
-     */
-    protected function _getCaptureTransaction()
-    {
-        // TODO: Implement _getCaptureTransaction() method.
-    }
-
-    /**
-     * @return null|Transaction
-     */
-    protected function _getAuthorizeTransaction()
-    {
-        // TODO: Implement _getAuthorizeTransaction() method.
-    }
-
-    /**
-     * @return null|Transaction
-     */
-    protected function _getRefundTransaction()
-    {
-        // TODO: Implement _getRefundTransaction() method.
-    }
-}
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="TIG\Buckaroo\Model\GatewayInterface" type="TIG\Buckaroo\Model\Gateway\Bpe3"/>
+</config>

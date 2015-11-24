@@ -1,4 +1,5 @@
 <?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -36,93 +37,100 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Gateway;
 
-namespace TIG\Buckaroo\Model\Method;
-
-use TIG\Buckaroo\Model\Gateway\Transaction;
-
-class Ideal extends AbstractMethod
+class Transaction
 {
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
+    protected $_data = [];
+
+    protected $_services = [];
+
+    protected $_additionalParameters = [];
+
+    protected $_customParameters = [];
 
     /**
-     * Payment method code
+     * @return array
+     */
+    public function getAdditionalParameters()
+    {
+        return $this->_additionalParameters;
+    }
+
+    /**
+     * @param array $additionalParameters
      *
-     * @var string
+     * @return $this
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
-
-    /**
-     * @var string
-     */
-    protected $_formBlockType = 'TIG\Buckaroo\Block\Form\Ideal';
-
-    /**
-     * @var bool
-     */
-    protected $_isGateway               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canAuthorize            = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapture              = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapturePartial       = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefund               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canVoid                 = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseInternal          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseCheckout          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefundInvoicePartial = true;
-
-    /**
-     * @return null|Transaction
-     */
-    protected function _getCaptureTransaction()
+    public function setAdditionalParameters($additionalParameters)
     {
-        // TODO: Implement _getCaptureTransaction() method.
+        $this->_additionalParameters = $additionalParameters;
+
+        return $this;
     }
 
     /**
-     * @return null|Transaction
+     * @return array
      */
-    protected function _getAuthorizeTransaction()
+    public function getCustomParameters()
     {
-        // TODO: Implement _getAuthorizeTransaction() method.
+        return $this->_customParameters;
     }
 
     /**
-     * @return null|Transaction
+     * @param array $customParameters
+     *
+     * @return $this
      */
-    protected function _getRefundTransaction()
+    public function setCustomParameters($customParameters)
     {
-        // TODO: Implement _getRefundTransaction() method.
+        $this->_customParameters = $customParameters;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData()
+    {
+        return $this->_data;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return $this
+     */
+    public function setData($data)
+    {
+        $this->_data = $data;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getServices()
+    {
+        return $this->_services;
+    }
+
+    /**
+     * @param array $services
+     *
+     * @return $this
+     */
+    public function setServices($services)
+    {
+        $this->_services = $services;
+
+        return $this;
+    }
+
+    public function toSoapArray()
+    {
+
     }
 }
