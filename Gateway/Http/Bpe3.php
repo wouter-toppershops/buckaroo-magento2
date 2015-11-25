@@ -61,8 +61,9 @@ class Bpe3 implements GatewayInterface
      * @param \Magento\Payment\Gateway\Http\Client\Soap $client
      * @param \Magento\Framework\Data\ObjectFactory     $objectFactory
      */
-    public function __construct(Soap $client,
-                                ObjectFactory $objectFactory
+    public function __construct(
+        Soap $client,
+        ObjectFactory $objectFactory
     )
     {
         $this->_client = $client;
