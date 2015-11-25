@@ -37,17 +37,34 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Gateway;
+namespace TIG\Buckaroo\Gateway\Http;
 
 class Transaction
 {
+    /**
+     * @var array
+     */
     protected $_data = [];
 
+    /**
+     * @var array
+     */
     protected $_services = [];
 
+    /**
+     * @var array
+     */
     protected $_additionalParameters = [];
 
+    /**
+     * @var array
+     */
     protected $_customParameters = [];
+
+    /**
+     * @var string
+     */
+    protected $_method;
 
     /**
      * @return array
@@ -129,8 +146,31 @@ class Transaction
         return $this;
     }
 
-    public function toSoapArray()
+    /**
+     * @return string
+     */
+    public function getMethod()
     {
+        return $this->_method;
+    }
 
+    /**
+     * @param string $method
+     *
+     * @return $this
+     */
+    public function setMethod($method)
+    {
+        $this->_method = $method;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBody()
+    {
+        return [];
     }
 }

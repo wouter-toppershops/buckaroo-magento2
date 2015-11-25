@@ -39,5 +39,5 @@
  */
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="TIG\Buckaroo\Model\GatewayInterface" type="TIG\Buckaroo\Model\Gateway\Bpe3"/>
+    <preference for="TIG\Buckaroo\Gateway\GatewayInterface" type="TIG\Buckaroo\Gateway\Http\Bpe3"/>
 </config>

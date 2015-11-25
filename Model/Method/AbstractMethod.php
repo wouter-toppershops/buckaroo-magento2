@@ -50,18 +50,18 @@ use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
 use Magento\Payment\Model\Method\AbstractMethod as MagentoAbstractMethod;
 use Magento\Payment\Model\Method\Logger;
-use TIG\Buckaroo\Model\Gateway\Transaction;
-use TIG\Buckaroo\Model\GatewayInterface;
+use TIG\Buckaroo\Gateway\Http\Transaction;
+use TIG\Buckaroo\Gateway\GatewayInterface;
 
 abstract class AbstractMethod extends MagentoAbstractMethod
 {
     /**
-     * @var \TIG\Buckaroo\Model\GatewayInterface
+     * @var \TIG\Buckaroo\Gateway\GatewayInterface
      */
     protected $_gateway;
 
     /**
-     * @var \TIG\Buckaroo\Model\Gateway\Transaction
+     * @var \TIG\Buckaroo\Gateway\Http\Transaction
      */
     protected $_transaction;
 

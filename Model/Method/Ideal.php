@@ -39,7 +39,7 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use TIG\Buckaroo\Model\Gateway\Transaction;
+use TIG\Buckaroo\Gateway\Http\Transaction;
 
 class Ideal extends AbstractMethod
 {
@@ -51,11 +51,6 @@ class Ideal extends AbstractMethod
      * @var string
      */
     protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
-
-    /**
-     * @var string
-     */
-    protected $_formBlockType = 'TIG\Buckaroo\Block\Form\Ideal';
 
     /**
      * @var bool

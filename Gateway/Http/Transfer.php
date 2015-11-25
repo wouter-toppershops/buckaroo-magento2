@@ -37,16 +37,11 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Gateway\Http;
 
-namespace Tig\Buckaroo\Model;
+use Magento\Payment\Gateway\Http\Transfer as MagentoTransfer;
 
-use \TIG\Buckaroo\Model\Gateway\Transaction;
-
-interface GatewayInterface
+class Transfer extends MagentoTransfer
 {
-    public function capture(Transaction $transaction);
 
-    public function authorize(Transaction $transaction);
-
-    public function refund(Transaction $transaction);
 }

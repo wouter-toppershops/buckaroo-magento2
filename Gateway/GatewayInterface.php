@@ -37,25 +37,16 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Gateway;
 
-use TIG\Buckaroo\Model\GatewayInterface;
+namespace TIG\Buckaroo\Gateway;
 
-class Bpe3 implements GatewayInterface
+use TIG\Buckaroo\Gateway\Http\Transaction;
+
+interface GatewayInterface
 {
+    public function capture(Transaction $transaction);
 
-    public function capture(Transaction $transaction)
-    {
-        // TODO: Implement capture() method.
-    }
+    public function authorize(Transaction $transaction);
 
-    public function authorize(Transaction $transaction)
-    {
-        // TODO: Implement authorize() method.
-    }
-
-    public function refund(Transaction $transaction)
-    {
-        // TODO: Implement refund() method.
-    }
+    public function refund(Transaction $transaction);
 }
