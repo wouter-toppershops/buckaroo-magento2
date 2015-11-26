@@ -39,9 +39,7 @@
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
-use Magento\Payment\Gateway\Http\Transfer as MagentoTransfer;
-
-class Transfer extends MagentoTransfer
+class Transfer extends \Magento\Payment\Gateway\Http\Transfer
 {
 
 }

@@ -48,12 +48,11 @@ use Magento\Framework\Model\ResourceModel\AbstractResource;
 use Magento\Framework\Registry;
 use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
-use Magento\Payment\Model\Method\AbstractMethod as MagentoAbstractMethod;
 use Magento\Payment\Model\Method\Logger;
 use TIG\Buckaroo\Gateway\Http\Transaction;
 use TIG\Buckaroo\Gateway\GatewayInterface;
 
-abstract class AbstractMethod extends MagentoAbstractMethod
+abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
     /**
      * @var \TIG\Buckaroo\Gateway\GatewayInterface
@@ -81,18 +80,19 @@ abstract class AbstractMethod extends MagentoAbstractMethod
      * @param GatewayInterface|null      $gateway
      * @param Transaction|null           $transaction
      */
-    public function __construct(Context $context,
-                                Registry $registry,
-                                ExtensionAttributesFactory $extensionFactory,
-                                AttributeValueFactory $customAttributeFactory,
-                                Data $paymentData,
-                                ScopeConfigInterface $scopeConfig,
-                                Logger $logger,
-                                AbstractResource $resource = null,
-                                AbstractDb $resourceCollection = null,
-                                array $data = [],
-                                GatewayInterface $gateway = null,
-                                Transaction $transaction = null
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        ExtensionAttributesFactory $extensionFactory,
+        AttributeValueFactory $customAttributeFactory,
+        Data $paymentData,
+        ScopeConfigInterface $scopeConfig,
+        Logger $logger,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
+        array $data = [],
+        GatewayInterface $gateway = null,
+        Transaction $transaction = null
     ) {
         parent::__construct(
             $context,
