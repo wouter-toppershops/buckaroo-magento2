@@ -115,15 +115,105 @@ class Bpe3 implements GatewayInterface
         $transfer = $this->_objectFactory->create(
             '\TIG\Buckaroo\Gateway\Http\Transfer',
             [
-                [], //client config
-                [], //headers
-                $transaction->getBody(),
-                [], //auth,
-                $transaction->getmethod(),
-                false
+                'clientConfig' => [
+                    'wsdl' => 'https://checkout.buckaroo.nl/soap/soap.svc?wsdl'
+                ],
+                'headers'  => $this->_getHeaders(),
+                'body'     => $transaction->getBody(),
+                'auth'     => [], //auth,
+                'method'   => $transaction->getMethod(),
+                'uri'      => 'https://testcheckout.buckaroo.nl/soap/',
+                'encode'   => false
             ]
         );
 
+        /**
+         * @param array $clientConfig
+         * @param array $headers
+         * @param array|string $body
+         * @param array $auth
+         * @param string $method
+         * @param string $uri
+         * @param bool $encode
+         */
         return $this->_client->placeRequest($transfer);
+    }
+
+    /**
+     * @returns array
+     */
+    protected function _getHeaders()
+    {
+        $headers[] = new \SoapHeader(
+            'https://checkout.buckaroo.nl/PaymentEngine/',
+            'MessageControlBlock',
+            [
+                'Id' => '_control',
+                'WebsiteKey' => 'SniACG6eSj',
+                'Culture' => 'nl-NL',
+                'TimeStamp' => 1448553322,
+                'Channel' => 'Web',
+                'Software' => [
+                    'PlatformName' => 'Magento 2',
+                    'PlatformVersion' => '2.0.0',
+                    'ModuleSupplier' => 'TIG',
+                    'ModuleName' => 'Buckaroo',
+                    'ModuleVersion' => '0.1.0',
+                ]
+            ],
+            false
+        );
+
+        $headers[] = new \SoapHeader(
+            'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+            'Security',
+            [
+                'Signature' => [
+                    'SignedInfo' => [
+                        'CanonicalizationMethod' => [
+                            'Algorithm' => 'http://www.w3.org/2001/10/xml-exc-c14n#',
+                        ],
+                        'SignatureMethod' => [
+                            'Algorithm' => 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+                        ],
+                        'Reference' => [
+                            [
+                                [
+                                    'Transforms' => [
+                                        [
+                                            'Algorithm' => 'http://www.w3.org/2001/10/xml-exc-c14n#',
+                                        ]
+                                    ],
+                                    'DigestMethod' => [
+                                        'Algorithm' => 'http://www.w3.org/2000/09/xmldsig#sha1',
+                                    ],
+                                    'DigestValue' => '',
+                                    'URI' => '#_body',
+                                    'Id' => null,
+                                ],
+                                [
+                                    'Transforms' => [
+                                        [
+                                            'Algorithm' => 'http://www.w3.org/2001/10/xml-exc-c14n#',
+                                        ]
+                                    ],
+                                    'DigestMethod' => [
+                                        'Algorithm' => 'http://www.w3.org/2000/09/xmldsig#sha1',
+                                    ],
+                                    'DigestValue' => '',
+                                    'URI' => '#_control',
+                                    'Id' => null,
+                                ]
+                            ]
+                        ]
+                    ]
+                ],
+                'SignatureValue' => '',
+                'KeyInfo' => null,
+            ],
+            false
+        );
+
+        return $headers;
     }
 }

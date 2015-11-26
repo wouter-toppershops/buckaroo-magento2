@@ -171,6 +171,38 @@ class Transaction
      */
     public function getBody()
     {
-        return [];
+        $body = [
+            'Currency' => 'EUR',
+            'AmountDebit' => 10.00,
+            'AmountCredit' => 0,
+            'Invoice' => 1,
+            'Order' => 1,
+            'Description' => 'Test',
+            'ClientIP' => [
+                '_' => '::1',
+                'Type' => 'Iv6',
+            ],
+            'ReturnURL' => 'http://local.buck2.dev/',
+            'ReturnURLCancel' => 'http://local.buck2.dev/',
+            'ReturnURLError' => 'http://local.buck2.dev/',
+            'ReturnURLReject' => 'http://local.buck2.dev/',
+            'OriginalTransactionKey' => null,
+            'StartRecurrent' => false,
+            'Services' => [
+                'Global' => null,
+                'Service' => [
+                    'RequestParameter' => [
+                        '_' => 'RABONL2U',
+                        'Name' => 'Issuer',
+                        'Group' => null,
+                    ],
+                    'Name' => 'ideal',
+                    'Action' => 'Pay',
+                    'Version' => 2,
+                ]
+            ],
+        ];
+
+        return $body;
     }
 }

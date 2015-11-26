@@ -98,15 +98,19 @@ class Ideal extends AbstractMethod
     protected $_canRefundInvoicePartial = true;
 
     /**
-     * @return null|Transaction
+     * {@inheritdoc}
      */
     protected function _getCaptureTransaction()
     {
-        // TODO: Implement _getCaptureTransaction() method.
+        $transaction = $this->_transaction;
+
+        $transaction->setMethod('TransactionRequest');
+
+        return $transaction;
     }
 
     /**
-     * @return null|Transaction
+     * {@inheritdoc}
      */
     protected function _getAuthorizeTransaction()
     {
@@ -114,7 +118,7 @@ class Ideal extends AbstractMethod
     }
 
     /**
-     * @return null|Transaction
+     * {@inheritdoc}
      */
     protected function _getRefundTransaction()
     {

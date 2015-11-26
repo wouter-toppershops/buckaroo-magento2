@@ -39,18 +39,8 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Framework\Api\AttributeValueFactory;
-use Magento\Framework\Api\ExtensionAttributesFactory;
-use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Data\Collection\AbstractDb;
-use Magento\Framework\Model\Context;
-use Magento\Framework\Model\ResourceModel\AbstractResource;
-use Magento\Framework\Registry;
-use Magento\Payment\Helper\Data;
 use Magento\Payment\Model\InfoInterface;
-use Magento\Payment\Model\Method\Logger;
 use TIG\Buckaroo\Gateway\Http\Transaction;
-use TIG\Buckaroo\Gateway\GatewayInterface;
 
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
@@ -64,35 +54,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected $_transaction;
 
-    /**
-     * Ideal constructor.
-     *
-     * @param Context                    $context
-     * @param Registry                   $registry
-     * @param ExtensionAttributesFactory $extensionFactory
-     * @param AttributeValueFactory      $customAttributeFactory
-     * @param Data                       $paymentData
-     * @param ScopeConfigInterface       $scopeConfig
-     * @param Logger                     $logger
-     * @param AbstractResource|null      $resource
-     * @param AbstractDb|null            $resourceCollection
-     * @param array                      $data
-     * @param GatewayInterface|null      $gateway
-     * @param Transaction|null           $transaction
-     */
     public function __construct(
-        Context $context,
-        Registry $registry,
-        ExtensionAttributesFactory $extensionFactory,
-        AttributeValueFactory $customAttributeFactory,
-        Data $paymentData,
-        ScopeConfigInterface $scopeConfig,
-        Logger $logger,
-        AbstractResource $resource = null,
-        AbstractDb $resourceCollection = null,
-        array $data = [],
-        GatewayInterface $gateway = null,
-        Transaction $transaction = null
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\Transaction $transaction = null,
+        array $data = []
     ) {
         parent::__construct(
             $context,
@@ -163,17 +137,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @return null|Transaction
+     * @return Transaction
      */
     protected abstract function _getAuthorizeTransaction();
 
     /**
-     * @return null|Transaction
+     * @return Transaction
      */
     protected abstract function _getCaptureTransaction();
 
     /**
-     * @return null|Transaction
+     * @return Transaction
      */
     protected abstract function _getRefundTransaction();
 }
