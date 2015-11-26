@@ -40,20 +40,40 @@
 
 namespace TIG\Buckaroo\Model;
 
+use Magento\Framework\Webapi\Rest\Request;
 use TIG\Buckaroo\Api\PushInterface;
 
 class Push implements PushInterface
 {
     /**
-     * @return boolean
+     * @var Request
+     */
+    protected $_request;
+
+    /**
+     * @var array
+     */
+    protected $_postData;
+
+    /**
+     * Push constructor.
      *
-     * @api
+     * @param \Magento\Framework\Webapi\Rest\Request $request
+     */
+    public function __construct(Request $request)
+    {
+        $this->_request = $request;
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
      */
     public function receivePush()
     {
-        echo '<pre>';
-        var_dump($_POST);
-        var_dump(func_get_args());exit;
+        $this->_postData = $this->_request->getParams();
+
         return true;
     }
 }
