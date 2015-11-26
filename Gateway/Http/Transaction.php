@@ -172,6 +172,7 @@ class Transaction
     public function getBody()
     {
         $body = [
+            'test' => '1',
             'Currency' => 'EUR',
             'AmountDebit' => 10.00,
             'AmountCredit' => 0,
@@ -179,15 +180,16 @@ class Transaction
             'Order' => 1,
             'Description' => 'Test',
             'ClientIP' => [
-                '_' => '::1',
-                'Type' => 'Iv6',
+                '_' => $_SERVER['REMOTE_ADDR'],
+                'Type' => 'IPv4',
             ],
-            'ReturnURL' => 'http://local.buck2.dev/',
-            'ReturnURLCancel' => 'http://local.buck2.dev/',
-            'ReturnURLError' => 'http://local.buck2.dev/',
-            'ReturnURLReject' => 'http://local.buck2.dev/',
+            'ReturnURL' => 'http://magento2.cow3299.com/',
+            'ReturnURLCancel' => 'http://magento2.cow3299.com/',
+            'ReturnURLError' => 'http://magento2.cow3299.com/',
+            'ReturnURLReject' => 'http://magento2.cow3299.com/',
             'OriginalTransactionKey' => null,
             'StartRecurrent' => false,
+            'PushURL' => 'http://magento2.cow3299.com/index.php/rest/V1/buckaroo/push',
             'Services' => [
                 'Global' => null,
                 'Service' => [
@@ -204,5 +206,81 @@ class Transaction
         ];
 
         return $body;
+    }
+
+    /**
+     * @returns array
+     */
+    public function getHeaders()
+    {
+        $headers[] = new \SoapHeader(
+            'https://checkout.buckaroo.nl/PaymentEngine/',
+            'MessageControlBlock',
+            [
+                'Id' => '_control',
+                'WebsiteKey' => 'SniACG6eSj',
+                'Culture' => 'nl-NL',
+                'TimeStamp' => 1448553322,
+                'Channel' => 'Web',
+                'Software' => [
+                    'PlatformName' => 'Magento 2',
+                    'PlatformVersion' => '2.0.0',
+                    'ModuleSupplier' => 'TIG',
+                    'ModuleName' => 'Buckaroo',
+                    'ModuleVersion' => '0.1.0',
+                ]
+            ],
+            false
+        );
+
+        $headers[] = new \SoapHeader(
+            'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd',
+            'Security',
+            [
+                'Signature' => [
+                    'SignedInfo' => [
+                        'CanonicalizationMethod' => [
+                            'Algorithm' => 'http://www.w3.org/2001/10/xml-exc-c14n#',
+                        ],
+                        'SignatureMethod' => [
+                            'Algorithm' => 'http://www.w3.org/2000/09/xmldsig#rsa-sha1',
+                        ],
+                        'Reference' => [
+                            [
+                                'Transforms' => [
+                                    [
+                                        'Algorithm' => 'http://www.w3.org/2001/10/xml-exc-c14n#',
+                                    ]
+                                ],
+                                'DigestMethod' => [
+                                    'Algorithm' => 'http://www.w3.org/2000/09/xmldsig#sha1',
+                                ],
+                                'DigestValue' => '',
+                                'URI' => '#_body',
+                                'Id' => null,
+                            ],
+                            [
+                                'Transforms' => [
+                                    [
+                                        'Algorithm' => 'http://www.w3.org/2001/10/xml-exc-c14n#',
+                                    ]
+                                ],
+                                'DigestMethod' => [
+                                    'Algorithm' => 'http://www.w3.org/2000/09/xmldsig#sha1',
+                                ],
+                                'DigestValue' => '',
+                                'URI' => '#_control',
+                                'Id' => null,
+                            ]
+                        ]
+                    ],
+                    'SignatureValue' => '',
+                ],
+                'KeyInfo' => ' ',
+            ],
+            false
+        );
+
+        return $headers;
     }
 }

@@ -115,7 +115,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $transaction = $this->_getCaptureTransaction();
 
-        $this->_gateway->capture($transaction);
+        \Zend_Debug::dump($this->_gateway->capture($transaction));exit;
         return $this;
     }
 

@@ -39,8 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use TIG\Buckaroo\Gateway\Http\Transaction;
-
 class Ideal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
