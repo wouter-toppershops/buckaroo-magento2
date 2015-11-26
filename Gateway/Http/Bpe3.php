@@ -69,43 +69,46 @@ class Bpe3 implements GatewayInterface
         $this->_objectFactory = $objectFactory;
     }
 
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function capture(Transaction $transaction)
     {
-        /** @var \TIG\Buckaroo\Gateway\Http\Transfer $transfer */
-        $transfer = $this->_objectFactory->create(
-            '\TIG\Buckaroo\Gateway\Http\Transfer',
-            [
-                [], //client config
-                [], //headers
-                $transaction->getBody(),
-                [], //auth,
-                $transaction->getmethod(),
-                false
-            ]
-        );
-
-        $this->_client->placeRequest($transfer);
+        return $this->_doRequest($transaction);
     }
 
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function authorize(Transaction $transaction)
     {
-        /** @var \TIG\Buckaroo\Gateway\Http\Transfer $transfer */
-        $transfer = $this->_objectFactory->create(
-            '\TIG\Buckaroo\Gateway\Http\Transfer',
-            [
-                [], //client config
-                [], //headers
-                $transaction->getBody(),
-                [], //auth,
-                $transaction->getmethod(),
-                false
-            ]
-        );
-
-        $this->_client->placeRequest($transfer);
+        return $this->_doRequest($transaction);
     }
 
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function refund(Transaction $transaction)
+    {
+        return $this->_doRequest($transaction);
+    }
+
+    /**
+     * @param Transaction $transaction
+     *
+     * @return array
+     * @throws \Exception
+     */
+    protected function _doRequest(Transaction $transaction)
     {
         /** @var \TIG\Buckaroo\Gateway\Http\Transfer $transfer */
         $transfer = $this->_objectFactory->create(
@@ -120,6 +123,6 @@ class Bpe3 implements GatewayInterface
             ]
         );
 
-        $this->_client->placeRequest($transfer);
+        return $this->_client->placeRequest($transfer);
     }
 }

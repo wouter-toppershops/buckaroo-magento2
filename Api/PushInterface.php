@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,19 +37,14 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="TIG\Buckaroo\Gateway\GatewayInterface" type="TIG\Buckaroo\Gateway\Http\Bpe3"/>
-    <preference for="TIG\Buckaroo\Api\PushInterface" type="TIG\Buckaroo\Model\Push"/>
+namespace TIG\Buckaroo\Api;
 
-    <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
-        <arguments>
-            <argument name="deserializers" xsi:type="array">
-                <item name="application_x-www-form-urlencoded" xsi:type="array">
-                    <item name="type" xsi:type="string">application/x-www-form-urlencoded</item>
-                    <item name="model" xsi:type="string">TIG\Buckaroo\Webapi\Rest\Request\Deserializer\XWwwFormUrlencoded</item>
-                </item>
-            </argument>
-        </arguments>
-    </type>
-</config>
+interface PushInterface
+{
+    /**
+     * @return boolean
+     *
+     * @api
+     */
+    public function receivePush();
+}
