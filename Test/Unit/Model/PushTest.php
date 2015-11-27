@@ -1,4 +1,5 @@
 <?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -36,98 +37,47 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
-namespace TIG\Buckaroo\Model\Method;
+use \Mockery as m;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class Ideal extends AbstractMethod
+class PushTest extends \PHPUnit_Framework_TestCase
 {
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
+    /**
+     * @var \TIG\Buckaroo\Model\Push
+     */
+    protected $_object;
 
     /**
-     * Payment method code
-     *
-     * @var string
+     * @var \Magento\Framework\TestFramework\Unit\Helper\ObjectManager
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
+    protected $_objectManagerHelper;
 
-    /**
-     * @var bool
-     */
-    protected $_isGateway               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canAuthorize            = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapture              = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapturePartial       = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefund               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canVoid                 = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseInternal          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseCheckout          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefundInvoicePartial = true;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getCaptureTransaction()
+    protected function setUp()
     {
-        $transaction = $this->_transactionBuilder->getTransaction();
+        $requestMock = m::mock('\Magento\Framework\Webapi\Rest\Request');
+        $requestMock->shouldReceive('getParams')->once()->andReturn([]);
 
-        $transaction->setMethod('TransactionRequest');
+        $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
-        return $transaction;
+        $this->_object = $this->_objectManagerHelper->getObject(
+            'TIG\Buckaroo\Model\Push',
+            [
+                'request' => $requestMock
+            ]
+        );
+
+        $this->_objectManagerHelper = new ObjectManager($this);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getAuthorizeTransaction()
+    public function testReceivePush()
     {
-        $transaction = $this->_transactionBuilder->getTransaction();
-
-        $transaction->setMethod('TransactionRequest');
-
-        return $transaction;
+        $this->assertTrue($this->_object->receivePush());
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getRefundTransaction()
+    protected function tearDown()
     {
-        $transaction = $this->_transactionBuilder->getTransaction();
-
-        $transaction->setMethod('TransactionRequest');
-
-        return $transaction;
+        m::close();
     }
 }

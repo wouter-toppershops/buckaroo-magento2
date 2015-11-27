@@ -50,9 +50,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $_gateway;
 
     /**
-     * @var \TIG\Buckaroo\Gateway\Http\Transaction
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilder
      */
-    protected $_transaction;
+    protected $_transactionBuilder;
 
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -65,7 +65,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
-        \TIG\Buckaroo\Gateway\Http\Transaction $transaction = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilder $transactionBuilder = null,
         array $data = []
     ) {
         parent::__construct(
@@ -82,7 +82,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         );
 
         $this->_gateway = $gateway;
-        $this->_transaction = $transaction;
+        $this->_transactionBuilder = $transactionBuilder;
     }
 
     /**
@@ -115,7 +115,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $transaction = $this->_getCaptureTransaction();
 
-        \Zend_Debug::dump($this->_gateway->capture($transaction));exit;
+        $this->_gateway->capture($transaction);
         return $this;
     }
 
