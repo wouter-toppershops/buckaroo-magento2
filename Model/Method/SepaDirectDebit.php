@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,30 +36,98 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
-    <default>
-        <payment>
-            <tig_buckaroo_ideal>
-                <active>1</active>
-                <model>TIG\Buckaroo\Model\Method\Ideal</model>
-                <order_status>pending</order_status>
-                <title>TIG Buckaroo iDeal</title>
-                <allowspecific>0</allowspecific>
-                <sort_order>1</sort_order>
-                <group>tig_buckaroo_ideal</group>
-                <payment_action>authorize_capture</payment_action>
-            </tig_buckaroo_ideal>
-            <tig_buckaroo_sepadirectdebit>
-                <active>1</active>
-                <model>TIG\Buckaroo\Model\Method\SepaDirectDebit</model>
-                <order_status>pending</order_status>
-                <title>TIG Buckaroo SEPA Direct Debit</title>
-                <allowspecific>0</allowspecific>
-                <sort_order>1</sort_order>
-                <group>tig_buckaroo_sepadirectdebit</group>
-                <payment_action>authorize_capture</payment_action>
-            </tig_buckaroo_sepadirectdebit>
-        </payment>
-    </default>
-</config>
+
+namespace TIG\Buckaroo\Model\Method;
+
+class SepaDirectDebit extends AbstractMethod
+{
+    const PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE = 'tig_buckaroo_sepadirectdebit';
+
+    /**
+     * Payment method code
+     *
+     * @var string
+     */
+    protected $_code = self::PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE;
+
+    /**
+     * @var bool
+     */
+    protected $_isGateway               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canCapture              = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canCapturePartial       = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canRefund               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canVoid                 = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canUseInternal          = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canUseCheckout          = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canRefundInvoicePartial = true;
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getCaptureTransaction()
+    {
+        $transaction = $this->_transactionBuilder->build();
+
+        $transaction->setMethod('TransactionRequest');
+
+        return $transaction;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getAuthorizeTransaction()
+    {
+        $transaction = $this->_transactionBuilder->build();
+
+        $transaction->setMethod('TransactionRequest');
+
+        return $transaction;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function _getRefundTransaction()
+    {
+        $transaction = $this->_transactionBuilder->build();
+
+        $transaction->setMethod('TransactionRequest');
+
+        return $transaction;
+    }
+}
