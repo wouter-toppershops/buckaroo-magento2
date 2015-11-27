@@ -61,13 +61,16 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
         $transactionMock->shouldReceive('setMethod')->andReturnSelf();
 
+        $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilder');
+        $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
+
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('capture')->once()->with($transactionMock)->andReturnSelf();
 
         $this->_object = $this->_objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
             [
-                'transaction' => $transactionMock,
+                'transactionBuilder' => $transactionBuilderMock,
                 'gateway' => $gatewayMock,
             ]
         );
@@ -88,13 +91,16 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
         $transactionMock->shouldReceive('setMethod')->andReturnSelf();
 
+        $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilder');
+        $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
+
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('authorize')->once()->with($transactionMock)->andReturnSelf();
 
         $this->_object = $this->_objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
             [
-                'transaction' => $transactionMock,
+                'transactionBuilder' => $transactionBuilderMock,
                 'gateway' => $gatewayMock,
             ]
         );
@@ -115,13 +121,16 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
         $transactionMock->shouldReceive('setMethod')->andReturnSelf();
 
+        $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilder');
+        $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
+
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('refund')->once()->with($transactionMock)->andReturnSelf();
 
         $this->_object = $this->_objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
             [
-                'transaction' => $transactionMock,
+                'transactionBuilder' => $transactionBuilderMock,
                 'gateway' => $gatewayMock,
             ]
         );

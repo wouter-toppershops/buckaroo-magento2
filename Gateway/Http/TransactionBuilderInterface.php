@@ -37,97 +37,12 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\Method;
+namespace TIG\Buckaroo\Gateway\Http;
 
-class Ideal extends AbstractMethod
+interface TransactionBuilderInterface
 {
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
-
     /**
-     * Payment method code
-     *
-     * @var string
+     * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
-
-    /**
-     * @var bool
-     */
-    protected $_isGateway               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canAuthorize            = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapture              = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canCapturePartial       = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefund               = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canVoid                 = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseInternal          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canUseCheckout          = true;
-
-    /**
-     * @var bool
-     */
-    protected $_canRefundInvoicePartial = true;
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getCaptureTransaction()
-    {
-        $transaction = $this->_transactionBuilder->build();
-
-        $transaction->setMethod('TransactionRequest');
-
-        return $transaction;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getAuthorizeTransaction()
-    {
-        $transaction = $this->_transactionBuilder->build();
-
-        $transaction->setMethod('TransactionRequest');
-
-        return $transaction;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function _getRefundTransaction()
-    {
-        $transaction = $this->_transactionBuilder->build();
-
-        $transaction->setMethod('TransactionRequest');
-
-        return $transaction;
-    }
+    public function build();
 }

@@ -40,13 +40,13 @@
 
 namespace TIG\Buckaroo\Gateway\Http;
 
-class TransactionBuilder
+class TransactionBuilder implements TransactionBuilderInterface
 {
     /**
      * @return Transaction
      */
-    public function getTransaction()
+    public function build()
     {
-        return new \TIG\Buckaroo\Gateway\Http\Transaction();
+        return new Transaction();
     }
 }
