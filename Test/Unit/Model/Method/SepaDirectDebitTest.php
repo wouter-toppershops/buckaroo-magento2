@@ -59,9 +59,11 @@ class SepaDirectDebitTest extends \PHPUnit_Framework_TestCase
         $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
-        $transactionMock->shouldReceive('setMethod')->andReturnSelf();
 
         $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilder');
+        $transactionBuilderMock->shouldReceive('setOrder')->andReturnSelf();
+        $transactionBuilderMock->shouldReceive('setServices')->andReturnSelf();
+        $transactionBuilderMock->shouldReceive('setMethod')->andReturnSelf();
         $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
 
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
@@ -89,9 +91,11 @@ class SepaDirectDebitTest extends \PHPUnit_Framework_TestCase
         $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
-        $transactionMock->shouldReceive('setMethod')->andReturnSelf();
 
         $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilder');
+        $transactionBuilderMock->shouldReceive('setOrder')->andReturnSelf();
+        $transactionBuilderMock->shouldReceive('setServices')->andReturnSelf();
+        $transactionBuilderMock->shouldReceive('setMethod')->andReturnSelf();
         $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
 
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
@@ -119,9 +123,11 @@ class SepaDirectDebitTest extends \PHPUnit_Framework_TestCase
         $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
-        $transactionMock->shouldReceive('setMethod')->andReturnSelf();
 
         $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilder');
+        $transactionBuilderMock->shouldReceive('setOrder')->andReturnSelf();
+        $transactionBuilderMock->shouldReceive('setServices')->andReturnSelf();
+        $transactionBuilderMock->shouldReceive('setMethod')->andReturnSelf();
         $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
 
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');

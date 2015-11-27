@@ -42,6 +42,27 @@ namespace TIG\Buckaroo\Gateway\Http;
 interface TransactionBuilderInterface
 {
     /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setOrder($order);
+
+    /**
+     * @param array $services
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setServices($services);
+
+    /**
+     * @param string $method
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setMethod($method);
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

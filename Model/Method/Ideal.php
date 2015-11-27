@@ -98,11 +98,21 @@ class Ideal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getCaptureTransaction()
+    protected function _getCaptureTransaction($payment)
     {
-        $transaction = $this->_transactionBuilder->build();
+        $transactionBuilder = $this->_transactionBuilder;
 
-        $transaction->setMethod('TransactionRequest');
+        $services = [
+            'Name' => 'sepadirectdebit',
+            'Action' => 'Pay',
+            'Version' => 1,
+        ];
+
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        $transaction = $transactionBuilder->build();
 
         return $transaction;
     }
@@ -110,11 +120,21 @@ class Ideal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getAuthorizeTransaction()
+    protected function _getAuthorizeTransaction($payment)
     {
-        $transaction = $this->_transactionBuilder->build();
+        $transactionBuilder = $this->_transactionBuilder;
 
-        $transaction->setMethod('TransactionRequest');
+        $services = [
+            'Name' => 'sepadirectdebit',
+            'Action' => 'Pay',
+            'Version' => 1,
+        ];
+
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        $transaction = $transactionBuilder->build();
 
         return $transaction;
     }
@@ -122,11 +142,21 @@ class Ideal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getRefundTransaction()
+    protected function _getRefundTransaction($payment)
     {
-        $transaction = $this->_transactionBuilder->build();
+        $transactionBuilder = $this->_transactionBuilder;
 
-        $transaction->setMethod('TransactionRequest');
+        $services = [
+            'Name' => 'sepadirectdebit',
+            'Action' => 'Pay',
+            'Version' => 1,
+        ];
+
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        $transaction = $transactionBuilder->build();
 
         return $transaction;
     }

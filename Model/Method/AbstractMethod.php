@@ -96,7 +96,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         parent::authorize($payment, $amount);
 
-        $transaction = $this->_getAuthorizeTransaction();
+        $transaction = $this->_getAuthorizeTransaction($payment);
 
         $this->_gateway->authorize($transaction);
         return $this;
@@ -113,7 +113,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         parent::capture($payment, $amount);
 
-        $transaction = $this->_getCaptureTransaction();
+        $transaction = $this->_getCaptureTransaction($payment);
 
         $this->_gateway->capture($transaction);
         return $this;
@@ -130,24 +130,30 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         parent::refund($payment, $amount);
 
-        $transaction = $this->_getRefundTransaction();
+        $transaction = $this->_getRefundTransaction($payment);
 
         $this->_gateway->refund($transaction);
         return $this;
     }
 
     /**
+     * @param InfoInterface $payment
+     *
      * @return Transaction
      */
-    protected abstract function _getAuthorizeTransaction();
+    protected abstract function _getAuthorizeTransaction($payment);
 
     /**
+     * @param InfoInterface $payment
+     *
      * @return Transaction
      */
-    protected abstract function _getCaptureTransaction();
+    protected abstract function _getCaptureTransaction($payment);
 
     /**
+     * @param InfoInterface $payment
+     *
      * @return Transaction
      */
-    protected abstract function _getRefundTransaction();
+    protected abstract function _getRefundTransaction($payment);
 }
