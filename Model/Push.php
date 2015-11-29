@@ -40,7 +40,9 @@
 
 namespace TIG\Buckaroo\Model;
 
+use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Webapi\Rest\Request;
+use Magento\Sales\Model\Order;
 use TIG\Buckaroo\Api\PushInterface;
 
 class Push implements PushInterface
@@ -58,10 +60,15 @@ class Push implements PushInterface
     /**
      * Push constructor.
      *
+     * @param ObjectManagerInterface                 $objectManager
      * @param \Magento\Framework\Webapi\Rest\Request $request
      */
-    public function __construct(Request $request)
+    public function __construct(
+        ObjectManagerInterface $objectManager,
+        Request $request
+    )
     {
+        $this->_objectManager = $objectManager;
         $this->_request = $request;
     }
 
@@ -73,6 +80,18 @@ class Push implements PushInterface
     public function receivePush()
     {
         $this->_postData = $this->_request->getParams();
+        $id = $this->_postData['brq_invoicenumber'];
+
+        /** @var Order $invoice */
+        $order = $this->_objectManager->create(Order::class)->load($id);
+
+        if (!$order->getId())
+        {
+            return false;
+        }
+
+        $order->setStatus('complete');
+        $order->save();
 
         return true;
     }

@@ -39,8 +39,11 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+use Magento\Framework\App\Http\Context;
+use Magento\Sales\Model\Order;
 use \Mockery as m;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+use Magento\Framework\ObjectManagerInterface;
 
 class PushTest extends \PHPUnit_Framework_TestCase
 {
@@ -56,24 +59,61 @@ class PushTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $requestMock = m::mock('\Magento\Framework\Webapi\Rest\Request');
-        $requestMock->shouldReceive('getParams')->once()->andReturn([]);
-
-        $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-
-        $this->_object = $this->_objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Push',
-            [
-                'request' => $requestMock
-            ]
-        );
-
         $this->_objectManagerHelper = new ObjectManager($this);
     }
 
     public function testReceivePush()
     {
-        $this->assertTrue($this->_object->receivePush());
+        $id = 1;
+        $requestMock = m::mock('\Magento\Framework\Webapi\Rest\Request');
+        $requestMock->shouldReceive('getParams')->once()->andReturn(['brq_invoicenumber'=>$id]);
+
+        $order = m::mock(Order::class);
+        $order->shouldReceive('load')->with($id)->andReturnSelf();
+        $order->shouldReceive('getId')->andReturn($id);
+        $order->shouldReceive('setStatus')->with('complete')->andReturnSelf();
+        $order->shouldReceive('save')->andReturn(true);
+
+        $objectManager = m::mock(ObjectManagerInterface::class);
+        $objectManager->shouldReceive('create')->with(Order::class)->andReturn($order);
+
+        $this->_object = $this->_objectManagerHelper->getObject(
+            'TIG\Buckaroo\Model\Push',
+            [
+                'objectManager' => $objectManager,
+                'request' => $requestMock
+            ]
+        );
+
+        $result = $this->_object->receivePush();
+        $this->assertTrue($result);
+    }
+
+    public function testReceivePushWithNonExistingId()
+    {
+        $id = 1;
+        $requestMock = m::mock('\Magento\Framework\Webapi\Rest\Request');
+        $requestMock->shouldReceive('getParams')->once()->andReturn(['brq_invoicenumber'=>$id]);
+
+        $order = m::mock(Order::class);
+        $order->shouldReceive('load')->with($id)->andReturnSelf();
+        $order->shouldReceive('getId')->andReturn(null);
+        $order->shouldReceive('setStatus')->with('complete')->andReturnSelf();
+        $order->shouldReceive('save')->andReturn(true);
+
+        $objectManager = m::mock(ObjectManagerInterface::class);
+        $objectManager->shouldReceive('create')->with(Order::class)->andReturn($order);
+
+        $this->_object = $this->_objectManagerHelper->getObject(
+            'TIG\Buckaroo\Model\Push',
+            [
+                'objectManager' => $objectManager,
+                'request' => $requestMock
+            ]
+        );
+
+        $result = $this->_object->receivePush();
+        $this->assertFalse($result);
     }
 
     protected function tearDown()
