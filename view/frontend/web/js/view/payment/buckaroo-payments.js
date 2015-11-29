@@ -51,6 +51,10 @@ define(
             {
                 type: 'tig_buckaroo_ideal',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/ideal'
+            },
+            {
+                type: 'tig_buckaroo_sepadirectdebit',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/sepadirectdebit'
             }
         );
         /** Add view logic here if needed */

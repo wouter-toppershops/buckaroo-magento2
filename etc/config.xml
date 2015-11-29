@@ -51,6 +51,16 @@
                 <group>tig_buckaroo_ideal</group>
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_ideal>
+            <tig_buckaroo_sepadirectdebit>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\SepaDirectDebit</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo SEPA Direct Debit</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <group>tig_buckaroo_sepadirectdebit</group>
+                <payment_action>authorize_capture</payment_action>
+            </tig_buckaroo_sepadirectdebit>
         </payment>
     </default>
 </config>

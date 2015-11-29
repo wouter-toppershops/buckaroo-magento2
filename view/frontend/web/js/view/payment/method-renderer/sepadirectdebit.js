@@ -1,5 +1,3 @@
-<?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,63 +35,19 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Gateway\Http;
+/*browser:true*/
+/*global define*/
+define(
+    [
+        'Magento_Checkout/js/view/payment/default'
+    ],
+    function (Component) {
+        'use strict';
 
-class Transaction
-{
-    /**
-     * @var array
-     */
-    protected $_body;
-
-    /**
-     * @var array
-     */
-    protected $_headers;
-
-    /**
-     * @var string
-     */
-    protected $_method;
-
-    /**
-     * Transaction constructor.
-     *
-     * @param array  $body
-     * @param array  $headers
-     * @param string $method
-     */
-    public function __construct(
-        array $body,
-        array $headers,
-        $method
-    ) {
-        $this->_body = $body;
-        $this->_headers = $headers;
-        $this->_method = $method;
+        return Component.extend({
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
+            }
+        });
     }
-
-    /**
-     * @return array
-     */
-    public function getBody()
-    {
-        return $this->_body;
-    }
-
-    /**
-     * @returns array
-     */
-    public function getHeaders()
-    {
-        return $this->_headers;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMethod()
-    {
-        return $this->_method;
-    }
-}
+);

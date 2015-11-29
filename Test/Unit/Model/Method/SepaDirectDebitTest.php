@@ -42,7 +42,7 @@ namespace TIG\Buckaroo\Test\Unit\Model\Method;
 use \Mockery as m;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class IdealTest extends \PHPUnit_Framework_TestCase
+class SepaDirectDebitTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \TIG\Buckaroo\Model\Method\Ideal
@@ -70,7 +70,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $gatewayMock->shouldReceive('capture')->once()->with($transactionMock)->andReturnSelf();
 
         $this->_object = $this->_objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Method\Ideal',
+            'TIG\Buckaroo\Model\Method\SepaDirectDebit',
             [
                 'transactionBuilder' => $transactionBuilderMock,
                 'gateway' => $gatewayMock,
@@ -83,7 +83,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
             'Magento\Payment\Model\Info'
         );
 
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->_object->capture($paymentInfoMock, 1));
+        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\SepaDirectDebit', $this->_object->capture($paymentInfoMock, 1));
     }
 
     public function testAuthorize()
@@ -102,7 +102,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $gatewayMock->shouldReceive('authorize')->once()->with($transactionMock)->andReturnSelf();
 
         $this->_object = $this->_objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Method\Ideal',
+            'TIG\Buckaroo\Model\Method\SepaDirectDebit',
             [
                 'transactionBuilder' => $transactionBuilderMock,
                 'gateway' => $gatewayMock,
@@ -115,7 +115,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
             'Magento\Payment\Model\Info'
         );
 
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->_object->authorize($paymentInfoMock, 1));
+        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\SepaDirectDebit', $this->_object->authorize($paymentInfoMock, 1));
     }
 
     public function testRefund()
@@ -134,7 +134,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $gatewayMock->shouldReceive('refund')->once()->with($transactionMock)->andReturnSelf();
 
         $this->_object = $this->_objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Method\Ideal',
+            'TIG\Buckaroo\Model\Method\SepaDirectDebit',
             [
                 'transactionBuilder' => $transactionBuilderMock,
                 'gateway' => $gatewayMock,
@@ -147,7 +147,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
             'Magento\Payment\Model\Info'
         );
 
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->_object->refund($paymentInfoMock, 1));
+        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\SepaDirectDebit', $this->_object->refund($paymentInfoMock, 1));
     }
 
     public function tearDown()

@@ -39,16 +39,16 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-class Ideal extends AbstractMethod
+class SepaDirectDebit extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
+    const PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE = 'tig_buckaroo_sepadirectdebit';
 
     /**
      * Payment method code
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
+    protected $_code = self::PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE;
 
     /**
      * @var bool
@@ -103,9 +103,11 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilder;
 
         $services = [
-            'Name' => 'sepadirectdebit',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Service' => [
+                'Name' => 'sepadirectdebit',
+                'Action' => 'Pay',
+                'Version' => 1,
+            ]
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -125,9 +127,11 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilder;
 
         $services = [
-            'Name' => 'sepadirectdebit',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Service' => [
+                'Name' => 'sepadirectdebit',
+                'Action' => 'Pay',
+                'Version' => 1,
+            ]
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -147,9 +151,11 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilder;
 
         $services = [
-            'Name' => 'sepadirectdebit',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Service' => [
+                'Name' => 'sepadirectdebit',
+                'Action' => 'Pay',
+                'Version' => 1,
+            ]
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
