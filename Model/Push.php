@@ -82,11 +82,10 @@ class Push implements PushInterface
         $this->_postData = $this->_request->getParams();
         $id = $this->_postData['brq_invoicenumber'];
 
-        /** @var Order $invoice */
+        /** @var Order $order */
         $order = $this->_objectManager->create(Order::class)->load($id);
 
-        if (!$order->getId())
-        {
+        if (!$order->getId()) {
             return false;
         }
 
