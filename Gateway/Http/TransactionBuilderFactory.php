@@ -67,18 +67,18 @@ class TransactionBuilderFactory
     /**
      * Retrieve proper transaction builder for the specified transaction type.
      *
-     * @param string $transactionType
+     * @param string $builderType
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
      * @throws \LogicException|\Magento\Framework\Webapi\Exception
      */
-    public function get($transactionType)
+    public function get($builderType)
     {
         if (empty($this->_transactionBuilders)) {
             throw new \LogicException('Transaction builder adapter is not set.');
         }
         foreach ($this->_transactionBuilders as $transactionBuilderMetaData) {
             $transactionBuilderType = $transactionBuilderMetaData['type'];
-            if ($transactionBuilderType == $transactionType) {
+            if ($transactionBuilderType == $builderType) {
                 $transactionBuilderClass = $transactionBuilderMetaData['model'];
                 break;
             }
@@ -88,7 +88,7 @@ class TransactionBuilderFactory
             throw new \Magento\Framework\Webapi\Exception(
                 new \Magento\Framework\Phrase(
                     'Unknown transaction builder type requested: %1.',
-                    [$transactionType]
+                    [$builderType]
                 )
             );
         }

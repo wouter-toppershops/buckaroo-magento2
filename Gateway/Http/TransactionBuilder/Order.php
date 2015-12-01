@@ -73,7 +73,9 @@ class Order extends AbstractTransactionBuilder
             'OriginalTransactionKey' => $this->_originalTransactionKey,
             'StartRecurrent' => $this->_startRecurrent,
             'PushURL' => $this->_urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => $this->getServices(),
+            'Services' => [
+                'Service' => $this->getServices()
+            ],
         ];
 
         return $body;

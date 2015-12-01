@@ -103,13 +103,14 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilderFactory->get('order');
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 2,
+            'Name'             => 'ideal',
+            'Action'           => 'Pay',
+            'Version'          => 2,
             'RequestParameter' => [
                 [
-                    'issuer' => 'RABONL2U',
-                ],
+                    '_'    => 'RABONL2U',
+                    'Name' => 'issuer',
+                ]
             ],
         ];
 
@@ -119,7 +120,6 @@ class Ideal extends AbstractMethod
 
         $transaction = $transactionBuilder->build();
 
-        print_r($transaction);exit;
         return $transaction;
     }
 
@@ -131,9 +131,15 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilderFactory->get('order');
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 2,
+            'Name'             => 'ideal',
+            'Action'           => 'Pay',
+            'Version'          => 2,
+            'RequestParameter' => [
+                [
+                    '_'    => 'RABONL2U',
+                    'Name' => 'issuer',
+                ]
+            ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -153,14 +159,15 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilderFactory->get('refund');
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 2,
+            'Name'    => 'ideal',
+            'Action'  => 'Refund',
+            'Version' => 1,
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
-                           ->setMethod('TransactionRequest');
+                           ->setMethod('TransactionRequest')
+                           ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         $transaction = $transactionBuilder->build();
 

@@ -106,6 +106,30 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $_originalTransactionKey = null;
 
     /**
+     * @param null|string $originalTransactionKey
+     *
+     * @return $this
+     */
+    public function setOriginalTransactionKey($originalTransactionKey)
+    {
+        $this->_originalTransactionKey = $originalTransactionKey;
+
+        return $this;
+    }
+
+    /**
+     * @param boolean $startRecurrent
+     *
+     * @return $this
+     */
+    public function setStartRecurrent($startRecurrent)
+    {
+        $this->_startRecurrent = $startRecurrent;
+
+        return $this;
+    }
+
+    /**
      * TransactionBuilder constructor.
      *
      * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata
