@@ -38,10 +38,28 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Gateway\Http;
+namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
-class TransactionBuilder implements TransactionBuilderInterface
+use Magento\Store\Model\ScopeInterface;
+
+abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
 {
+    /**
+     * Module supplier.
+     */
+    const MODULE_SUPPLIER = 'TIG';
+
+    /**
+     * Module code.
+     */
+    const MODULE_CODE = 'TIG_Buckaroo';
+
+    /**#@+
+     * Config Xpaths
+     */
+    const XPATH_PAYMENT_DESCRIPTION = 'buckaroo/advanced/payment_description';
+    /**#@-*/
+
     /**
      * @var \Magento\Sales\Model\Order
      */
@@ -60,17 +78,51 @@ class TransactionBuilder implements TransactionBuilderInterface
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
-    protected $_productMetadataInterface;
+    protected $_productMetadata;
+
+    /**
+     * @var \Magento\Framework\Module\ModuleListInterface
+     */
+    protected $_moduleList;
+
+    /**
+     * @var \Magento\Framework\UrlInterface
+     */
+    protected $_urlBuilder;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $_scopeConfig;
+
+    /**
+     * @var bool
+     */
+    protected $_startRecurrent = false;
+
+    /**
+     * @var null|string
+     */
+    protected $_originalTransactionKey = null;
 
     /**
      * TransactionBuilder constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadataInterface $productMetadataInterface
+     * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata
+     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
+     * @param \Magento\Framework\UrlInterface                    $urlBuilder
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\App\ProductMetadataInterface $productMetadataInterface
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
+        \Magento\Framework\Module\ModuleListInterface $moduleList,
+        \Magento\Framework\UrlInterface $urlBuilder,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->_productMetadataInterface = $productMetadataInterface;
+        $this->_productMetadata = $productMetadata;
+        $this->_moduleList = $moduleList;
+        $this->_urlBuilder = $urlBuilder;
+        $this->_scopeConfig = $scopeConfig;
     }
 
     /**
@@ -134,50 +186,25 @@ class TransactionBuilder implements TransactionBuilderInterface
     }
 
     /**
-     * @return Transaction
+     * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build()
     {
-        return new Transaction($this->getBody(), $this->getHeaders(), $this->getMethod());
+        return new \TIG\Buckaroo\Gateway\Http\Transaction($this->getBody(), $this->getHeaders(), $this->getMethod());
     }
 
     /**
      * @return array
      */
-    public function getBody()
-    {
-        $order = $this->getOrder();
-
-        $body = [
-            'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
-            'AmountDebit' => $order->getBaseGrandTotal(),
-            'AmountCredit' => 0,
-            'Invoice' => $order->getIncrementId(),
-            'Order' => $order->getIncrementId(),
-            'Description' => 'Test',
-            'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => 'IPv4',
-            ],
-            'ReturnURL' => 'http://magento2.cow3299.com/',
-            'ReturnURLCancel' => 'http://magento2.cow3299.com/',
-            'ReturnURLError' => 'http://magento2.cow3299.com/',
-            'ReturnURLReject' => 'http://magento2.cow3299.com/',
-            'OriginalTransactionKey' => null,
-            'StartRecurrent' => false,
-            'PushURL' => 'http://magento2.cow3299.com/index.php/rest/V1/buckaroo/push',
-            'Services' => $this->getServices(),
-        ];
-
-        return $body;
-    }
+    abstract public function getBody();
 
     /**
      * @returns array
      */
     public function getHeaders()
     {
+        $module = $this->_moduleList->getOne(self::MODULE_CODE);
+
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
             'MessageControlBlock',
@@ -185,16 +212,16 @@ class TransactionBuilder implements TransactionBuilderInterface
                 'Id' => '_control',
                 'WebsiteKey' => 'SniACG6eSj',
                 'Culture' => 'nl-NL',
-                'TimeStamp' => 1448553322,
+                'TimeStamp' => time(),
                 'Channel' => 'Web',
                 'Software' => [
-                    'PlatformName' => $this->_productMetadataInterface->getName()
+                    'PlatformName' => $this->_productMetadata->getName()
                                       . ' - '
-                                      . $this->_productMetadataInterface->getEdition(),
-                    'PlatformVersion' => $this->_productMetadataInterface->getVersion(),
-                    'ModuleSupplier' => 'TIG',
-                    'ModuleName' => 'Buckaroo',
-                    'ModuleVersion' => '0.1.0',
+                                      . $this->_productMetadata->getEdition(),
+                    'PlatformVersion' => $this->_productMetadata->getVersion(),
+                    'ModuleSupplier' => self::MODULE_SUPPLIER,
+                    'ModuleName' => $module['name'],
+                    'ModuleVersion' => $module['setup_version'],
                 ]
             ],
             false

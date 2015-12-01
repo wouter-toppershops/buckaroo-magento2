@@ -50,10 +50,26 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $_gateway;
 
     /**
-     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory
      */
-    protected $_transactionBuilder;
+    protected $_transactionBuilderFactory;
 
+    /**
+     * AbstractMethod constructor.
+     *
+     * @param \Magento\Framework\Model\Context                             $context
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory            $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory                 $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                                 $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                         $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                  $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
+     * @param array                                                        $data
+     */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
@@ -65,7 +81,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
-        \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $transactionBuilder = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
         array $data = []
     ) {
         parent::__construct(
@@ -82,7 +98,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         );
 
         $this->_gateway = $gateway;
-        $this->_transactionBuilder = $transactionBuilder;
+        $this->_transactionBuilderFactory = $transactionBuilderFactory;
     }
 
     /**

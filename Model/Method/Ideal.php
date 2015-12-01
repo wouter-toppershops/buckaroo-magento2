@@ -100,12 +100,17 @@ class Ideal extends AbstractMethod
      */
     protected function _getCaptureTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('order');
 
         $services = [
-            'Name' => 'sepadirectdebit',
+            'Name' => 'ideal',
             'Action' => 'Pay',
-            'Version' => 1,
+            'Version' => 2,
+            'RequestParameter' => [
+                [
+                    'issuer' => 'RABONL2U',
+                ],
+            ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -114,6 +119,7 @@ class Ideal extends AbstractMethod
 
         $transaction = $transactionBuilder->build();
 
+        print_r($transaction);exit;
         return $transaction;
     }
 
@@ -122,12 +128,12 @@ class Ideal extends AbstractMethod
      */
     protected function _getAuthorizeTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('order');
 
         $services = [
-            'Name' => 'sepadirectdebit',
+            'Name' => 'ideal',
             'Action' => 'Pay',
-            'Version' => 1,
+            'Version' => 2,
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -144,12 +150,12 @@ class Ideal extends AbstractMethod
      */
     protected function _getRefundTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('refund');
 
         $services = [
-            'Name' => 'sepadirectdebit',
+            'Name' => 'ideal',
             'Action' => 'Pay',
-            'Version' => 1,
+            'Version' => 2,
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
