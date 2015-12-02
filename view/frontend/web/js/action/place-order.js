@@ -50,11 +50,7 @@ define(
                     if (redirectOnSuccess) {
                         window.location.replace(url.build('checkout/onepage/success/'));
                     }
-                    // Check if window.Buckaroo even exists
-                    if (window.Buckaroo === undefined) {
-                        window.Buckaroo = [];
-                    }
-                    window.Buckaroo['response'] = response;
+                    window.checkoutConfig.payment.buckaroo.response = response;
                     fullScreenLoader.stopLoader();
                 }
             ).fail(

@@ -75,9 +75,9 @@ class ConfigProvider extends CcGenericConfigProvider
                             'name' => 'ABN AMRO',
                             'code' => 'AA',
                             'img' => 'ico-abn'
-                        ]
-
+                        ],
                     ],
+                    'response' => [],
                 ],
             ],
         ]);

@@ -14,7 +14,7 @@
         </resources>
     </route>
 
-    <route url="/V1/buckaroo/payment-information" method="GET">
+    <route url="/V1/buckaroo/payment-information" method="POST">
         <service class="TIG\Buckaroo\Api\PaymentInformationManagementInterface" method="buckarooSavePaymentInformationAndPlaceOrder"/>
         <resources>
             <resource ref="self" />
