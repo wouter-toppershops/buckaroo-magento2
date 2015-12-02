@@ -42,19 +42,28 @@ define(
         'jquery',
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'TIG_Buckaroo/js/action/place-order'
+        'TIG_Buckaroo/js/action/place-order',
+        'ko'
     ],
     function (
         $,
         Component,
         additionalValidators,
-        placeOrderAction
+        placeOrderAction,
+        ko
     ) {
         'use strict';
 
         return Component.extend({
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_ideal'
+            },
+
+
+            initObservable: function () {
+                this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
+
+                return this;
             },
 
             // Set redirectAfterPlaceOrder to false
@@ -95,4 +104,13 @@ define(
 
         });
     }
+
 );
+
+
+
+
+
+
+
+

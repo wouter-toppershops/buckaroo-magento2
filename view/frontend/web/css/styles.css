@@ -1,0 +1,18 @@
+.payment-method-banks {
+    margin-left :20px;
+}
+.payment-method-banks .bank-types{
+    float:left; width: 100%;
+}
+.payment-method-banks .bank-types-img{
+    vertical-align:middle;
+    margin-right:10px;
+}
+.payment-method-banks .bank-types-input{
+    margin-top:10px;
+}
+
+
+
+
+

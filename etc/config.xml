@@ -61,6 +61,16 @@
                 <group>tig_buckaroo_sepadirectdebit</group>
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_sepadirectdebit>
+            <tig_buckaroo_paypal>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Paypal</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo PayPal</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <group>tig_buckaroo_paypal</group>
+                <payment_action>authorize_capture</payment_action>
+            </tig_buckaroo_paypal>
         </payment>
     </default>
 </config>
