@@ -58,7 +58,7 @@ class Ideal extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -68,7 +68,7 @@ class Ideal extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canCapturePartial       = true;
+    protected $_canCapturePartial       = false;
 
     /**
      * @var bool
@@ -100,12 +100,18 @@ class Ideal extends AbstractMethod
      */
     protected function _getCaptureTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('order');
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Name'             => 'ideal',
+            'Action'           => 'Pay',
+            'Version'          => 2,
+            'RequestParameter' => [
+                [
+                    '_'    => 'RABONL2U',
+                    'Name' => 'issuer',
+                ]
+            ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -122,21 +128,7 @@ class Ideal extends AbstractMethod
      */
     protected function _getAuthorizeTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
-
-        $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 1,
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
-
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return false;
     }
 
     /**
@@ -144,17 +136,18 @@ class Ideal extends AbstractMethod
      */
     protected function _getRefundTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('refund');
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
+            'Name'    => 'ideal',
+            'Action'  => 'Refund',
             'Version' => 1,
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
-                           ->setMethod('TransactionRequest');
+                           ->setMethod('TransactionRequest')
+                           ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         $transaction = $transactionBuilder->build();
 

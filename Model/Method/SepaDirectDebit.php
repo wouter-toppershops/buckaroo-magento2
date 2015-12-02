@@ -58,7 +58,7 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -68,7 +68,7 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canCapturePartial       = true;
+    protected $_canCapturePartial       = false;
 
     /**
      * @var bool
@@ -100,7 +100,7 @@ class SepaDirectDebit extends AbstractMethod
      */
     protected function _getCaptureTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('order');
 
         $services = [
             'Service' => [
@@ -124,23 +124,7 @@ class SepaDirectDebit extends AbstractMethod
      */
     protected function _getAuthorizeTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
-
-        $services = [
-            'Service' => [
-                'Name' => 'sepadirectdebit',
-                'Action' => 'Pay',
-                'Version' => 1,
-            ]
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
-
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return false;
     }
 
     /**
@@ -148,7 +132,7 @@ class SepaDirectDebit extends AbstractMethod
      */
     protected function _getRefundTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->_transactionBuilderFactory->get('refund');
 
         $services = [
             'Service' => [

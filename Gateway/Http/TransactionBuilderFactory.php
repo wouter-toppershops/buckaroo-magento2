@@ -38,60 +38,67 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model;
+namespace TIG\Buckaroo\Gateway\Http;
 
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Webapi\Rest\Request;
-use Magento\Sales\Model\Order;
-use TIG\Buckaroo\Api\PushInterface;
-
-class Push implements PushInterface
+class TransactionBuilderFactory
 {
     /**
-     * @var Request
+     * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_request;
+    protected $_objectManager;
 
     /**
      * @var array
      */
-    protected $_postData;
+    protected $_transactionBuilders;
 
     /**
-     * Push constructor.
-     *
-     * @param ObjectManagerInterface                 $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request $request
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param array $transactionBuilders
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
-        Request $request
-    )
-    {
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        array $transactionBuilders = []
+    ) {
         $this->_objectManager = $objectManager;
-        $this->_request = $request;
+        $this->_transactionBuilders = $transactionBuilders;
     }
 
     /**
-     * {@inheritdoc}
+     * Retrieve proper transaction builder for the specified transaction type.
      *
-     * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
+     * @param string $builderType
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
+     * @throws \LogicException|\Magento\Framework\Webapi\Exception
      */
-    public function receivePush()
+    public function get($builderType)
     {
-        $this->_postData = $this->_request->getParams();
-        $id = $this->_postData['brq_invoicenumber'];
-
-        /** @var Order $order */
-        $order = $this->_objectManager->create(Order::class)->load($id);
-
-        if (!$order->getId()) {
-            return false;
+        if (empty($this->_transactionBuilders)) {
+            throw new \LogicException('Transaction builder adapter is not set.');
+        }
+        foreach ($this->_transactionBuilders as $transactionBuilderMetaData) {
+            $transactionBuilderType = $transactionBuilderMetaData['type'];
+            if ($transactionBuilderType == $builderType) {
+                $transactionBuilderClass = $transactionBuilderMetaData['model'];
+                break;
+            }
         }
 
-        $order->setStatus('complete');
-        $order->save();
+        if (!isset($transactionBuilderClass) || empty($transactionBuilderClass)) {
+            throw new \Magento\Framework\Webapi\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unknown transaction builder type requested: %1.',
+                    [$builderType]
+                )
+            );
+        }
 
-        return true;
+        $transactionBuilder = $this->_objectManager->get($transactionBuilderClass);
+        if (!$transactionBuilder instanceof \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface) {
+            throw new \LogicException(
+                'The transaction builder must implement "TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface".'
+            );
+        }
+        return $transactionBuilder;
     }
 }

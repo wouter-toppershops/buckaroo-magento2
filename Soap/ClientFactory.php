@@ -51,8 +51,6 @@ BdQ2gUgllhq2FyS60SV2rFSIekkBOiwo3g1cTBScHiUt
 -----END RSA PRIVATE KEY-----"
         );
 
-        echo PHP_EOL.PHP_EOL;
-
         return $client;
     }
 }

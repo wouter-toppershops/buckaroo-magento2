@@ -39,7 +39,6 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
-use Magento\Framework\App\Http\Context;
 use Magento\Sales\Model\Order;
 use \Mockery as m;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;

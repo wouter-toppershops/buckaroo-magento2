@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -34,64 +33,18 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Api;
 
-namespace TIG\Buckaroo\Model;
-
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Webapi\Rest\Request;
-use Magento\Sales\Model\Order;
-use TIG\Buckaroo\Api\PushInterface;
-
-class Push implements PushInterface
+interface PaymentInformationManagementInterface
 {
-    /**
-     * @var Request
-     */
-    protected $_request;
 
-    /**
-     * @var array
-     */
-    protected $_postData;
+    public function buckarooSavePaymentInformationAndPlaceOrder(
+        $cartId,
+        \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
+        \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
+    );
 
-    /**
-     * Push constructor.
-     *
-     * @param ObjectManagerInterface                 $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request $request
-     */
-    public function __construct(
-        ObjectManagerInterface $objectManager,
-        Request $request
-    )
-    {
-        $this->_objectManager = $objectManager;
-        $this->_request = $request;
-    }
-
-    /**
-     * {@inheritdoc}
-     *
-     * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
-     */
-    public function receivePush()
-    {
-        $this->_postData = $this->_request->getParams();
-        $id = $this->_postData['brq_invoicenumber'];
-
-        /** @var Order $order */
-        $order = $this->_objectManager->create(Order::class)->load($id);
-
-        if (!$order->getId()) {
-            return false;
-        }
-
-        $order->setStatus('complete');
-        $order->save();
-
-        return true;
-    }
 }

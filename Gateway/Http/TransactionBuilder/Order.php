@@ -38,60 +38,46 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model;
+namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
-use Magento\Framework\ObjectManagerInterface;
-use Magento\Framework\Webapi\Rest\Request;
-use Magento\Sales\Model\Order;
-use TIG\Buckaroo\Api\PushInterface;
+use Magento\Store\Model\ScopeInterface;
 
-class Push implements PushInterface
+class Order extends AbstractTransactionBuilder
 {
     /**
-     * @var Request
+     * @return array
      */
-    protected $_request;
-
-    /**
-     * @var array
-     */
-    protected $_postData;
-
-    /**
-     * Push constructor.
-     *
-     * @param ObjectManagerInterface                 $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request $request
-     */
-    public function __construct(
-        ObjectManagerInterface $objectManager,
-        Request $request
-    )
+    public function getBody()
     {
-        $this->_objectManager = $objectManager;
-        $this->_request = $request;
-    }
+        $order = $this->getOrder();
 
-    /**
-     * {@inheritdoc}
-     *
-     * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
-     */
-    public function receivePush()
-    {
-        $this->_postData = $this->_request->getParams();
-        $id = $this->_postData['brq_invoicenumber'];
+        $body = [
+            'test' => '1',
+            'Currency' => $order->getOrderCurrencyCode(),
+            'AmountDebit' => $order->getBaseGrandTotal(),
+            'AmountCredit' => 0,
+            'Invoice' => $order->getIncrementId(),
+            'Order' => $order->getIncrementId(),
+            'Description' => $this->_scopeConfig->getValue(
+                self::XPATH_PAYMENT_DESCRIPTION,
+                ScopeInterface::SCOPE_STORE
+            ),
+            'ClientIP' => [
+                '_' => $order->getRemoteIp(),
+                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
+            ],
+            'ReturnURL' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURLCancel' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURLError' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURLReject' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'OriginalTransactionKey' => $this->_originalTransactionKey,
+            'StartRecurrent' => $this->_startRecurrent,
+            'PushURL' => $this->_urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
+            'Services' => [
+                'Service' => $this->getServices()
+            ],
+        ];
 
-        /** @var Order $order */
-        $order = $this->_objectManager->create(Order::class)->load($id);
-
-        if (!$order->getId()) {
-            return false;
-        }
-
-        $order->setStatus('complete');
-        $order->save();
-
-        return true;
+        return $body;
     }
 }
