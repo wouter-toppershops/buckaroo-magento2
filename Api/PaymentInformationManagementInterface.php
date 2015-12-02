@@ -1,3 +1,4 @@
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -32,33 +33,18 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-/*browser:true*/
-/*global define*/
-define(
-    [
-        'uiComponent',
-        'Magento_Checkout/js/model/payment/renderer-list',
-        'Magento_Checkout/js/action/place-order'
-    ],
-    function (
-        Component,
-        rendererList
-    ) {
-        'use strict';
-        rendererList.push(
-            {
-                type: 'tig_buckaroo_ideal',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/ideal'
-            },
-            {
-                type: 'tig_buckaroo_sepadirectdebit',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/sepadirectdebit'
-            }
-        );
-        /** Add view logic here if needed */
-        return Component.extend({});
-    }
-);
+namespace TIG\Buckaroo\Api;
+
+interface PaymentInformationManagementInterface
+{
+
+    public function buckarooSavePaymentInformationAndPlaceOrder(
+        $cartId,
+        \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
+        \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
+    );
+
+}
