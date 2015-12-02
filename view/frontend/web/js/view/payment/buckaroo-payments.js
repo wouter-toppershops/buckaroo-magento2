@@ -56,7 +56,12 @@ define(
             {
                 type: 'tig_buckaroo_sepadirectdebit',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/sepadirectdebit'
+            },
+            {
+                type: 'tig_buckaroo_paypal',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/paypal'
             }
+
         );
         /** Add view logic here if needed */
         return Component.extend({});

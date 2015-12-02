@@ -16,6 +16,21 @@
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
+
+        <div class="payment-method-banks" >
+            <!-- ko foreach: banktypes -->
+            <label class="bank-types">
+                <!--@TODO: write a script which generates the images in pub/static  -->
+                <img class="bank-types-img" data-bind="attr: {
+                     'src': '../pub/media/tig/buckaroo/images/' + img + '.png',
+                     'width': 20,
+                     'height': 20 }"
+                />
+                <input class="bank-types-input" type="radio" data-bind="value: code, text: name" name="bank"> <!-- ko text: name --><!--/ko-->
+            </label>
+            <!--/ko-->
+        </div>
+
         <div class="checkout-agreements-block">
             <!-- ko foreach: $parent.getRegion('before-place-order') -->
             <!-- ko template: getTemplate() --><!-- /ko -->

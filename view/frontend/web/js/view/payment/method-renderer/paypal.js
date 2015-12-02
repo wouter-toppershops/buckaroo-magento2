@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-<!--
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,23 +35,19 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/payment.xsd">
-    <groups>
-        <group id="buckaroo">
-            <label>Buckaroo Payment Methods</label>
-        </group>
-    </groups>
-    <methods>
-        <method name="tig_buckaroo_ideal">
-            <allow_multiple_address>1</allow_multiple_address>
-        </method>
-        <method name="tig_buckaroo_sepadirectdebit">
-            <allow_multiple_address>1</allow_multiple_address>
-        </method>
-        <method name="tig_buckaroo_paypal">
-            <allow_multiple_address>1</allow_multiple_address>
-        </method>
-    </methods>
-</payment>
+/*browser:true*/
+/*global define*/
+define(
+    [
+        'Magento_Checkout/js/view/payment/default'
+    ],
+    function (Component) {
+        'use strict';
+
+        return Component.extend({
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_paypal'
+            }
+        });
+    }
+);
