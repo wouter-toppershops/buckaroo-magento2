@@ -39,15 +39,31 @@
 /*global define*/
 define(
     [
-        'Magento_Checkout/js/view/payment/default'
+        'Magento_Checkout/js/view/payment/default',
+        'ko'                                                                                        /* added ko js */
     ],
-    function (Component) {
+    function (Component,ko) {                                                                       /* added ko js */
         'use strict';
 
         return Component.extend({
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_ideal'
+            },
+
+            initObservable: function (){
+                this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
+
+                return this;
             }
         });
     }
+
 );
+
+
+
+
+
+
+
+

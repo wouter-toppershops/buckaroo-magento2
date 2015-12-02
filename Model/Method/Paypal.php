@@ -39,16 +39,16 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-class Ideal extends AbstractMethod
+class Paypal extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
+    const PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE = 'tig_buckaroo_paypal';
 
     /**
      * Payment method code
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
+    protected $_code = self::PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE;
 
     /**
      * @var bool
@@ -103,14 +103,16 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilder;
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Service' => [
+                'Name' => 'paypal',
+                'Action' => 'Pay',
+                'Version' => 1,
+            ]
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         $transaction = $transactionBuilder->build();
 
@@ -125,14 +127,16 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilder;
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Service' => [
+                'Name' => 'paypal',
+                'Action' => 'Pay',
+                'Version' => 1,
+            ]
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         $transaction = $transactionBuilder->build();
 
@@ -147,14 +151,16 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->_transactionBuilder;
 
         $services = [
-            'Name' => 'ideal',
-            'Action' => 'Pay',
-            'Version' => 1,
+            'Service' => [
+                'Name' => 'paypal',
+                'Action' => 'Pay',
+                'Version' => 1,
+            ]
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         $transaction = $transactionBuilder->build();
 
