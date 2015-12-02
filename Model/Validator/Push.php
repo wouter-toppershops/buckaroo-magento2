@@ -1,5 +1,5 @@
-<?xml version="1.0"?>
-<!--
+<?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,15 +37,19 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
-    <type name="Magento\Checkout\Model\CompositeConfigProvider">
-        <arguments>
-            <argument name="configProviders" xsi:type="array">
-                <item name="braintree_config_provider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider</item>
-            </argument>
-        </arguments>
-    </type>
+namespace TIG\Buckaroo\Model\Validator;
 
-</config>
+class Push implements \TIG\Buckaroo\Model\ValidatorInterface
+{
+
+    /**
+     * @param array|object $data
+     *
+     * @return boolean
+     */
+    public function validate($data)
+    {
+        return true;
+    }
+}

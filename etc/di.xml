@@ -47,6 +47,7 @@
         <arguments>
             <argument name="gateway" xsi:type="object">TIG\Buckaroo\Gateway\GatewayInterface</argument>
             <argument name="transactionBuilderFactory" xsi:type="object">TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory</argument>
+            <argument name="validatorFactory" xsi:type="object">TIG\Buckaroo\Model\ValidatorFactory</argument>
         </arguments>
     </type>
 
@@ -66,6 +67,21 @@
                 <item name="refund" xsi:type="array">
                     <item name="type" xsi:type="string">refund</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Gateway\Http\TransactionBuilder\Refund</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Model\ValidatorFactory">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="push" xsi:type="array">
+                    <item name="type" xsi:type="string">push</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\Push</item>
+                </item>
+                <item name="transaction_response" xsi:type="array">
+                    <item name="type" xsi:type="string">transaction_response</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\TransactionResponse</item>
                 </item>
             </argument>
         </arguments>

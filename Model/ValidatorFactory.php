@@ -38,9 +38,9 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Gateway\Http;
+namespace TIG\Buckaroo\Model;
 
-class TransactionBuilderFactory
+class ValidatorFactory
 {
     /**
      * @var \Magento\Framework\ObjectManagerInterface
@@ -50,55 +50,55 @@ class TransactionBuilderFactory
     /**
      * @var array
      */
-    protected $_transactionBuilders;
+    protected $_validators;
 
     /**
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param array $transactionBuilders
+     * @param array $validators
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
-        array $transactionBuilders = []
+        array $validators = []
     ) {
         $this->_objectManager = $objectManager;
-        $this->_transactionBuilders = $transactionBuilders;
+        $this->_validators = $validators;
     }
 
     /**
      * Retrieve proper transaction builder for the specified transaction type.
      *
-     * @param string $builderType
-     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
+     * @param string $validatorType
+     * @return \TIG\Buckaroo\Model\ValidatorInterface
      * @throws \LogicException|\TIG\Buckaroo\Exception
      */
-    public function get($builderType)
+    public function get($validatorType)
     {
-        if (empty($this->_transactionBuilders)) {
-            throw new \LogicException('Transaction builder adapter is not set.');
+        if (empty($this->_validators)) {
+            throw new \LogicException('Validator adapter is not set.');
         }
-        foreach ($this->_transactionBuilders as $transactionBuilderMetaData) {
-            $transactionBuilderType = $transactionBuilderMetaData['type'];
-            if ($transactionBuilderType == $builderType) {
-                $transactionBuilderClass = $transactionBuilderMetaData['model'];
+        foreach ($this->_validators as $validatorMetaData) {
+            $validatorMetaDataType = $validatorMetaData['type'];
+            if ($validatorMetaDataType == $validatorType) {
+                $validatorClass = $validatorMetaData['model'];
                 break;
             }
         }
 
-        if (!isset($transactionBuilderClass) || empty($transactionBuilderClass)) {
+        if (!isset($validatorClass) || empty($validatorClass)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
-                    'Unknown transaction builder type requested: %1.',
-                    [$builderType]
+                    'Unknown validator type requested: %1.',
+                    [$validatorType]
                 )
             );
         }
 
-        $transactionBuilder = $this->_objectManager->get($transactionBuilderClass);
-        if (!$transactionBuilder instanceof \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface) {
+        $validator = $this->_objectManager->get($validatorClass);
+        if (!$validator instanceof \TIG\Buckaroo\Model\ValidatorInterface) {
             throw new \LogicException(
-                'The transaction builder must implement "TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface".'
+                'The transaction builder must implement "TIG\Buckaroo\Model\ValidatorInterface".'
             );
         }
-        return $transactionBuilder;
+        return $validator;
     }
 }
