@@ -58,16 +58,14 @@ define(
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_ideal'
             },
-
+            banktypes: [],
+            redirectAfterPlaceOrder: false,
 
             initObservable: function () {
                 this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
 
                 return this;
             },
-
-            // Set redirectAfterPlaceOrder to false
-            redirectAfterPlaceOrder: false,
 
             /**
              * Place order.
@@ -99,7 +97,7 @@ define(
             },
 
             afterPlaceOrder: function () {
-                console.log('AFTERPLACEORDER', window.Buckaroo);
+                console.log('AFTERPLACEORDER', window.checkoutConfig.payment.buckaroo);
             }
 
         });

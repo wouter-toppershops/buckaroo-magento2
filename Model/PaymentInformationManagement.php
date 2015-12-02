@@ -87,8 +87,8 @@ class PaymentInformationManagement
     {
         $result = $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
 
-        if ($this->_registry && $this->_registry->registry('buckaroo_redirect_url')) {
-            return $this->_registry->registry('buckaroo_redirect_url');
+        if ($this->_registry && $this->_registry->registry('buckaroo_response')) {
+            return $this->_registry->registry('buckaroo_response');
         } else {
             return $result;
         }
