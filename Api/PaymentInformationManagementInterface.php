@@ -41,6 +41,15 @@ namespace TIG\Buckaroo\Api;
 interface PaymentInformationManagementInterface
 {
 
+    /**
+     * Set payment information and place order for a specified cart.
+     *
+     * @param int $cartId
+     * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
+     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @return int Order ID.
+     */
     public function buckarooSavePaymentInformationAndPlaceOrder(
         $cartId,
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,

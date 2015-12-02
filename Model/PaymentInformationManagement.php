@@ -72,6 +72,13 @@ class PaymentInformationManagement
         $this->_registry = $registry;
     }
 
+    /**
+     * @param int                                           $cartId
+     * @param \Magento\Quote\Api\Data\PaymentInterface      $paymentMethod
+     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     *
+     * @return int|mixed
+     */
     public function buckarooSavePaymentInformationAndPlaceOrder(
         $cartId,
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
