@@ -39,15 +39,60 @@
 /*global define*/
 define(
     [
-        'Magento_Checkout/js/view/payment/default'
+        'jquery',
+        'Magento_Checkout/js/view/payment/default',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'TIG_Buckaroo/js/action/place-order'
     ],
-    function (Component) {
+    function (
+        $,
+        Component,
+        additionalValidators,
+        placeOrderAction
+    ) {
         'use strict';
 
         return Component.extend({
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_ideal'
+            },
+
+            // Set redirectAfterPlaceOrder to false
+            redirectAfterPlaceOrder: false,
+
+            /**
+             * Place order.
+             *
+             * @todo    To override the script used for placeOrderAction, we need to override the placeOrder method
+             *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
+             *
+             *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
+             *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
+             */
+            placeOrder: function (data, event) {
+                var self = this,
+                    placeOrder;
+
+                if (event) {
+                    event.preventDefault();
+                }
+
+                if (this.validate() && additionalValidators.validate()) {
+                    this.isPlaceOrderActionAllowed(false);
+                    placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
+
+                    $.when(placeOrder).fail(function () {
+                        self.isPlaceOrderActionAllowed(true);
+                    }).done(this.afterPlaceOrder.bind(this));
+                    return true;
+                }
+                return false;
+            },
+
+            afterPlaceOrder: function () {
+                console.log('AFTERPLACEORDER', window.Buckaroo);
             }
+
         });
     }
 );

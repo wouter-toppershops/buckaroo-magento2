@@ -133,9 +133,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $transaction = $this->_getCaptureTransaction($payment);
 
+        $response = null;
         if ($transaction) {
-            $this->_gateway->capture($transaction);
+            $response = $this->_gateway->capture($transaction);
         }
+
+        // SET REGISTRY BUCKAROO REDIRECT
+        $this->_registry->register('buckaroo_redirect_url', 'http://google.com');
+
         return $this;
     }
 
