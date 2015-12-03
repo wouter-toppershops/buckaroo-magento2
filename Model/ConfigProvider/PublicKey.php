@@ -37,47 +37,51 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\ConfigProvider;
 
-namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
-
-use Magento\Store\Model\ScopeInterface;
-
-class Order extends AbstractTransactionBuilder
+class PublicKey implements \Magento\Checkout\Model\ConfigProviderInterface
 {
     /**
+     * @var string
+     */
+    protected $publicKey = <<<KEY
+-----BEGIN CERTIFICATE-----
+MIICeDCCAeGgAwIBAgIBADANBgkqhkiG9w0BAQUFADCBwjEUMBIGA1UEBhMLTmV0
+aGVybGFuZHMxEDAOBgNVBAgTB1V0cmVjaHQxEDAOBgNVBAcTB1V0cmVjaHQxFjAU
+BgNVBAoTDUJ1Y2thcm9vIEIuVi4xGjAYBgNVBAsTEVRlY2huaWNhbCBTdXBwb3J0
+MS4wLAYDVQQDEyVCdWNrYXJvbyBPbmxpbmUgUGF5bWVudCBTZXJ2aWNlcyBCLlYu
+MSIwIAYJKoZIhvcNAQkBFhNzdXBwb3J0QGJ1Y2thcm9vLm5sMB4XDTEyMDIwNzEx
+MTQ1NVoXDTIyMDIwNzExMTQ1NVowQTEPMA0GA1UEBxMGQkVJTEVOMRYwFAYDVQQK
+Ew1CdWNrYXJvbyBCLlYuMRYwFAYDVQQDEw1CdWNrYXJvbyBCLlYuMIGfMA0GCSqG
+SIb3DQEBAQUAA4GNADCBiQKBgQD4u6psr+HtBpZIB9cGkg/Aov+yJNm0GPVV+f3w
+yoXPNDhbHxCnKXslKxO6WYxEzUQJuuphtUdxb5tR1wbuv8NSnBNUv2qB1SLRIEJH
+CLCtUyTC79HvpWHIDaibuRCqCjNlOgphgc0Am/PruwGqvG3qtVcWjG1io7iXzlJJ
+XF+UbQIDAQABMA0GCSqGSIb3DQEBBQUAA4GBANj91vccLfvwIMU5L++ONcx6Ymck
+wU0UnlIDKapCvNIcpfCH1wE9QiSvgfe22G9TPtYCGl3EkD+1QetQ/luFuSchD+/Q
+RJgSa1IpXGvqmV3g8H2xSj0N+a7z1fK2N2CqREHQZ7VbYZdWSNXYyn5yggNefuCC
+utpwIl+bFlxvC64V
+-----END CERTIFICATE-----
+KEY;
+
+    /**
+     * PublicKey constructor.
+     *
+     * @param null $publicKey
+     */
+    public function __construct($publicKey = null)
+    {
+        if ($publicKey) {
+            $this->publicKey = $publicKey;
+        }
+    }
+
+    /**
+     * Retrieve assoc array of configuration
+     *
      * @return array
      */
-    public function getBody()
+    public function getConfig()
     {
-        $order = $this->getOrder();
-
-        $body = [
-            'test' => '1',
-            'Currency' => 'EUR', //$order->getOrderCurrencyCode(),
-            'AmountDebit' => $order->getBaseGrandTotal(),
-            'AmountCredit' => 0,
-            'Invoice' => $order->getIncrementId(),
-            'Order' => $order->getIncrementId(),
-            'Description' => $this->scopeConfig->getValue(
-                self::XPATH_PAYMENT_DESCRIPTION,
-                ScopeInterface::SCOPE_STORE
-            ),
-            'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
-            ],
-            'ReturnURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/return'),
-            'ReturnURLCancel' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/return'),
-            'ReturnURLError' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/return'),
-            'ReturnURLReject' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/return'),
-            'OriginalTransactionKey' => $this->originalTransactionKey,
-            'StartRecurrent' => $this->startRecurrent,
-            'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => [
-                'Service' => $this->getServices()
-            ],
-        ];
-
-        return $body;
+        return ['public_key' => $this->publicKey];
     }
 }

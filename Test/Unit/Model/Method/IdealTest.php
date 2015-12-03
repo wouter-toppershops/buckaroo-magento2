@@ -47,16 +47,16 @@ class IdealTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \TIG\Buckaroo\Model\Method\Ideal
      */
-    protected $_object;
+    protected $object;
 
     /**
      * @var \Magento\Framework\TestFramework\Unit\Helper\ObjectManager
      */
-    protected $_objectManagerHelper;
+    protected $objectManagerHelper;
 
     public function testCapture()
     {
-        $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $this->objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
 
@@ -69,7 +69,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('capture')->once()->with($transactionMock)->andReturnSelf();
 
-        $this->_object = $this->_objectManagerHelper->getObject(
+        $this->object = $this->objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
             [
                 'transactionBuilder' => $transactionBuilderMock,
@@ -77,18 +77,18 @@ class IdealTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->_objectManagerHelper = new ObjectManager($this);
+        $this->objectManagerHelper = new ObjectManager($this);
         /** @var  $paymentInfoMock \Magento\Payment\Model\InfoInterface */
-        $paymentInfoMock = $this->_objectManagerHelper->getObject(
+        $paymentInfoMock = $this->objectManagerHelper->getObject(
             'Magento\Payment\Model\Info'
         );
 
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->_object->capture($paymentInfoMock, 1));
+        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->capture($paymentInfoMock, 1));
     }
 
     public function testAuthorize()
     {
-        $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $this->objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
 
@@ -101,7 +101,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('authorize')->once()->with($transactionMock)->andReturnSelf();
 
-        $this->_object = $this->_objectManagerHelper->getObject(
+        $this->object = $this->objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
             [
                 'transactionBuilder' => $transactionBuilderMock,
@@ -109,18 +109,18 @@ class IdealTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->_objectManagerHelper = new ObjectManager($this);
+        $this->objectManagerHelper = new ObjectManager($this);
         /** @var  $paymentInfoMock \Magento\Payment\Model\InfoInterface */
-        $paymentInfoMock = $this->_objectManagerHelper->getObject(
+        $paymentInfoMock = $this->objectManagerHelper->getObject(
             'Magento\Payment\Model\Info'
         );
 
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->_object->authorize($paymentInfoMock, 1));
+        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->authorize($paymentInfoMock, 1));
     }
 
     public function testRefund()
     {
-        $this->_objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $this->objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
 
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
 
@@ -133,7 +133,7 @@ class IdealTest extends \PHPUnit_Framework_TestCase
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('refund')->once()->with($transactionMock)->andReturnSelf();
 
-        $this->_object = $this->_objectManagerHelper->getObject(
+        $this->object = $this->objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
             [
                 'transactionBuilder' => $transactionBuilderMock,
@@ -141,13 +141,13 @@ class IdealTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $this->_objectManagerHelper = new ObjectManager($this);
+        $this->objectManagerHelper = new ObjectManager($this);
         /** @var  $paymentInfoMock \Magento\Payment\Model\InfoInterface */
-        $paymentInfoMock = $this->_objectManagerHelper->getObject(
+        $paymentInfoMock = $this->objectManagerHelper->getObject(
             'Magento\Payment\Model\Info'
         );
 
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->_object->refund($paymentInfoMock, 1));
+        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->refund($paymentInfoMock, 1));
     }
 
     public function tearDown()

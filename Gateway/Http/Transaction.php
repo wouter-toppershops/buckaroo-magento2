@@ -44,17 +44,17 @@ class Transaction
     /**
      * @var array
      */
-    protected $_body;
+    protected $body;
 
     /**
      * @var array
      */
-    protected $_headers;
+    protected $headers;
 
     /**
      * @var string
      */
-    protected $_method;
+    protected $method;
 
     /**
      * Transaction constructor.
@@ -68,9 +68,9 @@ class Transaction
         array $headers,
         $method
     ) {
-        $this->_body = $body;
-        $this->_headers = $headers;
-        $this->_method = $method;
+        $this->body = $body;
+        $this->headers = $headers;
+        $this->method = $method;
     }
 
     /**
@@ -78,7 +78,7 @@ class Transaction
      */
     public function getBody()
     {
-        return $this->_body;
+        return $this->body;
     }
 
     /**
@@ -86,7 +86,7 @@ class Transaction
      */
     public function getHeaders()
     {
-        return $this->_headers;
+        return $this->headers;
     }
 
     /**
@@ -94,6 +94,6 @@ class Transaction
      */
     public function getMethod()
     {
-        return $this->_method;
+        return $this->method;
     }
 }

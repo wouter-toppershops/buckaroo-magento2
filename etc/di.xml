@@ -57,21 +57,6 @@
         </arguments>
     </type>
 
-    <type name="TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory">
-        <arguments>
-            <argument name="transactionBuilders" xsi:type="array">
-                <item name="order" xsi:type="array">
-                    <item name="type" xsi:type="string">order</item>
-                    <item name="model" xsi:type="string">TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order</item>
-                </item>
-                <item name="refund" xsi:type="array">
-                    <item name="type" xsi:type="string">refund</item>
-                    <item name="model" xsi:type="string">TIG\Buckaroo\Gateway\Http\TransactionBuilder\Refund</item>
-                </item>
-            </argument>
-        </arguments>
-    </type>
-
     <type name="TIG\Buckaroo\Model\ValidatorFactory">
         <arguments>
             <argument name="validators" xsi:type="array">
@@ -86,6 +71,27 @@
                 <item name="redirect_return" xsi:type="array">
                     <item name="type" xsi:type="string">redirect_return</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\RedirectReturn</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Model\Validator\TransactionResponse">
+        <arguments>
+            <argument name="publicKeyConfigProvider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\PublicKey</argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory">
+        <arguments>
+            <argument name="transactionBuilders" xsi:type="array">
+                <item name="order" xsi:type="array">
+                    <item name="type" xsi:type="string">order</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order</item>
+                </item>
+                <item name="refund" xsi:type="array">
+                    <item name="type" xsi:type="string">refund</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Gateway\Http\TransactionBuilder\Refund</item>
                 </item>
             </argument>
         </arguments>

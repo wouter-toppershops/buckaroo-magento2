@@ -50,12 +50,12 @@ class Push implements PushInterface
     /**
      * @var Request
      */
-    protected $_request;
+    protected $request;
 
     /**
      * @var array
      */
-    protected $_postData;
+    protected $postData;
 
     /**
      * Push constructor.
@@ -68,8 +68,8 @@ class Push implements PushInterface
         Request $request
     )
     {
-        $this->_objectManager = $objectManager;
-        $this->_request = $request;
+        $this->objectManager = $objectManager;
+        $this->request = $request;
     }
 
     /**
@@ -79,11 +79,11 @@ class Push implements PushInterface
      */
     public function receivePush()
     {
-        $this->_postData = $this->_request->getParams();
-        $id = $this->_postData['brq_invoicenumber'];
+        $this->postData = $this->request->getParams();
+        $id = $this->postData['brq_invoicenumber'];
 
         /** @var Order $order */
-        $order = $this->_objectManager->create(Order::class)->loadByIncrementId($id);
+        $order = $this->objectManager->create(Order::class)->loadByIncrementId($id);
 
         if (!$order->getId()) {
             return false;

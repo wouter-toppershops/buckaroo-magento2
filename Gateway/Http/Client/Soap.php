@@ -68,7 +68,7 @@ class Soap implements \Magento\Payment\Gateway\Http\ClientInterface
      */
     public function __construct(
         Logger $logger,
-        ClientFactory $clientFactory,
+        \TIG\Buckaroo\Soap\ClientFactory $clientFactory,
         ConverterInterface $converter = null
     ) {
         $this->logger = $logger;

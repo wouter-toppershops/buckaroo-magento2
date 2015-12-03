@@ -98,9 +98,9 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getCaptureTransaction($payment)
+    protected function getCaptureTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilderFactory->get('order');
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
             'Service' => [
@@ -122,7 +122,7 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getAuthorizeTransaction($payment)
+    protected function getAuthorizeTransaction($payment)
     {
         return false;
     }
@@ -130,9 +130,9 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getRefundTransaction($payment)
+    protected function getRefundTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilderFactory->get('refund');
+        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
             'Service' => [

@@ -44,8 +44,8 @@ class PaymentInformationManagement
     implements \TIG\Buckaroo\Api\PaymentInformationManagementInterface
 {
 
-    protected $_registry = null;
-    protected $_logger = null;
+    protected $registry = null;
+    protected $logger = null;
 
     /**
      * @param \Magento\Quote\Api\BillingAddressManagementInterface $billingAddressManagement
@@ -72,8 +72,8 @@ class PaymentInformationManagement
             $paymentDetailsFactory,
             $cartTotalsRepository
         );
-        $this->_registry = $registry;
-        $this->_logger = $logger;
+        $this->registry = $registry;
+        $this->logger = $logger;
     }
 
     /**
@@ -93,13 +93,13 @@ class PaymentInformationManagement
     {
         $result = $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
 
-        $this->_logger->debug('-[RESULT]----------------------------------------');
-        $this->_logger->debug(print_r($this->_registry->registry('buckaroo_response'), true));
-        $this->_logger->debug('-------------------------------------------------');
+        $this->logger->debug('-[RESULT]----------------------------------------');
+        $this->logger->debug(print_r($this->registry->registry('buckaroo_response'), true));
+        $this->logger->debug('-------------------------------------------------');
 
         $response = array();
-        if ($this->_registry && $this->_registry->registry('buckaroo_response')) {
-            $response = $this->_registry->registry('buckaroo_response')[0];
+        if ($this->registry && $this->registry->registry('buckaroo_response')) {
+            $response = $this->registry->registry('buckaroo_response')[0];
         }
         return json_encode($response);
     }

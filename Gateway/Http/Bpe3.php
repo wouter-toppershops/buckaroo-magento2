@@ -44,12 +44,12 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     /**
      * @var \Magento\Payment\Gateway\Http\Client\Soap
      */
-    protected $_client;
+    protected $client;
 
     /**
      * @var \Magento\Framework\Data\ObjectFactory
      */
-    protected $_objectFactory;
+    protected $objectFactory;
 
     /**
      * Bpe3 constructor.
@@ -62,8 +62,8 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
         \Magento\Framework\Data\ObjectFactory $objectFactory
     )
     {
-        $this->_client = $client;
-        $this->_objectFactory = $objectFactory;
+        $this->client = $client;
+        $this->objectFactory = $objectFactory;
     }
 
     /**
@@ -74,7 +74,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function capture(Transaction $transaction)
     {
-        return $this->_doRequest($transaction);
+        return $this->doRequest($transaction);
     }
 
     /**
@@ -85,7 +85,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function authorize(Transaction $transaction)
     {
-        return $this->_doRequest($transaction);
+        return $this->doRequest($transaction);
     }
 
     /**
@@ -96,7 +96,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function refund(Transaction $transaction)
     {
-        return $this->_doRequest($transaction);
+        return $this->doRequest($transaction);
     }
 
     /**
@@ -105,10 +105,10 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      * @return array
      * @throws \Exception
      */
-    protected function _doRequest(Transaction $transaction)
+    protected function doRequest(Transaction $transaction)
     {
         /** @var \TIG\Buckaroo\Gateway\Http\Transfer $transfer */
-        $transfer = $this->_objectFactory->create(
+        $transfer = $this->objectFactory->create(
             '\TIG\Buckaroo\Gateway\Http\Transfer',
             [
                 'clientConfig' => [
@@ -123,6 +123,6 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
             ]
         );
 
-        return $this->_client->placeRequest($transfer);
+        return $this->client->placeRequest($transfer);
     }
 }

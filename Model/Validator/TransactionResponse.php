@@ -45,7 +45,29 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
     /**
      * @var \StdClass
      */
-    protected $_transaction;
+    protected $transaction;
+
+    /**
+     * @var string
+     */
+    protected $responseXml;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\PublicKey
+     */
+    protected $publicKeyConfigProvider;
+
+    /**
+     * TransactionResponse constructor.
+     *
+     * @param \TIG\Buckaroo\Model\ConfigProvider\PublicKey $publicKeyConfigProvider
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\PublicKey $publicKeyConfigProvider
+    )
+    {
+        $this->publicKeyConfigProvider = $publicKeyConfigProvider;
+    }
 
     /**
      * @param array|object $data
@@ -56,15 +78,22 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
      */
     public function validate($data)
     {
-        if (!$data instanceof \StdClass) {
+        if (empty($data[0]) || !$data[0] instanceof \StdClass) {
             throw new \InvalidArgumentException(
                 'Data must be an instance of "\StdClass"'
             );
         }
 
-        $this->_transaction = $data;
+        if (empty($data['response_xml'])) {
+            throw new \InvalidArgumentException(
+                'Data must contain the Buckaroo response XML.'
+            );
+        }
 
-        if ($this->_validateSignature() === true && $this->_validateDigest() === true) {
+        $this->transaction = $data[0];
+        $this->responseXml = $data['response_xml'];
+
+        if ($this->validateSignature() === true && $this->validateDigest() === true) {
             return true;
         }
 
@@ -74,40 +103,48 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
     /**
      * @return boolean
      */
-    protected function _validateSignature()
+    protected function validateSignature()
     {
         $verified = false;
 
         //save response XML to string
-        $responseDomDoc = $this->_responseXML;
-        $responseString = $responseDomDoc->saveXML();
+        $responseString = $this->responseXml;
+        $responseDomDoc = new \DOMDocument();
+        $responseDomDoc->loadXML($responseString);
 
         //retrieve the signature value
-        $sigatureRegex = "#<SignatureValue>(.*)</SignatureValue>#ims";
+        $sigatureRegex  = "#<SignatureValue>(.*)</SignatureValue>#ims";
         $signatureArray = array();
         preg_match_all($sigatureRegex, $responseString, $signatureArray);
 
         //decode the signature
-        $signature = $signatureArray[1][0];
+        $signature  = $signatureArray[1][0];
         $sigDecoded = base64_decode($signature);
 
-        $xPath = new DOMXPath($responseDomDoc);
+        $xPath = new \DOMXPath($responseDomDoc);
 
         //register namespaces to use in xpath query's
-        $xPath->registerNamespace('wsse','http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd');
-        $xPath->registerNamespace('sig','http://www.w3.org/2000/09/xmldsig#');
-        $xPath->registerNamespace('soap','http://schemas.xmlsoap.org/soap/envelope/');
+        $xPath->registerNamespace(
+            'wsse',
+            'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
+        );
+        $xPath->registerNamespace('sig', 'http://www.w3.org/2000/09/xmldsig#');
+        $xPath->registerNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
 
         //Get the SignedInfo nodeset
-        $SignedInfoQuery = '//wsse:Security/sig:Signature/sig:SignedInfo';
+        $SignedInfoQuery        = '//wsse:Security/sig:Signature/sig:SignedInfo';
         $SignedInfoQueryNodeSet = $xPath->query($SignedInfoQuery);
-        $SignedInfoNodeSet = $SignedInfoQueryNodeSet->item(0);
+        $SignedInfoNodeSet      = $SignedInfoQueryNodeSet->item(0);
 
         //Canonicalize nodeset
         $signedInfo = $SignedInfoNodeSet->C14N(true, false);
 
         //get the public key
-        $pubKey = openssl_get_publickey(openssl_x509_read(file_get_contents(CERTIFICATE_DIR . DS .'Checkout.pem')));
+        $pubKey = openssl_get_publickey(
+            openssl_x509_read(
+                $this->publicKeyConfigProvider->getConfig()['public_key']
+            )
+        );
 
         //verify the signature
         $sigVerify = openssl_verify($signedInfo, $sigDecoded, $pubKey);
@@ -122,13 +159,14 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
     /**
      * @return boolean
      */
-    protected function _validateDigest()
+    protected function validateDigest()
     {
         $verified = false;
 
         //save response XML to string
-        $responseDomDoc = $this->_responseXML;
-        $responseString = $responseDomDoc->saveXML();
+        $responseString = $this->responseXml;
+        $responseDomDoc = new \DOMDocument();
+        $responseDomDoc->loadXML($responseString);
 
         //retrieve the signature value
         $digestRegex = "#<DigestValue>(.*?)</DigestValue>#ims";
@@ -136,24 +174,27 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
         preg_match_all($digestRegex, $responseString, $digestArray);
 
         $digestValues = array();
-        foreach($digestArray[1] as $digest) {
+        foreach ($digestArray[1] as $digest) {
             $digestValues[] = $digest;
         }
 
-        $xPath = new DOMXPath($responseDomDoc);
+        $xPath = new \DOMXPath($responseDomDoc);
 
         //register namespaces to use in xpath query's
-        $xPath->registerNamespace('wsse','http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd');
-        $xPath->registerNamespace('sig','http://www.w3.org/2000/09/xmldsig#');
-        $xPath->registerNamespace('soap','http://schemas.xmlsoap.org/soap/envelope/');
+        $xPath->registerNamespace(
+            'wsse',
+            'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
+        );
+        $xPath->registerNamespace('sig', 'http://www.w3.org/2000/09/xmldsig#');
+        $xPath->registerNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
 
         $controlHashReference = $xPath->query('//*[@Id="_control"]')->item(0);
         $controlHashCanonical = $controlHashReference->C14N(true, false);
-        $controlHash = base64_encode(pack('H*',sha1($controlHashCanonical)));
+        $controlHash          = base64_encode(pack('H*', sha1($controlHashCanonical)));
 
         $bodyHashReference = $xPath->query('//*[@Id="_body"]')->item(0);
         $bodyHashCanonical = $bodyHashReference->C14N(true, false);
-        $bodyHash = base64_encode(pack('H*',sha1($bodyHashCanonical)));
+        $bodyHash          = base64_encode(pack('H*', sha1($bodyHashCanonical)));
 
         if (in_array($controlHash, $digestValues) === true && in_array($bodyHash, $digestValues) === true) {
             $verified = true;

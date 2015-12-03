@@ -45,12 +45,12 @@ class TransactionBuilderFactory
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
 
     /**
      * @var array
      */
-    protected $_transactionBuilders;
+    protected $transactionBuilders;
 
     /**
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
@@ -60,8 +60,8 @@ class TransactionBuilderFactory
         \Magento\Framework\ObjectManagerInterface $objectManager,
         array $transactionBuilders = []
     ) {
-        $this->_objectManager = $objectManager;
-        $this->_transactionBuilders = $transactionBuilders;
+        $this->objectManager = $objectManager;
+        $this->transactionBuilders = $transactionBuilders;
     }
 
     /**
@@ -73,10 +73,10 @@ class TransactionBuilderFactory
      */
     public function get($builderType)
     {
-        if (empty($this->_transactionBuilders)) {
+        if (empty($this->transactionBuilders)) {
             throw new \LogicException('Transaction builder adapter is not set.');
         }
-        foreach ($this->_transactionBuilders as $transactionBuilderMetaData) {
+        foreach ($this->transactionBuilders as $transactionBuilderMetaData) {
             $transactionBuilderType = $transactionBuilderMetaData['type'];
             if ($transactionBuilderType == $builderType) {
                 $transactionBuilderClass = $transactionBuilderMetaData['model'];
@@ -93,7 +93,7 @@ class TransactionBuilderFactory
             );
         }
 
-        $transactionBuilder = $this->_objectManager->get($transactionBuilderClass);
+        $transactionBuilder = $this->objectManager->get($transactionBuilderClass);
         if (!$transactionBuilder instanceof \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface) {
             throw new \LogicException(
                 'The transaction builder must implement "TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface".'

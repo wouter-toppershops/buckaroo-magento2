@@ -58,7 +58,7 @@ class Refund extends AbstractTransactionBuilder
             'AmountCredit' => $order->getBaseGrandTotal(),
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $this->_scopeConfig->getValue(
+            'Description' => $this->scopeConfig->getValue(
                 self::XPATH_PAYMENT_DESCRIPTION,
                 ScopeInterface::SCOPE_STORE
             ),
@@ -66,13 +66,13 @@ class Refund extends AbstractTransactionBuilder
                 '_' => $order->getRemoteIp(),
                 'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
             ],
-            'ReturnURL' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLCancel' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLError' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLReject' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'OriginalTransactionKey' => $this->_originalTransactionKey,
-            'StartRecurrent' => $this->_startRecurrent,
-            'PushURL' => $this->_urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
+            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'OriginalTransactionKey' => $this->originalTransactionKey,
+            'StartRecurrent' => $this->startRecurrent,
+            'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
             'Services' => $this->getServices(),
         ];
 

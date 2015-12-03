@@ -63,47 +63,47 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     /**
      * @var \Magento\Sales\Model\Order
      */
-    protected $_order;
+    protected $order;
 
     /**
      * @var array
      */
-    protected $_services;
+    protected $services;
 
     /**
      * @var string
      */
-    protected $_method;
+    protected $method;
 
     /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
-    protected $_productMetadata;
+    protected $productMetadata;
 
     /**
      * @var \Magento\Framework\Module\ModuleListInterface
      */
-    protected $_moduleList;
+    protected $moduleList;
 
     /**
      * @var \Magento\Framework\UrlInterface
      */
-    protected $_urlBuilder;
+    protected $urlBuilder;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface
      */
-    protected $_scopeConfig;
+    protected $scopeConfig;
 
     /**
      * @var bool
      */
-    protected $_startRecurrent = false;
+    protected $startRecurrent = false;
 
     /**
      * @var null|string
      */
-    protected $_originalTransactionKey = null;
+    protected $originalTransactionKey = null;
 
     /**
      * @param null|string $originalTransactionKey
@@ -112,7 +112,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function setOriginalTransactionKey($originalTransactionKey)
     {
-        $this->_originalTransactionKey = $originalTransactionKey;
+        $this->originalTransactionKey = $originalTransactionKey;
 
         return $this;
     }
@@ -124,7 +124,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function setStartRecurrent($startRecurrent)
     {
-        $this->_startRecurrent = $startRecurrent;
+        $this->startRecurrent = $startRecurrent;
 
         return $this;
     }
@@ -143,10 +143,10 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         \Magento\Framework\UrlInterface $urlBuilder,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->_productMetadata = $productMetadata;
-        $this->_moduleList = $moduleList;
-        $this->_urlBuilder = $urlBuilder;
-        $this->_scopeConfig = $scopeConfig;
+        $this->productMetadata = $productMetadata;
+        $this->moduleList = $moduleList;
+        $this->urlBuilder = $urlBuilder;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -154,7 +154,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getOrder()
     {
-        return $this->_order;
+        return $this->order;
     }
 
     /**
@@ -164,7 +164,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function setOrder($order)
     {
-        $this->_order = $order;
+        $this->order = $order;
 
         return $this;
     }
@@ -174,7 +174,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getServices()
     {
-        return $this->_services;
+        return $this->services;
     }
 
     /**
@@ -184,7 +184,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function setServices($services)
     {
-        $this->_services = $services;
+        $this->services = $services;
 
         return $this;
     }
@@ -194,7 +194,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getMethod()
     {
-        return $this->_method;
+        return $this->method;
     }
 
     /**
@@ -204,7 +204,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function setMethod($method)
     {
-        $this->_method = $method;
+        $this->method = $method;
 
         return $this;
     }
@@ -229,7 +229,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getHeaders()
     {
-        $module = $this->_moduleList->getOne(self::MODULE_CODE);
+        $module = $this->moduleList->getOne(self::MODULE_CODE);
 
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
@@ -241,10 +241,10 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
                 'TimeStamp' => time(),
                 'Channel' => 'Web',
                 'Software' => [
-                    'PlatformName' => $this->_productMetadata->getName()
+                    'PlatformName' => $this->productMetadata->getName()
                                       . ' - '
-                                      . $this->_productMetadata->getEdition(),
-                    'PlatformVersion' => $this->_productMetadata->getVersion(),
+                                      . $this->productMetadata->getEdition(),
+                    'PlatformVersion' => $this->productMetadata->getVersion(),
                     'ModuleSupplier' => self::MODULE_SUPPLIER,
                     'ModuleName' => $module['name'],
                     'ModuleVersion' => $module['setup_version'],

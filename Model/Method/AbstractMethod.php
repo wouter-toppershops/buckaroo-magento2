@@ -47,17 +47,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var \TIG\Buckaroo\Gateway\GatewayInterface
      */
-    protected $_gateway;
+    protected $gateway;
 
     /**
      * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory
      */
-    protected $_transactionBuilderFactory;
+    protected $transactionBuilderFactory;
 
     /**
      * @var \TIG\Buckaroo\Model\ValidatorFactory
      */
-    protected $_validatorFactory;
+    protected $validatorFactory;
 
     /**
      * AbstractMethod constructor.
@@ -104,9 +104,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $data
         );
 
-        $this->_gateway = $gateway;
-        $this->_transactionBuilderFactory = $transactionBuilderFactory;
-        $this->_validatorFactory = $validatorFactory;
+        $this->gateway = $gateway;
+        $this->transactionBuilderFactory = $transactionBuilderFactory;
+        $this->validatorFactory = $validatorFactory;
     }
 
     /**
@@ -121,7 +121,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         parent::authorize($payment, $amount);
 
-        $transaction = $this->_getAuthorizeTransaction($payment);
+        $transaction = $this->getAuthorizeTransaction($payment);
 
         if (!$transaction) {
             throw new \LogicException(
@@ -129,8 +129,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        $response = $this->_gateway->authorize($transaction);
-        if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
+        $response = $this->gateway->authorize($transaction);
+        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
                     'The transaction response could not be verified.'
@@ -153,7 +153,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         parent::capture($payment, $amount);
 
-        $transaction = $this->_getCaptureTransaction($payment);
+        $transaction = $this->getCaptureTransaction($payment);
 
         if (!$transaction) {
             throw new \LogicException(
@@ -161,9 +161,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        $response = $this->_gateway->capture($transaction);
-        print_r($response);exit;
-        if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
+        $response = $this->gateway->capture($transaction);
+        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
                     'The transaction response could not be verified.'
@@ -189,7 +188,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         parent::refund($payment, $amount);
 
-        $transaction = $this->_getRefundTransaction($payment);
+        $transaction = $this->getRefundTransaction($payment);
 
         if (!$transaction) {
             throw new \LogicException(
@@ -197,8 +196,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        $response = $this->_gateway->refund($transaction);
-        if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
+        $response = $this->gateway->refund($transaction);
+        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
                     'The transaction response could not be verified.'
@@ -214,19 +213,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return Transaction|false
      */
-    protected abstract function _getAuthorizeTransaction($payment);
+    protected abstract function getAuthorizeTransaction($payment);
 
     /**
      * @param InfoInterface $payment
      *
      * @return Transaction|false
      */
-    protected abstract function _getCaptureTransaction($payment);
+    protected abstract function getCaptureTransaction($payment);
 
     /**
      * @param InfoInterface $payment
      *
      * @return Transaction|false
      */
-    protected abstract function _getRefundTransaction($payment);
+    protected abstract function getRefundTransaction($payment);
 }

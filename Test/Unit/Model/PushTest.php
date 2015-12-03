@@ -49,16 +49,16 @@ class PushTest extends \PHPUnit_Framework_TestCase
     /**
      * @var \TIG\Buckaroo\Model\Push
      */
-    protected $_object;
+    protected $object;
 
     /**
      * @var \Magento\Framework\TestFramework\Unit\Helper\ObjectManager
      */
-    protected $_objectManagerHelper;
+    protected $objectManagerHelper;
 
     protected function setUp()
     {
-        $this->_objectManagerHelper = new ObjectManager($this);
+        $this->objectManagerHelper = new ObjectManager($this);
     }
 
     public function testReceivePush()
@@ -76,7 +76,7 @@ class PushTest extends \PHPUnit_Framework_TestCase
         $objectManager = m::mock(ObjectManagerInterface::class);
         $objectManager->shouldReceive('create')->with(Order::class)->andReturn($order);
 
-        $this->_object = $this->_objectManagerHelper->getObject(
+        $this->object = $this->objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Push',
             [
                 'objectManager' => $objectManager,
@@ -84,7 +84,7 @@ class PushTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $result = $this->_object->receivePush();
+        $result = $this->object->receivePush();
         $this->assertTrue($result);
     }
 
@@ -103,7 +103,7 @@ class PushTest extends \PHPUnit_Framework_TestCase
         $objectManager = m::mock(ObjectManagerInterface::class);
         $objectManager->shouldReceive('create')->with(Order::class)->andReturn($order);
 
-        $this->_object = $this->_objectManagerHelper->getObject(
+        $this->object = $this->objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Push',
             [
                 'objectManager' => $objectManager,
@@ -111,7 +111,7 @@ class PushTest extends \PHPUnit_Framework_TestCase
             ]
         );
 
-        $result = $this->_object->receivePush();
+        $result = $this->object->receivePush();
         $this->assertFalse($result);
     }
 
