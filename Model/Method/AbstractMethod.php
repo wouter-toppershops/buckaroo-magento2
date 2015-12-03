@@ -55,6 +55,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $_transactionBuilderFactory;
 
     /**
+     * @var \TIG\Buckaroo\Model\ValidatorFactory
+     */
+    protected $_validatorFactory;
+
+    /**
      * AbstractMethod constructor.
      *
      * @param \Magento\Framework\Model\Context                             $context
@@ -68,6 +73,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                  $gateway
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                         $validatorFactory
      * @param array                                                        $data
      */
     public function __construct(
@@ -82,6 +88,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
         array $data = []
     ) {
         parent::__construct(
@@ -99,6 +106,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->_gateway = $gateway;
         $this->_transactionBuilderFactory = $transactionBuilderFactory;
+        $this->_validatorFactory = $validatorFactory;
     }
 
     /**
@@ -106,7 +114,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param float         $amount
      *
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function authorize(InfoInterface $payment, $amount)
     {
@@ -114,9 +123,21 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $transaction = $this->_getAuthorizeTransaction($payment);
 
-        if ($transaction) {
-            $this->_gateway->authorize($transaction);
+        if (!$transaction) {
+            throw new \LogicException(
+                'Authorize action is not implemented for this payment method.'
+            );
         }
+
+        $response = $this->_gateway->authorize($transaction);
+        if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'The transaction response could not be verified.'
+                )
+            );
+        }
+
         return $this;
     }
 
@@ -125,7 +146,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param float         $amount
      *
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function capture(InfoInterface $payment, $amount)
     {
@@ -133,13 +155,23 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $transaction = $this->_getCaptureTransaction($payment);
 
-        $response = null;
-        if ($transaction) {
-            $response = $this->_gateway->capture($transaction);
+        if (!$transaction) {
+            throw new \LogicException(
+                'Capture action is not implemented for this payment method.'
+            );
+        }
+
+        $response = $this->_gateway->capture($transaction);
+        if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'The transaction response could not be verified.'
+                )
+            );
         }
 
         // SET REGISTRY BUCKAROO REDIRECT
-        $this->_registry->register('buckaroo_redirect_url', 'http://google.com');
+        $this->_registry->register('buckaroo_response', $response);
 
         return $this;
     }
@@ -149,7 +181,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param float         $amount
      *
      * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function refund(InfoInterface $payment, $amount)
     {
@@ -157,9 +190,21 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $transaction = $this->_getRefundTransaction($payment);
 
-        if ($transaction) {
-            $this->_gateway->refund($transaction);
+        if (!$transaction) {
+            throw new \LogicException(
+                'Refund action is not implemented for this payment method.'
+            );
         }
+
+        $response = $this->_gateway->refund($transaction);
+        if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'The transaction response could not be verified.'
+                )
+            );
+        }
+
         return $this;
     }
 

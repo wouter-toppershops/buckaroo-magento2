@@ -87,6 +87,7 @@ class ConfigProvider extends CcGenericConfigProvider
                             'img' => 'ico-regio'
                         ],
                         [
+
                             'name' => 'Triodos Bank',
                             'code' => 'TR',
                             'img' => 'ico-trio'
@@ -102,6 +103,7 @@ class ConfigProvider extends CcGenericConfigProvider
                             'img' => 'ico-knab'
                         ],
                     ],
+                    'response' => [],
                 ],
             ],
         ]);

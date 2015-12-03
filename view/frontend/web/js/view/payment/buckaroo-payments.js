@@ -40,8 +40,7 @@
 define(
     [
         'uiComponent',
-        'Magento_Checkout/js/model/payment/renderer-list',
-        'Magento_Checkout/js/action/place-order'
+        'Magento_Checkout/js/model/payment/renderer-list'
     ],
     function (
         Component,
