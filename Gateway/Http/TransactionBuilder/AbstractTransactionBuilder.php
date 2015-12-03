@@ -211,6 +211,8 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
 
     /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
+     *
+     * @todo fix to not directly instantiate class by using objectmanager
      */
     public function build()
     {
