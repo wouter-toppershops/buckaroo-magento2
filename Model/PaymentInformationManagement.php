@@ -45,15 +45,15 @@ class PaymentInformationManagement
 {
 
     protected $_registry = null;
+    protected $_logger = null;
 
     /**
      * @param \Magento\Quote\Api\BillingAddressManagementInterface $billingAddressManagement
-     * @param \Magento\Quote\Api\PaymentMethodManagementInterface  $paymentMethodManagement
-     * @param \Magento\Quote\Api\CartManagementInterface           $cartManagement
-     * @param \Magento\Checkout\Model\PaymentDetailsFactory        $paymentDetailsFactory
-     * @param \Magento\Quote\Api\CartTotalRepositoryInterface      $cartTotalsRepository
-     * @param \Magento\Framework\Registry                          $registry
-     *
+     * @param \Magento\Quote\Api\PaymentMethodManagementInterface $paymentMethodManagement
+     * @param \Magento\Quote\Api\CartManagementInterface $cartManagement
+     * @param \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory
+     * @param \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository
+     * @param \Psr\Log\LoggerInterface $logger
      * @codeCoverageIgnore
      */
     public function __construct(
@@ -62,7 +62,8 @@ class PaymentInformationManagement
         \Magento\Quote\Api\CartManagementInterface $cartManagement,
         \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory,
         \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct(
             $billingAddressManagement,
@@ -72,6 +73,7 @@ class PaymentInformationManagement
             $cartTotalsRepository
         );
         $this->_registry = $registry;
+        $this->_logger = $logger;
     }
 
     /**
@@ -81,7 +83,7 @@ class PaymentInformationManagement
      * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
      * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
      * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @return mixed
+     * @return string
      */
     public function buckarooSavePaymentInformationAndPlaceOrder(
         $cartId,
@@ -91,10 +93,14 @@ class PaymentInformationManagement
     {
         $result = $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
 
+        $this->_logger->debug('-[RESULT]----------------------------------------');
+        $this->_logger->debug(print_r($this->_registry->registry('buckaroo_response'), true));
+        $this->_logger->debug('-------------------------------------------------');
+
+        $response = array();
         if ($this->_registry && $this->_registry->registry('buckaroo_response')) {
-            return $this->_registry->registry('buckaroo_response');
-        } else {
-            return $result;
+            $response = $this->_registry->registry('buckaroo_response')[0];
         }
+        return json_encode($response);
     }
 }
