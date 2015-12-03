@@ -39,21 +39,84 @@
 
 namespace TIG\Buckaroo\Gateway\Http\Client;
 
+use Magento\Framework\Webapi\Soap\ClientFactory;
 use Magento\Payment\Gateway\Http\ConverterInterface;
+use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
 
-class Soap extends \Magento\Payment\Gateway\Http\Client\Soap
+class Soap implements \Magento\Payment\Gateway\Http\ClientInterface
 {
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
+     * @var ConverterInterface | null
+     */
+    protected $converter;
+
+    /**
+     * @var ClientFactory
+     */
+    protected $clientFactory;
+
+    /**
      * @param Logger $logger
-     * @param \TIG\Buckaroo\Soap\ClientFactory $clientFactory
+     * @param ClientFactory $clientFactory
      * @param ConverterInterface | null $converter
      */
     public function __construct(
         Logger $logger,
-        \TIG\Buckaroo\Soap\ClientFactory $clientFactory,
+        ClientFactory $clientFactory,
         ConverterInterface $converter = null
     ) {
-        parent::__construct($logger, $clientFactory, $converter);
+        $this->logger = $logger;
+        $this->converter = $converter;
+        $this->clientFactory = $clientFactory;
+    }
+
+    /**
+     * Places request to gateway. Returns result as ENV array
+     *
+     * @param TransferInterface $transferObject
+     * @return array
+     * @throws \Magento\Payment\Gateway\Http\ClientException
+     * @throws \Magento\Payment\Gateway\Http\ConverterException
+     * @throws \Exception
+     */
+    public function placeRequest(TransferInterface $transferObject)
+    {
+        $this->logger->debug(['request' => $transferObject->getBody()]);
+
+        $client = $this->clientFactory->create(
+            $transferObject->getClientConfig()['wsdl'],
+            ['trace' => true]
+        );
+
+        try {
+            $client->__setSoapHeaders($transferObject->getHeaders());
+
+            $response = $client->__soapCall(
+                $transferObject->getMethod(),
+                [$transferObject->getBody()]
+            );
+
+            $result = $this->converter
+                ? $this->converter->convert(
+                    $response
+                )
+                : [$response];
+
+            $result['request_xml'] = $client->__getLastRequest();
+            $result['response_xml'] = $client->__getLastResponse();
+
+            $this->logger->debug(['response' => $result]);
+        } catch (\Exception $e) {
+            $this->logger->debug(['trace' => $client->__getLastRequest()]);
+            throw $e;
+        }
+
+        return $result;
     }
 }

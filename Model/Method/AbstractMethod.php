@@ -162,6 +162,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         $response = $this->_gateway->capture($transaction);
+        print_r($response);exit;
         if (!$this->_validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(

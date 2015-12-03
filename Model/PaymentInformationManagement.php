@@ -48,10 +48,12 @@ class PaymentInformationManagement
 
     /**
      * @param \Magento\Quote\Api\BillingAddressManagementInterface $billingAddressManagement
-     * @param \Magento\Quote\Api\PaymentMethodManagementInterface $paymentMethodManagement
-     * @param \Magento\Quote\Api\CartManagementInterface $cartManagement
-     * @param \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory
-     * @param \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository
+     * @param \Magento\Quote\Api\PaymentMethodManagementInterface  $paymentMethodManagement
+     * @param \Magento\Quote\Api\CartManagementInterface           $cartManagement
+     * @param \Magento\Checkout\Model\PaymentDetailsFactory        $paymentDetailsFactory
+     * @param \Magento\Quote\Api\CartTotalRepositoryInterface      $cartTotalsRepository
+     * @param \Magento\Framework\Registry                          $registry
+     *
      * @codeCoverageIgnore
      */
     public function __construct(
@@ -73,11 +75,13 @@ class PaymentInformationManagement
     }
 
     /**
-     * @param int                                           $cartId
-     * @param \Magento\Quote\Api\Data\PaymentInterface      $paymentMethod
-     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * Set payment information and place order for a specified cart.
      *
-     * @return int|mixed
+     * @param int $cartId
+     * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
+     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @return mixed
      */
     public function buckarooSavePaymentInformationAndPlaceOrder(
         $cartId,

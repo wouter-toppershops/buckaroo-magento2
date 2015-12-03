@@ -48,7 +48,7 @@ interface PaymentInformationManagementInterface
      * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
      * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
      * @throws \Magento\Framework\Exception\CouldNotSaveException
-     * @return int Order ID.
+     * @return mixed
      */
     public function buckarooSavePaymentInformationAndPlaceOrder(
         $cartId,

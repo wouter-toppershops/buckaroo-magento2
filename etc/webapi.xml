@@ -50,7 +50,7 @@
     <route url="/V1/buckaroo/payment-information" method="POST">
         <service class="TIG\Buckaroo\Api\PaymentInformationManagementInterface" method="buckarooSavePaymentInformationAndPlaceOrder"/>
         <resources>
-            <resource ref="self" />
+            <resource ref="anonymous" />
         </resources>
         <data>
             <parameter name="cartId" force="true">%cart_id%</parameter>

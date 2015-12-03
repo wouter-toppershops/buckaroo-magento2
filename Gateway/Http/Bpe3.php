@@ -39,10 +39,7 @@
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
-use Magento\Framework\Data\ObjectFactory;
-use TIG\Buckaroo\Gateway\GatewayInterface;
-
-class Bpe3 implements GatewayInterface
+class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
 {
     /**
      * @var \Magento\Payment\Gateway\Http\Client\Soap
@@ -58,11 +55,11 @@ class Bpe3 implements GatewayInterface
      * Bpe3 constructor.
      *
      * @param \TIG\Buckaroo\Gateway\Http\Client\Soap $client
-     * @param \Magento\Framework\Data\ObjectFactory     $objectFactory
+     * @param \Magento\Framework\Data\ObjectFactory  $objectFactory
      */
     public function __construct(
-        Client\Soap $client,
-        ObjectFactory $objectFactory
+        \TIG\Buckaroo\Gateway\Http\Client\Soap $client,
+        \Magento\Framework\Data\ObjectFactory $objectFactory
     )
     {
         $this->_client = $client;
@@ -126,15 +123,6 @@ class Bpe3 implements GatewayInterface
             ]
         );
 
-        /**
-         * @param array $clientConfig
-         * @param array $headers
-         * @param array|string $body
-         * @param array $auth
-         * @param string $method
-         * @param string $uri
-         * @param bool $encode
-         */
         return $this->_client->placeRequest($transfer);
     }
 }
