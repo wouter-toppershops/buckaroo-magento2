@@ -1,15 +1,92 @@
-.payment-method-banks {
-    margin-left :20px;
+.payment-method,
+.payment-method-content,
+.payment-method-billing-address,
+.checkout-agreements-block,
+.actions-toolbar{ float: left; width: 100%;  }
+
+/* ===================== Default styling ===================== */
+.checkout-payment-method .payment-method-content {
+    padding:0;
 }
-.payment-method-banks .bank-types{
+
+.payment-method-billing-address {
+    float:left;
+    width: 50%;
+}
+
+.payment-method-billing-address .actions-toolbar .primary {
+    margin :20px 0;
+}
+
+.actions-toolbar {
+    margin :20px 0;
+}
+
+@media screen and (max-width:767px){
+    .checkout-payment-method,
+    .payment-method-content {
+        padding:0 20px;
+        box-sizing:border-box;
+    }
+
+    .payment-method-billing-address {
+        float:left;
+        width: 100%;
+    }
+}
+
+/* ===================== Paypal ===================== */
+.paypal .button-paypal{
+    display:block;
+    width: auto;
+    float:right;
+
+    text-align:center;
+    background:#1979c3;
+    border: 1px solid #1979c3;
+    border-radius: 3px;
+    color: #ffffff;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 600;
+    line-height: 2.2rem;
+    padding: 14px 17px;
+    font-size: 1.8rem;
+}
+
+.paypal .button-paypal:hover {
+    background:#006bb4;
+}
+
+@media screen and (max-width:767px) {
+    .paypal .button-paypal {
+        width :100%;
+    }
+}
+
+/* ===================== IDEAL ===================== */
+.ideal .payment-method-banks {
+    float:right;
+    width: 40%;
+    margin-left: 10%;
+}
+
+.ideal .payment-method-banks .bank-types{
     float:left; width: 100%;
 }
-.payment-method-banks .bank-types-img{
+.ideal .payment-method-banks .bank-types-img{
     vertical-align:middle;
     margin-right:10px;
 }
-.payment-method-banks .bank-types-input{
+.ideal .payment-method-banks .bank-types-input{
     margin-top:10px;
+}
+
+@media screen and (max-width:767px){
+    .ideal .payment-method-banks {
+        float:left;
+        width: 100%;
+        margin:0 0 20px 0;
+    }
 }
 
 
