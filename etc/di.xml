@@ -83,6 +83,10 @@
                     <item name="type" xsi:type="string">transaction_response</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\TransactionResponse</item>
                 </item>
+                <item name="redirect_return" xsi:type="array">
+                    <item name="type" xsi:type="string">redirect_return</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\RedirectReturn</item>
+                </item>
             </argument>
         </arguments>
     </type>

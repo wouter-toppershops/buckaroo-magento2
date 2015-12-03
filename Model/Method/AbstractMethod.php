@@ -115,9 +115,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \TIG\Buckaroo\Exception
-     * @throws \LogicException
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function authorize(InfoInterface $payment, $amount)
     {
@@ -149,9 +147,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \TIG\Buckaroo\Exception
-     * @throws \LogicException
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function capture(InfoInterface $payment, $amount)
     {
@@ -186,9 +182,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      *
-     * @throws \Magento\Framework\Exception\LocalizedException
-     * @throws \TIG\Buckaroo\Exception
-     * @throws \LogicException
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function refund(InfoInterface $payment, $amount)
     {
