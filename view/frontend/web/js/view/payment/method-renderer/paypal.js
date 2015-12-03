@@ -39,15 +39,37 @@
 /*global define*/
 define(
     [
-        'Magento_Checkout/js/view/payment/default'
+        'jquery',
+        'Magento_Checkout/js/view/payment/default',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'TIG_Buckaroo/js/action/place-order',
+        'ko'
     ],
-    function (Component) {
+    function (
+        $,
+        Component,
+        additionalValidators,
+        placeOrderAction,
+        ko
+    ) {
         'use strict';
 
         return Component.extend({
+            WindowPaypal: function () {
+
+
+            },
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_paypal'
             }
         });
     }
 );
+
+
+
+
+
+
+
+

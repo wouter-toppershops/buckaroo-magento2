@@ -57,6 +57,21 @@ class ConfigProvider extends CcGenericConfigProvider
                 'buckaroo' => [
                     'banks' => [
                         [
+                            'name' => 'ABN AMRO',
+                            'code' => 'AA',
+                            'img' => 'ico-abn'
+                        ],
+                        [
+                            'name' => 'ASN Bank',
+                            'code' => 'AS',
+                            'img' => 'ico-asn'
+                        ],
+                        [
+                            'name' => 'ING',
+                            'code' => 'IN',
+                            'img' => 'ico-ing'
+                        ],
+                        [
                             'name' => 'Rabobank',
                             'code' => 'RB',
                             'img' => 'ico-rb'
@@ -67,16 +82,25 @@ class ConfigProvider extends CcGenericConfigProvider
                             'img' => 'ico-sns'
                         ],
                         [
-                            'name' => 'ING',
-                            'code' => 'IN',
-                            'img' => 'ico-ing'
+                            'name' => 'RegioBank',
+                            'code' => 'RG',
+                            'img' => 'ico-regio'
                         ],
                         [
-                            'name' => 'ABN AMRO',
-                            'code' => 'AA',
-                            'img' => 'ico-abn'
-                        ]
-
+                            'name' => 'Triodos Bank',
+                            'code' => 'TR',
+                            'img' => 'ico-trio'
+                        ],
+                        [
+                            'name' => 'Van Lanschot',
+                            'code' => 'VL',
+                            'img' => 'ico-lans'
+                        ],
+                        [
+                            'name' => 'Knab Bank',
+                            'code' => 'KN',
+                            'img' => 'ico-knab'
+                        ],
                     ],
                 ],
             ],
