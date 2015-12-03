@@ -99,9 +99,9 @@ define(
             afterPlaceOrder: function () {
                 var response = window.checkoutConfig.payment.buckaroo.response;
                 response = $.parseJSON(response);
-                //if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
-                //    window.location.replace(response.RequiredAction.RedirectURL);
-                //}
+                if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
+                    window.location.replace(response.RequiredAction.RedirectURL);
+                }
             }
 
         });

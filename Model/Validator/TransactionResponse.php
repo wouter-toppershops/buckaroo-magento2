@@ -62,9 +62,7 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
      *
      * @param \TIG\Buckaroo\Model\ConfigProvider\PublicKey $publicKeyConfigProvider
      */
-    public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\PublicKey $publicKeyConfigProvider
-    )
+    public function __construct(\TIG\Buckaroo\Model\ConfigProvider\PublicKey $publicKeyConfigProvider)
     {
         $this->publicKeyConfigProvider = $publicKeyConfigProvider;
     }
