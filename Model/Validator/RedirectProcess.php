@@ -40,9 +40,8 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
-class RedirectReturn implements \TIG\Buckaroo\Model\ValidatorInterface
+class RedirectProcess implements \TIG\Buckaroo\Model\ValidatorInterface
 {
-
     /**
      * @param array|object $data
      *

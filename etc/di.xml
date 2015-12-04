@@ -68,9 +68,9 @@
                     <item name="type" xsi:type="string">transaction_response</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\TransactionResponse</item>
                 </item>
-                <item name="redirect_return" xsi:type="array">
+                <item name="redirect_process" xsi:type="array">
                     <item name="type" xsi:type="string">redirect_return</item>
-                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\RedirectReturn</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\RedirectProcess</item>
                 </item>
             </argument>
         </arguments>
