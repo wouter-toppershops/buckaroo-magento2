@@ -67,7 +67,7 @@ class Process extends \Magento\Framework\App\Action\Action
     /**
      * Process action
      *
-     * @return $this
+     * @return void
      */
     public function execute()
     {
@@ -76,17 +76,13 @@ class Process extends \Magento\Framework\App\Action\Action
 
         $this->response = $this->getRequest()->getParams();
         $statusCode = (int)$this->response['brq_statuscode'];
-        $incrementId = $this->response['brq_ordernumber'];
 
-        $this->order = $this->_objectManager->create('\Magento\Sales\Model\Order')->loadByIncrementId($this->response['brq_ordernumber']);
+        $this->order = $this->_objectManager->create('\Magento\Sales\Model\Order')
+            ->loadByIncrementId($this->response['brq_ordernumber']);
         if (!$this->order->getId()) {
-            $statusCode = self::TIG_BUCKAROO_ORDER_FAILED;
+            $statusCode = $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED');
         }
         $this->quote = $this->_objectManager->create('\Magento\Quote\Model\Quote')->load($this->order->getQuoteId());
-
-        \Zend_Debug::dump($this->response);
-
-//        $statusCode = 490;
 
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
@@ -102,7 +98,7 @@ class Process extends \Magento\Framework\App\Action\Action
                 if (!$this->recreateQuote()) {
                     throw new \TIG\Buckaroo\Exception(
                         new \Magento\Framework\Phrase(
-                            'Could not recreqte the quote. Did not cancel the order (%1).',
+                            'Could not recreate the quote. Did not cancel the order (%1).',
                             $this->order->getId()
                         )
                     );

@@ -103,11 +103,19 @@ class SepaDirectDebit extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
-            'Service' => [
-                'Name' => 'sepadirectdebit',
-                'Action' => 'Pay',
-                'Version' => 1,
-            ]
+            'Name'             => 'sepadirectdebit',
+            'Action'           => 'Pay',
+            'Version'          => 1,
+            'RequestParameter' => [
+                [
+                    '_'    => 'Joris Fritzsche',
+                    'Name' => 'customeraccountname',
+                ],
+                [
+                    '_'    => 'NL07RABO0326947159',
+                    'Name' => 'CustomerIBAN',
+                ],
+            ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
