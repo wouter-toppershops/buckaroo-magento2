@@ -37,11 +37,11 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model;
+namespace TIG\Buckaroo\Model\ConfigProvider;
 
 use Magento\Payment\Model\CcGenericConfigProvider;
 
-class ConfigProvider extends CcGenericConfigProvider
+class Creditcard extends CcGenericConfigProvider
 {
 
     /**
@@ -51,56 +51,25 @@ class ConfigProvider extends CcGenericConfigProvider
     {
 
         $config = parent::getConfig();
-        //@TODO: get banks dynamic
+        //@TODO: get cards dynamic
         $config = array_merge_recursive($config, [
             'payment' => [
                 'buckaroo' => [
-                    'banks' => [
+                    'creditcards' => [
                         [
-                            'name' => 'ABN AMRO',
-                            'code' => 'AA',
-                            'img' => 'ico-abn'
+                            'name' => 'Mastercard',
+                            'code' => 'Mc',
+                            'img' => 'ico-mc'
                         ],
                         [
-                            'name' => 'ASN Bank',
-                            'code' => 'AS',
-                            'img' => 'ico-asn'
+                            'name' => 'Visa',
+                            'code' => 'Vi',
+                            'img' => 'ico-vi'
                         ],
                         [
-                            'name' => 'ING',
-                            'code' => 'IN',
-                            'img' => 'ico-ing'
-                        ],
-                        [
-                            'name' => 'Rabobank',
-                            'code' => 'RB',
-                            'img' => 'ico-rb'
-                        ],
-                        [
-                            'name' => 'SNS Bank',
-                            'code' => 'SN',
-                            'img' => 'ico-sns'
-                        ],
-                        [
-                            'name' => 'RegioBank',
-                            'code' => 'RG',
-                            'img' => 'ico-regio'
-                        ],
-                        [
-
-                            'name' => 'Triodos Bank',
-                            'code' => 'TR',
-                            'img' => 'ico-trio'
-                        ],
-                        [
-                            'name' => 'Van Lanschot',
-                            'code' => 'VL',
-                            'img' => 'ico-lans'
-                        ],
-                        [
-                            'name' => 'Knab Bank',
-                            'code' => 'KN',
-                            'img' => 'ico-knab'
+                            'name' => 'Creditcard3',
+                            'code' => 'c3',
+                            'img' => 'ico-c3'
                         ],
                     ],
                     'response' => [],
