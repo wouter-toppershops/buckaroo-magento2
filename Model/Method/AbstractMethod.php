@@ -138,6 +138,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        // SET REGISTRY BUCKAROO REDIRECT
+        $this->_registry->register('buckaroo_response', $response);
+
         return $this;
     }
 
