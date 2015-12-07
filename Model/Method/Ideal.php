@@ -100,6 +100,14 @@ class Ideal extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAuthorizeTransaction($payment)
+    {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
@@ -121,14 +129,6 @@ class Ideal extends AbstractMethod
         $transaction = $transactionBuilder->build();
 
         return $transaction;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizeTransaction($payment)
-    {
-        return false;
     }
 
     /**

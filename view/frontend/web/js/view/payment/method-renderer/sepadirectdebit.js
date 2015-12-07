@@ -39,12 +39,51 @@
 /*global define*/
 define(
     [
-        'Magento_Checkout/js/view/payment/default'
+        'ko',
+        'Magento_Checkout/js/view/payment/default',
+        'Magento_Checkout/js/model/quote'
     ],
-    function (Component) {
+    function (ko, Component, quote) {
         'use strict';
 
         return Component.extend({
+            initObservable: function () {
+
+                /**
+                 * check if country is NL, if so load: bank account number | ifnot load: bicnumber
+                 */
+                this.isnl = ko.computed( function () {
+                    var address = quote.billingAddress();
+
+                    if (address === null)
+                    {
+                        return false;
+                    }
+
+                    return address.countryId == 'NL';
+                }, this);
+
+                /**
+                 * Bind this values to the input field.
+                 */
+                this.bankaccountholder = ko.observable('');
+                this.bankaccountnumber = ko.observable('');
+                this.bicnumber = ko.observable('');
+
+                /**
+                 * Check if the required fields are filled. If so: enable place order button | ifnot: disable place order button
+                 */
+                this.accountNumberIsValid = ko.computed( function () {
+                    if (this.isnl())
+                    {
+                        return !(this.bankaccountholder() == '' || this.bankaccountnumber() == '');
+                    } else {
+                        return !(this.bankaccountholder() == '' || this.bicnumber() == '');
+                    }
+                }, this);
+
+                return this;
+            },
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
             }

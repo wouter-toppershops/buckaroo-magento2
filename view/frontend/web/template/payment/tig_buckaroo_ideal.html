@@ -13,7 +13,7 @@
         <!--/ko-->
 
 
-        <div class="payment-method-banks" >
+        <div class="payment-method-2col" >
             <!-- ko foreach: banktypes -->
             <label class="bank-types">
                 <!--@TODO: write a script which generates the images in pub/static  -->
@@ -47,7 +47,7 @@
                         click: placeOrder,
                         attr: {title: $t('Place Order')},
                         enable: (getCode() == isChecked()),
-                        css: {disabled: !isPlaceOrderActionAllowed()}
+                        css: {disabled: !isPlaceOrderActionAllowed() }
                         "
                         disabled>
                     <span data-bind="i18n: 'Place Order'"></span>
