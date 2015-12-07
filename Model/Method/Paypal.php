@@ -103,16 +103,15 @@ class Paypal extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
-            'Service' => [
-                'Name' => 'paypal',
-                'Action' => 'Pay',
-                'Version' => 1,
-            ]
+            'Name'             => 'paypal',
+            'Action'           => 'Pay',
+            'Version'          => 1,
+            'RequestParameter' => [],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
 
         $transaction = $transactionBuilder->build();
 

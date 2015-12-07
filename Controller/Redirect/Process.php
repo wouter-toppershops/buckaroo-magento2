@@ -41,14 +41,116 @@ namespace TIG\Buckaroo\Controller\Redirect;
 
 class Process extends \Magento\Framework\App\Action\Action
 {
+
+    protected $response;
+
+    /**
+     * @var \Magento\Sales\Model\Order $order
+     */
+    protected $order;
+
+    /**
+     * @var \Magento\Quote\Model\Quote $quote
+     */
+    protected $quote;
+
+    /**
+     * @var \TIG\Buckaroo\Helper\Data $helper
+     */
+    protected $helper;
+
+    /**
+     * @var \Magento\Checkout\Model\Cart
+     */
+    protected $cart;
+
     /**
      * Process action
      *
-     * @return $this
+     * @return void
      */
     public function execute()
     {
-        \Zend_Debug::dump($this->getRequest()->getParams());
+        $this->helper = $this->_objectManager->create('\TIG\Buckaroo\Helper\Data');
+        $this->cart = $this->_objectManager->create('\Magento\Checkout\Model\Cart');
+
+        $this->response = $this->getRequest()->getParams();
+        $statusCode = (int)$this->response['brq_statuscode'];
+
+        $this->order = $this->_objectManager->create('\Magento\Sales\Model\Order')
+            ->loadByIncrementId($this->response['brq_ordernumber']);
+        if (!$this->order->getId()) {
+            $statusCode = $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED');
+        }
+        $this->quote = $this->_objectManager->create('\Magento\Quote\Model\Quote')->load($this->order->getQuoteId());
+
+        switch ($statusCode) {
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
+                // Redirect to success page
+                $this->redirectToSuccessPage();
+                break;
+            case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
+                // Recreate quote from order
+                if (!$this->recreateQuote()) {
+                    throw new \TIG\Buckaroo\Exception(
+                        new \Magento\Framework\Phrase(
+                            'Could not recreate the quote. Did not cancel the order (%1).',
+                            $this->order->getId()
+                        )
+                    );
+                }
+                // Cancel order
+                if (!$this->cancelOrder()) {
+                    throw new \TIG\Buckaroo\Exception(
+                        new \Magento\Framework\Phrase(
+                            'Could not cancel the order (%1).',
+                            $this->order->getId()
+                        )
+                    );
+                }
+
+                $this->messageManager->addErrorMessage(
+                    __(
+                        'Unfortunately an error occurred while processing your payment. Please try again. If this' .
+                        ' error persists, please choose a different payment method.'
+                    )
+                );
+
+                // And redirect back to checkout with our new quote
+                $this->redirectToCheckout();
+                break;
+        }
         return;
     }
+
+    protected function redirectToSuccessPage() {
+        return $this->_redirect('checkout/onepage/success');
+    }
+
+    protected function recreateQuote() {
+        $this->quote->setIsActive('1');
+        $this->quote->setTriggerRecollect('1');
+        $this->quote->setReservedOrderId(null);
+        if ($this->cart->setQuote($this->quote)->save()) {
+            return true;
+        }
+        return false;
+    }
+
+    protected function cancelOrder() {
+        if ($this->order->canCancel()) {
+            $this->order->cancel();
+            return true;
+        }
+        return false;
+    }
+
+    protected function redirectToCheckout() {
+        return $this->_redirect('checkout', ['_fragment' => 'payment']);
+    }
+
 }

@@ -23,7 +23,7 @@ define(
 
             /** Checkout for guest and registered customer. */
             if (!customer.isLoggedIn()) {
-                serviceUrl = urlBuilder.createUrl('/guest-carts/:quoteId/payment-information', {
+                serviceUrl = urlBuilder.createUrl('/guest-buckaroo/:quoteId/payment-information', {
                     quoteId: quote.getQuoteId()
                 });
                 payload = {
