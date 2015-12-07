@@ -53,12 +53,12 @@ class Order extends AbstractTransactionBuilder
 
         $body = [
             'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
+            'Currency' => 'EUR', //$order->getOrderCurrencyCode(),
             'AmountDebit' => $order->getBaseGrandTotal(),
             'AmountCredit' => 0,
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $this->_scopeConfig->getValue(
+            'Description' => $this->scopeConfig->getValue(
                 self::XPATH_PAYMENT_DESCRIPTION,
                 ScopeInterface::SCOPE_STORE
             ),
@@ -66,10 +66,10 @@ class Order extends AbstractTransactionBuilder
                 '_' => $order->getRemoteIp(),
                 'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
             ],
-            'ReturnURL' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLCancel' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLError' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLReject' => $this->_urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURL' => $this->_urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURLCancel' => $this->_urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURLError' => $this->_urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURLReject' => $this->_urlBuilder->getRouteUrl('buckaroo/redirect/process'),
             'OriginalTransactionKey' => $this->_originalTransactionKey,
             'StartRecurrent' => $this->_startRecurrent,
             'PushURL' => $this->_urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),

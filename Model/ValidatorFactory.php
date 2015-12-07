@@ -45,12 +45,12 @@ class ValidatorFactory
     /**
      * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_objectManager;
+    protected $objectManager;
 
     /**
      * @var array
      */
-    protected $_validators;
+    protected $validators;
 
     /**
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
@@ -60,8 +60,8 @@ class ValidatorFactory
         \Magento\Framework\ObjectManagerInterface $objectManager,
         array $validators = []
     ) {
-        $this->_objectManager = $objectManager;
-        $this->_validators = $validators;
+        $this->objectManager = $objectManager;
+        $this->validators = $validators;
     }
 
     /**
@@ -73,10 +73,10 @@ class ValidatorFactory
      */
     public function get($validatorType)
     {
-        if (empty($this->_validators)) {
+        if (empty($this->validators)) {
             throw new \LogicException('Validator adapter is not set.');
         }
-        foreach ($this->_validators as $validatorMetaData) {
+        foreach ($this->validators as $validatorMetaData) {
             $validatorMetaDataType = $validatorMetaData['type'];
             if ($validatorMetaDataType == $validatorType) {
                 $validatorClass = $validatorMetaData['model'];
@@ -93,7 +93,7 @@ class ValidatorFactory
             );
         }
 
-        $validator = $this->_objectManager->get($validatorClass);
+        $validator = $this->objectManager->get($validatorClass);
         if (!$validator instanceof \TIG\Buckaroo\Model\ValidatorInterface) {
             throw new \LogicException(
                 'The transaction builder must implement "TIG\Buckaroo\Model\ValidatorInterface".'

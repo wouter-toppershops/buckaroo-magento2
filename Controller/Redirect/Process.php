@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -34,22 +33,22 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\Validator;
+namespace TIG\Buckaroo\Controller\Redirect;
 
-class RedirectReturn implements \TIG\Buckaroo\Model\ValidatorInterface
+class Process extends \Magento\Framework\App\Action\Action
 {
-
     /**
-     * @param array|object $data
+     * Process action
      *
-     * @return boolean
+     * @return $this
      */
-    public function validate($data)
+    public function execute()
     {
-        return true;
+        \Zend_Debug::dump($this->getRequest()->getParams());
+        return;
     }
 }

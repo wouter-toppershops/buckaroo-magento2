@@ -44,7 +44,8 @@ class PaymentInformationManagement
     implements \TIG\Buckaroo\Api\PaymentInformationManagementInterface
 {
 
-    protected $_registry = null;
+    protected $registry = null;
+    protected $logger = null;
 
     /**
      * @param \Magento\Quote\Api\BillingAddressManagementInterface $billingAddressManagement
@@ -52,6 +53,7 @@ class PaymentInformationManagement
      * @param \Magento\Quote\Api\CartManagementInterface $cartManagement
      * @param \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory
      * @param \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository
+     * @param \Psr\Log\LoggerInterface $logger
      * @codeCoverageIgnore
      */
     public function __construct(
@@ -60,7 +62,8 @@ class PaymentInformationManagement
         \Magento\Quote\Api\CartManagementInterface $cartManagement,
         \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory,
         \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository,
-        \Magento\Framework\Registry $registry
+        \Magento\Framework\Registry $registry,
+        \Psr\Log\LoggerInterface $logger
     ) {
         parent::__construct(
             $billingAddressManagement,
@@ -69,15 +72,18 @@ class PaymentInformationManagement
             $paymentDetailsFactory,
             $cartTotalsRepository
         );
-        $this->_registry = $registry;
+        $this->registry = $registry;
+        $this->logger = $logger;
     }
 
     /**
-     * @param int                                           $cartId
-     * @param \Magento\Quote\Api\Data\PaymentInterface      $paymentMethod
-     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * Set payment information and place order for a specified cart.
      *
-     * @return int|mixed
+     * @param int $cartId
+     * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
+     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @return string
      */
     public function buckarooSavePaymentInformationAndPlaceOrder(
         $cartId,
@@ -87,10 +93,14 @@ class PaymentInformationManagement
     {
         $result = $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
 
-        if ($this->_registry && $this->_registry->registry('buckaroo_response')) {
-            return $this->_registry->registry('buckaroo_response');
-        } else {
-            return $result;
+        $this->logger->debug('-[RESULT]----------------------------------------');
+        $this->logger->debug(print_r($this->registry->registry('buckaroo_response'), true));
+        $this->logger->debug('-------------------------------------------------');
+
+        $response = array();
+        if ($this->registry && $this->registry->registry('buckaroo_response')) {
+            $response = $this->registry->registry('buckaroo_response')[0];
         }
+        return json_encode($response);
     }
 }

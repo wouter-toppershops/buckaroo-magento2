@@ -112,7 +112,11 @@ define(
             },
 
             afterPlaceOrder: function () {
-                console.log('AFTERPLACEORDER', window.checkoutConfig.payment.buckaroo);
+                var response = window.checkoutConfig.payment.buckaroo.response;
+                response = $.parseJSON(response);
+                if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
+                    window.location.replace(response.RequiredAction.RedirectURL);
+                }
             }
 
         });

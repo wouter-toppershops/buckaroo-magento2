@@ -38,44 +38,17 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
+namespace TIG\Buckaroo\Model\Validator;
 
-use Magento\Store\Model\ScopeInterface;
-
-class Refund extends AbstractTransactionBuilder
+class RedirectProcess implements \TIG\Buckaroo\Model\ValidatorInterface
 {
     /**
-     * @return array
+     * @param array|object $data
+     *
+     * @return boolean
      */
-    public function getBody()
+    public function validate($data)
     {
-        $order = $this->getOrder();
-
-        $body = [
-            'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
-            'AmountDebit' => 0,
-            'AmountCredit' => $order->getBaseGrandTotal(),
-            'Invoice' => $order->getIncrementId(),
-            'Order' => $order->getIncrementId(),
-            'Description' => $this->scopeConfig->getValue(
-                self::XPATH_PAYMENT_DESCRIPTION,
-                ScopeInterface::SCOPE_STORE
-            ),
-            'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
-            ],
-            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'OriginalTransactionKey' => $this->originalTransactionKey,
-            'StartRecurrent' => $this->startRecurrent,
-            'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => $this->getServices(),
-        ];
-
-        return $body;
+        return true;
     }
 }

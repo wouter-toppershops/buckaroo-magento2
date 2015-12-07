@@ -98,9 +98,9 @@ class Paypal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getCaptureTransaction($payment)
+    protected function getCaptureTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
             'Service' => [
@@ -122,33 +122,17 @@ class Paypal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function _getAuthorizeTransaction($payment)
+    protected function getAuthorizeTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
-
-        $services = [
-            'Service' => [
-                'Name' => 'paypal',
-                'Action' => 'Pay',
-                'Version' => 1,
-            ]
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
-
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return false;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function _getRefundTransaction($payment)
+    protected function getRefundTransaction($payment)
     {
-        $transactionBuilder = $this->_transactionBuilder;
+        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
             'Service' => [
