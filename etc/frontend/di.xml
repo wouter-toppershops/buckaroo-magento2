@@ -43,7 +43,7 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="braintree_config_provider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider</item>
+                <item name="buckaroo_config_provider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider</item>
             </argument>
         </arguments>
     </type>

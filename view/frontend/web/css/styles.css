@@ -9,6 +9,12 @@
     padding:0;
 }
 
+.payment-method-2col {
+    float:right;
+    width: 40%;
+    margin-left: 10%;
+}
+
 .payment-method-billing-address {
     float:left;
     width: 50%;
@@ -35,7 +41,7 @@
     }
 }
 
-/* ===================== Paypal ===================== */
+/* ===================== PAYPAL ===================== */
 .paypal .button-paypal{
     display:block;
     width: auto;
@@ -64,32 +70,30 @@
 }
 
 /* ===================== IDEAL ===================== */
-.ideal .payment-method-banks {
-    float:right;
-    width: 40%;
-    margin-left: 10%;
-}
-
-.ideal .payment-method-banks .bank-types{
+.ideal .payment-method-2col .bank-types{
     float:left; width: 100%;
 }
-.ideal .payment-method-banks .bank-types-img{
+.ideal .payment-method-2col .bank-types-img{
     vertical-align:middle;
     margin-right:10px;
 }
-.ideal .payment-method-banks .bank-types-input{
+.ideal .payment-method-2col .bank-types-input{
     margin-top:10px;
 }
 
 @media screen and (max-width:767px){
-    .ideal .payment-method-banks {
+    .ideal .payment-method-2col {
         float:left;
         width: 100%;
         margin:0 0 20px 0;
     }
 }
+/* ===================== SEPA DIRECT DEBIT ===================== */
 
-
-
+@media screen and (max-width:767px) {
+    .sepadirectdebit .payment-method-2col {
+        float :left; width :100%; margin-left: 0; margin-bottom: 20px; max-width:500px;
+    }
+}
 
 
