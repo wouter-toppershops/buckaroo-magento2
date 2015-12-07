@@ -112,6 +112,14 @@ class Process extends \Magento\Framework\App\Action\Action
                         )
                     );
                 }
+
+                $this->messageManager->addErrorMessage(
+                    __(
+                        'Unfortunately an error occurred while processing your payment. Please try again. If this' .
+                        ' error persists, please choose a different payment method.'
+                    )
+                );
+
                 // And redirect back to checkout with our new quote
                 $this->redirectToCheckout();
                 break;
@@ -126,6 +134,7 @@ class Process extends \Magento\Framework\App\Action\Action
     protected function recreateQuote() {
         $this->quote->setIsActive('1');
         $this->quote->setTriggerRecollect('1');
+        $this->quote->setReservedOrderId(null);
         if ($this->cart->setQuote($this->quote)->save()) {
             return true;
         }
@@ -141,7 +150,7 @@ class Process extends \Magento\Framework\App\Action\Action
     }
 
     protected function redirectToCheckout() {
-        return $this->_redirect('checkout');
+        return $this->_redirect('checkout', ['_fragment' => 'payment']);
     }
 
 }
