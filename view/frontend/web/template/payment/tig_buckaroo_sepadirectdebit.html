@@ -21,7 +21,7 @@
                             <span data-bind="i18n: 'Bank account holder'"> </span>
 
                         </label>
-                        <input id="bankaccountholder" class="input-text field _error" type="text" data-bind="{ value: bankaccountholder }">
+                        <input id="bankaccountholder" class="input-text field _error" type="text" data-bind="{ value: bankaccountholder }" name="payment[tig_buckaroo_sepadirectdebit][customer_account_name]">
                     </div>
 
                     <div class="field required">
@@ -29,7 +29,7 @@
                         <label class="label" for="bankaccountnumber">
                             <span data-bind="i18n: 'Bank account number'"> </span>
                         </label>
-                        <input id="bankaccountnumber"  class="input-text field _error" type="text" data-bind="{ value: bankaccountnumber }">
+                        <input id="bankaccountnumber"  class="input-text field _error" type="text" data-bind="{ value: bankaccountnumber }" name="payment[tig_buckaroo_sepadirectdebit][customer_iban]">
                         <!-- /ko -->
                     </div>
 
@@ -38,7 +38,7 @@
                         <label for="bicnumber" class="label" >
                             <span data-bind="i18n: 'BIC number'"> </span>
                         </label>
-                        <input id="bicnumber" class="input-text field _error" type="text" data-bind="{ value: bicnumber }">
+                        <input id="bicnumber" class="input-text field _error" type="text" data-bind="{ value: bicnumber }" name="payment[tig_buckaroo_sepadirectdebit][customer_bic]">
                         <!-- /ko -->
                     </div>
 

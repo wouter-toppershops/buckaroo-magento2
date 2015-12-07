@@ -8,6 +8,11 @@
     </div>
 
     <div class="payment-method-content">
+        <div class="payment-method-billing-address">
+            <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div>
         <!--<button class="button-paypal primary" data-bind="click: WindowPaypal">Place order with PayPal</button>-->
 
         <button class="action primary checkout button-paypal"

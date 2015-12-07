@@ -69,7 +69,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_paypal</group>
-                <payment_action>authorize_capture</payment_action>
+                <payment_action>authorize</payment_action>
             </tig_buckaroo_paypal>
             <tig_buckaroo_creditcard>
                 <active>1</active>

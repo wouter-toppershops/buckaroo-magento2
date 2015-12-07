@@ -100,6 +100,14 @@ class Paypal extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
+        return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAuthorizeTransaction($payment)
+    {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
@@ -116,14 +124,6 @@ class Paypal extends AbstractMethod
         $transaction = $transactionBuilder->build();
 
         return $transaction;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizeTransaction($payment)
-    {
-        return false;
     }
 
     /**

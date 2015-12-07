@@ -98,9 +98,22 @@ class Ideal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+        if (is_array($data)) {
+            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
+        } elseif ($data instanceof \Magento\Framework\DataObject) {
+            $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
+        }
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getCaptureTransaction($payment)
     {
-        return false;
+        return true;
     }
 
     /**
@@ -116,9 +129,9 @@ class Ideal extends AbstractMethod
             'Version'          => 2,
             'RequestParameter' => [
                 [
-                    '_'    => 'RABONL2U',
+                    '_'    => $payment->getAdditionalInformation('issuer'),
                     'Name' => 'issuer',
-                ]
+                ],
             ],
         ];
 

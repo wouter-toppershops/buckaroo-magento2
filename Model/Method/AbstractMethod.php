@@ -127,6 +127,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             throw new \LogicException(
                 'Authorize action is not implemented for this payment method.'
             );
+        } elseif ($transaction === true) {
+            return $this;
         }
 
         $response = $this->gateway->authorize($transaction);
@@ -159,10 +161,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $transaction = $this->getCaptureTransaction($payment);
 
         if (!$transaction) {
-            return $this;
             throw new \LogicException(
                 'Capture action is not implemented for this payment method.'
             );
+        } elseif ($transaction === true) {
+            return $this;
         }
 
         $response = $this->gateway->capture($transaction);
@@ -198,6 +201,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             throw new \LogicException(
                 'Refund action is not implemented for this payment method.'
             );
+        } elseif ($transaction === true) {
+            return $this;
         }
 
         $response = $this->gateway->refund($transaction);

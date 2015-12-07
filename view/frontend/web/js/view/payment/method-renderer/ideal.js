@@ -71,8 +71,7 @@ define(
                  */
                 var self = this;
                 this.selectedBank = ko.observable(null);
-                this.setSelectedBank = function (value)
-                {
+                this.setSelectedBank = function (value) {
                     self.selectedBank(value);
                     return true;
                 };
@@ -122,8 +121,17 @@ define(
                 if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
                     window.location.replace(response.RequiredAction.RedirectURL);
                 }
-            }
+            },
 
+            getData: function() {
+                return {
+                    "method": this.item.method,
+                    "po_number": null,
+                    "additional_data": {
+                        "issuer" : this.selectedBank().code
+                    }
+                };
+            }
         });
     }
 );
