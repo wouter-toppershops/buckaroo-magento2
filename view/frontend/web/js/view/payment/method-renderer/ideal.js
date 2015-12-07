@@ -64,6 +64,21 @@ define(
             initObservable: function () {
                 this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
 
+
+
+                console.log(window.checkoutConfig.payment.buckaroo.banks);
+
+                /* observe radio buttons */
+                /* check if selected */
+                /* if so return true / if not return false */
+
+                /**
+                 * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
+                 */
+                this.buttoncheck = ko.computed(function(){
+                        return false;
+                });
+
                 return this;
             },
 
@@ -102,7 +117,6 @@ define(
 
         });
     }
-
 );
 
 
