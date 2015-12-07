@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -34,33 +33,29 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
-    <route url="/V1/buckaroo/push" method="POST">
-        <service class="TIG\Buckaroo\Api\PushInterface" method="receivePush"/>
-        <resources>
-            <resource ref="anonymous"/>
-        </resources>
-    </route>
+namespace TIG\Buckaroo\Api;
 
-    <route url="/V1/guest-buckaroo/:cartId/payment-information" method="POST">
-        <service class="TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface" method="buckarooSavePaymentInformationAndPlaceOrder"/>
-        <resources>
-            <resource ref="anonymous" />
-        </resources>
-    </route>
+interface GuestPaymentInformationManagementInterface
+{
 
-    <route url="/V1/buckaroo/payment-information" method="POST">
-        <service class="TIG\Buckaroo\Api\PaymentInformationManagementInterface" method="buckarooSavePaymentInformationAndPlaceOrder"/>
-        <resources>
-            <resource ref="self" />
-        </resources>
-        <data>
-            <parameter name="cartId" force="true">%cart_id%</parameter>
-        </data>
-    </route>
-</routes>
+    /**
+     * Set payment information and place order for a specified cart.
+     *
+     * @param string $cartId
+     * @param string $email
+     * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
+     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * @throws \Magento\Framework\Exception\CouldNotSaveException
+     * @return string
+     */
+    public function buckarooSavePaymentInformationAndPlaceOrder(
+        $cartId,
+        $email,
+        \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
+        \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
+    );
+
+}
