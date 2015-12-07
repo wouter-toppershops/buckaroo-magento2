@@ -66,7 +66,7 @@ define(
 
 
 
-                console.log(window.checkoutConfig.payment.buckaroo.banks);
+                //console.log(window.checkoutConfig.payment.buckaroo.banks);
 
                 /* observe radio buttons */
                 /* check if selected */
@@ -75,9 +75,9 @@ define(
                 /**
                  * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
                  */
-                this.buttoncheck = ko.computed(function(){
-                        return false;
-                });
+                //this.buttoncheck = ko.computed(function(){
+                //        return false;
+                //});
 
                 return this;
             },
