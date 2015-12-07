@@ -58,7 +58,7 @@ class Ideal extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = false;
+    protected $_canAuthorize            = true;
 
     /**
      * @var bool

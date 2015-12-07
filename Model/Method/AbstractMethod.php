@@ -159,6 +159,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $transaction = $this->getCaptureTransaction($payment);
 
         if (!$transaction) {
+            return $this;
             throw new \LogicException(
                 'Capture action is not implemented for this payment method.'
             );
