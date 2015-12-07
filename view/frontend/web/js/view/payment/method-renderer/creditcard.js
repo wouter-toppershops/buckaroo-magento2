@@ -56,24 +56,24 @@ define(
 
         return Component.extend({
             defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_ideal'
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_creditcard'
             },
-            banktypes: [],
+            creditcards: [],
             redirectAfterPlaceOrder: false,
 
             initObservable: function () {
-                this.selectedBank = ko.observable(null);
-                this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
+                this.selectedCard = ko.observable(null);
+                this.creditcards = ko.observableArray(window.checkoutConfig.payment.buckaroo.creditcards);
 
                 /**
                  * observe radio buttons
                  * check if selected
                  */
                 var self = this;
-                this.selectedBank = ko.observable(null);
-                this.setSelectedBank = function (value)
+                this.selectedCard = ko.observable(null);
+                this.setSelectedCard= function (value)
                 {
-                    self.selectedBank(value);
+                    self.selectedCard(value);
                     return true;
                 };
 
@@ -81,47 +81,10 @@ define(
                  * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
                  */
                 this.buttoncheck = ko.computed(function(){
-                    return this.selectedBank() !== null;
+                    return this.selectedCard();
                 }, this);
 
                 return this;
-            },
-
-            /**
-             * Place order.
-             *
-             * @todo    To override the script used for placeOrderAction, we need to override the placeOrder method
-             *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
-             *
-             *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
-             *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
-             */
-            placeOrder: function (data, event) {
-                var self = this,
-                    placeOrder;
-
-                if (event) {
-                    event.preventDefault();
-                }
-
-                if (this.validate() && additionalValidators.validate()) {
-                    this.isPlaceOrderActionAllowed(false);
-                    placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
-
-                    $.when(placeOrder).fail(function () {
-                        self.isPlaceOrderActionAllowed(true);
-                    }).done(this.afterPlaceOrder.bind(this));
-                    return true;
-                }
-                return false;
-            },
-
-            afterPlaceOrder: function () {
-                var response = window.checkoutConfig.payment.buckaroo.response;
-                response = $.parseJSON(response);
-                if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
-                    window.location.replace(response.RequiredAction.RedirectURL);
-                }
             }
 
         });

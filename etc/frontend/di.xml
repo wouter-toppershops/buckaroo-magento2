@@ -43,7 +43,10 @@
     <type name="Magento\Checkout\Model\CompositeConfigProvider">
         <arguments>
             <argument name="configProviders" xsi:type="array">
-                <item name="buckaroo_config_provider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider</item>
+                <item name="buckaroo_config_provider1" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Ideal</item>
+            </argument>
+            <argument name="configProviders" xsi:type="array">
+                <item name="buckaroo_config_provider2" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Creditcard</item>
             </argument>
         </arguments>
     </type>

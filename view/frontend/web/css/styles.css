@@ -15,7 +15,9 @@
     margin-left: 10%;
 }
 
-.payment-method-billing-address {
+.ideal .payment-method-billing-address,
+.sepadirectdebit .payment-method-billing-address,
+.creditcard .payment-method-billing-address{
     float:left;
     width: 50%;
 }
@@ -96,4 +98,22 @@
     }
 }
 
+/* ===================== CREDITCARD ===================== */
+.creditcard .payment-method-2col .card-types{
+    float:left; width: 100%;
+}
+.creditcard .payment-method-2col .card-types-img{
+    vertical-align:middle;
+    margin-right:10px;
+}
+.creditcard .payment-method-2col .card-types-input{
+    margin-top:10px;
+}
 
+@media screen and (max-width:767px){
+    .creditcard .payment-method-2col {
+        float:left;
+        width: 100%;
+        margin:0 0 20px 0;
+    }
+}
