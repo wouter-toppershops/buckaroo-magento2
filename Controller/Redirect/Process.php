@@ -91,13 +91,7 @@ class Process extends \Magento\Framework\App\Action\Action
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
-                // Complete order
-                if ($this->completeOrder()) {
-                    echo 'completed order<br />';
-                } else {
-                    die('could not complete order');
-                }
-                // And redirect to success page because we've won at e-commerce
+                // Redirect to success page
                 $this->redirectToSuccessPage();
                 break;
             case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
@@ -105,16 +99,22 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
                 // Recreate quote from order
-                if ($this->recreateQuote()) {
-                    echo 'recreated quote from order<br />';
-                } else {
-                    die('could not recreate quote from order');
+                if (!$this->recreateQuote()) {
+                    throw new \TIG\Buckaroo\Exception(
+                        new \Magento\Framework\Phrase(
+                            'Could not recreqte the quote. Did not cancel the order (%1).',
+                            $this->order->getId()
+                        )
+                    );
                 }
                 // Cancel order
-                if ($this->cancelOrder()) {
-                    echo 'canceled order<br />';
-                } else {
-                    die('could not cancel order');
+                if (!$this->cancelOrder()) {
+                    throw new \TIG\Buckaroo\Exception(
+                        new \Magento\Framework\Phrase(
+                            'Could not cancel the order (%1).',
+                            $this->order->getId()
+                        )
+                    );
                 }
                 // And redirect back to checkout with our new quote
                 $this->redirectToCheckout();
@@ -124,29 +124,28 @@ class Process extends \Magento\Framework\App\Action\Action
     }
 
     protected function redirectToSuccessPage() {
-        echo 'REDIRECT TO SUCCESS PAGE';
-    }
-
-    protected function redirectToCheckout() {
-        echo 'REDIRECT TO CHECKOUT<br />';
-    }
-
-    protected function completeOrder() {
-        echo 'COMPLETE ORDER<br />';
-    }
-
-    protected function cancelOrder() {
-        return false;
+        return $this->_redirect('checkout/onepage/success');
     }
 
     protected function recreateQuote() {
         $this->quote->setIsActive('1');
         $this->quote->setTriggerRecollect('1');
         if ($this->cart->setQuote($this->quote)->save()) {
-            echo $this->cart->getQuote()->getId();
             return true;
         }
         return false;
+    }
+
+    protected function cancelOrder() {
+        if ($this->order->canCancel()) {
+            $this->order->cancel();
+            return true;
+        }
+        return false;
+    }
+
+    protected function redirectToCheckout() {
+        return $this->_redirect('checkout');
     }
 
 }
