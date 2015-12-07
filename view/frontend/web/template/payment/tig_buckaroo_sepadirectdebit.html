@@ -1,4 +1,4 @@
-<div class="payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+<div class="sepadirectdebit payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <input type="radio"
                name="payment[method]"
@@ -11,6 +11,43 @@
         <!-- ko foreach: getRegion('messages') -->
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
+
+        <div class="payment-method-2col" >
+            <form data-hasrequired="* Required Fields">
+                <fieldset id="" class="fieldset payment">
+
+                    <div class="field required">
+                        <label for="bankaccountholder" class="label">
+                            <span data-bind="i18n: 'Bank account holder'"> </span>
+
+                        </label>
+                        <input id="bankaccountholder" class="input-text field _error" type="text" data-bind="{ value: bankaccountholder }">
+                    </div>
+
+                    <div class="field required">
+                        <!-- ko if: isnl -->
+                        <label class="label" for="bankaccountnumber">
+                            <span data-bind="i18n: 'Bank account number'"> </span>
+                        </label>
+                        <input id="bankaccountnumber"  class="input-text field _error" type="text" data-bind="{ value: bankaccountnumber }">
+                        <!-- /ko -->
+                    </div>
+
+                    <div class="field required">
+                        <!-- ko ifnot: isnl -->
+                        <label for="bicnumber" class="label" >
+                            <span data-bind="i18n: 'BIC number'"> </span>
+                        </label>
+                        <input id="bicnumber" class="input-text field _error" type="text" data-bind="{ value: bicnumber }">
+                        <!-- /ko -->
+                    </div>
+
+                    <span data-bind="i18n: 'Please enter these fields as they appear on your bank account.' "></span>
+
+                </fieldset>
+            </form>
+        </div>
+
         <div class="payment-method-billing-address">
             <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
             <!-- ko template: getTemplate() --><!-- /ko -->
@@ -29,7 +66,7 @@
                         click: placeOrder,
                         attr: {title: $t('Place Order')},
                         enable: (getCode() == isChecked()),
-                        css: {disabled: !isPlaceOrderActionAllowed()}
+                        css: {disabled: !isPlaceOrderActionAllowed() || !accountNumberIsValid()}
                         "
                         disabled>
                     <span data-bind="i18n: 'Place Order'"></span>
