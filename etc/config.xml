@@ -81,6 +81,16 @@
                 <group>tig_buckaroo_creditcard</group>
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_creditcard>
+            <tig_buckaroo_transfer>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Transfer</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Transfer</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <group>tig_buckaroo_transfer</group>
+                <payment_action>authorize_capture</payment_action>
+            </tig_buckaroo_transfer>
         </payment>
     </default>
 </config>
