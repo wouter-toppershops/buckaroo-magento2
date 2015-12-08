@@ -108,6 +108,28 @@
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_giropay>
 
+            <tig_buckaroo_mrcash>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Mrcash</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Mrcash</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <group>tig_buckaroo_mrcash</group>
+                <payment_action>authorize_capture</payment_action>
+            </tig_buckaroo_mrcash>
+
+            <tig_buckaroo_sofortbanking>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Sofortbanking</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Sofortbanking</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <group>tig_buckaroo_sofortbanking</group>
+                <payment_action>authorize_capture</payment_action>
+            </tig_buckaroo_sofortbanking>
+
         </payment>
     </default>
 </config>
