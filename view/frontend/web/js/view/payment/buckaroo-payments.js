@@ -67,7 +67,12 @@ define(
             {
                 type: 'tig_buckaroo_transfer',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/transfer'
+            },
+            {
+                type: 'tig_buckaroo_giropay',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/giropay'
             }
+
 
         );
         /** Add view logic here if needed */
