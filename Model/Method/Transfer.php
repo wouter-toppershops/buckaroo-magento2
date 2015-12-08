@@ -63,7 +63,7 @@ class Transfer extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canCapture              = true;
+    protected $_canCapture              = false;
 
     /**
      * @var bool
@@ -113,7 +113,7 @@ class Transfer extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
-        return true;
+        return false;
     }
 
     /**
@@ -126,13 +126,7 @@ class Transfer extends AbstractMethod
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
-            'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => $payment->getAdditionalInformation('issuer'),
-                    'Name' => 'issuer',
-                ],
-            ],
+            'Version'          => 1,
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())

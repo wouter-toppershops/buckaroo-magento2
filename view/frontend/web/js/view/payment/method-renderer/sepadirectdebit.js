@@ -90,7 +90,6 @@ define(
             },
 
             getData: function() {
-                console.error(this.bankaccountnumber());
                 return {
                     "method": this.item.method,
                     "po_number": null,

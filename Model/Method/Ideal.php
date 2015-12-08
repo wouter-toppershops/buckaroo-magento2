@@ -63,7 +63,7 @@ class Ideal extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canCapture              = true;
+    protected $_canCapture              = false;
 
     /**
      * @var bool
@@ -113,7 +113,7 @@ class Ideal extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
-        return true;
+        return false;
     }
 
     /**
