@@ -71,7 +71,16 @@ define(
             {
                 type: 'tig_buckaroo_giropay',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/giropay'
+            },
+            {
+                type: 'tig_buckaroo_mrcash',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/mrcash'
+            },
+            {
+                type: 'tig_buckaroo_sofortbanking',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/sofortbanking'
             }
+
 
 
         );
