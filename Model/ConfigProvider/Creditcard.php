@@ -57,19 +57,44 @@ class Creditcard extends CcGenericConfigProvider
                 'buckaroo' => [
                     'creditcards' => [
                         [
-                            'name' => 'Mastercard',
-                            'code' => 'Mc',
+                            'name' => 'American Express',
+                            'code' => 'Amex',
+                            'img' => 'ico-ae'
+                        ],
+                        [
+                            'name' => 'Carte Bancaire',
+                            'code' => 'cartebancaire',
+                            'img' => 'ico-cb'
+                        ],
+                        [
+                            'name' => 'Carte Bleue',
+                            'code' => 'cartebleuevisa',
+                            'img' => 'ico-cbl'
+                        ],
+                        [
+                            'name' => 'Maestro',
+                            'code' => 'maestro',
+                            'img' => 'ico-mae'
+                        ],
+                        [
+                            'name' => 'MasterCard',
+                            'code' => 'mastercard',
                             'img' => 'ico-mc'
                         ],
                         [
-                            'name' => 'Visa',
-                            'code' => 'Vi',
+                            'name' => 'VISA',
+                            'code' => 'visa',
                             'img' => 'ico-vi'
                         ],
                         [
-                            'name' => 'Creditcard3',
-                            'code' => 'c3',
-                            'img' => 'ico-c3'
+                            'name' => 'VISA Electron',
+                            'code' => 'visaelectron',
+                            'img' => 'ico-ve'
+                        ],
+                        [
+                            'name' => 'VPay',
+                            'code' => 'Vpay',
+                            'img' => 'ico-vp'
                         ],
                     ],
                     'response' => [],
