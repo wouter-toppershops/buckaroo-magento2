@@ -98,6 +98,23 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * {@inheritdoc}
      */
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+        if (is_array($data)) {
+            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data['customer_iban']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_account_name', $data['customer_account_name']);
+        } elseif ($data instanceof \Magento\Framework\DataObject) {
+            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data->getCustomerBic());
+            $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data->getCustomerIban());
+            $this->getInfoInstance()->setAdditionalInformation('customer_account_name', $data->getCustomerAccountName());
+        }
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getCaptureTransaction($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
@@ -108,15 +125,22 @@ class SepaDirectDebit extends AbstractMethod
             'Version'          => 1,
             'RequestParameter' => [
                 [
-                    '_'    => 'Joris Fritzsche',
+                    '_'    => $this->getInfoInstance()->getAdditionalInformation('customer_account_name'),
                     'Name' => 'customeraccountname',
                 ],
                 [
-                    '_'    => 'NL07RABO0326947159',
+                    '_'    => $this->getInfoInstance()->getAdditionalInformation('customer_iban'),
                     'Name' => 'CustomerIBAN',
                 ],
             ],
         ];
+
+        if ($this->getInfoInstance()->getAdditionalInformation('customer_bic')) {
+            $services[0]['RequestParameter'][0][] = [
+                '_'    => $this->getInfoInstance()->getAdditionalInformation('customer_bic'),
+                'Name' => 'CustomerBIC',
+            ];
+        }
 
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)

@@ -58,48 +58,48 @@ class Ideal extends CcGenericConfigProvider
                     'banks' => [
                         [
                             'name' => 'ABN AMRO',
-                            'code' => 'AA',
+                            'code' => 'ABNANL2A',
                             'img' => 'ico-abn'
                         ],
                         [
                             'name' => 'ASN Bank',
-                            'code' => 'AS',
+                            'code' => 'ASNBNL21',
                             'img' => 'ico-asn'
                         ],
                         [
                             'name' => 'ING',
-                            'code' => 'IN',
+                            'code' => 'INGBNL2A',
                             'img' => 'ico-ing'
                         ],
                         [
                             'name' => 'Rabobank',
-                            'code' => 'RB',
+                            'code' => 'RABONL2U',
                             'img' => 'ico-rb'
                         ],
                         [
                             'name' => 'SNS Bank',
-                            'code' => 'SN',
+                            'code' => 'SNSBNL2A',
                             'img' => 'ico-sns'
                         ],
                         [
                             'name' => 'RegioBank',
-                            'code' => 'RG',
+                            'code' => 'RBRBNL21',
                             'img' => 'ico-regio'
                         ],
                         [
 
                             'name' => 'Triodos Bank',
-                            'code' => 'TR',
+                            'code' => 'TRIONL2U',
                             'img' => 'ico-trio'
                         ],
                         [
                             'name' => 'Van Lanschot',
-                            'code' => 'VL',
+                            'code' => 'FVLBNL22',
                             'img' => 'ico-lans'
                         ],
                         [
                             'name' => 'Knab Bank',
-                            'code' => 'KN',
+                            'code' => 'KNABNL2H',
                             'img' => 'ico-knab'
                         ],
                     ],

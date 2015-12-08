@@ -128,7 +128,27 @@ class Creditcard extends AbstractMethod
      */
     protected function getAuthorizeTransaction($payment)
     {
-        return false;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'creditcard',
+            'Action'           => 'Pay',
+            'Version'          => 2,
+            'RequestParameter' => [
+                [
+                    '_'    => 'RABONL2U',
+                    'Name' => 'issuer',
+                ]
+            ],
+        ];
+
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        $transaction = $transactionBuilder->build();
+
+        return $transaction;
     }
 
     /**

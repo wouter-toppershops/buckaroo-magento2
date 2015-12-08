@@ -84,8 +84,22 @@ define(
 
                 return this;
             },
+
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
+            },
+
+            getData: function() {
+                console.error(this.bankaccountnumber());
+                return {
+                    "method": this.item.method,
+                    "po_number": null,
+                    "additional_data": {
+                        "customer_bin": this.bicnumber(),
+                        "customer_iban": this.bankaccountnumber(),
+                        "customer_account_name": this.bankaccountholder()
+                    }
+                };
             }
         });
     }
