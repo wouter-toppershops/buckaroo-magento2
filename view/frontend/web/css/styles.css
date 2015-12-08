@@ -17,7 +17,8 @@
 
 .ideal .payment-method-billing-address,
 .sepadirectdebit .payment-method-billing-address,
-.creditcard .payment-method-billing-address{
+.creditcard .payment-method-billing-address,
+.giropay .payment-method-billing-address{
     float:left;
     width: 50%;
 }
@@ -115,5 +116,13 @@
         float:left;
         width: 100%;
         margin:0 0 20px 0;
+    }
+}
+
+/* ===================== GIROPAY ===================== */
+
+@media screen and (max-width:767px) {
+    .giropay .payment-method-2col {
+        float :left; width :100%; margin-left: 0; margin-bottom: 20px; max-width:500px;
     }
 }
