@@ -116,14 +116,14 @@ class Creditcard extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $action = 'Pay';
-        $requestParameters = null;
         if ($payment->getAmountAuthorized()) {
             $action = 'Capture';
-            $requestParameters = [
-                'originaltransaction' => $payment->getAdditionalInformation(
+            $transactionBuilder->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
-                ),
-            ];
+                )
+            );
+            $transactionBuilder->setChannel('CallCenter');
         }
 
         $services = [
@@ -131,10 +131,6 @@ class Creditcard extends AbstractMethod
             'Action'           => $action,
             'Version'          => 1,
         ];
-
-        if ($requestParameters) {
-            $services['RequestParameter'] = [$requestParameters];
-        }
 
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
@@ -185,7 +181,8 @@ class Creditcard extends AbstractMethod
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-            );
+            )
+            ->setChannel('CallCenter');
 
         $transaction = $transactionBuilder->build();
 

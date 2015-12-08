@@ -44,4 +44,9 @@
         <section name="cart"/>
         <section name="checkout-data"/>
     </action>
+    
+    <action name="rest/*/V1/buckaroo/payment-information">
+        <section name="cart"/>
+        <section name="checkout-data"/>
+    </action>
 </config>

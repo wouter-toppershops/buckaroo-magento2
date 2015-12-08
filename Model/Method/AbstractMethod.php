@@ -157,6 +157,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if (!empty($response[0]->Key)) {
             $transactionKey = $response[0]->Key;
             $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
+            $payment->setLastTransId($transactionKey);
         }
 
         // SET REGISTRY BUCKAROO REDIRECT
@@ -221,6 +222,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
              */
             $transactionKey = $response[0]->Key;
             $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
+            $payment->setLastTransId($transactionKey);
         }
 
         // SET REGISTRY BUCKAROO REDIRECT
@@ -265,6 +267,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
                     'The transaction response could not be verified.'
+                )
+            );
+        }
+
+        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unfortunately the refund was unsuccessful. Please try again.'
                 )
             );
         }
