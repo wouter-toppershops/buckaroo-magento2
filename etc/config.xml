@@ -41,6 +41,7 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
         <payment>
+
             <tig_buckaroo_ideal>
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Ideal</model>
@@ -51,6 +52,7 @@
                 <group>tig_buckaroo_ideal</group>
                 <payment_action>authorize</payment_action>
             </tig_buckaroo_ideal>
+
             <tig_buckaroo_sepadirectdebit>
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\SepaDirectDebit</model>
@@ -61,6 +63,7 @@
                 <group>tig_buckaroo_sepadirectdebit</group>
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_sepadirectdebit>
+
             <tig_buckaroo_paypal>
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Paypal</model>
@@ -71,6 +74,7 @@
                 <group>tig_buckaroo_paypal</group>
                 <payment_action>authorize</payment_action>
             </tig_buckaroo_paypal>
+
             <tig_buckaroo_creditcard>
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Creditcard</model>
@@ -81,6 +85,7 @@
                 <group>tig_buckaroo_creditcard</group>
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_creditcard>
+
             <tig_buckaroo_transfer>
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Transfer</model>
@@ -91,6 +96,18 @@
                 <group>tig_buckaroo_transfer</group>
                 <payment_action>authorize_capture</payment_action>
             </tig_buckaroo_transfer>
+
+            <tig_buckaroo_giropay>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Giropay</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Giropay</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>1</sort_order>
+                <group>tig_buckaroo_giropay</group>
+                <payment_action>authorize_capture</payment_action>
+            </tig_buckaroo_giropay>
+
         </payment>
     </default>
 </config>
