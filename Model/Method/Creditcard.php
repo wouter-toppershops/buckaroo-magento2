@@ -43,19 +43,6 @@ class Creditcard extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_CREDITCARD_CODE = 'tig_buckaroo_creditcard';
 
-    /**#@+
-     * Creditcard service codes.
-     */
-    const CREDITCARD_SERVICE_CODE_MASTERCARD    = 'mastercard';
-    const CREDITCARD_SERVICE_CODE_VISA          = 'visa';
-    const CREDITCARD_SERVICE_CODE_AMEX          = 'Amex';
-    const CREDITCARD_SERVICE_CODE_MAESTRO       = 'maestro';
-    const CREDITCARD_SERVICE_CODE_VPAY          = 'Vpay';
-    const CREDITCARD_SERVICE_CODE_VISAELECTRON  = 'visaelectron';
-    const CREDITCARD_SERVICE_CODE_CARTEBLEUE    = 'cartebleuevisa';
-    const CREDITCARD_SERVICE_CODE_CARTEBANCAIRE = 'cartebancaire';
-    /**#@-*/
-
     /**
      * Payment method code
      *
@@ -71,7 +58,7 @@ class Creditcard extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = false;
+    protected $_canAuthorize            = true;
 
     /**
      * @var bool
@@ -111,25 +98,43 @@ class Creditcard extends AbstractMethod
     /**
      * {@inheritdoc}
      */
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+        if (is_array($data)) {
+            $this->getInfoInstance()->setAdditionalInformation('card_type', $data['card_type']);
+        } elseif ($data instanceof \Magento\Framework\DataObject) {
+            $this->getInfoInstance()->setAdditionalInformation('card_type', $data->getCardType());
+        }
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     protected function getCaptureTransaction($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $action = 'Pay';
-        $requestParameters = [];
+        $requestParameters = null;
         if ($payment->getAmountAuthorized()) {
             $action = 'Capture';
             $requestParameters = [
-                'originaltransaction' => $payment->getAdditionalInformation(''),
+                'originaltransaction' => $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                ),
             ];
         }
 
         $services = [
-            'Name'             => 'creditcard',
+            'Name'             => $payment->getAdditionalInformation('card_type'),
             'Action'           => $action,
             'Version'          => 1,
-            'RequestParameter' => [$requestParameters],
         ];
+
+        if ($requestParameters) {
+            $services['RequestParameter'] = [$requestParameters];
+        }
 
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
@@ -148,10 +153,9 @@ class Creditcard extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
-            'Name'             => 'creditcard',
+            'Name'             => $payment->getAdditionalInformation('card_type'),
             'Action'           => 'Authorize',
             'Version'          => 1,
-            'RequestParameter' => [],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -171,7 +175,7 @@ class Creditcard extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
-            'Name'    => 'creditcard',
+            'Name'    => $payment->getAdditionalInformation('card_type'),
             'Action'  => 'Refund',
             'Version' => 1,
         ];
