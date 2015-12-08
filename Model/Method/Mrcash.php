@@ -58,7 +58,7 @@ class Mrcash extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -113,7 +113,21 @@ class Mrcash extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
-        return true;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'bancontactmrcash',
+            'Action'           => 'Pay',
+            'Version'          => 1,
+        ];
+
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        $transaction = $transactionBuilder->build();
+
+        return $transaction;
     }
 
     /**
@@ -121,27 +135,7 @@ class Mrcash extends AbstractMethod
      */
     protected function getAuthorizeTransaction($payment)
     {
-        $transactionBuilder = $this->transactionBuilderFactory->get('order');
-
-        $services = [
-            'Name'             => 'mrcash',
-            'Action'           => 'Pay',
-            'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => $payment->getAdditionalInformation('issuer'),
-                    'Name' => 'issuer',
-                ],
-            ],
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
-
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return false;
     }
 
     /**

@@ -39,11 +39,19 @@
 /*global define*/
 define(
     [
-        'ko',
+        'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'TIG_Buckaroo/js/action/place-order',
+        'ko'
     ],
-    function (ko, Component, quote) {
+    function (
+        $,
+        Component,
+        additionalValidators,
+        placeOrderAction,
+        ko
+    ) {
         'use strict';
 
         return Component.extend({
@@ -64,17 +72,53 @@ define(
                 return this;
             },
 
+            /**
+             * Place order.
+             *
+             * @todo    To override the script used for placeOrderAction, we need to override the placeOrder method
+             *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
+             *
+             *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
+             *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
+             */
+            placeOrder: function (data, event) {
+                var self = this,
+                    placeOrder;
+
+                if (event) {
+                    event.preventDefault();
+                }
+
+                if (this.validate() && additionalValidators.validate()) {
+                    this.isPlaceOrderActionAllowed(false);
+                    placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
+
+                    $.when(placeOrder).fail(function () {
+                        self.isPlaceOrderActionAllowed(true);
+                    }).done(this.afterPlaceOrder.bind(this));
+                    return true;
+                }
+                return false;
+            },
+
+            afterPlaceOrder: function () {
+                var response = window.checkoutConfig.payment.buckaroo.response;
+                response = $.parseJSON(response);
+                if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
+                    window.location.replace(response.RequiredAction.RedirectURL);
+                }
+            },
+
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay'
             },
 
             getData: function() {
-                console.error(this.bicnumber());
                 return {
                     "method": this.item.method,
                     "po_number": null,
                     "additional_data": {
-                        "customer_bin": this.bicnumber()
+                        "customer_bic": this.bicnumber()
                     }
                 };
             }

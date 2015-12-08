@@ -101,9 +101,9 @@ class Giropay extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         if (is_array($data)) {
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
+            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data->getCustomerBic());
         }
         return $this;
     }
@@ -113,14 +113,6 @@ class Giropay extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
-        return true;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizeTransaction($payment)
-    {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
@@ -129,19 +121,27 @@ class Giropay extends AbstractMethod
             'Version'          => 2,
             'RequestParameter' => [
                 [
-                    '_'    => $payment->getAdditionalInformation('issuer'),
-                    'Name' => 'issuer',
+                    '_'    => $payment->getAdditionalInformation('customer_bic'),
+                    'Name' => 'bic',
                 ],
             ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
 
         $transaction = $transactionBuilder->build();
 
         return $transaction;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAuthorizeTransaction($payment)
+    {
+        return false;
     }
 
     /**

@@ -205,6 +205,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
+                )
+            );
+        }
+
         if (!$payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             && !empty($response[0]->Key)
         ) {
