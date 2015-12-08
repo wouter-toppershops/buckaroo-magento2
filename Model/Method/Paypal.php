@@ -63,12 +63,12 @@ class Paypal extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canCapture              = true;
+    protected $_canCapture              = false;
 
     /**
      * @var bool
      */
-    protected $_canCapturePartial       = true;
+    protected $_canCapturePartial       = false;
 
     /**
      * @var bool
@@ -100,7 +100,7 @@ class Paypal extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
-        return true;
+        return false;
     }
 
     /**

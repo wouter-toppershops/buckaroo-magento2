@@ -99,7 +99,7 @@ class Process extends \Magento\Framework\App\Action\Action
                     throw new \TIG\Buckaroo\Exception(
                         new \Magento\Framework\Phrase(
                             'Could not recreate the quote. Did not cancel the order (%1).',
-                            $this->order->getId()
+                            [$this->order->getId()]
                         )
                     );
                 }
@@ -108,7 +108,7 @@ class Process extends \Magento\Framework\App\Action\Action
                     throw new \TIG\Buckaroo\Exception(
                         new \Magento\Framework\Phrase(
                             'Could not cancel the order (%1).',
-                            $this->order->getId()
+                            [$this->order->getId()]
                         )
                     );
                 }

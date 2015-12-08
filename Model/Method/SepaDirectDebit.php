@@ -58,12 +58,12 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = false;
+    protected $_canAuthorize            = true;
 
     /**
      * @var bool
      */
-    protected $_canCapture              = true;
+    protected $_canCapture              = false;
 
     /**
      * @var bool
@@ -117,6 +117,14 @@ class SepaDirectDebit extends AbstractMethod
      */
     protected function getCaptureTransaction($payment)
     {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function getAuthorizeTransaction($payment)
+    {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
@@ -149,14 +157,6 @@ class SepaDirectDebit extends AbstractMethod
         $transaction = $transactionBuilder->build();
 
         return $transaction;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getAuthorizeTransaction($payment)
-    {
-        return false;
     }
 
     /**
