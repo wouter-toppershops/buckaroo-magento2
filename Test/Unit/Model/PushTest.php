@@ -68,10 +68,10 @@ class PushTest extends \PHPUnit_Framework_TestCase
         $requestMock->shouldReceive('getParams')->once()->andReturn(['brq_invoicenumber'=>$id]);
 
         $order = m::mock(Order::class);
-        $order->shouldReceive('load')->with($id)->andReturnSelf();
-        $order->shouldReceive('getId')->andReturn($id);
-        $order->shouldReceive('setStatus')->with('complete')->andReturnSelf();
-        $order->shouldReceive('save')->andReturn(true);
+        $order->shouldReceive('loadByIncrementId')->once()->with($id)->andReturnSelf();
+        $order->shouldReceive('getId')->once()->andReturn($id);
+        $order->shouldReceive('setStatus')->once()->with('complete')->andReturnSelf();
+        $order->shouldReceive('save')->once()->andReturn(true);
 
         $objectManager = m::mock(ObjectManagerInterface::class);
         $objectManager->shouldReceive('create')->with(Order::class)->andReturn($order);
@@ -95,6 +95,7 @@ class PushTest extends \PHPUnit_Framework_TestCase
         $requestMock->shouldReceive('getParams')->once()->andReturn(['brq_invoicenumber'=>$id]);
 
         $order = m::mock(Order::class);
+        $order->shouldReceive('loadByIncrementId')->once()->with($id)->andReturnSelf();
         $order->shouldReceive('load')->with($id)->andReturnSelf();
         $order->shouldReceive('getId')->andReturn(null);
         $order->shouldReceive('setStatus')->with('complete')->andReturnSelf();
