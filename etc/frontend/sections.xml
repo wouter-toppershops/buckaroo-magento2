@@ -1,6 +1,6 @@
-<?php
-
-/**
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
  *                    |    |  /  _ \\   __\\__  \  |  |
@@ -37,47 +37,16 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-
-namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
-
-use Magento\Store\Model\ScopeInterface;
-
-class Order extends AbstractTransactionBuilder
-{
-    /**
-     * @return array
-     */
-    public function getBody()
-    {
-        $order = $this->getOrder();
-
-        $body = [
-            'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
-            'AmountDebit' => $order->getBaseGrandTotal(),
-            'AmountCredit' => 0,
-            'Invoice' => $order->getIncrementId(),
-            'Order' => $order->getIncrementId(),
-            'Description' => $this->scopeConfig->getValue(
-                self::XPATH_PAYMENT_DESCRIPTION,
-                ScopeInterface::SCOPE_STORE
-            ),
-            'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
-            ],
-            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'OriginalTransactionKey' => $this->originalTransactionKey,
-            'StartRecurrent' => $this->startRecurrent,
-            'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => [
-                'Service' => $this->getServices()
-            ],
-        ];
-
-        return $body;
-    }
-}
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Customer:etc/sections.xsd">
+    <action name="rest/*/V1/guest-buckaroo/*/payment-information">
+        <section name="cart"/>
+        <section name="checkout-data"/>
+    </action>
+    
+    <action name="rest/*/V1/buckaroo/payment-information">
+        <section name="cart"/>
+        <section name="checkout-data"/>
+    </action>
+</config>

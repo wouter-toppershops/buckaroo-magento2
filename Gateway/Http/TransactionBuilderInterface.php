@@ -70,6 +70,13 @@ interface TransactionBuilderInterface
     public function setOriginalTransactionKey($key);
 
     /**
+     * @param string $channel
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setChannel($channel);
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

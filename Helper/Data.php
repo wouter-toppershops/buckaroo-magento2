@@ -11,10 +11,20 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $statusCodes = [
         'TIG_BUCKAROO_STATUSCODE_SUCCESS'               => 190,
-        'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'    => 791,
         'TIG_BUCKAROO_STATUSCODE_FAILED'                => 490,
+        'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE'    => 491,
+        'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR'       => 492,
         'TIG_BUCKAROO_STATUSCODE_REJECTED'              => 690,
+        'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT' => 790,
+        'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'    => 791,
+        'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER'   => 792,
+        'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD'       => 793,
         'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'     => 890,
+        'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT' => 891,
+
+        /**
+         * Codes below are created by TIG< not by Buckaroo.
+         */
         'TIG_BUCKAROO_ORDER_FAILED'                     => 11014,
     ];
 
