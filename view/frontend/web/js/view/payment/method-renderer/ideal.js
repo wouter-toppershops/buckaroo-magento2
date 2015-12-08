@@ -124,11 +124,16 @@ define(
             },
 
             getData: function() {
+                var selectedBankCode = null;
+                if (this.selectedBank()) {
+                    selectedBankCode = this.selectedBank().code;
+                }
+
                 return {
                     "method": this.item.method,
                     "po_number": null,
                     "additional_data": {
-                        "issuer" : this.selectedBank().code
+                        "issuer" : selectedBankCode
                     }
                 };
             }
