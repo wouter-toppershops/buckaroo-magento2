@@ -106,7 +106,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $originalTransactionKey = null;
 
     /**
-     * @param null|string $originalTransactionKey
+     * @param string $originalTransactionKey
      *
      * @return $this
      */

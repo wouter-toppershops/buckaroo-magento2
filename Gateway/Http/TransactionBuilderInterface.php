@@ -63,6 +63,13 @@ interface TransactionBuilderInterface
     public function setMethod($method);
 
     /**
+     * @param string $key
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setOriginalTransactionKey($key);
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

@@ -134,7 +134,7 @@ define(
                     "method": this.item.method,
                     "po_number": null,
                     "additional_data": {
-                        "issuer" : selectedCardCode
+                        "card_type" : selectedCardCode
                     }
                 };
             }

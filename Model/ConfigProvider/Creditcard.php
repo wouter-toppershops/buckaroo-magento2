@@ -43,6 +43,18 @@ use Magento\Payment\Model\CcGenericConfigProvider;
 
 class Creditcard extends CcGenericConfigProvider
 {
+    /**#@+
+     * Creditcard service codes.
+     */
+    const CREDITCARD_SERVICE_CODE_MASTERCARD    = 'mastercard';
+    const CREDITCARD_SERVICE_CODE_VISA          = 'visa';
+    const CREDITCARD_SERVICE_CODE_AMEX          = 'Amex';
+    const CREDITCARD_SERVICE_CODE_MAESTRO       = 'maestro';
+    const CREDITCARD_SERVICE_CODE_VPAY          = 'Vpay';
+    const CREDITCARD_SERVICE_CODE_VISAELECTRON  = 'visaelectron';
+    const CREDITCARD_SERVICE_CODE_CARTEBLEUE    = 'cartebleuevisa';
+    const CREDITCARD_SERVICE_CODE_CARTEBANCAIRE = 'cartebancaire';
+    /**#@-*/
 
     /**
      * @return array|void
@@ -58,42 +70,42 @@ class Creditcard extends CcGenericConfigProvider
                     'creditcards' => [
                         [
                             'name' => 'American Express',
-                            'code' => 'Amex',
+                            'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
                             'img' => 'ico-ae'
                         ],
                         [
                             'name' => 'Carte Bancaire',
-                            'code' => 'cartebancaire',
+                            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
                             'img' => 'ico-cb'
                         ],
                         [
                             'name' => 'Carte Bleue',
-                            'code' => 'cartebleuevisa',
+                            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
                             'img' => 'ico-cbl'
                         ],
                         [
                             'name' => 'Maestro',
-                            'code' => 'maestro',
+                            'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,
                             'img' => 'ico-mae'
                         ],
                         [
                             'name' => 'MasterCard',
-                            'code' => 'mastercard',
+                            'code' => self::CREDITCARD_SERVICE_CODE_MASTERCARD,
                             'img' => 'ico-mc'
                         ],
                         [
                             'name' => 'VISA',
-                            'code' => 'visa',
+                            'code' => self::CREDITCARD_SERVICE_CODE_VISA,
                             'img' => 'ico-vi'
                         ],
                         [
                             'name' => 'VISA Electron',
-                            'code' => 'visaelectron',
+                            'code' => self::CREDITCARD_SERVICE_CODE_VISAELECTRON,
                             'img' => 'ico-ve'
                         ],
                         [
                             'name' => 'VPay',
-                            'code' => 'Vpay',
+                            'code' => self::CREDITCARD_SERVICE_CODE_VPAY,
                             'img' => 'ico-vp'
                         ],
                     ],
