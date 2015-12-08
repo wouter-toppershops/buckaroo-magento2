@@ -44,6 +44,8 @@ use TIG\Buckaroo\Gateway\Http\Transaction;
 
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
+    const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
+
     /**
      * @var \TIG\Buckaroo\Gateway\GatewayInterface
      */
@@ -115,10 +117,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      *
-     * @throws \TIG\Buckaroo\Exception|\LogicException
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
     public function authorize(InfoInterface $payment, $amount)
     {
+        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
+            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
+                ' and "\Magento\Payment\Model\InfoInterface".'
+            );
+        }
+
         parent::authorize($payment, $amount);
 
         $transaction = $this->getAuthorizeTransaction($payment);
@@ -140,6 +151,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        /**
+         * Save the payment's transaction key.
+         */
+        if (!empty($response[0]->Key)) {
+            $transactionKey = $response[0]->Key;
+            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
+        }
+
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
 
@@ -152,10 +171,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      *
-     * @throws \TIG\Buckaroo\Exception|\LogicException
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
     public function capture(InfoInterface $payment, $amount)
     {
+        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
+            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
+                ' and "\Magento\Payment\Model\InfoInterface".'
+            );
+        }
+
         parent::capture($payment, $amount);
 
         $transaction = $this->getCaptureTransaction($payment);
@@ -177,6 +205,16 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        if (!$payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+            && !empty($response[0]->Key)
+        ) {
+            /**
+             * Save the payment's transaction key.
+             */
+            $transactionKey = $response[0]->Key;
+            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
+        }
+
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
 
@@ -189,10 +227,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      *
-     * @throws \TIG\Buckaroo\Exception|\LogicException
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
     public function refund(InfoInterface $payment, $amount)
     {
+        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
+            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
+                ' and "\Magento\Payment\Model\InfoInterface".'
+            );
+        }
+
         parent::refund($payment, $amount);
 
         $transaction = $this->getRefundTransaction($payment);
@@ -218,21 +265,21 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param InfoInterface $payment
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return Transaction|false
      */
     protected abstract function getAuthorizeTransaction($payment);
 
     /**
-     * @param InfoInterface $payment
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return Transaction|false
      */
     protected abstract function getCaptureTransaction($payment);
 
     /**
-     * @param InfoInterface $payment
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return Transaction|false
      */

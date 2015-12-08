@@ -43,6 +43,19 @@ class Creditcard extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_CREDITCARD_CODE = 'tig_buckaroo_creditcard';
 
+    /**#@+
+     * Creditcard service codes.
+     */
+    const CREDITCARD_SERVICE_CODE_MASTERCARD    = 'mastercard';
+    const CREDITCARD_SERVICE_CODE_VISA          = 'visa';
+    const CREDITCARD_SERVICE_CODE_AMEX          = 'Amex';
+    const CREDITCARD_SERVICE_CODE_MAESTRO       = 'maestro';
+    const CREDITCARD_SERVICE_CODE_VPAY          = 'Vpay';
+    const CREDITCARD_SERVICE_CODE_VISAELECTRON  = 'visaelectron';
+    const CREDITCARD_SERVICE_CODE_CARTEBLEUE    = 'cartebleuevisa';
+    const CREDITCARD_SERVICE_CODE_CARTEBANCAIRE = 'cartebancaire';
+    /**#@-*/
+
     /**
      * Payment method code
      *
@@ -102,16 +115,20 @@ class Creditcard extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        $action = 'Pay';
+        $requestParameters = [];
+        if ($payment->getAmountAuthorized()) {
+            $action = 'Capture';
+            $requestParameters = [
+                'originaltransaction' => $payment->getAdditionalInformation(''),
+            ];
+        }
+
         $services = [
             'Name'             => 'creditcard',
-            'Action'           => 'Pay',
-            'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => 'RABONL2U',
-                    'Name' => 'issuer',
-                ]
-            ],
+            'Action'           => $action,
+            'Version'          => 1,
+            'RequestParameter' => [$requestParameters],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -132,14 +149,9 @@ class Creditcard extends AbstractMethod
 
         $services = [
             'Name'             => 'creditcard',
-            'Action'           => 'Pay',
-            'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => 'RABONL2U',
-                    'Name' => 'issuer',
-                ]
-            ],
+            'Action'           => 'Authorize',
+            'Version'          => 1,
+            'RequestParameter' => [],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -167,7 +179,9 @@ class Creditcard extends AbstractMethod
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+            );
 
         $transaction = $transactionBuilder->build();
 
