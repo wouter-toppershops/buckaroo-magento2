@@ -23,7 +23,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT' => 891,
 
         /**
-         * Codes below are created by TIG< not by Buckaroo.
+         * Codes below are created by TIG, not by Buckaroo.
          */
         'TIG_BUCKAROO_ORDER_FAILED'                     => 11014,
     ];
@@ -38,6 +38,21 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     public function getStatusCode($code) {
         if (isset($this->statusCodes[$code])) {
             return $this->statusCodes[$code];
+        }
+        return null;
+    }
+
+    /**
+     * Return the requested status key with the value, or null if not found
+     *
+     * @param (int) $value
+     *
+     * @return mixed|null
+     */
+    public function getStatusByValue($value)
+    {
+        if( array_search($value, $this->statusCodes) ) {
+            return array_search($value, $this->statusCodes);
         }
         return null;
     }
