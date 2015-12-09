@@ -62,6 +62,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $validatorFactory;
 
     /**
+     * @var \Magento\Framework\Message\ManagerInterface
+     */
+    protected $messageManager;
+
+    /**
      * AbstractMethod constructor.
      *
      * @param \Magento\Framework\Model\Context                             $context
@@ -76,6 +81,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                  $gateway
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
      * @param \TIG\Buckaroo\Model\ValidatorFactory                         $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
      * @param array                                                        $data
      */
     public function __construct(
@@ -91,6 +97,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \Magento\Framework\Message\ManagerInterface $messageManager = null,
         array $data = []
     ) {
         parent::__construct(
@@ -109,11 +116,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->gateway = $gateway;
         $this->transactionBuilderFactory = $transactionBuilderFactory;
         $this->validatorFactory = $validatorFactory;
+        $this->messageManager = $messageManager;
     }
 
     /**
-     * @param InfoInterface $payment
-     * @param float         $amount
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param float                                                                              $amount
      *
      * @return $this
      *
@@ -151,6 +159,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
+                )
+            );
+        }
+
         /**
          * Save the payment's transaction key.
          */
@@ -163,12 +179,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
 
+        $this->afterAuthorize($payment, $response);
+
         return $this;
     }
 
     /**
-     * @param InfoInterface $payment
-     * @param float         $amount
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param float                                                                              $amount
      *
      * @return $this
      *
@@ -228,12 +246,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
 
+        $this->afterCapture($payment, $response);
+
         return $this;
     }
 
     /**
-     * @param InfoInterface $payment
-     * @param float         $amount
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param float                                                                              $amount
      *
      * @return $this
      *
@@ -278,6 +298,65 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
                 )
             );
         }
+
+        $this->afterRefund($payment, $response);
+
+        return $this;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param array|\StdCLass                                                                    $response
+     *
+     * @return $this
+     */
+    protected function afterAuthorize($payment, $response)
+    {
+        $this->_eventManager->dispatch(
+            'tig_buckaroo_method_authorize_after',
+            [
+                'payment' => $payment,
+                'response' => $response
+            ]
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param array|\StdCLass                                                                    $response
+     *
+     * @return $this
+     */
+    protected function afterCapture($payment, $response)
+    {
+        $this->_eventManager->dispatch(
+            'tig_buckaroo_method_capture_after',
+            [
+                'payment' => $payment,
+                'response' => $response
+            ]
+        );
+
+        return $this;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param array|\StdCLass                                                                    $response
+     *
+     * @return $this
+     */
+    protected function afterRefund($payment, $response)
+    {
+        $this->_eventManager->dispatch(
+            'tig_buckaroo_method_refund_after',
+            [
+                'payment' => $payment,
+                'response' => $response
+            ]
+        );
 
         return $this;
     }

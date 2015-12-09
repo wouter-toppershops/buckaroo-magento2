@@ -182,4 +182,26 @@ class SepaDirectDebit extends AbstractMethod
 
         return $transaction;
     }
+
+    /**
+     * @param \Magento\Payment\Model\InfoInterface|\Magento\Sales\Api\Data\OrderPaymentInterface $payment
+     * @param array|\StdCLass                                                                    $response
+     *
+     * @return $this
+     */
+    protected function afterAuthorize($payment, $response)
+    {
+        if (!empty($response[0]->ConsumerMessage) && $response[0]->ConsumerMessage->MustRead == 1) {
+            $consumerMessage = $response[0]->ConsumerMessage;
+
+            $this->messageManager->addSuccessMessage(
+                __($consumerMessage->Title)
+            );
+            $this->messageManager->addSuccessMessage(
+                __($consumerMessage->PlainText)
+            );
+        }
+
+        return parent::afterAuthorize($payment, $response);
+    }
 }
