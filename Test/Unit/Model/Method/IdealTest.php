@@ -65,6 +65,8 @@ class IdealTest extends BaseTest
             '\Magento\Sales\Api\Data\OrderPaymentInterface'
         );
 
+        $this->markTestIncomplete('Unable to get by the parent::capture($payment, $amount); method.');
+
         $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->capture($paymentInfoMock, 1));
     }
 
@@ -96,8 +98,8 @@ class IdealTest extends BaseTest
         $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
 
         $validatorFactoryMock = m::mock('TIG\Buckaroo\Model\ValidatorFactory');
-        $validatorFactoryMock->shouldReceive('get')->andReturnSelf();
-        $validatorFactoryMock->shouldReceive('validate')->andReturnSelf();
+        $validatorFactoryMock->shouldReceive('get')->once()->andReturnSelf();
+        $validatorFactoryMock->shouldReceive('validate')->once()->andReturnSelf();
 
         $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
         $gatewayMock->shouldReceive('authorize')->once()->with($transactionMock)->andReturn([]);
@@ -153,7 +155,8 @@ class IdealTest extends BaseTest
 
         $validatorFactoryMock = m::mock('TIG\Buckaroo\Model\ValidatorFactory');
         $validatorFactoryMock->shouldReceive('get')->with('transaction_response')->once()->andReturnSelf();
-        $validatorFactoryMock->shouldReceive('validate')->with($gatewayMock)->once()->andReturn(true);
+        $validatorFactoryMock->shouldReceive('get')->with('transaction_response_status')->once()->andReturnSelf();
+        $validatorFactoryMock->shouldReceive('validate')->with($gatewayMock)->twice()->andReturn(true);
 
         $this->object = $this->objectManagerHelper->getObject(
             'TIG\Buckaroo\Model\Method\Ideal',
