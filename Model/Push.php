@@ -134,7 +134,7 @@ class Push implements PushInterface
         $payment     = $this->_order->getPayment();
         $originalKey = \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
 
-        if (!$payment->getAdditionalInformation($originalKey && !empty($this->_postData['brq_transactions']))
+        if (!$payment->getAdditionalInformation($originalKey) && !empty($this->_postData['brq_transactions'])
         ) {
             $payment->setAdditionalInformation($originalKey, $this->_postData['brq_transactions']);
         }

@@ -48,16 +48,10 @@ namespace TIG\Buckaroo\Model;
 interface ValidatorInterface
 {
     /**
-     * @param $code
+     * @param $data
      *
      * @return mixed
      */
-    public function validateStatusCode($code);
+    public function validate($data);
 
-    /**
-     * @param $signature
-     *
-     * @return mixed
-     */
-    public function validateSignature($signature);
 }
