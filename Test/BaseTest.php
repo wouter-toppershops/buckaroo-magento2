@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-**
+<?php
+/**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
  *                    |    |  /  _ \\   __\\__  \  |  |
@@ -26,27 +25,38 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Customer:etc/sections.xsd">
-    <action name="rest/*/V1/guest-buckaroo/*/payment-information">
-        <section name="cart"/>
-        <section name="checkout-data"/>
-    </action>
+namespace TIG\Buckaroo\Test;
 
-    <action name="rest/*/V1/buckaroo/payment-information">
-        <section name="cart"/>
-        <section name="checkout-data"/>
-    </action>
-</config>
+use Mockery as m;
+use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
+
+class BaseTest extends \PHPUnit_Framework_TestCase
+{
+    /**
+     * @var \Magento\Framework\TestFramework\Unit\Helper\ObjectManager
+     */
+    protected $objectManagerHelper;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->objectManagerHelper = new ObjectManager($this);
+    }
+
+    public function tearDown()
+    {
+        m::close();
+    }
+}

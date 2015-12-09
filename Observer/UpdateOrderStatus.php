@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -38,46 +37,25 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
+namespace TIG\Buckaroo\Observer;
 
-use Magento\Store\Model\ScopeInterface;
-
-class Order extends AbstractTransactionBuilder
+class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * @return array
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return void
      */
-    public function getBody()
+    public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        $order = $this->getOrder();
+        /** @var $payment \Magento\Sales\Model\Order\Payment */
+        $payment = $observer->getPayment();
 
-        $body = [
-            'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
-            'AmountDebit' => $order->getBaseGrandTotal(),
-            'AmountCredit' => 0,
-            'Invoice' => $order->getIncrementId(),
-            'Order' => $order->getIncrementId(),
-            'Description' => $this->scopeConfig->getValue(
-                self::XPATH_PAYMENT_DESCRIPTION,
-                ScopeInterface::SCOPE_STORE
-            ),
-            'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
-            ],
-            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'OriginalTransactionKey' => $this->originalTransactionKey,
-            'StartRecurrent' => $this->startRecurrent,
-            'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => [
-                'Service' => $this->getServices()
-            ],
-        ];
+        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
+            return;
+        }
 
-        return $body;
+        $order = $payment->getOrder();
+        $order->setStatus('tig_buckaroo_pending_payment');
     }
 }
