@@ -49,6 +49,7 @@
             <argument name="gateway" xsi:type="object">TIG\Buckaroo\Gateway\GatewayInterface</argument>
             <argument name="transactionBuilderFactory" xsi:type="object">TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory</argument>
             <argument name="validatorFactory" xsi:type="object">TIG\Buckaroo\Model\ValidatorFactory</argument>
+            <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
         </arguments>
     </type>
 
