@@ -47,8 +47,6 @@ use TIG\Buckaroo\Api\PushInterface;
 use TIG\Buckaroo\Exception;
 use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 
-
-
 /**
  * Class Push
  *
@@ -141,24 +139,30 @@ class Push implements PushInterface
 
         /** @var  $newStates  @todo built the method that sets and gets the new states of the order.
          */
-        $newState = 'completed';
+        $newStatus = 'closed';
 
         switch ( $response['status'] ) {
-            case ValidatorPush::BUCKAROO_ERROR:
-            case ValidatorPush::BUCKAROO_FAILED:
-                $this->_processFailedPush($newState, $response['message']);
+            case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
+            case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
+            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
+            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
+            case 'TIG_BUCKAROO_STATUSCODE_FAILED':
+                $this->_processFailedPush($newStatus, $response['message']);
                 break;
-            case ValidatorPush::BUCKAROO_SUCCESS:
-                $this->_processSuccededPush($newState, $response['message']);
+            case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
+                $this->_processSuccededPush($newStatus, $response['message']);
                 break;
-            case ValidatorPush::BUCKAROO_NEUTRAL:
+            case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
                 $this->_setOrderNotifactionNote($response['message']);
                 break;
-            case ValidatorPush::BUCKAROO_PENDING_PAYMENT:
-                $this->_processPendingPaymentPush($newState, $response['message']);
+            case 'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD':
+            case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
+            case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
+            case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
+                $this->_processPendingPaymentPush($newStatus, $response['message']);
                 break;
-            case ValidatorPush::BUCKAROO_INCORRECT_PAYMENT:
-                $this->_processIncorrectPaymentPush($newState, $response['message']);
+            case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
+                $this->_processIncorrectPaymentPush($newStatus, $response['message']);
                 break;
         }
 
@@ -190,10 +194,10 @@ class Push implements PushInterface
     protected function _canUpdateOrderStatus()
     {
         //Types of statusses
-        $completedStateAndStatus = array(self::ORDER_TYPE_COMPLETED, self::ORDER_TYPE_COMPLETED);
-        $cancelledStateAndStatus = array(self::ORDER_TYPE_CANCELED, self::ORDER_TYPE_CANCELED);
-        $holdedStateAndStatus    = array(self::ORDER_TYPE_HOLDED, self::ORDER_TYPE_HOLDED);
-        $closedStateAndStatus    = array(self::ORDER_TYPE_CLOSED, self::ORDER_TYPE_CLOSED);
+        $completedStateAndStatus = [self::ORDER_TYPE_COMPLETED, self::ORDER_TYPE_COMPLETED];
+        $cancelledStateAndStatus = [self::ORDER_TYPE_CANCELED, self::ORDER_TYPE_CANCELED];
+        $holdedStateAndStatus    = [self::ORDER_TYPE_HOLDED, self::ORDER_TYPE_HOLDED];
+        $closedStateAndStatus    = [self::ORDER_TYPE_CLOSED, self::ORDER_TYPE_CLOSED];
         //Get current state and status of order
         $currentStateAndStatus = array($this->_order->getState(), $this->_order->getStatus());
         //If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
@@ -211,50 +215,51 @@ class Push implements PushInterface
     }
 
     /**
-     * @param $newStates
+     * @param $newStatus
      * @param $message
      *
      * @return bool
      */
-    protected function _processFailedPush($newStates, $message)
+    protected function _processFailedPush($newStatus, $message)
     {
         //Create discription
         $discription = ''.$message;
 
         /** @todo Check if the order can cancel ? */
-        $this->_updateOrderState(Order::STATE_CANCELED, $newStates, $discription);
+        $this->_updateOrderStatus(Order::STATE_CANCELED, $newStatus, $discription);
 
         return true;
     }
 
     /**
-     * @param $newStates
+     * @param $newStatus
      * @param $message
      *
      * @return bool
      */
-    protected function _processSuccededPush($newStates, $message)
+    protected function _processSuccededPush($newStatus, $message)
     {
         if( !$this->_order->getEmailSent() ) {
             // Sent new order mail.
         }
-
         //Create discription
         $discription = ''.$message;
 
-        /** @todo Auto Invoice ? */
-        $this->_updateOrderState(Order::STATE_PROCESSING, $newStates, $discription);
+        //Create invoice
+        $this->_saveInvoice();
+
+        $this->_updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $discription);
 
         return true;
     }
 
     /**
-     * @param $newStates
+     * @param $newStatus
      * @param $message
      * @todo well, as you can see, named the method, didn't built it yet.
      * @return bool
      */
-    protected function _processIncorrectPaymentPush($newStates, $message)
+    protected function _processIncorrectPaymentPush($newStatus, $message)
     {
         //Check if the paid amount is correct
         //hold the order
@@ -262,16 +267,16 @@ class Push implements PushInterface
     }
 
     /**
-     * @param $newStates
+     * @param $newStatus
      * @param $message
      *
      * @return bool
      */
-    protected function _processPendingPaymentPush($newStates, $message)
+    protected function _processPendingPaymentPush($newStatus, $message)
     {
         $discription = ''.$message;
 
-        $this->_updateOrderState(Order::STATE_NEW, $newStates, $discription);
+        $this->_updateOrderStatus(Order::STATE_NEW, $newStatus, $discription);
 
         return true;
     }
@@ -298,15 +303,41 @@ class Push implements PushInterface
      *
      * @param $orderState
      * @param $description
-     * @param $newState
+     * @param $newStatus
      */
-    protected function _updateOrderState($orderState, $description, $newState)
+    protected function _updateOrderStatus($orderState, $newStatus, $description)
     {
         if ( $this->_order->getState() ==  $orderState) {
-            $this->_order->addStatusHistoryComment($description, $newState)->save();
-            $this->_order->setStatus($newState)->save();
+            $this->_order->addStatusHistoryComment($description, $newStatus)->save();
+            $this->_order->setStatus($newStatus)->save();
         } else {
             $this->_order->addStatusHistoryComment($description)->save();
         }
+    }
+
+    /**
+     * Creates and saves the invoice and adds for each invoice the buckaroo transaction keys
+     *
+     * @return bool
+     */
+    protected function _saveInvoice()
+    {
+        //Only when the order can be invoiced and has not been invoiced before.
+        if( $this->_order->canInvoice() && !$this->_order->hasInvoices() ) {
+            $payment = $this->_order->getPayment();
+            $payment->registerCaptureNotification($this->_order->getBaseGrandTotal());
+            $this->_order->save();
+
+            foreach($this->_order->getInvoiceCollection() as $invoice)
+            {
+                if (!isset($this->_postData['brq_transactions'])) {
+                    continue;
+                }
+                $invoice->setTransactionId($this->_postData['brq_transactions'])
+                    ->save();
+            }
+            return true;
+        }
+        return false;
     }
 }
