@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-**
+<?php
+/**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
  *                    |    |  /  _ \\   __\\__  \  |  |
@@ -37,16 +36,26 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Customer:etc/sections.xsd">
-    <action name="rest/*/V1/guest-buckaroo/*/payment-information">
-        <section name="cart"/>
-        <section name="checkout-data"/>
-    </action>
 
-    <action name="rest/*/V1/buckaroo/payment-information">
-        <section name="cart"/>
-        <section name="checkout-data"/>
-    </action>
-</config>
+namespace TIG\Buckaroo\Observer;
+
+class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
+{
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return void
+     */
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        /** @var $payment \Magento\Sales\Model\Order\Payment */
+        $payment = $observer->getPayment();
+
+        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
+            return;
+        }
+
+        $order = $payment->getOrder();
+        $order->setStatus('tig_buckaroo_pending_payment');
+    }
+}
