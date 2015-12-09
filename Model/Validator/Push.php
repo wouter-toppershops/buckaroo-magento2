@@ -109,6 +109,16 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
     );
 
     /**
+     * @param $data
+     *
+     * @return bool
+     */
+    public function validate($data)
+    {
+        return true;
+    }
+
+    /**
      * Checks if the status code is returned by the bpe push and is valid.
      * @param $code
      *
