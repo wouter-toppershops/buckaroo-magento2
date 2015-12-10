@@ -126,7 +126,21 @@ class Transfer extends AbstractMethod
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
-            'Version'          => 1,
+            'Version'          => 2,
+            'RequestParameter' => [
+                [
+                    '_'    => $payment->getOrder()->getCustomerFirstname(),
+                    'Name' => 'CustomerFirstName',
+                ],
+                [
+                    '_'    => $payment->getOrder()->getCustomerLastName(),
+                    'Name' => 'CustomerLastName',
+                ],
+                [
+                    '_'    => $payment->getOrder()->getCustomerEmail(),
+                    'Name' => 'CustomerEmail',
+                ],
+            ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
