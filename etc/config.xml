@@ -46,7 +46,7 @@
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Ideal</model>
                 <order_status>pending</order_status>
-                <title>TIG Buckaroo iDeal</title>
+                <title>TIG Buckaroo iDEAL</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_ideal</group>
@@ -79,7 +79,7 @@
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Creditcard</model>
                 <order_status>pending</order_status>
-                <title>TIG Buckaroo Creditcard</title>
+                <title>TIG Buckaroo Creditcard and Debit Card</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_creditcard</group>
