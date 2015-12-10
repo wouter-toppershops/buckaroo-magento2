@@ -63,7 +63,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
 
     /**
      * @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
@@ -156,22 +156,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this;
         }
 
-        $response = $this->gateway->authorize($transaction);
-        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
-            throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'The transaction response could not be verified.'
-                )
-            );
-        }
-
-        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
-            throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
-            );
-        }
+        $response = $this->authorizeTransaction($transaction);
 
         /**
          * Save the payment's transaction key.
@@ -188,6 +173,35 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->afterAuthorize($payment, $response);
 
         return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function authorizeTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
+        $response = $this->gateway->authorize($transaction);
+
+        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'The transaction response could not be verified.'
+                )
+            );
+        }
+
+        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
+                )
+            );
+        }
+
+        return $response;
     }
 
     /**
@@ -223,22 +237,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this;
         }
 
-        $response = $this->gateway->capture($transaction);
-        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
-            throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'The transaction response could not be verified.'
-                )
-            );
-        }
-
-        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
-            throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
-            );
-        }
+        $response = $this->captureTransaction($transaction);
 
         if (!empty($response[0]->Key)) {
             /**
@@ -255,6 +254,35 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->afterCapture($payment, $response);
 
         return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function captureTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
+        $response = $this->gateway->capture($transaction);
+
+        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'The transaction response could not be verified.'
+                )
+            );
+        }
+
+        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
+                )
+            );
+        }
+
+        return $response;
     }
 
     /**
@@ -290,7 +318,23 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this;
         }
 
+        $response = $this->refundTransaction($transaction);
+
+        $this->afterRefund($payment, $response);
+
+        return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function refundTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
         $response = $this->gateway->refund($transaction);
+
         if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
@@ -302,14 +346,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
-                    'Unfortunately the refund was unsuccessful. Please try again.'
+                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
                 )
             );
         }
 
-        $this->afterRefund($payment, $response);
-
-        return $this;
+        return $response;
     }
 
     /**
