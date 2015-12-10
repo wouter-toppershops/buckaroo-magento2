@@ -13,7 +13,7 @@
         <!--/ko-->
 
         <div class="payment-method-2col" >
-            <form data-hasrequired="* Required Fields">
+            <form data-hasrequired="* Required Fields" data-bind="mageInit: { 'validation': [] }">
                 <fieldset id="" class="fieldset payment">
 
                     <div class="field required">
@@ -21,7 +21,8 @@
                             <span data-bind="i18n: 'BIC Number'"> </span>
 
                         </label>
-                        <input id="bicnumber" class="input-text field _error" type="text" data-bind="{ value: bicnumber }" name="payment[tig_buckaroo_giropay][customer_account_name]">
+                        <input id="bicnumber" class="input-text field _error" type="text" data-bind="{ value: bicnumber }" name="payment[tig_buckaroo_giropay][customer_account_name]"
+                                data-validate="{ 'required': true }">
                     </div>
 
 
