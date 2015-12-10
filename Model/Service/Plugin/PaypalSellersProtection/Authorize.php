@@ -37,9 +37,9 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\Service\Plugin;
+namespace TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection;
 
-class PaypalSellersProtection
+class Authorize
 {
     /**
      * @param \TIG\Buckaroo\Model\Method\Paypal                      $paymentMethod
