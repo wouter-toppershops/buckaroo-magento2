@@ -40,7 +40,6 @@
 namespace TIG\Buckaroo\Model\Method;
 
 use Magento\Payment\Model\InfoInterface;
-use TIG\Buckaroo\Gateway\Http\Transaction;
 
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
@@ -65,6 +64,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @var \Magento\Framework\Message\ManagerInterface
      */
     protected $messageManager;
+
+    /**
+     * @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
+     */
+    public $payment;
 
     /**
      * AbstractMethod constructor.
@@ -140,7 +144,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         parent::authorize($payment, $amount);
 
-        $transaction = $this->getAuthorizeTransaction($payment);
+        $this->payment = $payment;
+
+        $transaction = $this->getAuthorizeTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
@@ -205,7 +211,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         parent::capture($payment, $amount);
 
-        $transaction = $this->getCaptureTransaction($payment);
+        $this->payment = $payment;
+
+        $transaction = $this->getCaptureTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
@@ -270,7 +278,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         parent::refund($payment, $amount);
 
-        $transaction = $this->getRefundTransaction($payment);
+        $this->payment = $payment;
+
+        $transaction = $this->getRefundTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
@@ -362,21 +372,21 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
-     * @return Transaction|false
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
-    protected abstract function getAuthorizeTransaction($payment);
+    public abstract function getAuthorizeTransactionBuilder($payment);
 
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
-     * @return Transaction|false
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
-    protected abstract function getCaptureTransaction($payment);
+    public abstract function getCaptureTransactionBuilder($payment);
 
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
-     * @return Transaction|false
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
-    protected abstract function getRefundTransaction($payment);
+    public abstract function getRefundTransactionBuilder($payment);
 }

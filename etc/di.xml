@@ -53,6 +53,10 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Model\Method\Paypal">
+        <plugin name="tig_buckaroo_paypal_sellersprotection" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection" />
+    </type>
+
     <type name="TIG\Buckaroo\Model\PaymentInformationManagement">
         <arguments>
             <argument name="registry" xsi:type="object">Magento\Framework\Registry</argument>

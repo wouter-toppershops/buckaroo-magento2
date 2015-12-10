@@ -111,7 +111,7 @@ class Giropay extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getCaptureTransaction($payment)
+    public function getCaptureTransactionBuilder($payment)
     {
         return false;
     }
@@ -119,7 +119,7 @@ class Giropay extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getAuthorizeTransaction($payment)
+    public function getAuthorizeTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -139,15 +139,13 @@ class Giropay extends AbstractMethod
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getRefundTransaction($payment)
+    public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
@@ -162,8 +160,6 @@ class Giropay extends AbstractMethod
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 }
