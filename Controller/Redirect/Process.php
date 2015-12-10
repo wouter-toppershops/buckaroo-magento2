@@ -65,7 +65,27 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $cart;
 
     /**
+     * @param \Magento\Framework\App\Action\Context $context
+     */
+    public function __construct(
+        \Magento\Framework\App\Action\Context $context,
+        \TIG\Buckaroo\Helper\Data $helper,
+        \Magento\Checkout\Model\Cart $cart,
+        \Magento\Sales\Model\Order $order,
+        \Magento\Quote\Model\Quote $quote
+    )
+    {
+        parent::__construct($context);
+        $this->helper   = $helper;
+        $this->cart     = $cart;
+        $this->order    = $order;
+        $this->quote    = $quote;
+    }
+
+    /**
      * Process action
+     *
+     * @throws \TIG\Buckaroo\Exception
      *
      * @return void
      *
@@ -73,18 +93,15 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $this->helper = $this->_objectManager->create('\TIG\Buckaroo\Helper\Data');
-        $this->cart = $this->_objectManager->create('\Magento\Checkout\Model\Cart');
-
         $this->response = $this->getRequest()->getParams();
         $statusCode = (int)$this->response['brq_statuscode'];
 
-        $this->order = $this->_objectManager->create('\Magento\Sales\Model\Order')
-            ->loadByIncrementId($this->response['brq_ordernumber']);
+        $this->order->loadByIncrementId($this->response['brq_ordernumber']);
         if (!$this->order->getId()) {
             $statusCode = $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED');
+        } else {
+            $this->quote->load($this->order->getQuoteId());
         }
-        $this->quote = $this->_objectManager->create('\Magento\Quote\Model\Quote')->load($this->order->getQuoteId());
 
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
@@ -96,7 +113,13 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
-                // Recreate quote from order
+
+                /*
+                 * Something went wrong, so we're going to have to
+                 * 1) recreate the quote for the user
+                 * 2) cancel the order we had to create to even get here
+                 * 3) redirect back to the checkout page to offer the user feedback & the option to try again
+                 */
                 if (!$this->recreateQuote()) {
                     throw new \TIG\Buckaroo\Exception(
                         new \Magento\Framework\Phrase(
@@ -105,7 +128,6 @@ class Process extends \Magento\Framework\App\Action\Action
                         )
                     );
                 }
-                // Cancel order
                 if (!$this->cancelOrder()) {
                     throw new \TIG\Buckaroo\Exception(
                         new \Magento\Framework\Phrase(
@@ -114,25 +136,24 @@ class Process extends \Magento\Framework\App\Action\Action
                         )
                     );
                 }
-
                 $this->messageManager->addErrorMessage(
                     __(
                         'Unfortunately an error occurred while processing your payment. Please try again. If this' .
                         ' error persists, please choose a different payment method.'
                     )
                 );
-
-                // And redirect back to checkout with our new quote
                 $this->redirectToCheckout();
                 break;
         }
         return;
     }
 
-    protected function redirectToSuccessPage() {
-        return $this->_redirect('checkout/onepage/success');
-    }
-
+    /**
+     * Make the previous quote active again, so we can offer the user another opportunity to order (since something
+     * went wrong)
+     *
+     * @return bool
+     */
     protected function recreateQuote() {
         $this->quote->setIsActive('1');
         $this->quote->setTriggerRecollect('1');
@@ -143,6 +164,11 @@ class Process extends \Magento\Framework\App\Action\Action
         return false;
     }
 
+    /**
+     * If possible, cancel the order
+     *
+     * @return bool
+     */
     protected function cancelOrder() {
         if ($this->order->canCancel()) {
             $this->order->cancel();
@@ -151,6 +177,20 @@ class Process extends \Magento\Framework\App\Action\Action
         return false;
     }
 
+    /**
+     * Redirect to Success page, which means everything seems to be going fine
+     *
+     * @return \Magento\Framework\App\ResponseInterface
+     */
+    protected function redirectToSuccessPage() {
+        return $this->_redirect('checkout/onepage/success');
+    }
+
+    /**
+     * Redirect to Checkout, which means we've got a problem
+     *
+     * @return \Magento\Framework\App\ResponseInterface
+     */
     protected function redirectToCheckout() {
         return $this->_redirect('checkout', ['_fragment' => 'payment']);
     }
