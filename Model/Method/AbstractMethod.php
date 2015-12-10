@@ -232,9 +232,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        if (!$payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-            && !empty($response[0]->Key)
-        ) {
+        if (!empty($response[0]->Key)) {
             /**
              * Save the payment's transaction key.
              */
