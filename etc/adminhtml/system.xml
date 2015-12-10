@@ -40,18 +40,338 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
-        <section id="payment">
-            <group id="tig_buckaroo_section" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Buckaroo</label>
-                <comment><![CDATA[Buckaroo payment methods.]]></comment>
+        <section id="tig_buckaroo" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Buckaroo</label>
+            <tab>sales</tab>
+            <resource>Sales_Buckaroo::configuration</resource>
+
+            <!-- TODO: Default values? -->
+
+            <!-- Support section TODO: Find out how to make a section with support info that has no field elements -->
+            <group id="tig_buckaroo_support_section" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Version &amp; Support</label>
+                <fieldset_css>tig_buckaroo-section</fieldset_css>
                 <attribute type="expanded">1</attribute>
-                <fieldset_css>complex tig_buckaroo-section</fieldset_css>
+
                 <group id="tig_buckaroo" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <field id="active" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="0">
-                        <label>Enable Buckaroo</label>
-                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <label>Stappenplan</label>
+                    <comment><![CDATA[The quick brown fox jumps over the lazy dog.]]></comment>
+                </group>
+            </group>
+
+            <!-- General settings section TODO:recheck values & comments & tooltips w/ M1 TODO: add advanced options-->
+            <group id="tig_buckaroo_account_section" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>General configuration and account information</label>
+                <fieldset_css>tig_buckaroo-section</fieldset_css>
+
+                <field id="active" translate="label" type="radios" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Enable Buckaroo</label>
+                    <source_model>TIG\Buckaroo\Model\Config\Source\Enablemode</source_model>
+                    <config_path>payment/tig_buckaroo_account/active</config_path>
+                </field>
+
+                <field id="secret_key" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Secret Key</label>
+                    <comment><![CDATA[Enter your Buckaroo Secret Key.]]></comment>
+                    <config_path>payment/tig_buckaroo_account/secret_key</config_path>
+                </field>
+
+                <field id="merchant_key" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>(Merchant) Key</label>
+                    <comment><![CDATA[Enter your Buckaroo merchant/website key.]]></comment>
+                    <config_path>payment/tig_buckaroo_account/merchant_key</config_path>
+                </field>
+
+                <field id="transaction_label" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Transaction label</label>
+                    <comment><![CDATA[The transaction description in Payment Plaza.]]></comment>
+                    <config_path>payment/tig_buckaroo_account/transaction_label</config_path>
+                </field>
+
+                <!-- TODO: set the correct file upload/select field types -->
+                <field id="certificate_label" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Certificate label</label>
+                    <comment><![CDATA[Enter a name for the certificate. This is purely administrative.]]></comment>
+                    <config_path>payment/tig_buckaroo_account/certificate_label</config_path>
+                </field>
+
+                <field id="certificate_upload" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Upload your Buckaroo private key certificate</label>
+                    <config_path>payment/tig_buckaroo_account/certificate_upload</config_path>
+                </field>
+
+                <field id="certificate_file" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Certificate file</label>
+                    <config_path>payment/tig_buckaroo_account/certificate_file</config_path>
+                </field>
+
+                <field id="certificate_thumbprint" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Certificate thumbprint</label>
+                    <comment><![CDATA[The thumbprint and certificate should form a pair.]]></comment>
+                    <config_path>payment/tig_buckaroo_account/certificate_thumbprint</config_path>
+                </field>
+
+                <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Advanced Configuration</label>
+
+                    <field id="certificate_tst" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>tst</label>
+                        <comment><![CDATA[Advanced]]></comment>
+                        <config_path>payment/tig_buckaroo_account/advanced</config_path>
+                    </field>
+                </group>
+            </group>
+
+            <!-- Payment section -->
+            <group id="tig_buckaroo_payment_section" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Buckaroo payment methods</label>
+                <fieldset_css>tig_buckaroo-section</fieldset_css>
+
+                <!-- iDEAL Payment method group -->
+                <group id="tig_buckaroo_ideal" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>iDEAL</label>
+
+                    <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable iDEAL</label>
+                        <comment><![CDATA[Enable or disable this payment method.]]></comment>
+                        <source_model>TIG\Buckaroo\Model\Config\Source\Enablemode</source_model>
                         <config_path>payment/tig_buckaroo_ideal/active</config_path>
                     </field>
+
+                    <field id="title" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frontend label</label>
+                        <comment><![CDATA[Determines the frontend label shown.]]></comment>
+                        <config_path>payment/tig_buckaroo_ideal/title</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frontend sort order</label>
+                        <comment><![CDATA[Determines the sorting of payment methods.]]></comment>
+                        <config_path>payment/tig_buckaroo_ideal/sort_order</config_path>
+                    </field>
+
+                    <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Advanced Configuration</label>
+
+                        <field id="order_email" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Send order confirmation email</label>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/order_email</config_path>
+                        </field>
+
+                        <!-- TODO: Only prices and percentages validation -->
+                        <field id="payment_fee" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment fee</label>
+                            <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
+                            <config_path>payment/tig_buckaroo_ideal/payment_fee</config_path>
+                        </field>
+
+                        <field id="payment_fee_label" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment fee frontend label</label>
+                            <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
+                            <config_path>payment/tig_buckaroo_ideal/payment_fee_label</config_path>
+                        </field>
+
+                        <!-- TODO: only prices validation -->
+                        <field id="max_amount" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Max order amount (in Base Currency)</label>
+                            <comment><![CDATA[Maximum order amount allowed.]]></comment>
+                            <tooltip>The payment method show only for orders with an order amount smaller then the maximum amount.</tooltip>
+                            <config_path>payment/tig_buckaroo_ideal/max_amount</config_path>
+                        </field>
+
+                        <!-- TODO: only prices validation -->
+                        <field id="min_amount" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment fee frontend label</label>
+                            <comment><![CDATA[Minimum order amount allowed.]]></comment>
+                            <tooltip>The payment method show only for orders with an order amount greater than the minimum amount.</tooltip>
+                            <config_path>payment/tig_buckaroo_ideal/min_amount</config_path>
+                        </field>
+
+                        <field id="active_status" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Method specific status enabled</label>
+                            <comment><![CDATA[Enable or disable specific status.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/active_status</config_path>
+                        </field>
+
+                        <field id="order_status_success" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Method specific success status</label>
+                            <comment><![CDATA[Leave empty to use default 'success' status.]]></comment>
+                            <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/order_status_success</config_path>
+                            <depends>
+                                <field id="active_status">1</field>
+                            </depends>
+                        </field>
+
+                        <field id="order_status_failed" translate="label comment" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Method specific failed status</label>
+                            <comment><![CDATA[Leave empty to use default 'failed' status.]]></comment>
+                            <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/order_status_failed</config_path>
+                            <depends>
+                                <field id="active_status">1</field>
+                            </depends>
+                        </field>
+
+                        <field id="allowed_currencies" translate="label comment" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Allowed currencies</label>
+                            <comment><![CDATA[Select payment method specific currencies.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                            <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
+                            <config_path>payment/tig_buckaroo_ideal/allowed_currencies</config_path>
+                        </field>
+
+                        <field id="allowspecific" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment from applicable countries</label>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllOrSpecificCountries</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/allowspecific</config_path>
+                        </field>
+
+                        <field id="specificcountry" translate="label comment" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment from Specific Country</label>
+                            <comment><![CDATA[Only available when set to 'specific countries'.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Locale\Country</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/specificcountry</config_path>
+                            <depends>
+                                <field id="allowspecific">1</field>
+                            </depends>
+                        </field>
+
+                        <field id="limit_by_ip" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Display only for selected IP's</label>
+                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <tooltip>Magento developer client restrictions.</tooltip>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/limit_by_ip</config_path>
+                        </field>
+                    </group>
+                </group>
+
+                <!-- Creditcards Payment method group -->
+                <group id="tig_buckaroo_creditcards" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Creditcards</label>
+
+                    <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Creditcards</label>
+                        <comment><![CDATA[Enable or disable this payment method.]]></comment>
+                        <source_model>TIG\Buckaroo\Model\Config\Source\Enablemode</source_model>
+                        <config_path>payment/tig_buckaroo_creditcards/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frontend label</label>
+                        <comment><![CDATA[Determines the frontend label shown.]]></comment>
+                        <config_path>payment/tig_buckaroo_creditcards/title</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frontend sort order</label>
+                        <comment><![CDATA[Determines the sorting of payment methods.]]></comment>
+                        <config_path>payment/tig_buckaroo_creditcards/sort_order</config_path>
+                    </field>
+
+                    <field id="allowed_creditcards" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Allowed Creditcards</label>
+                        <comment><![CDATA[Select payment method specific Creditcards]]></comment>
+                        <config_path>payment/tig_buckaroo_creditcards/allowed_creditcards</config_path>
+                    </field>
+
+                    <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Advanced Configuration</label>
+
+                        <!-- TODO: only prices validation -->
+                        <field id="max_amount" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Max order amount (in Base Currency)</label>
+                            <comment><![CDATA[Maximum order amount allowed.]]></comment>
+                            <tooltip>The payment method show only for orders with an order amount smaller then the maximum amount.</tooltip>
+                            <config_path>payment/tig_buckaroo_ideal/max_amount</config_path>
+                        </field>
+
+                        <!-- TODO: only prices validation -->
+                        <field id="min_amount" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment fee frontend label</label>
+                            <comment><![CDATA[Minimum order amount allowed.]]></comment>
+                            <tooltip>The payment method show only for orders with an order amount greater than the minimum amount.</tooltip>
+                            <config_path>payment/tig_buckaroo_ideal/min_amount</config_path>
+                        </field>
+
+                        <field id="active_status" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Method specific status enabled</label>
+                            <comment><![CDATA[Enable or disable specific status.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/active_status</config_path>
+                        </field>
+
+                        <field id="order_status_success" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Method specific success status</label>
+                            <comment><![CDATA[Leave empty to use default 'success' status.]]></comment>
+                            <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/order_status_success</config_path>
+                            <depends>
+                                <field id="active_status">1</field>
+                            </depends>
+                        </field>
+
+                        <field id="order_status_failed" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Method specific failed status</label>
+                            <comment><![CDATA[Leave empty to use default 'failed' status.]]></comment>
+                            <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/order_status_failed</config_path>
+                            <depends>
+                                <field id="active_status">1</field>
+                            </depends>
+                        </field>
+
+                        <field id="allowed_currencies" translate="label comment" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Allowed currencies</label>
+                            <comment><![CDATA[Select payment method specific currencies.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
+                            <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
+                            <config_path>payment/tig_buckaroo_ideal/allowed_currencies</config_path>
+                        </field>
+
+                        <field id="allowspecific" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment from applicable countries</label>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllOrSpecificCountries</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/allowspecific</config_path>
+                        </field>
+
+                        <field id="specificcountry" translate="label comment" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment from Specific Country</label>
+                            <comment><![CDATA[Only available when set to 'specific countries'.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Locale\Country</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/specificcountry</config_path>
+                            <depends>
+                                <field id="allowspecific">1</field>
+                            </depends>
+                        </field>
+
+                        <field id="limit_by_ip" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Display only for selected IP's</label>
+                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <tooltip>Magento developer client restrictions.</tooltip>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/limit_by_ip</config_path>
+                        </field>
+
+                        <field id="heading_american_express" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>American Express Specific</label>
+                            <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                        </field>
+
+                        <field id="hhh" translate="label" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment from applicable countries</label>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllOrSpecificCountries</source_model>
+                            <config_path>payment/tig_buckaroo_ideal/allowspeciuuufic</config_path>
+                        </field>
+                    </group>
                 </group>
             </group>
         </section>
