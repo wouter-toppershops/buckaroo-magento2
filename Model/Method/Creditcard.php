@@ -111,7 +111,7 @@ class Creditcard extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getCaptureTransaction($payment)
+    public function getCaptureTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -136,15 +136,13 @@ class Creditcard extends AbstractMethod
             ->setServices($services)
             ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getAuthorizeTransaction($payment)
+    public function getAuthorizeTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -158,15 +156,13 @@ class Creditcard extends AbstractMethod
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getRefundTransaction($payment)
+    public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
@@ -184,8 +180,6 @@ class Creditcard extends AbstractMethod
             )
             ->setChannel('CallCenter');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 }

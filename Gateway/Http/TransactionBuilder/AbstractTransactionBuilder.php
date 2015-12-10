@@ -121,6 +121,14 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
+     * @return null|string
+     */
+    public function getOriginalTransactionKey()
+    {
+        return $this->originalTransactionKey;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function setChannel($channel)
@@ -128,6 +136,14 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         $this->channel = $channel;
 
         return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getChannel()
+    {
+        return $this->channel;
     }
 
     /**

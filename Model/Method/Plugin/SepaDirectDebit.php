@@ -37,72 +37,32 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Gateway\Http;
+namespace TIG\Buckaroo\Model\Method\Plugin;
 
-interface TransactionBuilderInterface
+class SepaDirectDebit
 {
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * @param \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment
+     * @param array|\StdCLass                            $response
      *
-     * @return TransactionBuilderInterface
+     * @return $this
      */
-    public function setOrder($order);
+    public function afterAuthorizeTransaction(
+        \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment,
+        $response
+    )
+    {
+        if (!empty($response[0]->ConsumerMessage) && $response[0]->ConsumerMessage->MustRead == 1) {
+            $consumerMessage = $response[0]->ConsumerMessage;
 
-    /**
-     * @return \Magento\Sales\Model\Order
-     */
-    public function getOrder();
+            $payment->messageManager->addSuccessMessage(
+                __($consumerMessage->Title)
+            );
+            $payment->messageManager->addSuccessMessage(
+                __($consumerMessage->PlainText)
+            );
+        }
 
-    /**
-     * @param array $services
-     *
-     * @return TransactionBuilderInterface
-     */
-    public function setServices($services);
-
-    /**
-     * @return array
-     */
-    public function getServices();
-
-    /**
-     * @param string $method
-     *
-     * @return TransactionBuilderInterface
-     */
-    public function setMethod($method);
-
-    /**
-     * @return string
-     */
-    public function getMethod();
-
-    /**
-     * @param string $key
-     *
-     * @return TransactionBuilderInterface
-     */
-    public function setOriginalTransactionKey($key);
-
-    /**
-     * @return string
-     */
-    public function getOriginalTransactionKey();
-
-    /**
-     * @param string $channel
-     *
-     * @return TransactionBuilderInterface
-     */
-    public function setChannel($channel);
-
-    /**
-     * @return string
-     */
-    public function getChannel();
-
-    /**
-     * @return \TIG\Buckaroo\Gateway\Http\Transaction
-     */
-    public function build();
+        return $response;
+    }
 }

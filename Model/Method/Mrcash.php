@@ -111,7 +111,7 @@ class Mrcash extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getCaptureTransaction($payment)
+    public function getCaptureTransactionBuilder($payment)
     {
         return false;
     }
@@ -119,7 +119,7 @@ class Mrcash extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getAuthorizeTransaction($payment)
+    public function getAuthorizeTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -133,15 +133,13 @@ class Mrcash extends AbstractMethod
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getRefundTransaction($payment)
+    public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
@@ -159,8 +157,6 @@ class Mrcash extends AbstractMethod
             )
             ->setChannel('CallCenter');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 }

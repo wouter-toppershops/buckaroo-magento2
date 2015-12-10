@@ -111,7 +111,7 @@ class Transfer extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getCaptureTransaction($payment)
+    public function getCaptureTransactionBuilder($payment)
     {
         return false;
     }
@@ -119,14 +119,28 @@ class Transfer extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getAuthorizeTransaction($payment)
+    public function getAuthorizeTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
-            'Version'          => 1,
+            'Version'          => 2,
+            'RequestParameter' => [
+                [
+                    '_'    => $payment->getOrder()->getCustomerFirstname(),
+                    'Name' => 'CustomerFirstName',
+                ],
+                [
+                    '_'    => $payment->getOrder()->getCustomerLastName(),
+                    'Name' => 'CustomerLastName',
+                ],
+                [
+                    '_'    => $payment->getOrder()->getCustomerEmail(),
+                    'Name' => 'CustomerEmail',
+                ],
+            ],
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
@@ -135,13 +149,13 @@ class Transfer extends AbstractMethod
 
         $transaction = $transactionBuilder->build();
 
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getRefundTransaction($payment)
+    public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
@@ -156,8 +170,6 @@ class Transfer extends AbstractMethod
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 }

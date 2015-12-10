@@ -66,7 +66,7 @@ define(
                  * Check if the required fields are filled. If so: enable place order button | ifnot: disable place order button
                  */
                 this.buttoncheck = ko.computed( function () {
-                    return !(this.bicnumber() == '');
+                    return this.bicnumber();
                 }, this);
 
                 return this;

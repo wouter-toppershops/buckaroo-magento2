@@ -25,84 +25,49 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\ConfigProvider;
 
-namespace TIG\Buckaroo\Gateway\Http;
+use Magento\Framework\View\Asset\Repository;
+use Magento\Checkout\Model\ConfigProviderInterface;
 
-interface TransactionBuilderInterface
+abstract class AbstractConfigProvider implements ConfigProviderInterface
 {
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * The asset repository to generate the correct url to our assets.
      *
-     * @return TransactionBuilderInterface
+     * @var Repository
      */
-    public function setOrder($order);
+    protected $assetRepo;
 
     /**
-     * @return \Magento\Sales\Model\Order
+     * @param Repository $assetRepo
      */
-    public function getOrder();
+    public function __construct(
+        Repository $assetRepo
+    ) {
+        $this->assetRepo = $assetRepo;
+    }
 
     /**
-     * @param array $services
+     * Generate the url to the desired asset.
      *
-     * @return TransactionBuilderInterface
-     */
-    public function setServices($services);
-
-    /**
-     * @return array
-     */
-    public function getServices();
-
-    /**
-     * @param string $method
+     * @param $imgName
      *
-     * @return TransactionBuilderInterface
-     */
-    public function setMethod($method);
-
-    /**
      * @return string
      */
-    public function getMethod();
-
-    /**
-     * @param string $key
-     *
-     * @return TransactionBuilderInterface
-     */
-    public function setOriginalTransactionKey($key);
-
-    /**
-     * @return string
-     */
-    public function getOriginalTransactionKey();
-
-    /**
-     * @param string $channel
-     *
-     * @return TransactionBuilderInterface
-     */
-    public function setChannel($channel);
-
-    /**
-     * @return string
-     */
-    public function getChannel();
-
-    /**
-     * @return \TIG\Buckaroo\Gateway\Http\Transaction
-     */
-    public function build();
+    protected function getImageUrl($imgName)
+    {
+        return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
+    }
 }
