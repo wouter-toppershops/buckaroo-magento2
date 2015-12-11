@@ -50,7 +50,6 @@ define(
     function (ko, $, Component, quote, additionalValidators) {
         'use strict';
 
-
         /**
          *
          * Validate IBAN and BIC number
@@ -151,7 +150,6 @@ define(
             },
 
 
-
             /**
              *
              * Include template
@@ -161,13 +159,6 @@ define(
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
             },
-
-
-            /**
-             *
-             * Validate IBAN and BIC number
-             *
-             */
 
             getData: function() {
                 return {
