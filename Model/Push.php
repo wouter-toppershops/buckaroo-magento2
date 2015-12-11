@@ -94,7 +94,7 @@ class Push implements PushInterface
     ) {
         $this->objectManager = $objectManager;
         $this->request       = $request;
-        $this->validator    = $validator;
+        $this->validator     = $validator;
 
     }
 
@@ -103,7 +103,6 @@ class Push implements PushInterface
      *
      * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
      * @todo Debug mailing trough the push flow.
-     * @todo Check if the amount equals the amount of the order.
      */
     public function receivePush()
     {
@@ -114,11 +113,12 @@ class Push implements PushInterface
         //Check if the push can be procesed and if the order can be updtated.
         $validSignature = $this->validator->validateSignature($this->postData['brq_signature']);
         //Check if the order can recieve further status updates
+        /** @var  \Magento\Sales\Model\Order\ $this->order */
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);
         if (!$this->order->getId()) {
             // try to get order by transaction id on payment.
-            $this->getOrderByTransactionKey($this->postData['brq_transactions']);
+            $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
         $canUpdateOrder = $this->canUpdateOrderStatus();
 
@@ -177,16 +177,19 @@ class Push implements PushInterface
      * Sometimes the push does not contain the order id, when thats the case try to get the order by his payment,
      * by using its own transactionkey.
      *
-     * @todo well, as you can see, named the method, didn't built it yet.
-     * @param $transaction
-     *
+     * @param $transactionId
      * @return bool
      */
-    protected function getOrderByTransactionKey($transaction)
+    protected function getOrderByTransactionKey($transactionId)
     {
-        if ($transaction) {
-            //get invoice by transaction
-            // And get order by invoice
+        if ($transactionId) {
+            /** @var  \Magento\Sales\Model\Order\Payment\Transaction $transaction */
+            $transaction = $this->objectManager->create('Magento\Sales\Model\Order\Payment\Transaction');
+            $transaction->load($transactionId, 'txn_id');
+            $order = $transaction->getOrder();
+            if ($order) {
+                return $order;
+            }
         }
         return false;
     }
@@ -203,7 +206,7 @@ class Push implements PushInterface
         $holdedStateAndStatus    = [self::ORDER_TYPE_HOLDED, self::ORDER_TYPE_HOLDED];
         $closedStateAndStatus    = [self::ORDER_TYPE_CLOSED, self::ORDER_TYPE_CLOSED];
         //Get current state and status of order
-        $currentStateAndStatus = array($this->order->getState(), $this->order->getStatus());
+        $currentStateAndStatus = [$this->order->getState(), $this->order->getStatus()];
         //If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
         if ($completedStateAndStatus != $currentStateAndStatus &&
            $cancelledStateAndStatus  != $currentStateAndStatus &&
