@@ -686,6 +686,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             if ($saveId) {
                 /** @noinspection PhpUndefinedMethodInspection */
                 $payment->setTransactionId($transactionKey);
+                $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
             }
         }
 

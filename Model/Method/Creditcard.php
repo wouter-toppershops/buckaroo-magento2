@@ -122,6 +122,20 @@ class Creditcard extends AbstractMethod
     }
 
     /**
+     * Check capture availability
+     *
+     * @return bool
+     * @api
+     */
+    public function canCapture()
+    {
+        if ($this->getConfigData('payment_action') == 'order') {
+            return false;
+        }
+        return $this->_canCapture;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOrderTransactionBuilder($payment)
@@ -149,27 +163,22 @@ class Creditcard extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        $action = 'Pay';
-        if ($payment->getAmountAuthorized()) {
-            $action = 'Capture';
-            $transactionBuilder->setOriginalTransactionKey(
-                $payment->getAdditionalInformation(
-                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
-                )
-            );
-            $transactionBuilder->setChannel('CallCenter');
-        }
-
         $services = [
             'Name'             => $payment->getAdditionalInformation('card_type'),
-            'Action'           => $action,
+            'Action'           => 'Capture',
             'Version'          => 1,
         ];
 
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
-            ->setMethod('TransactionRequest');
+            ->setMethod('TransactionRequest')
+            ->setChannel('CallCenter')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
 
         return $transactionBuilder;
     }
