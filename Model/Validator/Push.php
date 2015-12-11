@@ -40,12 +40,15 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
+use \TIG\Buckaroo\Helper\Data as DataHelper;
+use \TIG\Buckaroo\Model\ValidatorInterface;
+
 /**
  * Class Push
  *
  * @package TIG\Buckaroo\Model\Validator
  */
-class Push implements \TIG\Buckaroo\Model\ValidatorInterface
+class Push implements ValidatorInterface
 {
 
     public $helper;
@@ -67,7 +70,7 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
     /**
      * @param \TIG\Buckaroo\Helper\Data $helper
      */
-    public function __construct(\TIG\Buckaroo\Helper\Data $helper)
+    public function __construct(DataHelper $helper)
     {
         $this->helper = $helper;
     }
@@ -115,7 +118,9 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
      */
     public function validateSignature($signature)
     {
+        if (!$signature) {
+            return false;
+        }
         return true;
     }
-
 }

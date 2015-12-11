@@ -1,12 +1,14 @@
 <?php
 namespace TIG\Buckaroo\Helper;
 
+use \Magento\Framework\App\Helper\AbstractHelper;
+
 /**
  * Class Data
  *
  * @package TIG\Buckaroo\Helper
  */
-class Data extends \Magento\Framework\App\Helper\AbstractHelper
+class Data extends AbstractHelper
 {
 
     /**
