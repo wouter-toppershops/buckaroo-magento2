@@ -214,7 +214,7 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    public function getCancelTransactionBuilder($payment)
+    public function getVoidTransactionBuilder($payment)
     {
         return true;
     }

@@ -50,5 +50,5 @@ interface GatewayInterface
 
     public function refund(Transaction $transaction);
 
-    public function cancel(Transaction $transaction);
+    public function void(Transaction $transaction);
 }

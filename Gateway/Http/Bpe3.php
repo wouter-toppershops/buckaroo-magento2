@@ -105,7 +105,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      * @return array
      * @throws \Exception
      */
-    public function cancel(Transaction $transaction)
+    public function void(Transaction $transaction)
     {
         return $this->doRequest($transaction);
     }

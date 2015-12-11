@@ -197,7 +197,7 @@ class Creditcard extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    public function getCancelTransactionBuilder($payment)
+    public function getVoidTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -214,7 +214,7 @@ class Creditcard extends AbstractMethod
                            ->setOriginalTransactionKey(
                                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
                            )
-                           ->setChannel('Batch-File');
+                           ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }

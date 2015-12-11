@@ -39,8 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Payment\Model\InfoInterface;
-
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
@@ -151,7 +149,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function authorize(InfoInterface $payment, $amount)
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -236,7 +234,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function capture(InfoInterface $payment, $amount)
+    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -321,7 +319,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function refund(InfoInterface $payment, $amount)
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -393,7 +391,26 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         return $response;
     }
 
-    public function cancel(InfoInterface $payment)
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return $this
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
+     */
+    public function cancel(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        return $this->void($payment);
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return $this
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
+     */
+    public function void(\Magento\Payment\Model\InfoInterface $payment)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -408,17 +425,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->payment = $payment;
 
-        $transaction = $this->getCancelTransactionBuilder($payment)->build();
+        $transaction = $this->getVoidTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
-                'Cancel action is not implemented for this payment method.'
+                'Void action is not implemented for this payment method.'
             );
         } elseif ($transaction === true) {
             return $this;
         }
 
-        $response = $this->cancelTransaction($transaction);
+        $response = $this->voidTransaction($transaction);
 
         if (!empty($response[0]->Key)) {
             /**
@@ -431,7 +448,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $payment->setIsTransactionClosed($this->closeCancelTransaction);
         }
 
-        $this->afterCancel($payment, $response);
+        $this->afterVoid($payment, $response);
 
         return $this;
     }
@@ -442,9 +459,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @return array|\StdClass
      * @throws \TIG\Buckaroo\Exception
      */
-    public function cancelTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    public function voidTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
     {
-        $response = $this->gateway->cancel($transaction);
+        $response = $this->gateway->void($transaction);
 
         if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
@@ -457,7 +474,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
-                    'Unfortunately the cancellation was unsuccessful. Please try again.'
+                    'Unfortunately the payment authorization could not be voided. Please try again.'
                 )
             );
         }
@@ -528,10 +545,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return $this
      */
-    protected function afterCancel($payment, $response)
+    protected function afterVoid($payment, $response)
     {
         $this->_eventManager->dispatch(
-            'tig_buckaroo_method_cancel_after',
+            'tig_buckaroo_method_void_after',
             [
                 'payment' => $payment,
                 'response' => $response
@@ -567,5 +584,5 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
-    abstract public function getCancelTransactionBuilder($payment);
+    abstract public function getVoidTransactionBuilder($payment);
 }
