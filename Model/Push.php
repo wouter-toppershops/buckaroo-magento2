@@ -149,7 +149,6 @@ class Push implements PushInterface
             $this->setOrderNotifactionNote($response['message']);
             return false;
         }
-
         //Make sure the transactions key is set.
         $payment     = $this->order->getPayment();
         $originalKey = AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
@@ -294,25 +293,25 @@ class Push implements PushInterface
      */
     protected function processIncorrectPaymentPush($newStatus, $message)
     {
-        $baseTotal = round($this->order->getBaseGrandTotal()*100, 0);
+        $baseTotal = round($this->order->getBaseGrandTotal(), 0);
 
         //Set order amount
         $orderAmount  = $this->getCorrectOrderAmount();
-        $description  = 'FAILED ' .$message .' : ';
+        $description  = '<b> ' .$message .' :</b><br/>';
         /**
          * Determine whether too much or not has been paid
          */
         if ($baseTotal > $this->postData['brq_amount']) {
             $description .= __(
-                'Not enough paid: %s has been transfered. Order grand total was: %s.',
-                $this->pricingHelper->currency($this->postData['brq_amount']),
-                $this->pricingHelper->currency($orderAmount)
+                'Not enough paid: %1 has been transfered. Order grand total was: %2.',
+                $this->pricingHelper->currency($this->postData['brq_amount'], true, false),
+                $this->pricingHelper->currency($orderAmount, true, false)
             );
         } elseif ($baseTotal < $this->postData['brq_amount']) {
             $description .= __(
-                'Too much paid: %s has been transfered. Order grand total was: %s.',
-                $this->pricingHelper->currency($this->postData['brq_amount']),
-                $this->pricingHelper->currency($orderAmount)
+                'Too much paid: %1 has been transfered. Order grand total was: %2.',
+                $this->pricingHelper->currency($this->postData['brq_amount'], true, false),
+                $this->pricingHelper->currency($orderAmount, true, false)
             );
         } else {
             return false;
