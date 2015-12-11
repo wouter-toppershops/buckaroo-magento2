@@ -55,12 +55,20 @@ define(
         'use strict';
 
         return Component.extend({
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay'
+            },
+
             initObservable: function () {
 
                 /**
                  * Bind this values to the input field.
                  */
                 this.bicnumber = ko.observable('');
+
+                this.bicnumber.subscribe( function () {
+                    $('.' + this.getCode() + ' [data-validate]').valid();
+                }, this);
 
                 /**
                  * Check if the required fields are filled. If so: enable place order button | ifnot: disable place order button
@@ -109,10 +117,6 @@ define(
                 }
             },
 
-            defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay'
-            },
-
             getData: function() {
                 return {
                     "method": this.item.method,
@@ -121,6 +125,10 @@ define(
                         "customer_bic": this.bicnumber()
                     }
                 };
+            },
+
+            validate: function () {
+                return $('.' + this.getCode() + ' [data-validate]').valid();
             }
         });
     }
