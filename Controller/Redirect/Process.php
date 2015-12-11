@@ -92,9 +92,6 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     public function execute()
     {
-        $this->debugger->log(array('test', 1=>'test', 'test', 'test', 'test', 'test', 'test'));
-        die('I think I logged');
-
         $this->response = $this->getRequest()->getParams();
         $statusCode = (int)$this->response['brq_statuscode'];
 
