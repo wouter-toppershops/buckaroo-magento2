@@ -22,9 +22,14 @@
 
                         </label>
                         <input id="bicnumber" class="input-text field _error" type="text"
-                               data-bind="{ value: bicnumber }"
-                               name="payment[tig_buckaroo_giropay][customer_account_name]"
-                               data-validate="{ 'required': true }">
+                               data-bind="
+                                value: bicnumber,
+                                valueUpdate: 'keyup',
+                                attr: {
+                                    'data-validate': JSON.stringify({ 'required': true,  'BIC':true  })
+                                }
+                               "
+                               name="payment[tig_buckaroo_giropay][customer_bic]">
                     </div>
 
 
