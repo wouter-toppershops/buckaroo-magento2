@@ -50,7 +50,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_ideal</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_ideal>
 
             <tig_buckaroo_sepadirectdebit>
@@ -61,7 +61,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_sepadirectdebit</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_sepadirectdebit>
 
             <tig_buckaroo_paypal>
@@ -72,7 +72,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_paypal</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_paypal>
 
             <tig_buckaroo_creditcard>
@@ -94,7 +94,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_transfer</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_transfer>
 
             <tig_buckaroo_giropay>
@@ -105,7 +105,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_giropay</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_giropay>
 
             <tig_buckaroo_mrcash>
@@ -116,7 +116,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_mrcash</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_mrcash>
 
             <tig_buckaroo_sofortbanking>
@@ -127,7 +127,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_sofortbanking</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
             </tig_buckaroo_sofortbanking>
 
         </payment>

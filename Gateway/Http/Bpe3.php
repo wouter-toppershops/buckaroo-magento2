@@ -71,6 +71,17 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      * @return array
      * @throws \Exception
      */
+    public function order(Transaction $transaction)
+    {
+        return $this->doRequest($transaction);
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array
+     * @throws \Exception
+     */
     public function capture(Transaction $transaction)
     {
         return $this->doRequest($transaction);

@@ -59,6 +59,11 @@ class Creditcard extends AbstractMethod
     /**
      * @var bool
      */
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
     protected $_canAuthorize            = true;
 
     /**
@@ -114,6 +119,27 @@ class Creditcard extends AbstractMethod
             $this->getInfoInstance()->setAdditionalInformation('card_type', $data->getCardType());
         }
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrderTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => $payment->getAdditionalInformation('card_type'),
+            'Action'           => 'Pay',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
     }
 
     /**

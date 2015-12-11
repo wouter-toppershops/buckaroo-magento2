@@ -44,6 +44,8 @@ use TIG\Buckaroo\Gateway\Http\Transaction;
 
 interface GatewayInterface
 {
+    public function order(Transaction $transaction);
+
     public function capture(Transaction $transaction);
 
     public function authorize(Transaction $transaction);
