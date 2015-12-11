@@ -33,30 +33,26 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Observer;
+namespace TIG\Buckaroo\Debug;
 
-class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
+class Logger extends \Monolog\Logger
 {
+
     /**
-     * @param \Magento\Framework\Event\Observer $observer
+     * Change the name
      *
-     * @return void
+     * @param string $name
+     *
+     * @return $this
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function setName($name)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $payment \Magento\Sales\Model\Order\Payment */
-        $payment = $observer->getPayment();
-
-        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
-            return;
-        }
-
-        $order = $payment->getOrder();
-        $order->setStatus('tig_buckaroo_pending_payment');
+        $this->name = $name;
+        return $this;
     }
+
 }

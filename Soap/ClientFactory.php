@@ -46,11 +46,12 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
      *
      * @param string $wsdl
      * @param array $options
-     * @return \TIG\Buckaroo\Soap\Client\SoapClientWSSEC
+     *
+     * @return Client\SoapClientWSSEC
      */
     public function create($wsdl, array $options = [])
     {
-        $client = new \TIG\Buckaroo\Soap\Client\SoapClientWSSEC($wsdl, $options);
+        $client = new Client\SoapClientWSSEC($wsdl, $options);
 
         $client->__setLocation('http://testcheckout.buckaroo.nl/soap/Soap.svc');
         $client->loadPem(

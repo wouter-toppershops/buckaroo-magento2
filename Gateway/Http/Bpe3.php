@@ -60,8 +60,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     public function __construct(
         \TIG\Buckaroo\Gateway\Http\Client\Soap $client,
         \Magento\Framework\Data\ObjectFactory $objectFactory
-    )
-    {
+    ) {
         $this->client = $client;
         $this->objectFactory = $objectFactory;
     }
@@ -95,6 +94,17 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      * @throws \Exception
      */
     public function refund(Transaction $transaction)
+    {
+        return $this->doRequest($transaction);
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array
+     * @throws \Exception
+     */
+    public function void(Transaction $transaction)
     {
         return $this->doRequest($transaction);
     }

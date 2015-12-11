@@ -43,6 +43,7 @@ class Paypal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE = 'tig_buckaroo_paypal';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -94,11 +95,12 @@ class Paypal extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
      */
-    protected function getCaptureTransaction($payment)
+    public function getCaptureTransactionBuilder($payment)
     {
         return false;
     }
@@ -106,7 +108,7 @@ class Paypal extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    protected function getAuthorizeTransaction($payment)
+    public function getAuthorizeTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -117,19 +119,18 @@ class Paypal extends AbstractMethod
             'RequestParameter' => [],
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getRefundTransaction($payment)
+    public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
@@ -141,12 +142,19 @@ class Paypal extends AbstractMethod
             ]
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
+        return $transactionBuilder;
+    }
 
-        return $transaction;
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }

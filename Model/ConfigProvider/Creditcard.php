@@ -39,9 +39,7 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use Magento\Payment\Model\CcGenericConfigProvider;
-
-class Creditcard extends CcGenericConfigProvider
+class Creditcard extends AbstractConfigProvider
 {
     /**#@+
      * Creditcard service codes.
@@ -61,58 +59,56 @@ class Creditcard extends CcGenericConfigProvider
      */
     public function getConfig()
     {
-
-        $config = parent::getConfig();
         //@TODO: get cards dynamic
-        $config = array_merge_recursive($config, [
+        $config = [
             'payment' => [
                 'buckaroo' => [
                     'creditcards' => [
                         [
                             'name' => 'American Express',
                             'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
-                            'img' => 'ico-ae'
+                            'img' => $this->getImageUrl('ico-ae'),
                         ],
                         [
                             'name' => 'Carte Bancaire',
                             'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
-                            'img' => 'ico-cb'
+                            'img' => $this->getImageUrl('ico-cb'),
                         ],
                         [
                             'name' => 'Carte Bleue',
                             'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
-                            'img' => 'ico-cbl'
+                            'img' => $this->getImageUrl('ico-cbl'),
                         ],
                         [
                             'name' => 'Maestro',
                             'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,
-                            'img' => 'ico-mae'
+                            'img' => $this->getImageUrl('ico-mae'),
                         ],
                         [
                             'name' => 'MasterCard',
                             'code' => self::CREDITCARD_SERVICE_CODE_MASTERCARD,
-                            'img' => 'ico-mc'
+                            'img' => $this->getImageUrl('ico-mc'),
                         ],
                         [
                             'name' => 'VISA',
                             'code' => self::CREDITCARD_SERVICE_CODE_VISA,
-                            'img' => 'ico-vi'
+                            'img' => $this->getImageUrl('ico-vi'),
                         ],
                         [
                             'name' => 'VISA Electron',
                             'code' => self::CREDITCARD_SERVICE_CODE_VISAELECTRON,
-                            'img' => 'ico-ve'
+                            'img' => $this->getImageUrl('ico-ve'),
                         ],
                         [
                             'name' => 'VPay',
                             'code' => self::CREDITCARD_SERVICE_CODE_VPAY,
-                            'img' => 'ico-vp'
+                            'img' => $this->getImageUrl('ico-vp'),
                         ],
                     ],
                     'response' => [],
                 ],
             ],
-        ]);
+        ];
 
         return $config;
     }
