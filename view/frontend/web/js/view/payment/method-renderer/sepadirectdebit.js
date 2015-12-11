@@ -40,11 +40,54 @@
 define(
     [
         'ko',
+        'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Magento_Checkout/js/model/quote'
+        'Magento_Checkout/js/model/quote',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'jquery/validate',
+        'mage/translate'
     ],
-    function (ko, Component, quote) {
+    function (ko, $, Component, quote, additionalValidators) {
         'use strict';
+
+
+        /**
+         *
+         * Validate IBAN and BIC number
+         *
+         */
+
+        function isValidIBAN($v){ //This function check if the checksum if correct
+            $v = $v.replace(/^(.{4})(.*)$/,"$2$1"); //Move the first 4 chars from left to the right
+            $v = $v.replace(/[A-Z]/g,function($e){return $e.charCodeAt(0) - 'A'.charCodeAt(0) + 10}); //Convert A-Z to 10-25
+            var $sum = 0;
+            var $ei = 1; //First exponent
+            for(var $i = $v.length - 1; $i >= 0; $i--){
+                $sum += $ei * parseInt($v.charAt($i),10); //multiply the digit by it's exponent
+                $ei = ($ei * 10) % 97; //compute next base 10 exponent  in modulus 97
+            };
+            return $sum % 97 == 1;
+        }
+
+        /**
+         * Add validation methods
+         * */
+
+        $.validator.addMethod(
+            'IBAN', function (value) {
+                var patternIBAN = new RegExp('^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$');
+                return (patternIBAN.test(value) && isValidIBAN(value));
+            },$.mage.__('Enter Valid IBAN'));
+
+        $.validator.addMethod(
+            'BIC', function (value) {
+                var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
+                return patternBIC.test(value);
+            }, $.mage.__('Enter Valid BIC number'));
+
+        /**
+         * check country requires IBAN or BIC field
+         * */
 
         return Component.extend({
             initObservable: function () {
@@ -71,23 +114,60 @@ define(
                 this.bicnumber = ko.observable('');
 
                 /**
-                 * Check if the required fields are filled. If so: enable place order button | ifnot: disable place order button
+                 * Run validation on the three inputfields
                  */
+
+                var runValidation = function () {
+                    $('.' + this.getCode() + ' [data-validate]').valid();
+                };
+                this.bankaccountholder.subscribe(runValidation,this);
+                this.bankaccountnumber.subscribe(runValidation,this);
+                this.bicnumber.subscribe(runValidation,this);
+
+                /**
+                 * Check if the required fields are filled. If so: enable place order button | if not: disable place order button
+                 */
+                this.minimumWords = 2;
+
                 this.accountNumberIsValid = ko.computed( function () {
                     if (this.isnl())
                     {
-                        return !(this.bankaccountholder() == '' || this.bankaccountnumber() == '');
+                        return (this.bankaccountholder().length >= this.minimumWords && this.bankaccountnumber().length > 0);
                     } else {
-                        return !(this.bankaccountholder() == '' || this.bicnumber() == '');
+                        return (this.bankaccountholder().length >= this.minimumWords && this.bicnumber().length > 0);
+
                     }
                 }, this);
 
                 return this;
             },
 
+            /**
+             * Run function
+             */
+
+            validate: function () {
+                return $('.' + this.getCode() + ' [data-validate]').valid();
+            },
+
+
+
+            /**
+             *
+             * Include template
+             *
+             */
+
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
             },
+
+
+            /**
+             *
+             * Validate IBAN and BIC number
+             *
+             */
 
             getData: function() {
                 return {
@@ -103,3 +183,5 @@ define(
         });
     }
 );
+
+
