@@ -15,10 +15,10 @@
     margin-left: 10%;
 }
 
-.ideal .payment-method-billing-address,
-.sepadirectdebit .payment-method-billing-address,
-.creditcard .payment-method-billing-address,
-.giropay .payment-method-billing-address{
+.tig_buckaroo_ideal .payment-method-billing-address,
+.tig_buckaroo_sepadirectdebit .payment-method-billing-address,
+.tig_buckaroo_creditcard .payment-method-billing-address,
+.tig_buckaroo_giropay .payment-method-billing-address{
     float:left;
     width: 50%;
 }
@@ -45,7 +45,7 @@
 }
 
 /* ===================== PAYPAL ===================== */
-.paypal .button-paypal{
+.tig_buckaroo_paypal .button-paypal{
     display:block;
     width: auto;
     float:right;
@@ -62,30 +62,30 @@
     font-size: 1.8rem;
 }
 
-.paypal .button-paypal:hover {
+.tig_buckaroo_paypal .button-paypal:hover {
     background:#006bb4;
 }
 
 @media screen and (max-width:767px) {
-    .paypal .button-paypal {
+    .tig_buckaroo_paypal .button-paypal {
         width :100%;
     }
 }
 
 /* ===================== IDEAL ===================== */
-.ideal .payment-method-2col .bank-types{
+.tig_buckaroo_ideal .payment-method-2col .bank-types{
     float:left; width: 100%;
 }
-.ideal .payment-method-2col .bank-types-img{
+.tig_buckaroo_ideal .payment-method-2col .bank-types-img{
     vertical-align:middle;
     margin-right:10px;
 }
-.ideal .payment-method-2col .bank-types-input{
+.tig_buckaroo_ideal .payment-method-2col .bank-types-input{
     margin-top:10px;
 }
 
 @media screen and (max-width:767px){
-    .ideal .payment-method-2col {
+    .tig_buckaroo_ideal .payment-method-2col {
         float:left;
         width: 100%;
         margin:0 0 20px 0;
@@ -94,25 +94,25 @@
 /* ===================== SEPA DIRECT DEBIT ===================== */
 
 @media screen and (max-width:767px) {
-    .sepadirectdebit .payment-method-2col {
+    .tig_buckaroo_sepadirectdebit .payment-method-2col {
         float :left; width :100%; margin-left: 0; margin-bottom: 20px; max-width:500px;
     }
 }
 
 /* ===================== CREDITCARD ===================== */
-.creditcard .payment-method-2col .card-types{
+.tig_buckaroo_creditcard .payment-method-2col .card-types{
     float:left; width: 100%;
 }
-.creditcard .payment-method-2col .card-types-img{
+.tig_buckaroo_creditcard .payment-method-2col .card-types-img{
     vertical-align:middle;
     margin-right:10px;
 }
-.creditcard .payment-method-2col .card-types-input{
+.tig_buckaroo_creditcard .payment-method-2col .card-types-input{
     margin-top:10px;
 }
 
 @media screen and (max-width:767px){
-    .creditcard .payment-method-2col {
+    .tig_buckaroo_creditcard .payment-method-2col {
         float:left;
         width: 100%;
         margin:0 0 20px 0;
@@ -122,7 +122,7 @@
 /* ===================== GIROPAY ===================== */
 
 @media screen and (max-width:767px) {
-    .giropay .payment-method-2col {
+    .tig_buckaroo_giropay .payment-method-2col {
         float :left; width :100%; margin-left: 0; margin-bottom: 20px; max-width:500px;
     }
 }

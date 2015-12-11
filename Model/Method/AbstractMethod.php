@@ -39,9 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Payment\Model\InfoInterface;
-use TIG\Buckaroo\Gateway\Http\Transaction;
-
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
@@ -64,7 +61,32 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var \Magento\Framework\Message\ManagerInterface
      */
-    protected $messageManager;
+    public $messageManager;
+
+    /**
+     * @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
+     */
+    public $payment;
+
+    /**
+     * @var bool
+     */
+    public $closeAuthorizeTransaction = true;
+
+    /**
+     * @var bool
+     */
+    public $closeCaptureTransaction = true;
+
+    /**
+     * @var bool
+     */
+    public $closeRefundTransaction = true;
+
+    /**
+     * @var bool
+     */
+    public $closeCancelTransaction = true;
 
     /**
      * AbstractMethod constructor.
@@ -127,7 +149,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function authorize(InfoInterface $payment, $amount)
+    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -140,7 +162,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         parent::authorize($payment, $amount);
 
-        $transaction = $this->getAuthorizeTransaction($payment);
+        $this->payment = $payment;
+
+        $transaction = $this->getAuthorizeTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
@@ -150,7 +174,39 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this;
         }
 
+        $response = $this->authorizeTransaction($transaction);
+
+        /**
+         * Save the payment's transaction key.
+         */
+        if (!empty($response[0]->Key)) {
+            $transactionKey = $response[0]->Key;
+            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
+            $payment->setLastTransId($transactionKey);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setTransactionId($transactionKey);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setIsTransactionClosed($this->closeAuthorizeTransaction);
+        }
+
+        // SET REGISTRY BUCKAROO REDIRECT
+        $this->_registry->register('buckaroo_response', $response);
+
+        $this->afterAuthorize($payment, $response);
+
+        return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function authorizeTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
         $response = $this->gateway->authorize($transaction);
+
         if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
@@ -167,21 +223,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        /**
-         * Save the payment's transaction key.
-         */
-        if (!empty($response[0]->Key)) {
-            $transactionKey = $response[0]->Key;
-            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
-            $payment->setLastTransId($transactionKey);
-        }
-
-        // SET REGISTRY BUCKAROO REDIRECT
-        $this->_registry->register('buckaroo_response', $response);
-
-        $this->afterAuthorize($payment, $response);
-
-        return $this;
+        return $response;
     }
 
     /**
@@ -192,7 +234,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function capture(InfoInterface $payment, $amount)
+    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -205,7 +247,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         parent::capture($payment, $amount);
 
-        $transaction = $this->getCaptureTransaction($payment);
+        $this->payment = $payment;
+
+        $transaction = $this->getCaptureTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
@@ -215,7 +259,39 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this;
         }
 
+        $response = $this->captureTransaction($transaction);
+
+        if (!empty($response[0]->Key)) {
+            /**
+             * Save the payment's transaction key.
+             */
+            $transactionKey = $response[0]->Key;
+            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
+            $payment->setLastTransId($transactionKey);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setTransactionId($transactionKey);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setIsTransactionClosed($this->closeCaptureTransaction);
+        }
+
+        // SET REGISTRY BUCKAROO REDIRECT
+        $this->_registry->register('buckaroo_response', $response);
+
+        $this->afterCapture($payment, $response);
+
+        return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function captureTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
         $response = $this->gateway->capture($transaction);
+
         if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
@@ -232,21 +308,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        if (!empty($response[0]->Key)) {
-            /**
-             * Save the payment's transaction key.
-             */
-            $transactionKey = $response[0]->Key;
-            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
-            $payment->setLastTransId($transactionKey);
-        }
-
-        // SET REGISTRY BUCKAROO REDIRECT
-        $this->_registry->register('buckaroo_response', $response);
-
-        $this->afterCapture($payment, $response);
-
-        return $this;
+        return $response;
     }
 
     /**
@@ -257,7 +319,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function refund(InfoInterface $payment, $amount)
+    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
     {
         if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
             || !$payment instanceof \Magento\Payment\Model\InfoInterface
@@ -270,7 +332,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         parent::refund($payment, $amount);
 
-        $transaction = $this->getRefundTransaction($payment);
+        $this->payment = $payment;
+
+        $transaction = $this->getRefundTransactionBuilder($payment)->build();
 
         if (!$transaction) {
             throw new \LogicException(
@@ -280,7 +344,34 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this;
         }
 
+        $response = $this->refundTransaction($transaction);
+
+        if (!empty($response[0]->Key)) {
+            /**
+             * Save the payment's transaction key.
+             */
+            $transactionKey = $response[0]->Key;
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setTransactionId($transactionKey);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setIsTransactionClosed($this->closeRefundTransaction);
+        }
+
+        $this->afterRefund($payment, $response);
+
+        return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function refundTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
         $response = $this->gateway->refund($transaction);
+
         if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
@@ -292,14 +383,103 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase(
-                    'Unfortunately the refund was unsuccessful. Please try again.'
+                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
                 )
             );
         }
 
-        $this->afterRefund($payment, $response);
+        return $response;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return $this
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
+     */
+    public function cancel(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        return $this->void($payment);
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return $this
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
+     */
+    public function void(\Magento\Payment\Model\InfoInterface $payment)
+    {
+        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
+            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        ) {
+            throw new \InvalidArgumentException(
+                'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
+                ' and "\Magento\Payment\Model\InfoInterface".'
+            );
+        }
+
+        parent::cancel($payment);
+
+        $this->payment = $payment;
+
+        $transaction = $this->getVoidTransactionBuilder($payment)->build();
+
+        if (!$transaction) {
+            throw new \LogicException(
+                'Void action is not implemented for this payment method.'
+            );
+        } elseif ($transaction === true) {
+            return $this;
+        }
+
+        $response = $this->voidTransaction($transaction);
+
+        if (!empty($response[0]->Key)) {
+            /**
+             * Save the payment's transaction key.
+             */
+            $transactionKey = $response[0]->Key;
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setTransactionId($transactionKey);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setIsTransactionClosed($this->closeCancelTransaction);
+        }
+
+        $this->afterVoid($payment, $response);
 
         return $this;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
+     *
+     * @return array|\StdClass
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function voidTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
+    {
+        $response = $this->gateway->void($transaction);
+
+        if (!$this->validatorFactory->get('transaction_response')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'The transaction response could not be verified.'
+                )
+            );
+        }
+
+        if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    'Unfortunately the payment authorization could not be voided. Please try again.'
+                )
+            );
+        }
+
+        return $response;
     }
 
     /**
@@ -361,22 +541,48 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param array|\StdCLass                                                                    $response
      *
-     * @return Transaction|false
+     * @return $this
      */
-    protected abstract function getAuthorizeTransaction($payment);
+    protected function afterVoid($payment, $response)
+    {
+        $this->_eventManager->dispatch(
+            'tig_buckaroo_method_void_after',
+            [
+                'payment' => $payment,
+                'response' => $response
+            ]
+        );
+
+        return $this;
+    }
 
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
-     * @return Transaction|false
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
-    protected abstract function getCaptureTransaction($payment);
+    abstract public function getAuthorizeTransactionBuilder($payment);
 
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
-     * @return Transaction|false
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
-    protected abstract function getRefundTransaction($payment);
+    abstract public function getCaptureTransactionBuilder($payment);
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
+     */
+    abstract public function getRefundTransactionBuilder($payment);
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
+     */
+    abstract public function getVoidTransactionBuilder($payment);
 }
