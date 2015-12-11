@@ -40,8 +40,6 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
-use Magento\Store\Model\ScopeInterface;
-
 abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
 {
     /**

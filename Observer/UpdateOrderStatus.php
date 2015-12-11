@@ -48,6 +48,7 @@ class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         /** @var $payment \Magento\Sales\Model\Order\Payment */
         $payment = $observer->getPayment();
 

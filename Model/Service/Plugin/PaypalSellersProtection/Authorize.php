@@ -50,9 +50,9 @@ class Authorize
     public function afterGetAuthorizeTransactionBuilder(
         \TIG\Buckaroo\Model\Method\Paypal $paymentMethod,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $result
-    )
-    {
+    ) {
         $payment = $paymentMethod->payment;
+        /** @noinspection PhpUndefinedMethodInspection */
         /** @var \Magento\Sales\Model\Order $order */
         $order = $payment->getOrder();
         $shippingAddress = $order->getShippingAddress();

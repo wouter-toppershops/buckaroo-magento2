@@ -35,7 +35,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return int|null
      */
-    public function getStatusCode($code) {
+    public function getStatusCode($code)
+    {
         if (isset($this->statusCodes[$code])) {
             return $this->statusCodes[$code];
         }
@@ -51,7 +52,7 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getStatusByValue($value)
     {
-        if( array_search($value, $this->statusCodes) ) {
+        if (array_search($value, $this->statusCodes)) {
             return array_search($value, $this->statusCodes);
         }
         return null;
@@ -62,7 +63,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getStatusCodes() {
+    public function getStatusCodes()
+    {
         return $this->statusCodes;
     }
 

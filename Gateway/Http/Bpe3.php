@@ -60,8 +60,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     public function __construct(
         \TIG\Buckaroo\Gateway\Http\Client\Soap $client,
         \Magento\Framework\Data\ObjectFactory $objectFactory
-    )
-    {
+    ) {
         $this->client = $client;
         $this->objectFactory = $objectFactory;
     }

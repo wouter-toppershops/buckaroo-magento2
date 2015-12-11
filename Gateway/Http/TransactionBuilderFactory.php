@@ -68,7 +68,8 @@ class TransactionBuilderFactory
      * Retrieve proper transaction builder for the specified transaction type.
      *
      * @param string $builderType
-     * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
+     *
+     * @return TransactionBuilderInterface
      * @throws \LogicException|\TIG\Buckaroo\Exception
      */
     public function get($builderType)
@@ -94,7 +95,7 @@ class TransactionBuilderFactory
         }
 
         $transactionBuilder = $this->objectManager->get($transactionBuilderClass);
-        if (!$transactionBuilder instanceof \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface) {
+        if (!$transactionBuilder instanceof TransactionBuilderInterface) {
             throw new \LogicException(
                 'The transaction builder must implement "TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface".'
             );
