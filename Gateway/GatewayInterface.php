@@ -49,4 +49,6 @@ interface GatewayInterface
     public function authorize(Transaction $transaction);
 
     public function refund(Transaction $transaction);
+
+    public function void(Transaction $transaction);
 }

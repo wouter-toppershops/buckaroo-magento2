@@ -43,6 +43,7 @@ class Transfer extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_TRANSFER_CODE = 'tig_buckaroo_transfer';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -94,6 +95,7 @@ class Transfer extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -103,6 +105,7 @@ class Transfer extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
         }
         return $this;
@@ -123,6 +126,7 @@ class Transfer extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
@@ -143,11 +147,10 @@ class Transfer extends AbstractMethod
             ],
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
-
-        $transaction = $transactionBuilder->build();
 
         return $transactionBuilder;
     }
@@ -165,11 +168,20 @@ class Transfer extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }
