@@ -51,8 +51,12 @@ class Debugger
     protected $mailSubject = 'TIG_Buckaroo log mail';
     protected $mailFrom = 'info@buckaroo.nl';
 
-    protected $mode = 'logmail';
+    protected $mode = 'mail';
 
+    /**
+     * @param Logger                                    $logger
+     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     */
     public function __construct(
         \TIG\Buckaroo\Debug\Logger $logger,
         \Magento\Framework\ObjectManagerInterface $objectManager
