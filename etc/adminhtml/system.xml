@@ -648,6 +648,67 @@
                         </field>
                     </group>
                 </group>
+
+                <!-- Bank Transfer Payment method group -->
+                <group id="tig_buckaroo_bank_transfer" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Bank Transfer</label>
+
+                    <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Enable Bank Transfer</label>
+                        <comment><![CDATA[Enable or disable this payment method.]]></comment>
+                        <source_model>TIG\Buckaroo\Model\Config\Source\Enablemode</source_model>
+                        <config_path>payment/tig_buckaroo_bank_transfer/active</config_path>
+                    </field>
+
+                    <field id="title" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frontend label</label>
+                        <comment><![CDATA[Determines the frontend label shown.]]></comment>
+                        <config_path>payment/tig_buckaroo_bank_transfer/title</config_path>
+                    </field>
+
+                    <field id="sort_order" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Frontend sort order</label>
+                        <comment><![CDATA[Determines the sorting of payment methods.]]></comment>
+                        <config_path>payment/tig_buckaroo_bank_transfer/sort_order</config_path>
+                    </field>
+
+                    <field id="send_email" translate="label comment tooltip" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Send payment instruction email</label>
+                        <comment><![CDATA[Buckaroo sends an email to the customer with the payment procedures.]]></comment>
+                        <tooltip>Set to 'No' the customer is informed once online.</tooltip>
+                        <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                        <config_path>payment/tig_buckaroo_bank_transfer/send_email</config_path>
+                    </field>
+
+                    <!-- TODO: Numbers only validation -->
+                    <field id="due_date" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Due date (in days)</label>
+                        <comment><![CDATA[Specify the number of days the customer has to complete their payment before the first reminder e-mail will be sent by Buckaroo.]]></comment>
+                        <config_path>payment/tig_buckaroo_bank_transfer/due_date</config_path>
+                    </field>
+
+                    <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Advanced Configuration</label>
+
+                        <field id="use_creditmanagement" translate="label comment tooltip" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Use credit management</label>
+                            <comment><![CDATA[Buckaroo sends payment reminders to the customer.]]></comment>
+                            <tooltip>Contact Buckaroo before activating Credit Management. By default this is excluded in the contract.</tooltip>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_bank_transfer/use_creditmanagement</config_path>
+                        </field>
+
+                        <!-- TODO: Numbers only validation -->
+                        <field id="due_date_invoice" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Invoice delay (in days)</label>
+                            <comment><![CDATA[Specify the amount of days before Buckaroo invoices the order and sends out the payment mail.]]></comment>
+                            <config_path>payment/tig_buckaroo_bank_transfer/due_date_invoice</config_path>
+                            <depends>
+                                <field id="use_creditmanagement">1</field>
+                            </depends>
+                        </field>
+                    </group>
+                </group>
             </group>
         </section>
     </system>
