@@ -54,10 +54,12 @@ use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
  */
 class Push implements PushInterface
 {
-    const ORDER_TYPE_COMPLETED = 'complete';
-    const ORDER_TYPE_CANCELED  = 'canceled';
-    const ORDER_TYPE_HOLDED    = 'holded';
-    const ORDER_TYPE_CLOSED    = 'closed';
+    const ORDER_TYPE_COMPLETED  = 'complete';
+    const ORDER_TYPE_CANCELED   = 'canceled';
+    const ORDER_TYPE_HOLDED     = 'holded';
+    const ORDER_TYPE_CLOSED     = 'closed';
+    const ORDER_TYPE_PROCESSING = 'processing';
+    const ORDER_TYPE_PENDING    = 'pending';
     /**
      * @var Request
      */
@@ -137,20 +139,21 @@ class Push implements PushInterface
             $payment->setAdditionalInformation($originalKey, $this->_postData['brq_transactions']);
         }
 
-        /** @var  $newStates  @todo built the method that sets and gets the new states of the order.
+        /**
+         * @var  $newStates
+         * @todo built the method getNewStatusCodes to replace the class constance values with config values.
+         *
          */
-        $newStatus = 'closed';
-
         switch ( $response['status'] ) {
             case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
             case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-                $this->_processFailedPush($newStatus, $response['message']);
+                $this->_processFailedPush(self::ORDER_TYPE_CANCELED, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $this->_processSuccededPush($newStatus, $response['message']);
+                $this->_processSuccededPush(self::ORDER_TYPE_PROCESSING, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
                 $this->_setOrderNotifactionNote($response['message']);
@@ -159,10 +162,10 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $this->_processPendingPaymentPush($newStatus, $response['message']);
+                $this->_processPendingPaymentPush(self::ORDER_TYPE_PENDING, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $this->_processIncorrectPaymentPush($newStatus, $response['message']);
+                $this->_processIncorrectPaymentPush(self::ORDER_TYPE_HOLDED, $response['message']);
                 break;
         }
 
@@ -240,7 +243,7 @@ class Push implements PushInterface
     protected function _processSuccededPush($newStatus, $message)
     {
         if( !$this->_order->getEmailSent() ) {
-            // Sent new order mail.
+            $this->_order->setSendEmail(true);
         }
         //Create discription
         $discription = ''.$message;
@@ -261,8 +264,37 @@ class Push implements PushInterface
      */
     protected function _processIncorrectPaymentPush($newStatus, $message)
     {
-        //Check if the paid amount is correct
+        $baseTotal = round($this->_order->getBaseGrandTotal()*100, 0);
+
+        //Set currency and order amount
+        $currencyCode = $this->_getCorrectCurrencyCodeAndAmount()['currencyCode'];
+        $orderAmount  = $this->_getCorrectCurrencyCodeAndAmount()['orderAmount'];
+
+        /**
+         * Determine whether too much or not has been paid.
+         *
+         * @todo Get currency to currency with $currencyCode.
+         */
+        if ( $baseTotal > $this->_postData['brq_amount'] ) {
+            $description = __('Not enough paid: %s has been transfered. Order grand total was: %s.',
+                $this->_postData['brq_amount'],
+                $orderAmount
+            );
+        } elseif ( $baseTotal < $this->_postData['brq_amount'] ) {
+            $description = __('Too much paid: %s has been transfered. Order grand total was: %s.',
+                $this->_postData['brq_amount'],
+                $orderAmount
+            );
+        } else {
+            return false;
+        }
+
         //hold the order
+        $this->_order
+            ->hold()->save()
+            ->setStatus($newStatus)->save()
+            ->addStatusHistoryComment($description, $newStatus)->save();
+
         return true;
     }
 
@@ -284,7 +316,7 @@ class Push implements PushInterface
     /**
      * Try to add an notifaction note to the order comments.
      * @todo make note available trought translations.
-     * @todo What will be the notifactionnote ?
+     * @todo What will be the notifactionnote ? -> Create an class that would create the note dynamic
      *
      * @param $message
      */
@@ -339,5 +371,25 @@ class Push implements PushInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * Get Correct currency and order amount
+     * @return array
+     */
+    protected function _getCorrectCurrencyCodeAndAmount()
+    {
+        if( $this->_postData['brq_currency'] == $this->_order->getBaseCurrencyCode() ) {
+            $currencyCode = $this->_order->getBaseCurrencyCode();
+            $orderAmount = $this->_order->getBaseGrandTotal();
+        } else {
+            $currencyCode = $this->_order->getOrderCurrencyCode();
+            $orderAmount = $this->_order->getGrandTotal();
+        }
+
+        return [
+            'currencyCode' => $currencyCode,
+            'orderAmount'  => $orderAmount
+        ];
     }
 }
