@@ -43,10 +43,12 @@ namespace TIG\Buckaroo\Model;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use TIG\Buckaroo\Api\PushInterface;
 use TIG\Buckaroo\Exception;
 use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 use \TIG\Buckaroo\Model\Method\AbstractMethod;
+use \Magento\Framework\Pricing\Helper\Data as PricingHelper;
 
 /**
  * Class Push
@@ -61,10 +63,31 @@ class Push implements PushInterface
     const ORDER_TYPE_CLOSED     = 'closed';
     const ORDER_TYPE_PROCESSING = 'processing';
     const ORDER_TYPE_PENDING    = 'pending';
+
     /**
-     * @var Request
+     * @var \Magento\Framework\Webapi\Rest\Request $request
      */
     protected $request;
+
+    /**
+     * @var \TIG\Buckaroo\Model\Validator\Push $_validator
+     */
+    protected $validator;
+
+    /**
+     * @var Order $order
+     */
+    protected $order;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     */
+    protected $orderSender;
+
+    /**
+     * @var \Magento\Framework\Pricing\Helper\Data $pricingHelper
+     */
+    protected $pricingHelper;
 
     /**
      * @var array
@@ -72,29 +95,26 @@ class Push implements PushInterface
     protected $postData;
 
     /**
-     * \TIG\Buckaroo\Model\Validator\Push
-     * @var $_validator
-     */
-    protected $validator;
-
-    /** @var Order $order */
-    protected $order;
-
-    /**
      * Push constructor.
      *
-     * @param ObjectManagerInterface                 $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request $request
-     * @param \TIG\Buckaroo\Model\Validator\Push     $validator
+     * @param ObjectManagerInterface                              $objectManager
+     * @param \Magento\Framework\Webapi\Rest\Request              $request
+     * @param \TIG\Buckaroo\Model\Validator\Push                  $validator
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \Magento\Framework\Pricing\Helper\Data              $pricingHelper
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
         Request $request,
-        ValidatorPush $validator
+        ValidatorPush $validator,
+        OrderSender $orderSender,
+        PricingHelper $pricingHelper
     ) {
         $this->objectManager = $objectManager;
         $this->request       = $request;
         $this->validator     = $validator;
+        $this->orderSender   = $orderSender;
+        $this->pricingHelper = $pricingHelper;
 
     }
 
@@ -113,7 +133,6 @@ class Push implements PushInterface
         //Check if the push can be procesed and if the order can be updtated.
         $validSignature = $this->validator->validateSignature($this->postData['brq_signature']);
         //Check if the order can recieve further status updates
-        /** @var  \Magento\Sales\Model\Order\ $this->order */
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);
         if (!$this->order->getId()) {
@@ -231,7 +250,15 @@ class Push implements PushInterface
         //Create description
         $description = ''.$message;
 
-        /** @todo Check if the order can cancel ? */
+        /**
+         * @todo get config value cancel_on_failed
+         */
+        $buckarooCancelOnFailed = false;
+
+        if ($this->order->canCancel() && $buckarooCancelOnFailed) {
+            $this->order->cancel()->save();
+        }
+
         $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $description);
 
         return true;
@@ -246,12 +273,9 @@ class Push implements PushInterface
     protected function processSucceededPush($newStatus, $message)
     {
         if (!$this->order->getEmailSent()) {
-            //Send mail
-            /** @todo send the mail */
-            //Set the order send email to be true
-            $this->order->setSendEmail(true);
-
+            $this->orderSender->send($this->order);
         }
+
         //Create description
         $description = ''.$message;
 
@@ -272,36 +296,31 @@ class Push implements PushInterface
     {
         $baseTotal = round($this->order->getBaseGrandTotal()*100, 0);
 
-        //Set currency and order amount
-        $currencyCode = $this->getCorrectCurrencyCodeAndAmount()['currencyCode'];
-        $orderAmount  = $this->getCorrectCurrencyCodeAndAmount()['orderAmount'];
-
+        //Set order amount
+        $orderAmount  = $this->getCorrectOrderAmount();
+        $description  = 'FAILED ' .$message .' : ';
         /**
-         * Determine whether too much or not has been paid.
-         *
-         * @todo Get currency to currency with $currencyCode.
+         * Determine whether too much or not has been paid
          */
         if ($baseTotal > $this->postData['brq_amount']) {
-            $description = __(
+            $description .= __(
                 'Not enough paid: %s has been transfered. Order grand total was: %s.',
-                $this->postData['brq_amount'],
-                $orderAmount
+                $this->pricingHelper->currency($this->postData['brq_amount']),
+                $this->pricingHelper->currency($orderAmount)
             );
         } elseif ($baseTotal < $this->postData['brq_amount']) {
-            $description = __(
+            $description .= __(
                 'Too much paid: %s has been transfered. Order grand total was: %s.',
-                $this->postData['brq_amount'],
-                $orderAmount
+                $this->pricingHelper->currency($this->postData['brq_amount']),
+                $this->pricingHelper->currency($orderAmount)
             );
         } else {
             return false;
         }
 
         //hold the order
-        $this->order
-            ->hold()->save()
-            ->setStatus($newStatus)->save()
-            ->addStatusHistoryComment($description, $newStatus)->save();
+        $this->order->hold()->save()->addStatusHistoryComment($description, $newStatus);
+        $this->order->save();
 
         return true;
     }
@@ -332,7 +351,8 @@ class Push implements PushInterface
     {
         $note  = 'Buckaroo attempted to update this order, but failed : ' .$message;
         try {
-            $this->order->addStatusHistoryComment($note)->save();
+            $this->order->addStatusHistoryComment($note);
+            $this->order->save();
         } catch (Exception $e) {
             // parse exception into debug mail
         }
@@ -348,11 +368,11 @@ class Push implements PushInterface
     protected function updateOrderStatus($orderState, $newStatus, $description)
     {
         if ($this->order->getState() ==  $orderState) {
-            $this->order->addStatusHistoryComment($description, $newStatus)->save();
-            $this->order->setStatus($newStatus)->save();
+            $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
-            $this->order->addStatusHistoryComment($description)->save();
+            $this->order->addStatusHistoryComment($description);
         }
+        $this->order->save();
     }
 
     /**
@@ -372,6 +392,7 @@ class Push implements PushInterface
                 if (!isset($this->postData['brq_transactions'])) {
                     continue;
                 }
+                /** @var \Magento\Sales\Model\Order\Invoice  $invoice */
                 $invoice->setTransactionId($this->postData['brq_transactions'])
                     ->save();
             }
@@ -381,22 +402,17 @@ class Push implements PushInterface
     }
 
     /**
-     * Get Correct currency and order amount
-     * @return array
+     * Get Correct order amount
+     * @return int $orderAmount
      */
-    protected function getCorrectCurrencyCodeAndAmount()
+    protected function getCorrectOrderAmount()
     {
         if ($this->postData['brq_currency'] == $this->order->getBaseCurrencyCode()) {
-            $currencyCode = $this->order->getBaseCurrencyCode();
             $orderAmount = $this->order->getBaseGrandTotal();
         } else {
-            $currencyCode = $this->order->getOrderCurrencyCode();
             $orderAmount = $this->order->getGrandTotal();
         }
 
-        return [
-            'currencyCode' => $currencyCode,
-            'orderAmount'  => $orderAmount
-        ];
+        return $orderAmount;
     }
 }
