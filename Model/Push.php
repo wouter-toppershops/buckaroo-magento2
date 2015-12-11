@@ -79,6 +79,7 @@ class Push implements PushInterface
 
     /** @var Order $order */
     protected $order;
+
     /**
      * Push constructor.
      *
@@ -153,7 +154,7 @@ class Push implements PushInterface
                 $this->processFailedPush(self::ORDER_TYPE_CANCELED, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $this->processSuccededPush(self::ORDER_TYPE_PROCESSING, $response['message']);
+                $this->processSucceededPush(self::ORDER_TYPE_PROCESSING, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
                 $this->setOrderNotifactionNote($response['message']);
@@ -224,11 +225,11 @@ class Push implements PushInterface
      */
     protected function processFailedPush($newStatus, $message)
     {
-        //Create discription
-        $discription = ''.$message;
+        //Create description
+        $description = ''.$message;
 
         /** @todo Check if the order can cancel ? */
-        $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $discription);
+        $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $description);
 
         return true;
     }
@@ -239,7 +240,7 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processSuccededPush($newStatus, $message)
+    protected function processSucceededPush($newStatus, $message)
     {
         if (!$this->order->getEmailSent()) {
             //Send mail
@@ -248,13 +249,13 @@ class Push implements PushInterface
             $this->order->setSendEmail(true);
 
         }
-        //Create discription
-        $discription = ''.$message;
+        //Create description
+        $description = ''.$message;
 
         //Create invoice
         $this->saveInvoice();
 
-        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $discription);
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
         return true;
     }
@@ -262,7 +263,6 @@ class Push implements PushInterface
     /**
      * @param $newStatus
      * @param $message
-     * @todo well, as you can see, named the method, didn't built it yet.
      * @return bool
      */
     protected function processIncorrectPaymentPush($newStatus, $message)
@@ -311,9 +311,9 @@ class Push implements PushInterface
      */
     protected function processPendingPaymentPush($newStatus, $message)
     {
-        $discription = ''.$message;
+        $description = ''.$message;
 
-        $this->updateOrderStatus(Order::STATE_NEW, $newStatus, $discription);
+        $this->updateOrderStatus(Order::STATE_NEW, $newStatus, $description);
 
         return true;
     }

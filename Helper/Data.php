@@ -71,6 +71,8 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
         'TIG_BUCKAROO_ORDER_FAILED'                     => 11014,
     ];
 
+    protected $debugConfig = [];
+
     /**
      * Return the requested status $code, or null if not found
      *

@@ -123,6 +123,12 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Debug\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">TIG_Buckaroo</argument>
+        </arguments>
+    </type>
+
     <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
         <arguments>
             <argument name="deserializers" xsi:type="array">

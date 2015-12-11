@@ -1,0 +1,157 @@
+<?php
+/**
+ *                  ___________       __            __
+ *                  \__    ___/____ _/  |_ _____   |  |
+ *                    |    |  /  _ \\   __\\__  \  |  |
+ *                    |    | |  |_| ||  |   / __ \_|  |__
+ *                    |____|  \____/ |__|  (____  /|____/
+ *                                              \/
+ *          ___          __                                   __
+ *         |   |  ____ _/  |_   ____ _______   ____    ____ _/  |_
+ *         |   | /    \\   __\_/ __ \\_  __ \ /    \ _/ __ \\   __\
+ *         |   ||   |  \|  |  \  ___/ |  | \/|   |  \\  ___/ |  |
+ *         |___||___|  /|__|   \_____>|__|   |___|  / \_____>|__|
+ *                  \/                           \/
+ *                  ________
+ *                 /  _____/_______   ____   __ __ ______
+ *                /   \  ___\_  __ \ /  _ \ |  |  \\____ \
+ *                \    \_\  \|  | \/|  |_| ||  |  /|  |_| |
+ *                 \______  /|__|    \____/ |____/ |   __/
+ *                        \/                       |__|
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Creative Commons License.
+ * It is available through the world-wide-web at this URL:
+ * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * If you are unable to obtain it through the world-wide-web, please send an email
+ * to servicedesk@tig.nl so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this module to newer
+ * versions in the future. If you wish to customize this module for your
+ * needs please contact servicedesk@tig.nl for more information.
+ *
+ * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ */
+
+namespace TIG\Buckaroo\Debug;
+
+class Debugger
+{
+    protected $channelName = 'TIG_Buckaroo';
+    protected $defaultFilename = 'TIG_Buckaroo.log';
+
+    public function __construct(
+        \TIG\Buckaroo\Debug\Logger $logger,
+        \Magento\Framework\ObjectManagerInterface $objectManager
+    ) {
+        $this->logger = $logger;
+        $this->objectManager = $objectManager;
+    }
+
+    /**
+     * Return the default filename
+     *
+     * @return string
+     */
+    public function getDefaultFilename()
+    {
+        return $this->defaultFilename;
+    }
+
+    /**
+     * Set the default filename
+     *
+     * @param $defaultFilename
+     *
+     * @return $this
+     */
+    public function setDefaultFilename($defaultFilename)
+    {
+        $this->defaultFilename = $defaultFilename;
+        return $this;
+    }
+
+    /**
+     * Return the channel name
+     *
+     * @return string
+     */
+    public function getChannelName()
+    {
+        return $this->channelName;
+    }
+
+    /**
+     * Set the channel name
+     *
+     * @param $channelName
+     *
+     * @return $this
+     */
+    public function setChannelName($channelName)
+    {
+        $this->channelName = $channelName;
+        return $this;
+    }
+
+    /**
+     * Log message
+     *
+     * @param      $message
+     * @param int  $level
+     * @param null $filename
+     * @param bool $force
+     *
+     * @return $this
+     */
+    public function log($message, $level = 100, $filename = null, $force = false)
+    {
+        /**
+         * If filename isn't set, use the default filename that's currently set
+         */
+        if (!$filename) {
+            $filename = $this->getDefaultFilename();
+        }
+        /**
+         * If message is an array, print_r it to a string
+         */
+        if (is_array($message)) {
+            $message = print_r($message, true);
+        }
+
+        /**
+         * Monolog requires a streamHandler, which is set to a specific filename
+         */
+        $streamHandler = $this->createStreamHandler($filename);
+
+        /**
+         * Set the name we're supposed to set, push the streamHandler & add the record
+         */
+        $this->logger->setName($this->getChannelName());
+        $this->logger->pushHandler($streamHandler);
+        $this->logger->addRecord($level, $message, []);
+
+        return $this;
+    }
+
+    /**
+     * Creates a new streamHandler
+     *
+     * @return mixed
+     */
+    public function createStreamHandler($filename)
+    {
+        $streamHandler = $this->objectManager->create(
+            '\Monolog\Handler\StreamHandler',
+            [
+                'stream' => 'var/log/' . $filename,
+            ]
+        );
+        return $streamHandler;
+    }
+
+}
