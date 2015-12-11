@@ -54,22 +54,15 @@ define(
     ) {
         'use strict';
 
-
-
         /**
          * Add validation methods
          * */
-
 
         $.validator.addMethod(
             'BIC', function (value) {
                 var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
                 return patternBIC.test(value);
             }, $.mage.__('Enter Valid BIC number'));
-
-
-
-
 
 
         return Component.extend({
@@ -114,7 +107,7 @@ define(
             /**
              * Run function
              */
-                
+
             validate: function () {
                 return $('.' + this.getCode() + ' [data-validate]').valid();
             },
