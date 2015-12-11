@@ -48,12 +48,15 @@ class GuestPaymentInformationManagement
     protected $logger = null;
 
     /**
-     * @param \Magento\Quote\Api\GuestBillingAddressManagementInterface $billingAddressManagement
-     * @param \Magento\Quote\Api\GuestPaymentMethodManagementInterface $paymentMethodManagement
-     * @param \Magento\Quote\Api\GuestCartManagementInterface $cartManagement
+     * @param \Magento\Quote\Api\GuestBillingAddressManagementInterface   $billingAddressManagement
+     * @param \Magento\Quote\Api\GuestPaymentMethodManagementInterface    $paymentMethodManagement
+     * @param \Magento\Quote\Api\GuestCartManagementInterface             $cartManagement
      * @param \Magento\Checkout\Api\PaymentInformationManagementInterface $paymentInformationManagement
-     * @param \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory
-     * @param \Magento\Quote\Api\CartRepositoryInterface $cartRepository
+     * @param \Magento\Quote\Model\QuoteIdMaskFactory                     $quoteIdMaskFactory
+     * @param \Magento\Quote\Api\CartRepositoryInterface                  $cartRepository
+     * @param \Magento\Framework\Registry                                 $registry
+     * @param \Psr\Log\LoggerInterface                                    $logger
+     *
      * @codeCoverageIgnore
      */
     public function __construct(
@@ -93,9 +96,8 @@ class GuestPaymentInformationManagement
         $email,
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
         \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
-    )
-    {
-        $result = $this->savePaymentInformationAndPlaceOrder($cartId, $email, $paymentMethod, $billingAddress);
+    ) {
+        $this->savePaymentInformationAndPlaceOrder($cartId, $email, $paymentMethod, $billingAddress);
 
         $this->logger->debug('-[RESULT]----------------------------------------');
         $this->logger->debug(print_r($this->registry->registry('buckaroo_response'), true));

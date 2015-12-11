@@ -49,7 +49,16 @@
             <argument name="gateway" xsi:type="object">TIG\Buckaroo\Gateway\GatewayInterface</argument>
             <argument name="transactionBuilderFactory" xsi:type="object">TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory</argument>
             <argument name="validatorFactory" xsi:type="object">TIG\Buckaroo\Model\ValidatorFactory</argument>
+            <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
         </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Model\Method\Paypal">
+        <plugin name="tig_buckaroo_paypal_sellersprotection" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Authorize" />
+    </type>
+
+    <type name="TIG\Buckaroo\Model\Method\SepaDirectDebit">
+        <plugin name="tig_buckaroo_sepadirectdebit" type="TIG\Buckaroo\Model\Method\Plugin\SepaDirectDebit" />
     </type>
 
     <type name="TIG\Buckaroo\Model\PaymentInformationManagement">
@@ -111,6 +120,12 @@
                     <item name="model" xsi:type="string">TIG\Buckaroo\Gateway\Http\TransactionBuilder\Refund</item>
                 </item>
             </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Debug\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">TIG_Buckaroo</argument>
         </arguments>
     </type>
 

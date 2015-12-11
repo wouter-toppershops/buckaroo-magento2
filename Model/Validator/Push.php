@@ -40,73 +40,40 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
+use \TIG\Buckaroo\Helper\Data as DataHelper;
+use \TIG\Buckaroo\Model\ValidatorInterface;
+
 /**
  * Class Push
  *
  * @package TIG\Buckaroo\Model\Validator
  */
-class Push implements \TIG\Buckaroo\Model\ValidatorInterface
+class Push implements ValidatorInterface
 {
 
-    const BUCKAROO_SUCCESS           = 'BUCKAROO_SUCCESS';
-    const BUCKAROO_FAILED            = 'BUCKAROO_FAILED';
-    const BUCKAROO_ERROR             = 'BUCKAROO_ERROR';
-    const BUCKAROO_NEUTRAL           = 'BUCKAROO_NEUTRAL';
-    const BUCKAROO_PENDING_PAYMENT   = 'BUCKAROO_PENDING_PAYMENT';
-    const BUCKAROO_INCORRECT_PAYMENT = 'BUCKAROO_INCORRECT_PAYMENT';
-    const BUCKAROO_REJECTED          = 'BUCKAROO_REJECTED';
+    public $helper;
+
+    public $bpeResponseMessages = [
+        190 => 'Success',
+        490 => 'Payment failure',
+        491 => 'Validation error',
+        492 => 'Technical error',
+        690 => 'Payment rejected',
+        790 => 'Waiting for user input',
+        791 => 'Waiting for processor',
+        792 => 'Waiting on consumer action',
+        793 => 'Payment on hold',
+        890 => 'Cancelled by consumer',
+        891 => 'Cancelled by merchant'
+    ];
 
     /**
-     *  List of possible response codes sent by buckaroo.
-     *  This is the list for the BPE 3.0 gateway.
-     *  @var array $bpeResponseCodes
+     * @param \TIG\Buckaroo\Helper\Data $helper
      */
-    public $bpeResponseCodes = array(
-        190 => array(
-            'message' => 'Success',
-            'status'  => self::BUCKAROO_SUCCESS,
-        ),
-        490 => array(
-            'message' => 'Payment failure',
-            'status'  => self::BUCKAROO_FAILED,
-        ),
-        491 => array(
-            'message' => 'Validation error',
-            'status'  => self::BUCKAROO_FAILED,
-        ),
-        492 => array(
-            'message' => 'Technical error',
-            'status'  => self::BUCKAROO_ERROR,
-        ),
-        690 => array(
-            'message' => 'Payment rejected',
-            'status'  => self::BUCKAROO_REJECTED,
-        ),
-        790 => array(
-            'message' => 'Waiting for user input',
-            'status'  => self::BUCKAROO_PENDING_PAYMENT,
-        ),
-        791 => array(
-            'message' => 'Waiting for processor',
-            'status'  => self::BUCKAROO_PENDING_PAYMENT,
-        ),
-        792 => array(
-            'message' => 'Waiting on consumer action',
-            'status'  => self::BUCKAROO_PENDING_PAYMENT,
-        ),
-        793 => array(
-            'message' => 'Payment on hold',
-            'status'  => self::BUCKAROO_PENDING_PAYMENT,
-        ),
-        890 => array(
-            'message' => 'Cancelled by consumer',
-            'status'  => self::BUCKAROO_FAILED,
-        ),
-        891 => array(
-            'message' => 'Cancelled by merchant',
-            'status'  => self::BUCKAROO_FAILED,
-        ),
-    );
+    public function __construct(DataHelper $helper)
+    {
+        $this->helper = $helper;
+    }
 
     /**
      * @param $data
@@ -126,14 +93,20 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
      */
     public function validateStatusCode($code)
     {
-        if ( isset($this->bpeResponseCodes[$code]) ) {
-            return $this->bpeResponseCodes[$code];
-        }else{
-            return array(
-                'message' => 'Onbekende responsecode: ' . $code,
-                'status'  => self::BUCKAROO_NEUTRAL,
+        if (null !== $this->helper->getStatusByValue($code)
+            && isset($this->bpeResponseMessages[$code])
+        ) {
+            return [
+                'message' => $this->bpeResponseMessages[$code],
+                'status'  => $this->helper->getStatusByValue($code),
                 'code'    => $code,
-            );
+            ];
+        } else {
+            return [
+                'message' => 'Onbekende responsecode: ' . $code,
+                'status'  => 'TIG_BUCKAROO_STATUSCODE_NEUTRAL',
+                'code'    => $code,
+            ];
         }
     }
 
@@ -145,7 +118,9 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
      */
     public function validateSignature($signature)
     {
+        if (!$signature) {
+            return false;
+        }
         return true;
     }
-
 }

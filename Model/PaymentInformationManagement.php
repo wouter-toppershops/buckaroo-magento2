@@ -49,11 +49,13 @@ class PaymentInformationManagement
 
     /**
      * @param \Magento\Quote\Api\BillingAddressManagementInterface $billingAddressManagement
-     * @param \Magento\Quote\Api\PaymentMethodManagementInterface $paymentMethodManagement
-     * @param \Magento\Quote\Api\CartManagementInterface $cartManagement
-     * @param \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory
-     * @param \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository
-     * @param \Psr\Log\LoggerInterface $logger
+     * @param \Magento\Quote\Api\PaymentMethodManagementInterface  $paymentMethodManagement
+     * @param \Magento\Quote\Api\CartManagementInterface           $cartManagement
+     * @param \Magento\Checkout\Model\PaymentDetailsFactory        $paymentDetailsFactory
+     * @param \Magento\Quote\Api\CartTotalRepositoryInterface      $cartTotalsRepository
+     * @param \Magento\Framework\Registry                          $registry
+     * @param \Psr\Log\LoggerInterface                             $logger
+     *
      * @codeCoverageIgnore
      */
     public function __construct(
@@ -89,9 +91,8 @@ class PaymentInformationManagement
         $cartId,
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
         \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
-    )
-    {
-        $result = $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
+    ) {
+        $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
 
         $this->logger->debug('-[RESULT]----------------------------------------');
         $this->logger->debug(print_r($this->registry->registry('buckaroo_response'), true));

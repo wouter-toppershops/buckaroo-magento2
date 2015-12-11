@@ -54,22 +54,62 @@ define(
     ) {
         'use strict';
 
+        /**
+         * Add validation methods
+         * */
+
+        $.validator.addMethod(
+            'BIC', function (value) {
+                var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
+                return patternBIC.test(value);
+            }, $.mage.__('Enter Valid BIC number'));
+
+
         return Component.extend({
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay'
+            },
+
             initObservable: function () {
 
                 /**
                  * Bind this values to the input field.
                  */
+
                 this.bicnumber = ko.observable('');
 
+                this.bicnumber.subscribe( function () {
+                    $('.' + this.getCode() + ' [data-validate]').valid();
+                }, this);
+
+
                 /**
-                 * Check if the required fields are filled. If so: enable place order button | ifnot: disable place order button
+                 * Run validation on the inputfield
                  */
+
+                var runValidation = function () {
+                    $('.' + this.getCode() + ' [data-validate]').valid();
+                };
+                this.bicnumber.subscribe(runValidation,this);
+
+
+                /**
+                 * Check if the required fields are filled. If so: enable place order button | if not: disable place order button
+                 */
+
                 this.buttoncheck = ko.computed( function () {
-                    return !(this.bicnumber() == '');
+                    return this.bicnumber().length > 0;
                 }, this);
 
                 return this;
+            },
+
+            /**
+             * Run function
+             */
+
+            validate: function () {
+                return $('.' + this.getCode() + ' [data-validate]').valid();
             },
 
             /**
@@ -107,10 +147,6 @@ define(
                 if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
                     window.location.replace(response.RequiredAction.RedirectURL);
                 }
-            },
-
-            defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay'
             },
 
             getData: function() {

@@ -37,26 +37,31 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Observer;
+namespace TIG\Buckaroo\Model\Method\Plugin;
 
-class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
+class SepaDirectDebit
 {
     /**
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment
+     * @param array|\StdCLass                            $response
      *
-     * @return void
+     * @return $this
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $payment \Magento\Sales\Model\Order\Payment */
-        $payment = $observer->getPayment();
+    public function afterAuthorizeTransaction(
+        \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment,
+        $response
+    ) {
+        if (!empty($response[0]->ConsumerMessage) && $response[0]->ConsumerMessage->MustRead == 1) {
+            $consumerMessage = $response[0]->ConsumerMessage;
 
-        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
-            return;
+            $payment->messageManager->addSuccessMessage(
+                __($consumerMessage->Title)
+            );
+            $payment->messageManager->addSuccessMessage(
+                __($consumerMessage->PlainText)
+            );
         }
 
-        $order = $payment->getOrder();
-        $order->setStatus('tig_buckaroo_pending_payment');
+        return $response;
     }
 }

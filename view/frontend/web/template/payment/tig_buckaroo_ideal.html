@@ -1,4 +1,4 @@
-<div class="ideal payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
+<div class="tig_buckaroo_ideal payment-method" data-bind="css: {'_active': (getCode() == isChecked())}">
     <div class="payment-method-title field choice">
         <input type="radio"
                name="payment[method]"
@@ -18,7 +18,7 @@
             <label class="bank-types">
                 <!--@TODO: write a script which generates the images in pub/static  -->
                 <img class="bank-types-img" data-bind="attr: {
-                         'src': '../pub/media/tig/buckaroo/images/' + img + '.png',
+                         'src': img,
                          'width': 20,
                          'height': 20 }"
                         />

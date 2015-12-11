@@ -37,26 +37,40 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Observer;
+namespace TIG\Buckaroo\Setup;
 
-class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
+
+class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
 {
     /**
-     * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return void
+     * {@inheritdoc}
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $payment \Magento\Sales\Model\Order\Payment */
-        $payment = $observer->getPayment();
+        $setup->startSetup();
 
-        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
-            return;
+        if (version_compare($context->getVersion(), '0.1.1', '<')) {
+            /**
+             * Install order statuses from config
+             */
+            $setup->getConnection()->insert(
+                $setup->getTable('sales_order_status'),
+                [
+                    'status' => 'tig_buckaroo_pending_payment',
+                    'label'  => __('TIG Buckaroo Pending Payment'),
+                ]
+            );
+
+            $setup->getConnection()->insert(
+                $setup->getTable('sales_order_status_state'),
+                [
+                    'status'     => 'tig_buckaroo_pending_payment',
+                    'state'      => 'processing',
+                    'is_default' =>  0,
+                ]
+            );
         }
-
-        $order = $payment->getOrder();
-        $order->setStatus('tig_buckaroo_pending_payment');
     }
 }
