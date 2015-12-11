@@ -72,14 +72,15 @@ class Process extends \Magento\Framework\App\Action\Action
         \TIG\Buckaroo\Helper\Data $helper,
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Sales\Model\Order $order,
-        \Magento\Quote\Model\Quote $quote
-    )
-    {
+        \Magento\Quote\Model\Quote $quote,
+        \TIG\Buckaroo\Debug\Debugger $debugger
+    ) {
         parent::__construct($context);
         $this->helper   = $helper;
         $this->cart     = $cart;
         $this->order    = $order;
         $this->quote    = $quote;
+        $this->debugger = $debugger;
     }
 
     /**
@@ -88,11 +89,12 @@ class Process extends \Magento\Framework\App\Action\Action
      * @throws \TIG\Buckaroo\Exception
      *
      * @return void
-     *
-     * @throws \TIG\Buckaroo\Exception
      */
     public function execute()
     {
+        $this->debugger->log(array('test', 1=>'test', 'test', 'test', 'test', 'test', 'test'));
+        die('I think I logged');
+
         $this->response = $this->getRequest()->getParams();
         $statusCode = (int)$this->response['brq_statuscode'];
 
@@ -113,7 +115,6 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
-
                 /*
                  * Something went wrong, so we're going to have to
                  * 1) recreate the quote for the user
@@ -154,7 +155,8 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @return bool
      */
-    protected function recreateQuote() {
+    protected function recreateQuote()
+    {
         $this->quote->setIsActive('1');
         $this->quote->setTriggerRecollect('1');
         $this->quote->setReservedOrderId(null);
@@ -169,7 +171,8 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @return bool
      */
-    protected function cancelOrder() {
+    protected function cancelOrder()
+    {
         if ($this->order->canCancel()) {
             $this->order->cancel();
             return true;
@@ -182,7 +185,8 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @return \Magento\Framework\App\ResponseInterface
      */
-    protected function redirectToSuccessPage() {
+    protected function redirectToSuccessPage()
+    {
         return $this->_redirect('checkout/onepage/success');
     }
 
@@ -191,7 +195,8 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @return \Magento\Framework\App\ResponseInterface
      */
-    protected function redirectToCheckout() {
+    protected function redirectToCheckout()
+    {
         return $this->_redirect('checkout', ['_fragment' => 'payment']);
     }
 
