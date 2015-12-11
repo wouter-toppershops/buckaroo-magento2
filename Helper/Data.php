@@ -1,6 +1,11 @@
 <?php
 namespace TIG\Buckaroo\Helper;
 
+/**
+ * Class Data
+ *
+ * @package TIG\Buckaroo\Helper
+ */
 class Data extends \Magento\Framework\App\Helper\AbstractHelper
 {
 
@@ -52,10 +57,11 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getStatusByValue($value)
     {
-        if (array_search($value, $this->statusCodes)) {
-            return array_search($value, $this->statusCodes);
+        $result = array_search($value, $this->statusCodes);
+        if (!$result) {
+            $result = null;
         }
-        return null;
+        return $result;
     }
 
     /**
@@ -67,5 +73,4 @@ class Data extends \Magento\Framework\App\Helper\AbstractHelper
     {
         return $this->statusCodes;
     }
-
 }
