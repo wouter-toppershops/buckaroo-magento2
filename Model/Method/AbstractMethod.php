@@ -71,6 +71,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var bool
      */
+    public $closeOrderTransaction = true;
+
+    /**
+     * @var bool
+     */
     public $closeAuthorizeTransaction = true;
 
     /**
@@ -87,6 +92,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @var bool
      */
     public $closeCancelTransaction = true;
+
+    /**
+     * @var bool|string
+     */
+    public $orderPlaceRedirectUrl = true;
 
     /**
      * AbstractMethod constructor.
@@ -142,6 +152,30 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * Retrieve information from payment configuration
+     *
+     * @param string $field
+     * @param int|string|null|\Magento\Store\Model\Store $storeId
+     *
+     * @return mixed
+     */
+    public function getConfigData($field, $storeId = null)
+    {
+        if ('order_place_redirect_url' === $field) {
+            return $this->getOrderPlaceRedirectUrl();
+        }
+        return parent::getConfigData($field, $storeId);
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getOrderPlaceRedirectUrl()
+    {
+        return $this->orderPlaceRedirectUrl;
+    }
+
+    /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      * @param float                                                                              $amount
      *
@@ -176,18 +210,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->orderTransaction($transaction);
 
-        /**
-         * Save the payment's transaction key.
-         */
-        if (!empty($response[0]->Key)) {
-            $transactionKey = $response[0]->Key;
-            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
-            $payment->setLastTransId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setTransactionId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setIsTransactionClosed($this->closeAuthorizeTransaction);
-        }
+        $this->saveTransactionData($response[0], $payment, $this->closeOrderTransaction, true);
 
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
@@ -261,18 +284,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->authorizeTransaction($transaction);
 
-        /**
-         * Save the payment's transaction key.
-         */
-        if (!empty($response[0]->Key)) {
-            $transactionKey = $response[0]->Key;
-            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
-            $payment->setLastTransId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setTransactionId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setIsTransactionClosed($this->closeAuthorizeTransaction);
-        }
+        $this->saveTransactionData($response[0], $payment, $this->closeAuthorizeTransaction, true);
 
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
@@ -346,18 +358,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->captureTransaction($transaction);
 
-        if (!empty($response[0]->Key)) {
-            /**
-             * Save the payment's transaction key.
-             */
-            $transactionKey = $response[0]->Key;
-            $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
-            $payment->setLastTransId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setTransactionId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setIsTransactionClosed($this->closeCaptureTransaction);
-        }
+        $this->saveTransactionData($response[0], $payment, $this->closeCaptureTransaction, true);
 
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
@@ -431,16 +432,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->refundTransaction($transaction);
 
-        if (!empty($response[0]->Key)) {
-            /**
-             * Save the payment's transaction key.
-             */
-            $transactionKey = $response[0]->Key;
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setTransactionId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setIsTransactionClosed($this->closeRefundTransaction);
-        }
+        $this->saveTransactionData($response[0], $payment, $this->closeRefundTransaction, false);
 
         $this->afterRefund($payment, $response);
 
@@ -522,16 +514,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->voidTransaction($transaction);
 
-        if (!empty($response[0]->Key)) {
-            /**
-             * Save the payment's transaction key.
-             */
-            $transactionKey = $response[0]->Key;
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setTransactionId($transactionKey);
-            /** @noinspection PhpUndefinedMethodInspection */
-            $payment->setIsTransactionClosed($this->closeCancelTransaction);
-        }
+        $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, false);
 
         $this->afterVoid($payment, $response);
 
@@ -660,6 +643,76 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         );
 
         return $this;
+    }
+
+    /**
+     * @param \StdClass                                                                          $response
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param                                                                                    $close
+     * @param bool                                                                               $saveId
+     *
+     * @return \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
+     */
+    public function saveTransactionData(
+        \StdClass $response,
+        \Magento\Payment\Model\InfoInterface $payment,
+        $close,
+        $saveId = false
+    ) {
+        if (!empty($response->Key)) {
+            $transactionKey = $response->Key;
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setIsTransactionClosed($close);
+
+            /**
+             * Recursively convert object to array.
+             */
+            $arrayResponse = json_decode(json_encode($response), true);
+
+            /**
+             * Save the transaction's response as additional info for the transaction.
+             */
+            $rawInfo = $this->getTransactionAdditionalInfo($arrayResponse);
+
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setTransactionAdditionalInfo(
+                \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
+                $rawInfo
+            );
+
+            /**
+             * Save the payment's transaction key.
+             */
+            if ($saveId) {
+                /** @noinspection PhpUndefinedMethodInspection */
+                $payment->setTransactionId($transactionKey);
+            }
+        }
+
+        return $payment;
+    }
+
+    /**
+     * @param array  $array
+     * @param array  $rawInfo
+     * @param string $keyPrefix
+     *
+     * @return array
+     */
+    public function getTransactionAdditionalInfo(array $array, $rawInfo = [], $keyPrefix = '')
+    {
+        foreach ($array as $key => $value) {
+            $key = $keyPrefix . $key;
+
+            if (is_array($value)) {
+                $rawInfo = $this->getTransactionAdditionalInfo($value, $rawInfo, $key . ' => ');
+                continue;
+            }
+
+            $rawInfo[$key] = $value;
+        }
+
+        return $rawInfo;
     }
 
     /**
