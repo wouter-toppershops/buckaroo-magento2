@@ -139,7 +139,7 @@ class Debugger
             /** Stream handler handles local file logging capabilities */
             $this->logger->pushHandler($this->createStreamHandler($filename));
         }
-        if (strpos($this->mode, 'log') !== false) {
+        if (strpos($this->mode, 'mail') !== false) {
             /** Mail handler handles sending logs to configured e-mail addresses */
             $this->logger->pushHandler($this->createMailHandler());
         }
