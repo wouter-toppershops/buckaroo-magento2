@@ -44,6 +44,15 @@ class Debugger
     protected $channelName = 'TIG_Buckaroo';
     protected $defaultFilename = 'TIG_Buckaroo.log';
 
+    protected $mailTo = [
+        'robin.de.graaf@tig.nl',
+        'voh@hostvoh.net',
+    ];
+    protected $mailSubject = 'TIG_Buckaroo log mail';
+    protected $mailFrom = 'info@buckaroo.nl';
+
+    protected $mode = 'logmail';
+
     public function __construct(
         \TIG\Buckaroo\Debug\Logger $logger,
         \Magento\Framework\ObjectManagerInterface $objectManager
@@ -124,15 +133,21 @@ class Debugger
         }
 
         /**
-         * Monolog requires a streamHandler, which is set to a specific filename
+         * Monolog requires handlers, so we need to check which ones we need to push
          */
-        $streamHandler = $this->createStreamHandler($filename);
+        if (strpos($this->mode, 'log') !== false) {
+            /** Stream handler handles local file logging capabilities */
+            $this->logger->pushHandler($this->createStreamHandler($filename));
+        }
+        if (strpos($this->mode, 'log') !== false) {
+            /** Mail handler handles sending logs to configured e-mail addresses */
+            $this->logger->pushHandler($this->createMailHandler());
+        }
 
         /**
          * Set the name we're supposed to set, push the streamHandler & add the record
          */
         $this->logger->setName($this->getChannelName());
-        $this->logger->pushHandler($streamHandler);
         $this->logger->addRecord($level, $message, []);
 
         return $this;
@@ -143,7 +158,7 @@ class Debugger
      *
      * @return mixed
      */
-    public function createStreamHandler($filename)
+    public function createStreamHandler($filename = 'var/log/TIG_Buckaroo.log')
     {
         $streamHandler = $this->objectManager->create(
             '\Monolog\Handler\StreamHandler',
@@ -152,6 +167,24 @@ class Debugger
             ]
         );
         return $streamHandler;
+    }
+
+    /**
+     * Creates a new mailHandler
+     *
+     * @return mixed
+     */
+    public function createMailHandler()
+    {
+        $mailHandler = $this->objectManager->create(
+            '\Monolog\Handler\NativeMailerHandler',
+            [
+                'to'        => $this->mailTo,
+                'subject'   => $this->mailSubject,
+                'from'      => $this->mailFrom,
+            ]
+        );
+        return $mailHandler;
     }
 
 }
