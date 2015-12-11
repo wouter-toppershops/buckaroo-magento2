@@ -43,6 +43,7 @@ class Mrcash extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_MRCASH_CODE = 'tig_buckaroo_mrcash';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -94,6 +95,7 @@ class Mrcash extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -103,6 +105,7 @@ class Mrcash extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
         }
         return $this;
@@ -129,6 +132,7 @@ class Mrcash extends AbstractMethod
             'Version'          => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
@@ -149,11 +153,20 @@ class Mrcash extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCancelTransactionBuilder($payment)
+    {
+        return true;
     }
 }

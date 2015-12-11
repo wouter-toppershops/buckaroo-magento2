@@ -43,6 +43,7 @@ class Paypal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE = 'tig_buckaroo_paypal';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -94,6 +95,7 @@ class Paypal extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -117,6 +119,7 @@ class Paypal extends AbstractMethod
             'RequestParameter' => [],
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
@@ -139,10 +142,19 @@ class Paypal extends AbstractMethod
             ]
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCancelTransactionBuilder($payment)
+    {
+        return true;
     }
 }

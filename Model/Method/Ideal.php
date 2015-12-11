@@ -43,6 +43,7 @@ class Ideal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -94,6 +95,7 @@ class Ideal extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -103,6 +105,7 @@ class Ideal extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
         }
         return $this;
@@ -135,6 +138,7 @@ class Ideal extends AbstractMethod
             ],
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
@@ -155,11 +159,20 @@ class Ideal extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest')
                            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCancelTransactionBuilder($payment)
+    {
+        return true;
     }
 }
