@@ -130,6 +130,11 @@
                 <payment_action>order</payment_action>
             </tig_buckaroo_sofortbanking>
 
+            <tig_buckaroo_advanced>
+                <order_state_success>processing</order_state_success>
+                <order_state_failed>canceled</order_state_failed>
+                <order_state_pendingpayment>new</order_state_pendingpayment>
+            </tig_buckaroo_advanced>
         </payment>
     </default>
 </config>
