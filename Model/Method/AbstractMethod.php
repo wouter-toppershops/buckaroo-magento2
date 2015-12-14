@@ -64,6 +64,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $messageManager;
 
     /**
+     * @var \TIG\Buckaroo\Helper\Data
+     */
+    public $helper;
+
+    /**
      * @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
      */
     public $payment;
@@ -114,6 +119,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
      * @param \TIG\Buckaroo\Model\ValidatorFactory                         $validatorFactory
      * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
+     * @param \TIG\Buckaroo\Helper\Data                                    $helper
      * @param array                                                        $data
      */
     public function __construct(
@@ -130,6 +136,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -149,6 +156,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->transactionBuilderFactory = $transactionBuilderFactory;
         $this->validatorFactory = $validatorFactory;
         $this->messageManager = $messageManager;
+        $this->helper = $helper;
     }
 
     /**
@@ -694,26 +702,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param array  $array
-     * @param array  $rawInfo
-     * @param string $keyPrefix
+     * @param array $array
      *
      * @return array
      */
-    public function getTransactionAdditionalInfo(array $array, $rawInfo = [], $keyPrefix = '')
+    public function getTransactionAdditionalInfo(array $array)
     {
-        foreach ($array as $key => $value) {
-            $key = $keyPrefix . $key;
-
-            if (is_array($value)) {
-                $rawInfo = $this->getTransactionAdditionalInfo($value, $rawInfo, $key . ' => ');
-                continue;
-            }
-
-            $rawInfo[$key] = $value;
-        }
-
-        return $rawInfo;
+        return $this->helper->getTransactionAdditionalInfo($array);
     }
 
     /**

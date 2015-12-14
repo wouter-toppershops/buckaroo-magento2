@@ -115,4 +115,27 @@ class Data extends AbstractHelper
     {
         return $this->statusCodes;
     }
+
+    /**
+     * @param array  $array
+     * @param array  $rawInfo
+     * @param string $keyPrefix
+     *
+     * @return array
+     */
+    public function getTransactionAdditionalInfo(array $array, $rawInfo = [], $keyPrefix = '')
+    {
+        foreach ($array as $key => $value) {
+            $key = $keyPrefix . $key;
+
+            if (is_array($value)) {
+                $rawInfo = $this->getTransactionAdditionalInfo($value, $rawInfo, $key . ' => ');
+                continue;
+            }
+
+            $rawInfo[$key] = $value;
+        }
+
+        return $rawInfo;
+    }
 }

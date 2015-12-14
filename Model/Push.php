@@ -87,6 +87,11 @@ class Push implements PushInterface
     protected $postData;
 
     /**
+     * @var \TIG\Buckaroo\Helper\Data
+     */
+    protected $helper;
+
+    /**
      * Push constructor.
      *
      * @param ObjectManagerInterface                              $objectManager
@@ -94,19 +99,22 @@ class Push implements PushInterface
      * @param \TIG\Buckaroo\Model\Validator\Push                  $validator
      * @param \TIG\Buckaroo\Model\Validator\Amount                $amountValidator
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \TIG\Buckaroo\Helper\Data                           $helper
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
         Request $request,
         ValidatorPush $validator,
         ValidatorAmount $amountValidator,
-        OrderSender $orderSender
+        OrderSender $orderSender,
+        \TIG\Buckaroo\Helper\Data $helper
     ) {
         $this->objectManager  = $objectManager;
         $this->request        = $request;
         $this->validator      = $validator;
         $this->orderSender    = $orderSender;
         $this->validateAmount = $amountValidator;
+        $this->helper         = $helper;
     }
 
     /**
@@ -366,8 +374,8 @@ class Push implements PushInterface
     {
         //Only when the order can be invoiced and has not been invoiced before.
         if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
-            $payment = $this->order->getPayment();
-            $payment->registerCaptureNotification($this->order->getBaseGrandTotal());
+            $this->addTransactionData();
+
             $this->order->save();
 
             foreach ($this->order->getInvoiceCollection() as $invoice) {
@@ -381,6 +389,45 @@ class Push implements PushInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * @return Order\Payment
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function addTransactionData()
+    {
+        /** @var \Magento\Sales\Model\Order\Payment $payment */
+        $payment = $this->order->getPayment();
+
+        $transactionKey = $this->postData['brq_transactions'];
+
+        /**
+         * Save the transaction's response as additional info for the transaction.
+         */
+        $rawInfo = $this->helper->getTransactionAdditionalInfo($this->postData);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $payment->setTransactionAdditionalInfo(
+            \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
+            $rawInfo
+        );
+
+        /**
+         * Save the payment's transaction key.
+         */
+        /** @noinspection PhpUndefinedMethodInspection */
+        $payment->setTransactionId($transactionKey . '-capture');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $payment->setParentTransactionId($transactionKey);
+        $payment->setAdditionalInformation(
+            \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY,
+            $transactionKey
+        );
+
+        $payment->registerCaptureNotification($this->order->getBaseGrandTotal());
+
+        return $payment;
     }
 
     /**
