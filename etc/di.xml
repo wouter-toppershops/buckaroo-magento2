@@ -113,6 +113,12 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Model\ResourceModel\Certificate">
+        <arguments>
+            <argument name="dateTime" xsi:type="object">Magento\Framework\Stdlib\DateTime\DateTime</argument>
+        </arguments>
+    </type>
+
     <type name="TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory">
         <arguments>
             <argument name="transactionBuilders" xsi:type="array">

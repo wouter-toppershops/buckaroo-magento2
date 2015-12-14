@@ -40,34 +40,70 @@
 namespace TIG\Buckaroo\Setup;
 
 use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Framework\Setup\SchemaSetupInterface;
 
-class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
+class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
 {
     /**
-     * {@inheritdoc}
+     * Installs DB schema for a module
+     *
+     * @param SchemaSetupInterface   $setup
+     * @param ModuleContextInterface $context
+     *
+     * @return void
      */
-    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    public function install(SchemaSetupInterface $setup, ModuleContextInterface $context)
     {
-        $setup->startSetup();
+        $installer = $setup;
+        $installer->startSetup();
 
-        if (version_compare($context->getVersion(), '0.1.1', '<')) {
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status'),
+        if (!$installer->tableExists('tig_buckaroo_certificate')) {
+            $table = $installer->getConnection()
+                               ->newTable($installer->getTable('tig_buckaroo_certificate'));
+            $table->addColumn(
+                'entity_id',
+                \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+                null,
                 [
-                    'status' => 'tig_buckaroo_pending_payment',
-                    'label'  => __('TIG Buckaroo Pending Payment'),
-                ]
+                    'identity' => true,
+                    'unsigned' => true,
+                    'nullable' => false,
+                    'primary'  => true,
+                ],
+                'Entity ID'
             );
 
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status_state'),
+            $table->addColumn(
+                'certificate',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                null,
                 [
-                    'status'     => 'tig_buckaroo_pending_payment',
-                    'state'      => 'processing',
-                    'is_default' =>  0,
-                ]
+                    'nullable' => false,
+                ],
+                'Certificate'
             );
+
+            $table->addColumn(
+                'name',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+                255,
+                [
+                    'nullable' => false,
+                ],
+                'Name'
+            );
+
+            $table->addColumn(
+                'created_at',
+                \Magento\Framework\DB\Ddl\Table::TYPE_TIMESTAMP,
+                null,
+                [],
+                'Created At'
+            );
+
+            $table->setComment('TIG Buckaroo Certificate');
+
+            $installer->getConnection()->createTable($table);
         }
     }
 }
