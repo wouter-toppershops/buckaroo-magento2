@@ -65,10 +65,29 @@ class Amount implements ValidatorInterface
      */
     public function validate($data)
     {
-        return true;
+        if (empty($data)) {
+            throw new \InvalidArgumentException(
+                'No data to validate'
+            );
+        }
+
+        $validation = $this->validatePayment(
+            $data['baseTotal'],
+            $data['orderAmount'],
+            $data['message'],
+            $data['brq_amount']
+        );
+
+        if ($validation) {
+            return $validation;
+        }
+
+        return false;
     }
 
     /**
+     * Determine whether too much or not has been paid
+     *
      * @param $baseTotal
      * @param $orderAmount
      * @param $message
@@ -78,11 +97,8 @@ class Amount implements ValidatorInterface
      */
     public function validatePayment($baseTotal, $orderAmount, $message, $brq_amount)
     {
-        $description  = '<b> ' .$message .' :</b><br/>';
-        /**
-         * Determine whether too much or not has been paid
-         * @todo Move this over to an new validator class.
-         */
+        $description = '<b> ' .$message .' :</b><br/>';
+
         if ($baseTotal > $brq_amount) {
             $description .= __(
                 'Not enough paid: %1 has been transfered. Order grand total was: %2.',
@@ -98,6 +114,7 @@ class Amount implements ValidatorInterface
         } else {
             $description = false;
         }
+
         return $description;
     }
 }
