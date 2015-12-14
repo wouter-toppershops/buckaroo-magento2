@@ -38,33 +38,8 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+class DropdownCount4 implements \Magento\Framework\Option\ArrayInterface
 {
-    /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
-
-    /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
-     */
-    protected $_orderConfig;
-
-    /**
-     * Class constructor
-     *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
-    ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
-    }
-
     /**
      * Options getter
      *
@@ -72,19 +47,26 @@ class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
+        return [
+            ['value' => 1, 'label' => __('1')],
+            ['value' => 2, 'label' => __('2')],
+            ['value' => 3, 'label' => __('3')],
+            ['value' => 4, 'label' => __('4')]
+        ];
+    }
 
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
-
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
-        }
-
-        return $options;
+    /**
+     * Get options in "key-value" format
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            1 => __('1'),
+            2 => __('2'),
+            3 => __('3'),
+            4 => __('4')
+        ];
     }
 }
