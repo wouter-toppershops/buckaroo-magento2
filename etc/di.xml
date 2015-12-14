@@ -92,6 +92,10 @@
                     <item name="type" xsi:type="string">redirect_return</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\RedirectProcess</item>
                 </item>
+                <item name="amount" xsi:type="array">
+                    <item name="type" xsi:type="string">amount</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\Amount</item>
+                </item>
             </argument>
         </arguments>
     </type>
