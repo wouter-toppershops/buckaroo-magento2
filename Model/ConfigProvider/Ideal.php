@@ -39,7 +39,7 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-class iDEAL extends AbstractConfigProvider
+class Ideal extends AbstractConfigProvider
 {
     /**
      * @return array|void
