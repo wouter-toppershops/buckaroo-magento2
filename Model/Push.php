@@ -290,12 +290,12 @@ class Push implements PushInterface
         /**
          * Determine whether too much or not has been paid
          */
-        $description = $this->validateAmount->validatePayment(
-            $baseTotal,
-            $orderAmount,
-            $message,
-            $this->postData['brq_amount']
-        );
+        $description = $this->validateAmount->validate([
+            'baseTotal'   => $baseTotal,
+            'orderAmount' => $orderAmount,
+            'message'     => $message,
+            'brq_amount'  => $this->postData['brq_amount']
+        ]);
 
         if (!$description) {
             return false;
