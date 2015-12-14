@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -26,29 +25,39 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+namespace TIG\Buckaroo\Test\Unit\Controller\Redirect;
 
-    <type name="Magento\Checkout\Model\CompositeConfigProvider">
-        <arguments>
-            <argument name="configProviders" xsi:type="array">
-                <item name="buckaroo_config_provider1" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Ideal</item>
-            </argument>
-            <argument name="configProviders" xsi:type="array">
-                <item name="buckaroo_config_provider2" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Creditcard</item>
-            </argument>
-        </arguments>
-    </type>
+use Mockery as m;
+use TIG\Buckaroo\Test\BaseTest;
+use TIG\Buckaroo\Controller\Redirect\Process;
 
-</config>
+class ProcessTest extends BaseTest
+{
+    /**
+     * @var Process
+     */
+    protected $controller;
+
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->controller = $this->objectManagerHelper->getObject(Process::class);
+    }
+
+    public function testExecute()
+    {
+        $this->controller
+    }
+}
