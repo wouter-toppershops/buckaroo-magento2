@@ -131,10 +131,15 @@
             </tig_buckaroo_sofortbanking>
 
             <tig_buckaroo_advanced>
+                <model>TIG\Buckaroo\Model\Method\Mrcash</model>
                 <order_state_success>processing</order_state_success>
                 <order_state_failed>canceled</order_state_failed>
                 <order_state_pendingpayment>new</order_state_pendingpayment>
+                <order_incorrect_payment>holded</order_incorrect_payment>
+                <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
+                <cancel_on_failure>0</cancel_on_failure>
             </tig_buckaroo_advanced>
+
         </payment>
     </default>
 </config>
