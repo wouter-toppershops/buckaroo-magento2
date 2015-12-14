@@ -40,10 +40,10 @@ namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider;
 
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
-use TIG\Buckaroo\Model\ConfigProvider\iDEAL;
+use TIG\Buckaroo\Model\ConfigProvider\Ideal;
 use Magento\Framework\View\Asset\Repository;
 
-class iDealTest extends BaseTest
+class IdealTest extends BaseTest
 {
     /**
      * @var iDEAL
@@ -60,7 +60,7 @@ class iDealTest extends BaseTest
         parent::setUp();
 
         $this->assetRepository = m::mock(Repository::class);
-        $this->object = $this->objectManagerHelper->getObject(iDEAL::class, [
+        $this->object = $this->objectManagerHelper->getObject(Ideal::class, [
             'assetRepo' => $this->assetRepository
         ]);
     }
