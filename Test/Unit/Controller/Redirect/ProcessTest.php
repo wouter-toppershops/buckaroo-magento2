@@ -41,6 +41,8 @@ namespace TIG\Buckaroo\Test\Unit\Controller\Redirect;
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Controller\Redirect\Process;
+use Magento\Framework\App\Action\Context;
+use Magento\Framework\App\RequestInterface;
 
 class ProcessTest extends BaseTest
 {
@@ -49,15 +51,34 @@ class ProcessTest extends BaseTest
      */
     protected $controller;
 
+    /**
+     * @var Context
+     */
+    protected $context;
+
+    /**
+     * @var m\MockInterface
+     */
+    protected $request;
+
     public function setUp()
     {
         parent::setUp();
 
-        $this->controller = $this->objectManagerHelper->getObject(Process::class);
+        $this->request = m::mock(RequestInterface::class);
+        $this->context = $this->objectManagerHelper->getObject(Context::class, [
+            'request' => $this->request
+        ]);
+
+        $this->controller = $this->objectManagerHelper->getObject(Process::class, [
+            'context' => $this->context
+        ]);
     }
 
     public function testExecute()
     {
-        $this->controller
+        $this->request->shouldReceive('getParams')->andReturn(['brq_ordernumber' => null, 'brq_statuscode' => null]);
+
+        $this->controller->execute();
     }
 }
