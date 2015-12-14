@@ -115,7 +115,8 @@ class Push implements PushInterface
         ValidatorAmount $amountValidator,
         OrderSender $orderSender,
         \TIG\Buckaroo\Helper\Data $helper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        \TIG\Buckaroo\Helper\Data $helper
     ) {
         $this->objectManager  = $objectManager;
         $this->request        = $request;
@@ -269,7 +270,7 @@ class Push implements PushInterface
     {
         //Create description
         $description = ''.$message;
-        
+
         $buckarooCancelOnFailed = $this->scopeConfig->getValue(
             'payment\tig_buckaroo_advanced/cancel_on_failure',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
@@ -403,16 +404,25 @@ class Push implements PushInterface
 
         $this->order->save();
 
-        foreach ($this->order->getInvoiceCollection() as $invoice) {
-            if (!isset($this->postData['brq_transactions'])) {
-                continue;
-            }
-            /** @var \Magento\Sales\Model\Order\Invoice  $invoice */
-            $invoice->setTransactionId($this->postData['brq_transactions'])
-                ->save();
-        }
-        return true;
+        //Only when the order can be invoiced and has not been invoiced before.
+        if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
+            $this->addTransactionData();
 
+            $this->order->save();
+
+            foreach ($this->order->getInvoiceCollection() as $invoice) {
+                if (!isset($this->postData['brq_transactions'])) {
+                    continue;
+                }
+                /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+                $invoice->setTransactionId($this->postData['brq_transactions'])
+                    ->save();
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     /**
