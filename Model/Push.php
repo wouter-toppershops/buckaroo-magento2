@@ -61,36 +61,37 @@ class Push implements PushInterface
     /**
      * @var \Magento\Framework\Webapi\Rest\Request $request
      */
-    protected $request;
+    public $request;
 
     /**
      * @var \TIG\Buckaroo\Model\Validator\Push $validator
      */
-    protected $validator;
+    public $validator;
 
     /**
      * @var \TIG\Buckaroo\Model\Validator\Amount $validateAmount;
      */
-    protected $validateAmount;
+    public $validateAmount;
+
     /**
      * @var Order $order
      */
-    protected $order;
+    public $order;
 
     /**
      * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      */
-    protected $orderSender;
+    public $orderSender;
 
     /**
      * @var array
      */
-    protected $postData;
+    public $postData;
 
     /**
      * @var \TIG\Buckaroo\Helper\Data
      */
-    protected $helper;
+    public $helper;
 
     /**
      * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
@@ -209,6 +210,7 @@ class Push implements PushInterface
                 $this->processIncorrectPaymentPush($newSatus, $response['message']);
                 break;
         }
+        $this->order->save();
 
         return true;
     }
@@ -266,7 +268,7 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processFailedPush($newStatus, $message)
+    public function processFailedPush($newStatus, $message)
     {
         //Create description
         $description = ''.$message;
@@ -291,7 +293,7 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processSucceededPush($newStatus, $message)
+    public function processSucceededPush($newStatus, $message)
     {
         if (!$this->order->getEmailSent()) {
             $this->orderSender->send($this->order);
@@ -313,7 +315,7 @@ class Push implements PushInterface
      * @param $message
      * @return bool
      */
-    protected function processIncorrectPaymentPush($newStatus, $message)
+    public function processIncorrectPaymentPush($newStatus, $message)
     {
         $baseTotal    = round($this->order->getBaseGrandTotal(), 0);
         $orderAmount  = $this->getCorrectOrderAmount();
@@ -344,7 +346,7 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processPendingPaymentPush($newStatus, $message)
+    public function processPendingPaymentPush($newStatus, $message)
     {
         $description = ''.$message;
 
@@ -385,7 +387,6 @@ class Push implements PushInterface
         } else {
             $this->order->addStatusHistoryComment($description);
         }
-        $this->order->save();
     }
 
     /**
