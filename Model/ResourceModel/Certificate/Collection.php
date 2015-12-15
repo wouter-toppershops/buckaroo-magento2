@@ -37,37 +37,38 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Setup;
+namespace TIG\Buckaroo\Model\ResourceModel\Certificate;
 
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
-
-class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
+class Collection extends \Magento\Sales\Model\ResourceModel\Collection\AbstractCollection
 {
+    // @codingStandardsIgnoreStart
     /**
-     * {@inheritdoc}
+     * @var string
      */
-    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    protected $_idFieldName = 'entity_id';
+
+    /**
+     * Event prefix
+     *
+     * @var string
+     */
+    protected $_eventPrefix = 'tig_buckaroo_certificate_collection';
+
+    /**
+     * Event object
+     *
+     * @var string
+     */
+    protected $_eventObject = 'certificate_collection';
+
+    /**
+     * Model initialization
+     *
+     * @return void
+     */
+    protected function _construct()
     {
-        $setup->startSetup();
-
-        if (version_compare($context->getVersion(), '0.1.1', '<')) {
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status'),
-                [
-                    'status' => 'tig_buckaroo_pending_payment',
-                    'label'  => __('TIG Buckaroo Pending Payment'),
-                ]
-            );
-
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status_state'),
-                [
-                    'status'     => 'tig_buckaroo_pending_payment',
-                    'state'      => 'processing',
-                    'is_default' =>  0,
-                ]
-            );
-        }
+        $this->_init('TIG\Buckaroo\Model\Certificate', 'TIG\Buckaroo\Model\ResourceModel\Certificate');
     }
+    // @codingStandardsIgnoreEnd
 }
