@@ -132,16 +132,18 @@ class Paypal extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
-            'Service' => [
-                'Name' => 'paypal',
-                'Action' => 'Pay',
-                'Version' => 1,
-            ]
+            'Name' => 'paypal',
+            'Action' => 'Refund',
+            'Version' => 1,
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
-            ->setMethod('TransactionRequest');
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+            )
+            ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }

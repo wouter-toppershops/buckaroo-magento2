@@ -165,16 +165,20 @@ class SepaDirectDebit extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
-            'Service' => [
-                'Name' => 'sepadirectdebit',
-                'Action' => 'Pay',
-                'Version' => 1,
-            ]
+
+            'Name' => 'sepadirectdebit',
+            'Action' => 'Refund',
+            'Version' => 1,
+
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
-                           ->setMethod('TransactionRequest');
+                           ->setMethod('TransactionRequest')
+                           ->setOriginalTransactionKey(
+                               $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+                           )
+                           ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }
