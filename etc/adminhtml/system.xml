@@ -95,8 +95,9 @@
                     <config_path>payment/tig_buckaroo_account/certificate_label</config_path>
                 </field>
 
-                <field id="certificate_upload" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="certificate_upload" translate="label" type="file" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Upload your Buckaroo private key certificate</label>
+                    <backend_model>TIG\Buckaroo\Model\Config\Backend\Certificate</backend_model>
                     <config_path>payment/tig_buckaroo_account/certificate_upload</config_path>
                 </field>
 
