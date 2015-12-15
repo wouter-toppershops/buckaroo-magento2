@@ -55,11 +55,15 @@
     </type>
 
     <type name="TIG\Buckaroo\Model\Method\Paypal">
-        <plugin name="tig_buckaroo_paypal_sellersprotection" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Authorize" />
+        <plugin name="tig_buckaroo_paypal_sellersprotection_order" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Order" />
     </type>
 
     <type name="TIG\Buckaroo\Model\Method\SepaDirectDebit">
         <plugin name="tig_buckaroo_sepadirectdebit" type="TIG\Buckaroo\Model\Method\Plugin\SepaDirectDebit" />
+    </type>
+
+    <type name="TIG\Buckaroo\Model\Push">
+        <plugin name="tig_buckaroo_paypal_sellersprotection_push" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Push" />
     </type>
 
     <type name="TIG\Buckaroo\Model\PaymentInformationManagement">
