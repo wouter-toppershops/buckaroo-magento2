@@ -40,16 +40,172 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
-class Push implements \TIG\Buckaroo\Model\ValidatorInterface
+use \TIG\Buckaroo\Helper\Data as DataHelper;
+use \TIG\Buckaroo\Model\ValidatorInterface;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
+
+/**
+ * Class Push
+ *
+ * @package TIG\Buckaroo\Model\Validator
+ */
+class Push implements ValidatorInterface
 {
+    public $scopeConfig;
+
+    public $helper;
+
+    public $bpeResponseMessages = [
+        190 => 'Success',
+        490 => 'Payment failure',
+        491 => 'Validation error',
+        492 => 'Technical error',
+        690 => 'Payment rejected',
+        790 => 'Waiting for user input',
+        791 => 'Waiting for processor',
+        792 => 'Waiting on consumer action',
+        793 => 'Payment on hold',
+        890 => 'Cancelled by consumer',
+        891 => 'Cancelled by merchant'
+    ];
 
     /**
-     * @param array|object $data
+     * @param \TIG\Buckaroo\Helper\Data $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
+     */
+    public function __construct(
+        DataHelper $helper,
+        ScopeConfigInterface $scopeConfig
+    ) {
+        $this->helper      = $helper;
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * @param $data
      *
-     * @return boolean
+     * @return bool
      */
     public function validate($data)
     {
         return true;
+    }
+
+    /**
+     * Checks if the status code is returned by the bpe push and is valid.
+     * @param $code
+     *
+     * @return Array
+     */
+    public function validateStatusCode($code)
+    {
+        if (null !== $this->helper->getStatusByValue($code)
+            && isset($this->bpeResponseMessages[$code])
+        ) {
+            return [
+                'message' => $this->bpeResponseMessages[$code],
+                'status'  => $this->helper->getStatusByValue($code),
+                'code'    => $code,
+            ];
+        } else {
+            return [
+                'message' => 'Onbekende responsecode: ' . $code,
+                'status'  => 'TIG_BUCKAROO_STATUSCODE_NEUTRAL',
+                'code'    => $code,
+            ];
+        }
+    }
+
+    /**
+     * Generate/calculate the signature with the buckaroo config value and check if thats equal to the signature
+     * received from the push
+     *
+     * @param $postData
+     *
+     * @return bool
+     */
+    public function validateSignature($postData)
+    {
+        if (!isset($postData['brq_signature'])) {
+            return false;
+        }
+
+        $signature = $this->calculateSignature($postData);
+
+        if (!$signature === $postData['brq_signature']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Determines the signature using array sorting and the SHA1 hash algorithm
+     *
+     * @param $postData
+     *
+     * @return string
+     */
+    protected function calculateSignature($postData)
+    {
+        $copyData = $postData;
+        unset($copyData['brq_signature']);
+
+        $sortableArray = $this->buckarooArraySort($copyData);
+
+        $signatureString = '';
+
+        foreach ($sortableArray as $brq_key => $value) {
+            if ('brq_service_masterpass_customerphonenumber' !== $brq_key
+                && 'brq_service_masterpass_shippingrecipientphonenumber' !== $brq_key
+            ) {
+                $value = urldecode($value);
+            }
+
+            $signatureString .= $brq_key. '=' . $value;
+        }
+
+        /**
+         * @todo create this config value.
+         */
+        $digitalSignature = $this->scopeConfig->getValue(
+            'payment/tig_buckaroo_advanced/digital_signature',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        $signatureString .= $digitalSignature;
+
+        $signature = SHA1($signatureString);
+
+        return $signature;
+    }
+
+    /**
+     * Sort the array so that the signature can be calculated identical to the way buckaroo does.
+     *
+     * @param $arrayToUse
+     *
+     * @return array $sortableArray
+     */
+    protected function buckarooArraySort($arrayToUse)
+    {
+        $arrayToSort   = [];
+        $originalArray = [];
+
+        foreach ($arrayToUse as $key => $value) {
+            $arrayToSort[$key]   = $value;
+            $originalArray[$key] = $key;
+        }
+
+        ksort($arrayToSort);
+
+        $sortableArray = [];
+
+        foreach ($arrayToSort as $key => $value) {
+            $key = $originalArray[$key];
+            $sortableArray[$key] = $value;
+        }
+
+        return $sortableArray;
     }
 }

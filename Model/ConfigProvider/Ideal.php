@@ -39,74 +39,69 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use Magento\Payment\Model\CcGenericConfigProvider;
-
-class Ideal extends CcGenericConfigProvider
+class Ideal extends AbstractConfigProvider
 {
-
     /**
      * @return array|void
      */
     public function getConfig()
     {
-
-        $config = parent::getConfig();
-        //@TODO: get banks dynamic
-        $config = array_merge_recursive($config, [
+        // @TODO: get banks dynamic
+        $config = [
             'payment' => [
                 'buckaroo' => [
                     'banks' => [
                         [
                             'name' => 'ABN AMRO',
                             'code' => 'ABNANL2A',
-                            'img' => 'ico-abn'
+                            'img' => $this->getImageUrl('ico-abn'),
                         ],
                         [
                             'name' => 'ASN Bank',
                             'code' => 'ASNBNL21',
-                            'img' => 'ico-asn'
+                            'img' => $this->getImageUrl('ico-asn'),
                         ],
                         [
                             'name' => 'ING',
                             'code' => 'INGBNL2A',
-                            'img' => 'ico-ing'
+                            'img' => $this->getImageUrl('ico-ing'),
                         ],
                         [
                             'name' => 'Rabobank',
                             'code' => 'RABONL2U',
-                            'img' => 'ico-rb'
+                            'img' => $this->getImageUrl('ico-rb'),
                         ],
                         [
                             'name' => 'SNS Bank',
                             'code' => 'SNSBNL2A',
-                            'img' => 'ico-sns'
+                            'img' => $this->getImageUrl('ico-sns'),
                         ],
                         [
                             'name' => 'RegioBank',
                             'code' => 'RBRBNL21',
-                            'img' => 'ico-regio'
+                            'img' => $this->getImageUrl('ico-regio'),
                         ],
                         [
 
                             'name' => 'Triodos Bank',
                             'code' => 'TRIONL2U',
-                            'img' => 'ico-trio'
+                            'img' => $this->getImageUrl('ico-trio'),
                         ],
                         [
                             'name' => 'Van Lanschot',
                             'code' => 'FVLBNL22',
-                            'img' => 'ico-lans'
+                            'img' => $this->getImageUrl('ico-lans'),
                         ],
                         [
                             'name' => 'Knab Bank',
                             'code' => 'KNABNL2H',
-                            'img' => 'ico-knab'
+                            'img' => $this->getImageUrl('ico-knab'),
                         ],
                     ],
                     'response' => [],
                 ],
             ],
-        ]);
+        ];
 
         return $config;
     }

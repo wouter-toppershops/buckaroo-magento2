@@ -49,11 +49,21 @@ interface TransactionBuilderInterface
     public function setOrder($order);
 
     /**
+     * @return \Magento\Sales\Model\Order
+     */
+    public function getOrder();
+
+    /**
      * @param array $services
      *
      * @return TransactionBuilderInterface
      */
     public function setServices($services);
+
+    /**
+     * @return array
+     */
+    public function getServices();
 
     /**
      * @param string $method
@@ -63,11 +73,33 @@ interface TransactionBuilderInterface
     public function setMethod($method);
 
     /**
+     * @return string
+     */
+    public function getMethod();
+
+    /**
      * @param string $key
      *
      * @return TransactionBuilderInterface
      */
     public function setOriginalTransactionKey($key);
+
+    /**
+     * @return string
+     */
+    public function getOriginalTransactionKey();
+
+    /**
+     * @param string $channel
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setChannel($channel);
+
+    /**
+     * @return string
+     */
+    public function getChannel();
 
     /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction

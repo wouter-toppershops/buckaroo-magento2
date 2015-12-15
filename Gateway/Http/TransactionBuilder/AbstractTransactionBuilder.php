@@ -40,8 +40,6 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
-use Magento\Store\Model\ScopeInterface;
-
 abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
 {
     /**
@@ -106,15 +104,44 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $originalTransactionKey = null;
 
     /**
-     * @param string $originalTransactionKey
-     *
-     * @return $this
+     * @var null|string
+     */
+    protected $channel = 'Web';
+
+    /**
+     * {@inheritdoc}
      */
     public function setOriginalTransactionKey($originalTransactionKey)
     {
         $this->originalTransactionKey = $originalTransactionKey;
 
         return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getOriginalTransactionKey()
+    {
+        return $this->originalTransactionKey;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setChannel($channel)
+    {
+        $this->channel = $channel;
+
+        return $this;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getChannel()
+    {
+        return $this->channel;
     }
 
     /**
@@ -158,9 +185,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setOrder($order)
     {
@@ -178,9 +203,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
-     * @param array $services
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setServices($services)
     {
@@ -198,9 +221,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
-     * @param string $method
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setMethod($method)
     {
@@ -239,7 +260,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
                 'WebsiteKey' => 'SniACG6eSj',
                 'Culture' => 'nl-NL',
                 'TimeStamp' => time(),
-                'Channel' => 'Web',
+                'Channel' => $this->channel,
                 'Software' => [
                     'PlatformName' => $this->productMetadata->getName()
                                       . ' - '

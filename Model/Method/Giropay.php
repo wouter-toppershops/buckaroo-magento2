@@ -39,10 +39,16 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+use Magento\Framework\Validator\Exception;
+use Magento\Sales\Model\Order\Payment;
+
 class Giropay extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_GIROPAY_CODE = 'tig_buckaroo_giropay';
 
+    const BIC_NUMBER_REGEX = '^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$^';
+
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -58,7 +64,12 @@ class Giropay extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -94,6 +105,7 @@ class Giropay extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -103,23 +115,38 @@ class Giropay extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data->getCustomerBic());
         }
         return $this;
     }
 
     /**
-     * {@inheritdoc}
+     * Validate the extra input fields.
+     *
+     * @return $this
+     * @throws Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getCaptureTransaction($payment)
+    public function validate()
     {
-        return false;
+        parent::validate();
+
+        $paymentInfo = $this->getInfoInstance();
+        $customerBicNumber = $paymentInfo->getAdditionalInformation('customer_bic');
+
+        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber))
+        {
+            throw new Exception(__('Please enter a valid BIC number'));
+        }
+
+        return $this;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getAuthorizeTransaction($payment)
+    public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -135,19 +162,34 @@ class Giropay extends AbstractMethod
             ],
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
 
-        $transaction = $transactionBuilder->build();
-
-        return $transaction;
+        return $transactionBuilder;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function getRefundTransaction($payment)
+    public function getCaptureTransactionBuilder($payment)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthorizeTransactionBuilder($payment)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
@@ -157,13 +199,20 @@ class Giropay extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
-        $transaction = $transactionBuilder->build();
+        return $transactionBuilder;
+    }
 
-        return $transaction;
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }

@@ -66,14 +66,16 @@ class Refund extends AbstractTransactionBuilder
                 '_' => $order->getRemoteIp(),
                 'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
             ],
-            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
-            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/return/return'),
+            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
             'OriginalTransactionKey' => $this->originalTransactionKey,
             'StartRecurrent' => $this->startRecurrent,
             'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => $this->getServices(),
+            'Services' => [
+                'Service' => $this->getServices()
+            ],
         ];
 
         return $body;

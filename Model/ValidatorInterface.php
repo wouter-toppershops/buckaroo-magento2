@@ -40,12 +40,18 @@
 
 namespace TIG\Buckaroo\Model;
 
+/**
+ * Interface ValidatorInterface
+ *
+ * @package TIG\Buckaroo\Model
+ */
 interface ValidatorInterface
 {
     /**
-     * @param array|object $data
+     * @param $data
      *
-     * @return boolean
+     * @return mixed
      */
     public function validate($data);
+
 }
