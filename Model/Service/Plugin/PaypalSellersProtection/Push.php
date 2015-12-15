@@ -51,6 +51,31 @@ class Push
     const ELIGIBILITY_TYPE_NONE                 = 'None';
     /**#@-*/
 
+    // @codingStandardsIgnoreStart
+    /**#@+
+     * Xpaths to the paypal seller protection custom order statuses.
+     */
+    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ELIGIBLE             = 'payment/tig_buckaroo_paypal/sellers_protection_eligible';
+    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ITEM_NOT_RECEIVED    = 'payment/tig_buckaroo_paypal/sellers_protection_itemnotreceived_eligible';
+    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_UNAUTHORIZED_PAYMENT = 'payment/tig_buckaroo_paypal/sellers_protection_unauthorizedpayment_eligible';
+    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_NONE                 = 'payment/tig_buckaroo_paypal/sellers_protection_ineligible';
+    /**#@-*/
+    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->scopeConfig = $scopeConfig;
+    }
+
     /**
      * @param \TIG\Buckaroo\Model\Push $push
      * @param boolean                  $result
@@ -61,7 +86,9 @@ class Push
         \TIG\Buckaroo\Model\Push $push,
         $result
     ) {
-        if (empty($push->postData['brq_service_paypal_protectioneligibility'])) {
+        if (empty($push->postData['brq_service_paypal_protectioneligibility'])
+            || empty($push->postData['brq_service_paypal_protectioneligibilitytype'])
+        ) {
             return $result;
         }
 
@@ -75,29 +102,44 @@ class Push
         $order = $push->order;
         switch ($eligibilityType) {
             case self::ELIGIBILITY_TYPE_ELIGIBLE:
-                $order->addStatusHistoryComment(
-                    __(
-                        "Merchant is protected by PayPal Seller Protection Policy for both Unauthorized Payment and" .
-                        " Item Not Received."
-                    )
+                $comment = __(
+                    "Merchant is protected by PayPal Seller Protection Policy for both Unauthorized Payment and Item" .
+                    " Not Received."
+                );
+
+                $status = $this->scopeConfig->getValue(
+                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ELIGIBLE,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                 );
                 break;
             case self::ELIGIBILITY_TYPE_ITEM_NOT_RECEIVED:
-                $order->addStatusHistoryComment(
-                    __("Merchant is protected by Paypal Seller Protection Policy for Item Not Received.")
+                $comment = __("Merchant is protected by Paypal Seller Protection Policy for Item Not Received.");
+
+                $status = $this->scopeConfig->getValue(
+                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ITEM_NOT_RECEIVED,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                 );
                 break;
             case self::ELIGIBILITY_TYPE_UNAUTHORIZED_PAYMENT:
-                $order->addStatusHistoryComment(
-                    __("Merchant is protected by Paypal Seller Protection Policy for Unauthorized Payment.")
+                $comment = __("Merchant is protected by Paypal Seller Protection Policy for Unauthorized Payment.");
+
+                $status = $this->scopeConfig->getValue(
+                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_UNAUTHORIZED_PAYMENT,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                 );
                 break;
             case self::ELIGIBILITY_TYPE_NONE:
-                $order->addStatusHistoryComment(
-                    __("Merchant is not protected under the Seller Protection Policy.")
+                $comment = __("Merchant is not protected under the Seller Protection Policy.");
+
+                $status = $this->scopeConfig->getValue(
+                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_NONE,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                 );
                 break;
+            default:
+                throw new \InvalidArgumentException("Invalid eligibility type.");
         }
+        $order->addStatusHistoryComment($comment, $status ? $status : false);
 
         return $result;
     }

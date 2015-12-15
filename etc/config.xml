@@ -129,9 +129,9 @@
                 <group>tig_buckaroo_sofortbanking</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_sofortbanking>
-            
+
             <tig_buckaroo_advanced>
-                <model>TIG\Buckaroo\Model\Method\Mrcash</model>
+                <model>TIG\Buckaroo\Model\Method\Mrcash</model> <!-- placeholder -->
                 <order_state_success>processing</order_state_success>
                 <order_state_failed>canceled</order_state_failed>
                 <order_state_pendingpayment>new</order_state_pendingpayment>
