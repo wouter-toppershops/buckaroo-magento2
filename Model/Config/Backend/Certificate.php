@@ -73,6 +73,11 @@ class Certificate extends \Magento\Framework\App\Config\Value //\Magento\Config\
             if (!$this->validExtension($certFile['name'])) {
                 throw new \Exception('Disallowed file type.');
             }
+
+            $certDB = $this->objectManager->create('TIG\Buckaroo\Model\Certificate');
+            $certDB->setCertificate(file_get_contents($certFile['tmp_name']));
+            $certDB->setName('testie');
+            $certDB->save();
         }
 
         return $this;
@@ -93,52 +98,4 @@ class Certificate extends \Magento\Framework\App\Config\Value //\Magento\Config\
 
         return in_array(strtolower($extension), $allowedExtensions);
     }
-
-    /*const UPLOAD_DIR = 'buckcert';
-
-    protected function _getUploadDir()
-    {
-        return $this->_mediaDirectory->getAbsolutePath(
-            $this->_appendScopeInfo(
-                self::UPLOAD_DIR
-            )
-        );
-    }
-
-    protected function _addWhetherScopeInfo()
-    {
-        return true;
-    }
-
-    protected function _getAllowedExtensions()
-    {
-        return ['pem'];
-    }*/
-
-    /*
-    protected $_filesystem;
-
-    protected $_fileUploaderFactory;
-
-    protected $_coreRegistry;
-
-    protected $_objectManager;
-
-    public function __construct(
-        \Magento\Framework\Filesystem $filesystem,
-        \Magento\MediaStorage\Model\File\UploaderFactory $fileUploaderFactory,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Framework\ObjectManagerInterface $objectManager
-    ) {
-        $this->_filesystem          = $filesystem;
-        $this->_fileUploaderFactory = $fileUploaderFactory;
-        $this->_coreRegistry        = $coreRegistry;
-        $this->_objectManager       = $objectManager;
-    }
-
-    public function afterSave($object)
-    {
-        //Save crap todo
-    }
-    */
 }
