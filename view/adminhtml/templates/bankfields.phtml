@@ -1,0 +1,16 @@
+<!-- Gets extra fields if required for this payment method. Returns array of extra fields, or empty array -->
+<?php $extraFields = $block->getExtraFields(); ?>
+
+<table>
+<?php foreach ($extraFields as $name => $field): ?>
+    <tr>
+        <td class="label"><?php echo $name; ?><div id="tig_buckaroo_<?php echo $field; ?>"></div></td>
+        <td>
+            <input type="text"
+                   name="creditmemo[<?php echo $field; ?>]"
+                   class="input-text"
+                   id="<?php echo $field; ?>" />
+        </td>
+    </tr>
+<?php endforeach; ?>
+</table>
