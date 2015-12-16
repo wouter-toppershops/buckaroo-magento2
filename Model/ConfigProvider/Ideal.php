@@ -41,63 +41,81 @@ namespace TIG\Buckaroo\Model\ConfigProvider;
 
 class Ideal extends AbstractConfigProvider
 {
+    protected $issuers = [
+        [
+            'name' => 'ABN AMRO',
+            'code' => 'ABNANL2A',
+        ],
+        [
+            'name' => 'ASN Bank',
+            'code' => 'ASNBNL21',
+        ],
+        [
+            'name' => 'ING',
+            'code' => 'INGBNL2A',
+        ],
+        [
+            'name' => 'Rabobank',
+            'code' => 'RABONL2U',
+        ],
+        [
+            'name' => 'SNS Bank',
+            'code' => 'SNSBNL2A',
+        ],
+        [
+            'name' => 'RegioBank',
+            'code' => 'RBRBNL21',
+        ],
+        [
+            'name' => 'Triodos Bank',
+            'code' => 'TRIONL2U',
+        ],
+        [
+            'name' => 'Van Lanschot',
+            'code' => 'FVLBNL22',
+        ],
+        [
+            'name' => 'Knab Bank',
+            'code' => 'KNABNL2H',
+        ],
+    ];
+
+    /**
+     * Get the list of banks. This is used in the iDeal payment model.
+     *
+     * @return array
+     */
+    public function getIssuers()
+    {
+        return $this->issuers;
+    }
+
+    /**
+     * Format the issuers list so the img index is filled with the correct url.
+     *
+     * @return array
+     */
+    protected function formatIssuers()
+    {
+        return array_map(function ($issuer) {
+            $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
+
+            return $issuer;
+        }, $this->issuers);;
+    }
+
     /**
      * @return array|void
      */
     public function getConfig()
     {
+        $issuers = $this->formatIssuers();
+
         // @TODO: get banks dynamic
         $config = [
             'payment' => [
                 'buckaroo' => [
-                    'banks' => [
-                        [
-                            'name' => 'ABN AMRO',
-                            'code' => 'ABNANL2A',
-                            'img' => $this->getImageUrl('ico-abn'),
-                        ],
-                        [
-                            'name' => 'ASN Bank',
-                            'code' => 'ASNBNL21',
-                            'img' => $this->getImageUrl('ico-asn'),
-                        ],
-                        [
-                            'name' => 'ING',
-                            'code' => 'INGBNL2A',
-                            'img' => $this->getImageUrl('ico-ing'),
-                        ],
-                        [
-                            'name' => 'Rabobank',
-                            'code' => 'RABONL2U',
-                            'img' => $this->getImageUrl('ico-rb'),
-                        ],
-                        [
-                            'name' => 'SNS Bank',
-                            'code' => 'SNSBNL2A',
-                            'img' => $this->getImageUrl('ico-sns'),
-                        ],
-                        [
-                            'name' => 'RegioBank',
-                            'code' => 'RBRBNL21',
-                            'img' => $this->getImageUrl('ico-regio'),
-                        ],
-                        [
-
-                            'name' => 'Triodos Bank',
-                            'code' => 'TRIONL2U',
-                            'img' => $this->getImageUrl('ico-trio'),
-                        ],
-                        [
-                            'name' => 'Van Lanschot',
-                            'code' => 'FVLBNL22',
-                            'img' => $this->getImageUrl('ico-lans'),
-                        ],
-                        [
-                            'name' => 'Knab Bank',
-                            'code' => 'KNABNL2H',
-                            'img' => $this->getImageUrl('ico-knab'),
-                        ],
-                    ],
+                    'banks' => $issuers,
                     'response' => [],
                 ],
             ],
