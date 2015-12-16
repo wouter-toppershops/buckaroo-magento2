@@ -38,19 +38,12 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+class Certificates implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var \TIG\Buckaroo\Model\CertificateFactory $certificateModel
      */
-    protected $_scopeConfig;
-
-    /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
-     */
-    protected $_orderConfig;
+    protected $_modelCertificateFactory;
 
     /**
      * Class constructor
@@ -58,11 +51,9 @@ class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
      * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
+        \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
     ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
+        $this->_modelCertificateFactory = $modelCertificateFactory;
     }
 
     /**
@@ -72,19 +63,41 @@ class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
+        $certificateData = $this->getCertificateData();
 
         $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
 
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
+        if (count($certificateData) <= 0) {
+            $options[] = array(
+                'value' => '',
+                'label' => __('You have not yet uploaded any certificate files')
+            );
+
+            return $options;
+        }
+
+        $options[] = array('value' => '', 'label' => __('No certificate selected'));
+
+        foreach ($certificateData as $index => $data) {
+            $options[] = array(
+                'value' => $data['entity_id'],
+                'label' => $data['name'] . ' (' . $data['created_at'] . ')'
+            );
         }
 
         return $options;
+    }
+
+    /**
+     * Get a list of all stored certificates
+     *
+     * @return array
+     */
+    protected function getCertificateData()
+    {
+        $certificateModel = $this->_modelCertificateFactory->create();
+        $certificateCollection = $certificateModel->getCollection();
+
+        return $certificateCollection->getData();
     }
 }

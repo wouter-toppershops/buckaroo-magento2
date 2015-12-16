@@ -36,55 +36,45 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Config\Source;
+namespace TIG\Buckaroo\Model\Config\Backend;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+class CertificateLabel extends \Magento\Framework\App\Config\Value
 {
     /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $_scopeConfig;
+    protected $objectManager;
 
     /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
-     */
-    protected $_orderConfig;
-
-    /**
-     * Class constructor
+     * Construct
      *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\ObjectManagerInterface $objectmanager
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
+        \Magento\Framework\ObjectManagerInterface $objectmanager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\App\Config\ScopeConfigInterface $config,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
     ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
+        $this->objectManager = $objectmanager;
+
+        parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection);
     }
 
     /**
-     * Options getter
+     * Prevent saving the value by returning from the function immediatelly
      *
-     * @return array
+     * We don't need to safe certificate_label since it's handled in the certificate backend model.
+     * By returning $this immediatly we exit the function without saving or breaking anything.
+     *
+     * @return $this
      */
-    public function toOptionArray()
+    public function save()
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
-
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
-
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
-        }
-
-        return $options;
+        return $this;
     }
 }

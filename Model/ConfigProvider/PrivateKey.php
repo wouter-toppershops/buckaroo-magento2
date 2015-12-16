@@ -1,4 +1,5 @@
 <?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -36,38 +37,53 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\ConfigProvider;
 
-namespace TIG\Buckaroo\Setup;
-
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
-
-class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
+class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
 {
     /**
-     * {@inheritdoc}
+     * Xpath to the 'certificate_upload' setting.
      */
-    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
-    {
-        $setup->startSetup();
+    const XPATH_CERTIFICATE_ID = 'payment/tig_buckaroo_account/certificate_upload';
 
-        if (version_compare($context->getVersion(), '0.1.1', '<')) {
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status'),
-                [
-                    'status' => 'tig_buckaroo_pending_payment',
-                    'label'  => __('TIG Buckaroo Pending Payment'),
-                ]
-            );
+    /**
+     * @var \TIG\Buckaroo\Model\Certificate
+     */
+    protected $certificate;
 
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status_state'),
-                [
-                    'status'     => 'tig_buckaroo_pending_payment',
-                    'state'      => 'processing',
-                    'is_default' =>  0,
-                ]
-            );
+    /**
+     * PrivateKey constructor.
+     *
+     * @param \TIG\Buckaroo\Model\Certificate                    $certificate
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\Certificate $certificate,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->certificate = $certificate;
+
+        $certificateId = $scopeConfig->getValue(
+            self::XPATH_CERTIFICATE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        if (!$certificateId) {
+            throw new \LogicException('No Buckaroo certificate configured.');
         }
+
+        $this->certificate->load($certificateId);
+        if (!$certificate->getId()) {
+            throw new \LogicException('Invalid Buckaroo certificate configured.');
+        }
+    }
+
+    /**
+     * Retrieve assoc array of configuration
+     *
+     * @return array
+     */
+    public function getConfig()
+    {
+        return ['private_key' => $this->certificate->getCertificate()];
     }
 }
