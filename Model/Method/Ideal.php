@@ -132,15 +132,15 @@ class Ideal extends AbstractMethod
             $paymentData,
             $scopeConfig,
             $logger,
-            $resource = null,
-            $resourceCollection = null,
-            $gateway = null,
-            $transactionBuilderFactory = null,
-            $validatorFactory = null,
-            $messageManager = null,
-            $helper = null,
-            $request = null,
-            $data = []
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $messageManager,
+            $helper,
+            $request,
+            $data
         );
 
         $this->objectManager = $objectManager;
