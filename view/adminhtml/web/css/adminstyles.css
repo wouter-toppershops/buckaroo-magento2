@@ -1,0 +1,18 @@
+/* Buckaroo Active/Inactive Payments Feedback */
+
+.section-config {
+    box-sizing:border-box;
+    padding-left: 10px;
+}
+
+.payment_method_payment_method_inactive {
+    border-left: 3px solid grey !important;
+}
+
+.payment_method_live {
+    border-left: 3px solid green !important;
+}
+
+.payment_method_test {
+    border-left: 3px solid #FF8800 !important;
+}
