@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,16 +36,31 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
-    <scope id="global">
-        <fieldset id="sales_convert_quote_address">
-            <field name="buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-            <field name="base_buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-        </fieldset>
-    </scope>
-</config>
+namespace TIG\Buckaroo\Observer;
+
+
+class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
+{
+    /**
+     * Set invoiced buckaroo fee to order after invoice register
+     *
+     * @param \Magento\Framework\Event\Observer $observer
+     * @return $this
+     */
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        /* @var $invoice \Magento\Sales\Model\Order\Invoice */
+        $invoice = $observer->getEvent()->getInvoice();
+        if ($invoice->getBaseBuckarooFee()) {
+            $order = $invoice->getOrder();
+            $order->setBuckarooFeeInvoiced(
+                $order->getBuckarooFeeInvoiced() + $invoice->getBuckarooFee()
+            );
+            $order->setBaseBuckarooFeeInvoiced(
+                $order->getBaseBuckarooFeeInvoiced() + $invoice->getBaseBuckarooFee()
+            );
+        }
+
+        return $this;
+    }
+}

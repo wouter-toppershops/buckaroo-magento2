@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,16 +36,37 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
-    <scope id="global">
-        <fieldset id="sales_convert_quote_address">
-            <field name="buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-            <field name="base_buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-        </fieldset>
-    </scope>
-</config>
+
+namespace TIG\Buckaroo\Model\Total\Creditmemo;
+
+class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal
+{
+    /**
+     * Collect reward totals for credit memo
+     *
+     * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
+     * @return $this
+     */
+    public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
+    {
+        $order = $creditmemo->getOrder();
+        $buckarooFeeLeft = $order->getBuckarooFeeInvoiced() - $order->getBuckarooFeeRefunded();
+        $baseBuckarooFeeLeft = $order->getBaseBuckarooFeeInvoiced() - $order->getBaseBuckarooFeeRefunded();
+        if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
+            if ($baseBuckarooFeeLeft >= $creditmemo->getBaseGrandTotal()) {
+                $buckarooFeeLeft = $creditmemo->getGrandTotal();
+                $baseBuckarooFeeLeft = $creditmemo->getBaseGrandTotal();
+                $creditmemo->setGrandTotal(0);
+                $creditmemo->setBaseGrandTotal(0);
+                $creditmemo->setAllowZeroGrandTotal(true);
+            } else {
+                $creditmemo->setGrandTotal($creditmemo->getGrandTotal() - $buckarooFeeLeft);
+                $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() - $baseBuckarooFeeLeft);
+            }
+
+            $creditmemo->setBuckarooFee($buckarooFeeLeft);
+            $creditmemo->setBaseBuckarooFee($baseBuckarooFeeLeft);
+        }
+        return $this;
+    }
+}

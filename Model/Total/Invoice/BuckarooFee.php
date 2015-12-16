@@ -37,7 +37,7 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Total\Invoice;
+namespace TIG\Buckaroo\Model\Total\Invoice;
 
 class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
 {
@@ -54,8 +54,8 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
         $baseBuckarooFeeLeft = $order->getBaseBuckarooFee() - $order->getBaseBuckarooFeeInvoiced();
         if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
             if ($baseBuckarooFeeLeft < $invoice->getBaseGrandTotal()) {
-                $invoice->setGrandTotal($invoice->getGrandTotal() - $buckarooFeeLeft);
-                $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() - $baseBuckarooFeeLeft);
+                $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeLeft);
+                $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseBuckarooFeeLeft);
             } else {
                 $buckarooFeeLeft = $invoice->getGrandTotal();
                 $baseBuckarooFeeLeft = $invoice->getBaseGrandTotal();

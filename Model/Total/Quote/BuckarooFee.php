@@ -60,8 +60,8 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
     ) {
-        $totals = 9.8752;
-        $baseTotals = 41.9541;
+        $totals = 10;
+        $baseTotals = 10;
 
         $quote->setBuckarooFee($totals);
         $quote->setBaseBuckarooFee($baseTotals);

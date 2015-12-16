@@ -38,15 +38,14 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
-    <scope id="global">
-        <fieldset id="sales_convert_quote_address">
-            <field name="buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-            <field name="base_buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-        </fieldset>
-    </scope>
-</config>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="invoice_totals">
+            <block class="Magento\Sales\Block\Adminhtml\Order\Totals\Item" name="reward_points" template="TIG_Buckaroo::sales/order/total.phtml">
+                <action method="setBeforeCondition">
+                    <argument name="condition" xsi:type="string">customerbalance</argument>
+                </action>
+            </block>
+        </referenceBlock>
+    </body>
+</page>

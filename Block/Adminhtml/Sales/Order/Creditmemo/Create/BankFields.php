@@ -37,7 +37,7 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\buckaroo\Block\Adminhtml\Order\Creditmemo\Create;
+namespace TIG\buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 
 class BankFields extends \Magento\Backend\Block\Template
 {

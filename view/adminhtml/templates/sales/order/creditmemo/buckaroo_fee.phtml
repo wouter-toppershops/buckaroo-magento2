@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,16 +36,29 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
-    <scope id="global">
-        <fieldset id="sales_convert_quote_address">
-            <field name="buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-            <field name="base_buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-        </fieldset>
-    </scope>
-</config>
+
+// @codingStandardsIgnoreFile
+
+?>
+<div class="admin__field admin__field-option field-refund-reward-points">
+    <input type="checkbox" class="admin__control-checkbox" name="creditmemo[refund_reward_points_enable]" value="1" id="creditmemo_refund_reward_points_enable">
+    <label for="creditmemo_refund_reward_points_enable" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Refund Reward Points') ?></span></label>
+    <input type="text" class="input-text admin__control-text not-negative-amount" name="creditmemo[refund_reward_points]" value="<?php /* @escapeNotVerified */ echo $block->getBuckarooFeeToRefund() ?>" id="creditmemo_refund_reward_points">
+    <script>
+        require(['prototype'], function(){
+
+                //<![CDATA[
+                    toggleRewardPointsRefundAmount = function() {
+                        if ($('creditmemo_refund_reward_points_enable').checked) {
+                            $('creditmemo_refund_reward_points').disabled = false;
+                        } else {
+                            $('creditmemo_refund_reward_points').disabled = true;
+                        }
+                    };
+                    Event.observe($('creditmemo_refund_reward_points_enable'), 'change', toggleRewardPointsRefundAmount);
+                    toggleRewardPointsRefundAmount();
+                //]]>
+
+        });
+    </script>
+</div>

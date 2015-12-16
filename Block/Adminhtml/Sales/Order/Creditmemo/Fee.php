@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,16 +36,45 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
-    <scope id="global">
-        <fieldset id="sales_convert_quote_address">
-            <field name="buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-            <field name="base_buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-        </fieldset>
-    </scope>
-</config>
+
+namespace TIG\Buckaroo\Block\Adminhtml\Sales\Order\Creditmemo;
+
+class Fee extends \Magento\Backend\Block\Template
+{
+    /**
+     * Core registry
+     *
+     * @var \Magento\Framework\Registry
+     */
+    protected $coreRegistry = null;
+
+    /**
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param \Magento\Framework\Registry $registry
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Backend\Block\Template\Context $context,
+        \Magento\Framework\Registry $registry,
+        array $data = []
+    ) {
+        $this->coreRegistry = $registry;
+        parent::__construct($context, $data);
+    }
+
+    /**
+     * Getter
+     *
+     * @return \Magento\Sales\Model\Order\Creditmemo
+     */
+    public function getCreditmemo()
+    {
+        return $this->coreRegistry->registry('current_creditmemo');
+    }
+
+    public function getBuckarooFeeToRefund()
+    {
+        return $this->getCreditmemo()->getOrder()->getBuckarooFeeInvoiced()
+            - $this->getCreditmemo()->getOrder()->getBuckarooFeeRefunded();
+    }
+}

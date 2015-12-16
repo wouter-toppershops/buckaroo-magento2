@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,16 +36,42 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:DataObject/etc/fieldset.xsd">
-    <scope id="global">
-        <fieldset id="sales_convert_quote_address">
-            <field name="buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-            <field name="base_buckaroo_fee">
-                <aspect name="to_order" />
-            </field>
-        </fieldset>
-    </scope>
-</config>
+
+namespace TIG\Buckaroo\Model\Plugin;
+
+class BuckarooFeeRefund
+{
+    /**
+     * Reward points refund after creditmemo creation
+     *
+     * @param \Magento\Sales\Model\ResourceModel\Order\Creditmemo $subject
+     * @param \Closure $proceed
+     * @param \Magento\Framework\Model\AbstractModel $object
+     * @return bool
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function aroundSave(
+        \Magento\Sales\Model\ResourceModel\Order\Creditmemo $subject,
+        \Closure $proceed,
+        \Magento\Framework\Model\AbstractModel $object
+    ) {
+        /* @var $creditmemo \Magento\Sales\Model\Order\Creditmemo */
+        $creditmemo = $object;
+
+        /* @var $order \Magento\Sales\Model\Order */
+        $order = $creditmemo->getOrder();
+
+        if ($creditmemo->getBaseBuckarooFee()) {
+            $order->setBuckarooFeeRefunded(
+                $order->getBuckarooFeeRefunded() + $creditmemo->getBuckarooFee()
+            );
+            $order->setBaseBuckarooFeeRefunded(
+                $order->getBaseBuckarooFeeRefunded() + $creditmemo->getBaseBuckarooFee()
+            );
+        }
+
+        $result = $proceed($object);
+
+        return $result;
+    }
+}
