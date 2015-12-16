@@ -85,7 +85,7 @@ composer config repositories.tig composer https://packages.tig.nl
             <arg value="config" />
             <arg value="repositories.buckaroo" />
             <arg value="vcs" />
-            <arg value="git@tig.plan.io:tig-michielg.jenkins-buckaroo.git" />
+            <arg value="git@tig.plan.io:tig-tigbuckaroomagento2.tigmagento2buckaroo.git" />
         </exec>
     </target>
 
