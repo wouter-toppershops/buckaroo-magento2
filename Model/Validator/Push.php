@@ -132,11 +132,14 @@ class Push implements ValidatorInterface
 
         $signature = $this->calculateSignature($postData);
 
-        if ($signature === $postData['brq_signature']) {
-            return true;
+        if ($signature !== $postData['brq_signature']) {
+            /**
+             * @todo Add to error log.
+             */
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -173,7 +176,9 @@ class Push implements ValidatorInterface
         $signatureString .= $digitalSignature;
 
         $signature = SHA1($signatureString);
-
+        /**
+         * @todo Add the signature to the debug mail.
+         */
         return $signature;
     }
 
