@@ -37,37 +37,83 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Setup;
+namespace TIG\Buckaroo\Model;
 
-use Magento\Framework\Setup\ModuleContextInterface;
-use Magento\Framework\Setup\ModuleDataSetupInterface;
-
-class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
+class Certificate extends \Magento\Framework\Model\AbstractModel
 {
+    // @codingStandardsIgnoreStart
     /**
-     * {@inheritdoc}
+     * @var string
      */
-    public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
+    protected $_eventPrefix = 'tig_buckaroo_certificate';
+
+    /**
+     * @var string
+     */
+    protected $_eventObject = 'certificate';
+
+    /**
+     * Initialize resource model
+     *
+     * @return void
+     */
+    protected function _construct()
     {
-        $setup->startSetup();
+        $this->_init('TIG\Buckaroo\Model\ResourceModel\Certificate');
+    }
+    // @codingStandardsIgnoreEnd
 
-        if (version_compare($context->getVersion(), '0.1.1', '<')) {
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status'),
-                [
-                    'status' => 'tig_buckaroo_pending_payment',
-                    'label'  => __('TIG Buckaroo Pending Payment'),
-                ]
-            );
+    /**
+     * @return string
+     */
+    public function getCertificate()
+    {
+        return $this->getData('certificate');
+    }
 
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status_state'),
-                [
-                    'status'     => 'tig_buckaroo_pending_payment',
-                    'state'      => 'processing',
-                    'is_default' =>  0,
-                ]
-            );
-        }
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->getData('name');
+    }
+
+    /**
+     * @return string
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData('created_at');
+    }
+
+    /**
+     * @param string $certificate
+     *
+     * @return $this
+     */
+    public function setCertificate($certificate)
+    {
+        return $this->setData('certificate', $certificate);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        return $this->setData('name', $name);
+    }
+
+    /**
+     * @param string $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt($createdAt)
+    {
+        return $this->setData('created_at', $createdAt);
     }
 }
