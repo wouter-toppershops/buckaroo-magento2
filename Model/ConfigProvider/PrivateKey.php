@@ -44,7 +44,7 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Xpath to the 'certificate_upload' setting.
      */
-    const XPATH_CERTIFICATE_ID = 'payment/tig_buckaroo_account/certificate_upload';
+    const XPATH_CERTIFICATE_ID = 'payment/tig_buckaroo_account/certificate_file';
 
     /**
      * @var \TIG\Buckaroo\Model\Certificate
