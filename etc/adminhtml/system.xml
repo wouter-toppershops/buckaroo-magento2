@@ -52,10 +52,8 @@
                 <label>Version &amp; Support</label>
                 <fieldset_css>tig_buckaroo-section</fieldset_css>
                 <attribute type="expanded">1</attribute>
-
                 <group id="tig_buckaroo" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Stappenplan</label>
-                    <comment><![CDATA[The quick brown fox jumps over the lazy dog.]]></comment>
+                    <frontend_model>TIG\Buckaroo\Block\Adminhtml\Config\Support\SupportTab</frontend_model>
                 </group>
             </group>
 
@@ -126,6 +124,7 @@
                 <!-- iDEAL Payment method group -->
                 <group id="tig_buckaroo_ideal" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>iDEAL</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable iDEAL</label>
@@ -251,6 +250,7 @@
                 <!-- Creditcards Payment method group -->
                 <group id="tig_buckaroo_creditcards" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Creditcards</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Creditcards</label>
@@ -476,6 +476,7 @@
                 <!-- Paypal Payment method group -->
                 <group id="tig_buckaroo_paypal" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Paypal</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Paypal</label>
@@ -648,6 +649,7 @@
                 <!-- Bank Transfer Payment method group -->
                 <group id="tig_buckaroo_bank_transfer" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Bank Transfer</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Bank Transfer</label>

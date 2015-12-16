@@ -1,0 +1,145 @@
+/* ==================== Buckaroo Active/Inactive Payments Feedback ==================== */
+
+.section-config {
+    box-sizing:border-box;
+    padding-left: 10px;
+}
+
+.payment_method_payment_method_inactive {
+    border-left: 3px solid #CCCCCC !important;
+}
+
+.payment_method_live {
+    border-left: 3px solid rgba(73,171,67,1) !important;
+}
+
+.payment_method_test {
+    border-left: 3px solid #FFC107 !important;
+}
+
+/* ==================================== SupportTab ==================================== */
+
+#supporttab { margin-top: -40px; }
+
+.buckaroo_logo, .tig_logo {
+
+    padding:10px 10px 10px 0;
+}
+
+/* Default styling H elements */
+#supporttab h3 {
+    font-size: 1.4em;
+    margin:30px 0 10px 0;
+    padding:0;
+    color: rgba(73,171,67,1);
+}
+
+#supporttab h4 {
+    font-size: 1.1em;
+    margin:20px 0 5px 0;
+    padding:0;
+    color: rgba(0,136,204,1);
+}
+
+/* list styling */
+#supporttab ol, ul {
+    margin-left: 20px;
+    position :relative;
+}
+
+#supporttab ol li {
+    list-style-type: upper-roman;
+    line-height: 2em;
+}
+
+#supporttab li > ol > li {
+    list-style-type: square;
+}
+
+#supporttab ul li {
+    line-height: 2em;
+    list-style-type: none;
+}
+
+#supporttab li.first {
+    float: left;
+    margin-right:
+    5px;
+}
+#supporttab li.first,
+#supporttab li.last {
+    line-height: normal;
+}
+
+/* paragraph styling */
+#supporttab p {
+    line-height: 2em;
+}
+
+/* legend styling */
+.disabled span {
+     display:block;
+     float:left;
+     margin-top: 8px; margin-right:5px;
+     border: 6px solid;
+     border-color: transparent transparent transparent #CCCCCC;
+     width:0;
+     height:0;
+ }
+
+.live span {
+    display:block;
+    float:left;
+    margin-top: 8px; margin-right:5px;
+    border: 6px solid;
+    border-color: transparent transparent transparent rgba(73,171,67,1);
+    width:0;
+    height:0;
+}
+
+.test span {
+    display:block;
+    float:left;
+    margin-top: 8px; margin-right:5px;
+    border: 6px solid;
+    border-color: transparent transparent transparent #FFC107;
+    width:0;
+    height:0;
+}
+
+.advanced span {
+    display:block;
+    float:left;
+    margin-top: 8px; margin-right:5px;
+    border: 6px solid;
+    border-color: transparent transparent transparent #ff2e31;
+    width:0;
+    height:0;
+}
+
+/* responsive columns */
+.col-left, .col-right {
+    float:left;
+    width: 50%;
+    height: auto;
+    box-sizing: border-box;
+    padding: 20px;
+}
+@media screen and (max-width: 1300px){
+    .col-left, .col-right {
+        float:left;
+        width: 100%;
+        height: auto;
+        box-sizing: border-box;
+        padding: 20px;
+    }
+    .col-left {
+        padding-bottom: 0;
+    }
+
+    .col-right {
+        padding-top: 0;
+    }
+}
+
+

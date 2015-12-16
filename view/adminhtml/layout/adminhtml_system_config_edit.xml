@@ -1,5 +1,5 @@
-<?php
-
+<?xml version="1.0"?>
+<!--
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,53 +37,14 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider;
-
-class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
-{
-    /**
-     * Xpath to the 'certificate_upload' setting.
-     */
-    const XPATH_CERTIFICATE_ID = 'payment/tig_buckaroo_account/certificate_file';
-
-    /**
-     * @var \TIG\Buckaroo\Model\Certificate
-     */
-    protected $certificate;
-
-    /**
-     * PrivateKey constructor.
-     *
-     * @param \TIG\Buckaroo\Model\Certificate                    $certificate
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \TIG\Buckaroo\Model\Certificate $certificate,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->certificate = $certificate;
-
-        $certificateId = $scopeConfig->getValue(
-            self::XPATH_CERTIFICATE_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        if (!$certificateId) {
-            throw new \LogicException('No Buckaroo certificate configured.');
-        }
-
-        $this->certificate->load($certificateId);
-        if (!$certificate->getId()) {
-            throw new \LogicException('Invalid Buckaroo certificate configured.');
-        }
-    }
-
-    /**
-     * Retrieve assoc array of configuration
-     *
-     * @return array
-     */
-    public function getConfig()
-    {
-        return ['private_key' => $this->certificate->getCertificate()];
-    }
-}
+ -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="TIG_Buckaroo::css/adminstyles.css" />
+    </head>
+    <!--<body>-->
+        <!--<referenceContainer name="content">-->
+            <!--<block class="TIG\Buckaroo\Block\Adminhtml\Support\Support" name="buckaroo.support" template="TIG_Buckaroo::support.phtml" before="system.config.edit" />-->
+        <!--</referenceContainer>-->
+    <!--</body>-->
+</page>
