@@ -36,64 +36,25 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Quote\Address\Total;
 
-use Magento\Quote\Model\Quote\Address\Total\AbstractTotal;
+namespace TIG\Buckaroo\Block\Checkout;
 
-class BuckarooFee extends AbstractTotal
+class Total extends \Magento\Checkout\Block\Total\DefaultTotal
 {
     /**
+     * Totals calculation template when checkout using reward points
+     *
+     * @var string
      */
-    public function __construct()
-    {
-        $this->setCode('buckaroo_fee');
-    }
+    protected $_template = 'checkout/total.phtml';
 
     /**
-     * Collect grand total address amount
+     * Return url to remove reward points from totals calculation
      *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
-     * @return $this
+     * @return string
      */
-    public function collect(
-        \Magento\Quote\Model\Quote $quote,
-        \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
-        \Magento\Quote\Model\Quote\Address\Total $total
-    ) {
-        $totals = 9.8752;
-        $baseTotals = 41.9541;
-
-        $total->setBuckarooFee($totals);
-        $total->setBaseBuckarooFee($baseTotals);
-        return $this;
-    }
-
-    /**
-     * Add buckaroo fee information to address
-     *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
-     * @return $this
-     */
-    public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
+    public function getRemoveRewardTotalUrl()
     {
-        return [
-            'code' => $this->getCode(),
-            'title' => __('Payment Fee'),
-            'value' => '13.5000'// $total->getBuckarooFee(),
-        ];
-    }
-
-
-    /**
-     * Get Buckaroo label
-     *
-     * @return \Magento\Framework\Phrase
-     */
-    public function getLabel()
-    {
-        return __('Payment Fee');
+        return $this->getUrl('magento_reward/cart/remove');
     }
 }

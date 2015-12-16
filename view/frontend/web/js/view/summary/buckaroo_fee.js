@@ -19,7 +19,7 @@ define(
                 return this.isFullMode() && this.getValue() != 0;
             },
             getValue: function() {
-                var price = this.totals().buckaroo_fee;
+                var price = this.totals().extension_attributes.buckaroo_fee;
                 return this.getFormattedPrice(price);
             }
         });

@@ -1,6 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-**
+<?php
+/**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
  *                    |    |  /  _ \\   __\\__  \  |  |
@@ -37,21 +36,26 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Sales:etc/sales.xsd">
-    <section name="quote">
-        <group name="totals">
-            <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\BuckarooFee" sort_order="125"/>
-        </group>
-    </section>
-    <section name="order_invoice">
-        <group name="totals">
-           <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\BuckarooFee" sort_order="125"/>
-        </group>
-    </section>
-    <section name="order_creditmemo">
-        <group name="totals">
-            <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\BuckarooFee" sort_order="125"/>
-        </group>
-    </section>
-</config>
+namespace TIG\Buckaroo\Model\Plugin;
+
+use Magento\Quote\Model\Quote;
+
+class TotalsCollector
+{
+    /**
+     * Reset quote reward point amount
+     *
+     * @param \Magento\Quote\Model\Quote\TotalsCollector $subject
+     * @param Quote $quote
+     *
+     * @return void
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function beforeCollect(
+        \Magento\Quote\Model\Quote\TotalsCollector $subject,
+        Quote $quote
+    ) {
+        $quote->setBuckarooFee(0);
+        $quote->setBaseBuckarooFee(0);
+    }
+}

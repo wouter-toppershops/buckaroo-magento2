@@ -166,4 +166,12 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="Magento\Quote\Model\Cart\CartTotalRepository">
+        <plugin name="tig_buckaroo_fee_total" type="TIG\Buckaroo\Model\Plugin\CartTotalRepository" />
+    </type>
+
+    <type name="Magento\Quote\Model\Quote\TotalsCollector">
+        <plugin name="tig_buckaroo_fee_total_collector" type="TIG\Buckaroo\Model\Plugin\TotalsCollector" />
+    </type>
 </config>
