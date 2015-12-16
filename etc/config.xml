@@ -129,7 +129,7 @@
                 <group>tig_buckaroo_sofortbanking</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_sofortbanking>
-            
+
             <tig_buckaroo_advanced>
                 <model>TIG\Buckaroo\Model\Method\Mrcash</model>
                 <order_state_success>processing</order_state_success>
