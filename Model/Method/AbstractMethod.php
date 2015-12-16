@@ -104,23 +104,29 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $orderPlaceRedirectUrl = true;
 
     /**
+     * @var \Magento\Framework\App\Request\Http
+     */
+    protected $request;
+
+    /**
      * AbstractMethod constructor.
      *
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory            $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory                 $customAttributeFactory
-     * @param \Magento\Payment\Helper\Data                                 $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
-     * @param \Magento\Payment\Model\Method\Logger                         $logger
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                  $gateway
-     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
-     * @param \TIG\Buckaroo\Model\ValidatorFactory                         $validatorFactory
-     * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
-     * @param \TIG\Buckaroo\Helper\Data                                    $helper
-     * @param array                                                        $data
+     * @param \Magento\Framework\Model\Context                                  $context
+     * @param \Magento\Framework\Registry                                       $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory                 $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory                      $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                                      $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface                $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                              $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null      $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null                $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                       $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null         $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                              $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface                       $messageManager
+     * @param \Magento\Framework\App\RequestInterface                           $request
+     * @param \TIG\Buckaroo\Helper\Data                                         $helper
+     * @param array                                                             $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -137,6 +143,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
         array $data = []
     ) {
         parent::__construct(
@@ -157,6 +164,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->validatorFactory = $validatorFactory;
         $this->messageManager = $messageManager;
         $this->helper = $helper;
+        $this->request = $request;
     }
 
     /**
