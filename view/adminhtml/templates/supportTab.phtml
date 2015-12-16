@@ -1,0 +1,124 @@
+<?php
+/** @var \TIG\Buckaroo\Block\Adminhtml\Config\Support\SupportTab $this */
+?>
+<div id="supporttab">
+
+    <div class ="col-left">
+
+        <div class="text-box">
+            <h3><?php echo $block->escapeHtml(__('Quick reference guide'));?></h3>
+            <ol>
+                <li><strong><?php echo $block->escapeHtml(__('Log in to the '));?> <a target="_blank" href="https://payment.buckaroo.nl/"><?php echo $block->escapeHtml(__('Buckaroo Payment Plaza'));?></a> <?php echo $block->escapeHtml(__(' to collect the following security settings:'));?></strong>
+                    <ol>
+                        <li><?php echo $block->escapeHtml(__('(Merchant) Key - Profile &rarr; Websites &rarr; Key.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Secret Key - Configuration &rarr; Secret key for Digitale signature &rarr; Secret Key.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Certificate - Configuration &rarr; Manage certificates (BPE 3.0).'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Certificate Thumbprint - Configuration &rarr; Manage certificates (BPE 3.0).'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Enter the following URL under profile -> Websites -> Push settings -> Push URI Success & Failure: %s !!!@@@>>>>> HERE SHOULD BE A LINK <<<<<@@@!!! '));?></li>
+                    </ol>
+                </li>
+                <li><strong><?php echo $block->escapeHtml(__('Upload the Certificate to the Magento database under the Certificate Management tab.'));?></strong>
+                    <ol>
+                        <li><?php echo $block->escapeHtml(__('Give a name which is used for storing the certificate.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Select the certificate file to upload and Save Config.'));?></li>
+                    </ol>
+                </li>
+                <li><strong><?php echo $block->escapeHtml(__('Enter the collected Merchant- &amp; Secret Key under the Base Configuration tab.'));?></strong>
+                    <ol>
+                        <li><?php echo $block->escapeHtml(__('After adding the keys Save Config.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Select the uploaded certificate from the dropdown.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Add the corresponding thumbprint and Save Config.'));?></li>
+                    </ol>
+                </li>
+                <li><strong><?php echo $block->escapeHtml(__('Configure and enable the individual payment methods.'));?></strong>
+                    <ol>
+                        <li><?php echo $block->escapeHtml(__('Payment method specific settings are set under the corresponding tab.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Payment methods must be enabled within Buckaroo and Magento.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('Contact Buckaroo support for activating or availale payment methods.'));?></li>
+                    </ol>
+                </li>
+                <li><strong><?php echo $block->escapeHtml(__('Enable the module and select the Test or Live modus.'));?></strong>
+                    <ol>
+                        <li><?php echo $block->escapeHtml(__('The module has many options to adapt to your business rules.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('The manual gives more detailed information per subject.'));?></li>
+                        <li><?php echo $block->escapeHtml(__('The scope of the individual setting is presented as [GLOBAL], [WEBSITE] or [STOREVIEW].'));?></li>
+                    </ol>
+                </li>
+            </ol>
+        </div>
+
+        <div class="text-box">
+            <h3><?php echo $block->escapeHtml(__('Legend'));?></h3>
+            <ul id="legend">
+                <li class="disabled"><span></span><?php echo $block->escapeHtml(__('Payment method - Disabled'));?></li>
+                <li class="test"><span></span><?php echo $block->escapeHtml(__('Payment method - Test Modus'));?></li>
+                <li class="live"><span></span><?php echo $block->escapeHtml(__('Payment method - Live Modus'));?></li>
+<!--                <li class="advanced"><span></span>--><?php //echo $block->escapeHtml(__('Advanced Configuration'));?><!--</li>-->
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="col-right">
+
+        <div class="text-box">
+            <h3><?php echo $block->escapeHtml(__('Magento &amp; 3rd party version compatibility'));?></h3>
+            <ul>
+                <li><?php echo $block->escapeHtml(__('Magento Community Edition version'));?> 1.7, 1.8 &amp; 1.9</li>
+                <li><?php echo $block->escapeHtml(__('Magento Enterprise Edition version'));?> 1.12, 1.13 &amp; 1.14</li>
+            </ul>
+            <ul>
+                <li><?php echo $block->escapeHtml(__('OneStepCheckout version'));?> 4.0.7</li>
+            </ul>
+        </div>
+
+        <div class="text-box">
+            <h3><?php echo $block->escapeHtml(__('Support'));?></h3>
+            <p><?php echo $block->escapeHtml(__('This extension is developed by TIG, commissioned by Buckaroo.'));?></p>
+            <h4><?php echo $block->escapeHtml(__('Module basic configuration and account information'));?></h4>
+            <p><?php echo $block->escapeHtml(__('Acquire your (Merchant) key, Secret key, certificate and certificate thumbprint prior contacting Buckaroo technical support:'));?></p>
+
+            <ul>
+                <li class="buckaroo_logo" ><a href="http://www.buckaroo.nl" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/buckaroo_small.png'); ?> " alt="" /></a></li>
+                <li class="first"><?php echo $block->escapeHtml(__('Buckaroo Payment Plaza:'));?></li>
+                <li class="last"><a target="_blank" href="https://payment.buckaroo.nl/">payment.buckaroo.nl</a></li>
+            </ul>
+            <ul>
+                <li class="first"><?php echo $block->escapeHtml(__('Phone:'));?></li>
+                <li class="last">+31(0)30-711 50 50</li>
+            </ul>
+            <ul>
+                <li class="first"><?php echo $block->escapeHtml(__('E-mail:'));?></li>
+                <li class="last"><a href="mailto:support@buckaroo.nl">support@buckaroo.nl</a></li>
+            </ul>
+
+            <h4><?php echo $block->escapeHtml(__('Extension support and advanced configuration'));?></h4>
+            <ul>
+                <li class="tig_logo"><a href="http://www.tig.nl" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/tig_logo_medium.png'); ?>" alt="" /></a></li>
+                <li class="first"><?php echo $block->escapeHtml(__('Online documentation and FAQ:'));?></li>
+                <li class="last"><a target="_blank" href="http://kb.tig.nl/">kb.tig.nl</a></li>
+            </ul>
+            <ul>
+                <li class="first"><?php echo $block->escapeHtml(__('Request support:'));?></li>
+                <li class="last"><a target="_blank" href="http://kb.tig.nl/ticket/form/new">kb.tig.nl/ticket/form/new</a></li>
+            </ul>
+            <ul>
+                <li class="first"><?php echo $block->escapeHtml(__('Misc. questions by email:'));?></li>
+                <li class="last"><a href="mailto:servicedesk@tig.nl">servicedesk@tig.nl</a></li>
+            </ul>
+
+        </div>
+
+
+        <div class="text-box">
+            <h3><?php echo $block->escapeHtml(__('Documentation'));?></h3>
+            <p><?php echo $block->escapeHtml(__('A list of documents regarding the module.'));?></p>
+            <ul>
+                <li><a class="pdf" target="_blank" href="http://kb.tig.nl/topic/22098908" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('installation manual buckaroo bpe3 %s.pdf (NL)', 'v4.6.1'));?></a></li>
+                <li><a target="_blank" href="http://kb.tig.nl/topic/23902302" title="<?php echo $block->escapeHtml(__('View the complete changelog of the module. Currently the changelog is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('full changelog'));?></a></li>
+            </ul>
+        </div>
+
+    </div>
+
+</div>

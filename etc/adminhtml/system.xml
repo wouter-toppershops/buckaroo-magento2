@@ -52,19 +52,9 @@
                 <label>Version &amp; Support</label>
                 <fieldset_css>tig_buckaroo-section</fieldset_css>
                 <attribute type="expanded">1</attribute>
-
                 <group id="tig_buckaroo" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
-                    <label>Stappenplan</label>
-                    <comment><![CDATA[The quick brown fox jumps over the lazy dog. ahahahahha]]></comment>
-
-                    <field id="active" translate="label" type="radios" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>SUPPORT</label>
-
-                        <config_path>payment/tig_buckaroo_account/active</config_path>
-                    </field>
+                    <frontend_model>TIG\Buckaroo\Block\Adminhtml\Config\Support\SupportTab</frontend_model>
                 </group>
-
-
             </group>
 
             <!-- General settings section TODO:recheck values & comments & tooltips w/ M1 TODO: add advanced options-->
