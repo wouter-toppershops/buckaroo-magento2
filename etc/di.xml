@@ -51,15 +51,20 @@
             <argument name="validatorFactory" xsi:type="object">TIG\Buckaroo\Model\ValidatorFactory</argument>
             <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
             <argument name="helper" xsi:type="object">TIG\Buckaroo\Helper\Data</argument>
+            <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
         </arguments>
     </type>
 
     <type name="TIG\Buckaroo\Model\Method\Paypal">
-        <plugin name="tig_buckaroo_paypal_sellersprotection" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Authorize" />
+        <plugin name="tig_buckaroo_paypal_sellersprotection_order" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Order" />
     </type>
 
     <type name="TIG\Buckaroo\Model\Method\SepaDirectDebit">
         <plugin name="tig_buckaroo_sepadirectdebit" type="TIG\Buckaroo\Model\Method\Plugin\SepaDirectDebit" />
+    </type>
+
+    <type name="TIG\Buckaroo\Model\Push">
+        <plugin name="tig_buckaroo_paypal_sellersprotection_push" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Push" />
     </type>
 
     <type name="TIG\Buckaroo\Model\PaymentInformationManagement">

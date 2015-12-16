@@ -117,6 +117,8 @@
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_mrcash</group>
                 <payment_action>order</payment_action>
+                <refund_extra_fields>customeriban,customeraccountname,customerbic</refund_extra_fields>
+                <refund_extra_fields_labels>customer iban,customer account name,customer bic</refund_extra_fields_labels>
             </tig_buckaroo_mrcash>
 
             <tig_buckaroo_sofortbanking>
@@ -133,9 +135,13 @@
 
         <tig_states>
             <tig_buckaroo_advanced>
+                <model>TIG\Buckaroo\Model\Method\Mrcash</model> <!-- placeholder -->
                 <order_state_success>processing</order_state_success>
                 <order_state_failed>canceled</order_state_failed>
                 <order_state_pendingpayment>new</order_state_pendingpayment>
+                <order_incorrect_payment>holded</order_incorrect_payment>
+                <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
+                <cancel_on_failure>0</cancel_on_failure>
             </tig_buckaroo_advanced>
         </tig_states>
     </default>

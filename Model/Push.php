@@ -49,6 +49,7 @@ use TIG\Buckaroo\Exception;
 use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 use \TIG\Buckaroo\Model\Validator\Amount as ValidatorAmount;
 use \TIG\Buckaroo\Model\Method\AbstractMethod;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Class Push
@@ -60,36 +61,47 @@ class Push implements PushInterface
     /**
      * @var \Magento\Framework\Webapi\Rest\Request $request
      */
-    protected $request;
+    public $request;
 
     /**
      * @var \TIG\Buckaroo\Model\Validator\Push $validator
      */
-    protected $validator;
+    public $validator;
 
     /**
      * @var \TIG\Buckaroo\Model\Validator\Amount $validateAmount;
      */
-    protected $validateAmount;
+    public $validateAmount;
+
     /**
      * @var Order $order
      */
-    protected $order;
+    public $order;
 
     /**
      * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      */
-    protected $orderSender;
+    public $orderSender;
 
     /**
-     * @var array
+     * @var array $postData
      */
-    protected $postData;
+    public $postData;
+
+    /**
+     * @var array $orignalPostData
+     */
+    public $orignalPostData;
 
     /**
      * @var \TIG\Buckaroo\Helper\Data
      */
-    protected $helper;
+    public $helper;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
+    public $scopeConfig;
 
     /**
      * Push constructor.
@@ -100,6 +112,7 @@ class Push implements PushInterface
      * @param \TIG\Buckaroo\Model\Validator\Amount                $amountValidator
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      * @param \TIG\Buckaroo\Helper\Data                           $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
@@ -107,6 +120,8 @@ class Push implements PushInterface
         ValidatorPush $validator,
         ValidatorAmount $amountValidator,
         OrderSender $orderSender,
+        \TIG\Buckaroo\Helper\Data $helper,
+        ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Helper\Data $helper
     ) {
         $this->objectManager  = $objectManager;
@@ -115,6 +130,7 @@ class Push implements PushInterface
         $this->orderSender    = $orderSender;
         $this->validateAmount = $amountValidator;
         $this->helper         = $helper;
+        $this->scopeConfig    = $scopeConfig;
     }
 
     /**
@@ -125,12 +141,14 @@ class Push implements PushInterface
      */
     public function receivePush()
     {
+        //Set orginal postdata before setting it to case lower.
+        $this->orignalPostData = $this->request->getParams();
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
-        //Check if the push can be procesed and if the order can be updtated.
-        $validSignature = $this->validator->validateSignature($this->postData['brq_signature']);
+        //Check if the push can be procesed and if the order can be updated IMPORTANT => use the original post data.
+        $validSignature = $this->validator->validateSignature($this->orignalPostData);
         //Check if the order can recieve further status updates
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);
@@ -157,21 +175,26 @@ class Push implements PushInterface
             $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
         }
 
-        /**
-         * @var  $newStates
-         * @todo built the method getNewStatusCodes to replace the class constance values with config values.
-         *
-         */
+        $store = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
+
         switch ($response['status']) {
             case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
             case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-                $this->processFailedPush(Order::STATE_CANCELED, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_status_failed',
+                    $store
+                );
+                $this->processFailedPush($newSatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $this->processSucceededPush(Order::STATE_PROCESSING, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_status_success',
+                    $store
+                );
+                $this->processSucceededPush($newSatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
                 $this->setOrderNotifactionNote($response['message']);
@@ -180,12 +203,21 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $this->processPendingPaymentPush(Order::STATE_PENDING_PAYMENT, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_status_pendingpayment',
+                    $store
+                );
+                $this->processPendingPaymentPush($newSatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $this->processIncorrectPaymentPush(Order::STATE_HOLDED, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_incorrect_payment',
+                    $store
+                );
+                $this->processIncorrectPaymentPush($newSatus, $response['message']);
                 break;
         }
+        $this->order->save();
 
         return true;
     }
@@ -243,15 +275,15 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processFailedPush($newStatus, $message)
+    public function processFailedPush($newStatus, $message)
     {
         //Create description
         $description = ''.$message;
 
-        /**
-         * @todo get config value cancel_on_failed
-         */
-        $buckarooCancelOnFailed = false;
+        $buckarooCancelOnFailed = $this->scopeConfig->getValue(
+            'payment\tig_buckaroo_advanced/cancel_on_failure',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
 
         if ($this->order->canCancel() && $buckarooCancelOnFailed) {
             $this->order->cancel()->save();
@@ -268,7 +300,7 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processSucceededPush($newStatus, $message)
+    public function processSucceededPush($newStatus, $message)
     {
         if (!$this->order->getEmailSent()) {
             $this->orderSender->send($this->order);
@@ -290,7 +322,7 @@ class Push implements PushInterface
      * @param $message
      * @return bool
      */
-    protected function processIncorrectPaymentPush($newStatus, $message)
+    public function processIncorrectPaymentPush($newStatus, $message)
     {
         $baseTotal    = round($this->order->getBaseGrandTotal(), 0);
         $orderAmount  = $this->getCorrectOrderAmount();
@@ -321,7 +353,7 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function processPendingPaymentPush($newStatus, $message)
+    public function processPendingPaymentPush($newStatus, $message)
     {
         $description = ''.$message;
 
@@ -362,16 +394,24 @@ class Push implements PushInterface
         } else {
             $this->order->addStatusHistoryComment($description);
         }
-        $this->order->save();
     }
 
     /**
      * Creates and saves the invoice and adds for each invoice the buckaroo transaction keys
+     * Only when the order can be invoiced and has not been invoiced before.
      *
      * @return bool
      */
     protected function saveInvoice()
     {
+        if (!$this->order->canInvoice() && $this->order->hasInvoices()) {
+            return false;
+        }
+
+        $this->addTransactionData();
+
+        $this->order->save();
+
         //Only when the order can be invoiced and has not been invoiced before.
         if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
             $this->addTransactionData();
@@ -382,12 +422,14 @@ class Push implements PushInterface
                 if (!isset($this->postData['brq_transactions'])) {
                     continue;
                 }
-                /** @var \Magento\Sales\Model\Order\Invoice  $invoice */
+                /** @var \Magento\Sales\Model\Order\Invoice $invoice */
                 $invoice->setTransactionId($this->postData['brq_transactions'])
                     ->save();
             }
+
             return true;
         }
+
         return false;
     }
 
