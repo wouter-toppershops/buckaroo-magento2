@@ -117,6 +117,8 @@
                 <sort_order>1</sort_order>
                 <group>tig_buckaroo_mrcash</group>
                 <payment_action>order</payment_action>
+                <refund_extra_fields>customeriban,customeraccountname,customerbic</refund_extra_fields>
+                <refund_extra_fields_labels>customer iban,customer account name,customer bic</refund_extra_fields_labels>
             </tig_buckaroo_mrcash>
 
             <tig_buckaroo_sofortbanking>

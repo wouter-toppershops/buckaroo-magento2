@@ -52,6 +52,7 @@
             <argument name="validatorFactory" xsi:type="object">TIG\Buckaroo\Model\ValidatorFactory</argument>
             <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
             <argument name="helper" xsi:type="object">TIG\Buckaroo\Helper\Data</argument>
+            <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
         </arguments>
     </type>
 

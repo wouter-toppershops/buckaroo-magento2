@@ -132,11 +132,11 @@ class Push implements ValidatorInterface
 
         $signature = $this->calculateSignature($postData);
 
-        if (!$signature === $postData['brq_signature']) {
-            return false;
+        if ($signature === $postData['brq_signature']) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -165,9 +165,6 @@ class Push implements ValidatorInterface
             $signatureString .= $brq_key. '=' . $value;
         }
 
-        /**
-         * @todo create this config value.
-         */
         $digitalSignature = $this->scopeConfig->getValue(
             'payment/tig_buckaroo_advanced/digital_signature',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
