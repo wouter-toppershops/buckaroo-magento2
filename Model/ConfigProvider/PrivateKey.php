@@ -1,4 +1,5 @@
 <?php
+
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -25,66 +26,64 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ * to servicedesk@tig.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Config\Source;
+namespace TIG\Buckaroo\Model\ConfigProvider;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
 {
     /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * Xpath to the 'certificate_upload' setting.
      */
-    protected $_scopeConfig;
+    const XPATH_CERTIFICATE_ID = 'payment/tig_buckaroo_account/certificate_file';
 
     /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
+     * @var \TIG\Buckaroo\Model\Certificate
      */
-    protected $_orderConfig;
+    protected $certificate;
 
     /**
-     * Class constructor
+     * PrivateKey constructor.
      *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Model\Certificate                    $certificate
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
+        \TIG\Buckaroo\Model\Certificate $certificate,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
+        $this->certificate = $certificate;
+
+        $certificateId = $scopeConfig->getValue(
+            self::XPATH_CERTIFICATE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        if (!$certificateId) {
+            throw new \LogicException('No Buckaroo certificate configured.');
+        }
+
+        $this->certificate->load($certificateId);
+        if (!$certificate->getId()) {
+            throw new \LogicException('Invalid Buckaroo certificate configured.');
+        }
     }
 
     /**
-     * Options getter
+     * Retrieve assoc array of configuration
      *
      * @return array
      */
-    public function toOptionArray()
+    public function getConfig()
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
-
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
-
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
-        }
-
-        return $options;
+        return ['private_key' => $this->certificate->getCertificate()];
     }
 }

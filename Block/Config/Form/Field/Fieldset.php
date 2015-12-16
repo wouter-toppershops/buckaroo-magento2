@@ -36,55 +36,27 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Config\Source;
+namespace TIG\Buckaroo\Block\Config\Form\Field;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
-    /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
-
-    /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
-     */
-    protected $_orderConfig;
-
-    /**
-     * Class constructor
-     *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
-    ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
-    }
-
-    /**
-     * Options getter
-     *
-     * @return array
-     */
-    public function toOptionArray()
+    protected function _getFrontendClass($element)
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
-
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
-
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
+        $class = 'payment_method_';
+        $group = $element->getData('group');
+        $value = $this->_scopeConfig->getValue($group['children']['active']['config_path']);
+        if ($value == '0')
+        {
+            $class .= 'payment_method_inactive';
+        } else if ($value == '1') {
+            $class .= 'payment_method_active payment_method_test';
+        } else {
+            $class .= 'payment_method_active payment_method_live';
         }
 
-        return $options;
+        $classes = parent::_getFrontendClass($element);
+        $classes .= ' ' . $class;
+
+        return $classes;
     }
 }

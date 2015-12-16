@@ -122,28 +122,6 @@ class Giropay extends AbstractMethod
     }
 
     /**
-     * Validate the extra input fields.
-     *
-     * @return $this
-     * @throws Exception
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function validate()
-    {
-        parent::validate();
-
-        $paymentInfo = $this->getInfoInstance();
-        $customerBicNumber = $paymentInfo->getAdditionalInformation('customer_bic');
-
-        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber))
-        {
-            throw new Exception(__('Please enter a valid BIC number'));
-        }
-
-        return $this;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function getOrderTransactionBuilder($payment)
@@ -217,5 +195,27 @@ class Giropay extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return true;
+    }
+
+    /**
+     * Validate the extra input fields.
+     *
+     * @return $this
+     * @throws Exception
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function validate()
+    {
+        parent::validate();
+
+        $paymentInfo = $this->getInfoInstance();
+        $customerBicNumber = $paymentInfo->getAdditionalInformation('customer_bic');
+
+        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber))
+        {
+            throw new Exception(__('Please enter a valid BIC number'));
+        }
+
+        return $this;
     }
 }

@@ -36,55 +36,20 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Config\Source;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+namespace TIG\Buckaroo\Block\Adminhtml\Config\Support;
+
+use Magento\Framework\Data\Form\Element\AbstractElement;
+use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
+
+class SupportTab extends \Magento\Framework\View\Element\Template implements RendererInterface
 {
-    /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
+    protected $_template = 'supportTab.phtml';
 
-    /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
-     */
-    protected $_orderConfig;
-
-    /**
-     * Class constructor
-     *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
-    ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
-    }
-
-    /**
-     * Options getter
-     *
-     * @return array
-     */
-    public function toOptionArray()
+    public function render(AbstractElement $element)
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
+        $this->setElement($element);
 
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
-
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
-        }
-
-        return $options;
+        return $this->toHtml();
     }
 }

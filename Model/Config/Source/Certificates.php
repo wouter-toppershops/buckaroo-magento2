@@ -33,94 +33,71 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2014 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Config\Source;
 
-namespace TIG\Buckaroo\Model\ConfigProvider;
-
-class Ideal extends AbstractConfigProvider
+class Certificates implements \Magento\Framework\Option\ArrayInterface
 {
-    protected $issuers = [
-        [
-            'name' => 'ABN AMRO',
-            'code' => 'ABNANL2A',
-        ],
-        [
-            'name' => 'ASN Bank',
-            'code' => 'ASNBNL21',
-        ],
-        [
-            'name' => 'ING',
-            'code' => 'INGBNL2A',
-        ],
-        [
-            'name' => 'Rabobank',
-            'code' => 'RABONL2U',
-        ],
-        [
-            'name' => 'SNS Bank',
-            'code' => 'SNSBNL2A',
-        ],
-        [
-            'name' => 'RegioBank',
-            'code' => 'RBRBNL21',
-        ],
-        [
-            'name' => 'Triodos Bank',
-            'code' => 'TRIONL2U',
-        ],
-        [
-            'name' => 'Van Lanschot',
-            'code' => 'FVLBNL22',
-        ],
-        [
-            'name' => 'Knab Bank',
-            'code' => 'KNABNL2H',
-        ],
-    ];
+    /**
+     * @var \TIG\Buckaroo\Model\CertificateFactory $certificateModel
+     */
+    protected $_modelCertificateFactory;
 
     /**
-     * Get the list of banks. This is used in the iDeal payment model.
+     * Class constructor
      *
-     * @return array
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
-    public function getIssuers()
-    {
-        return $this->issuers;
+    public function __construct(
+        \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
+    ) {
+        $this->_modelCertificateFactory = $modelCertificateFactory;
     }
 
     /**
-     * Format the issuers list so the img index is filled with the correct url.
+     * Options getter
      *
      * @return array
      */
-    protected function formatIssuers()
+    public function toOptionArray()
     {
-        return array_map(function ($issuer) {
-            $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
+        $certificateData = $this->getCertificateData();
 
-            return $issuer;
-        }, $this->issuers);;
+        $options = array();
+
+        if (count($certificateData) <= 0) {
+            $options[] = array(
+                'value' => '',
+                'label' => __('You have not yet uploaded any certificate files')
+            );
+
+            return $options;
+        }
+
+        $options[] = array('value' => '', 'label' => __('No certificate selected'));
+
+        foreach ($certificateData as $index => $data) {
+            $options[] = array(
+                'value' => $data['entity_id'],
+                'label' => $data['name'] . ' (' . $data['created_at'] . ')'
+            );
+        }
+
+        return $options;
     }
 
     /**
-     * @return array|void
+     * Get a list of all stored certificates
+     *
+     * @return array
      */
-    public function getConfig()
+    protected function getCertificateData()
     {
-        $issuers = $this->formatIssuers();
+        $certificateModel = $this->_modelCertificateFactory->create();
+        $certificateCollection = $certificateModel->getCollection();
 
-        // @TODO: get banks dynamic
-        $config = [
-            'payment' => [
-                'buckaroo' => [
-                    'banks' => $issuers,
-                    'response' => [],
-                ],
-            ],
-        ];
-
-        return $config;
+        return $certificateCollection->getData();
     }
 }

@@ -25,66 +25,95 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ * to servicedesk@tig.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Config\Source;
 
-class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
+namespace TIG\Buckaroo\Model;
+
+class Certificate extends \Magento\Framework\Model\AbstractModel
 {
+    // @codingStandardsIgnoreStart
     /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var string
      */
-    protected $_scopeConfig;
+    protected $_eventPrefix = 'tig_buckaroo_certificate';
 
     /**
-     * Core order config
-     * @var \Magento\Sales\Model\Order\Config
+     * @var string
      */
-    protected $_orderConfig;
+    protected $_eventObject = 'certificate';
 
     /**
-     * Class constructor
+     * Initialize resource model
      *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @return void
      */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
-    ) {
-        $this->_scopeConfig = $scopeConfig;
-        $this->_orderConfig = $orderConfig;
+    protected function _construct()
+    {
+        $this->_init('TIG\Buckaroo\Model\ResourceModel\Certificate');
+    }
+    // @codingStandardsIgnoreEnd
+
+    /**
+     * @return string
+     */
+    public function getCertificate()
+    {
+        return $this->getData('certificate');
     }
 
     /**
-     * Options getter
-     *
-     * @return array
+     * @return string
      */
-    public function toOptionArray()
+    public function getName()
     {
-        $state = $this->_scopeConfig->getValue(
-            'tig_states/tig_buckaroo_advanced/order_state_success',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-        $statuses = $this->_orderConfig->getStateStatuses($state);
+        return $this->getData('name');
+    }
 
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
+    /**
+     * @return string
+     */
+    public function getCreatedAt()
+    {
+        return $this->getData('created_at');
+    }
 
-        foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
-        }
+    /**
+     * @param string $certificate
+     *
+     * @return $this
+     */
+    public function setCertificate($certificate)
+    {
+        return $this->setData('certificate', $certificate);
+    }
 
-        return $options;
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function setName($name)
+    {
+        return $this->setData('name', $name);
+    }
+
+    /**
+     * @param string $createdAt
+     *
+     * @return $this
+     */
+    public function setCreatedAt($createdAt)
+    {
+        return $this->setData('created_at', $createdAt);
     }
 }

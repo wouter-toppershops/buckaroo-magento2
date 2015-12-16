@@ -33,94 +33,40 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2014 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Config\Source;
 
-namespace TIG\Buckaroo\Model\ConfigProvider;
-
-class Ideal extends AbstractConfigProvider
+class DropdownCount4 implements \Magento\Framework\Option\ArrayInterface
 {
-    protected $issuers = [
-        [
-            'name' => 'ABN AMRO',
-            'code' => 'ABNANL2A',
-        ],
-        [
-            'name' => 'ASN Bank',
-            'code' => 'ASNBNL21',
-        ],
-        [
-            'name' => 'ING',
-            'code' => 'INGBNL2A',
-        ],
-        [
-            'name' => 'Rabobank',
-            'code' => 'RABONL2U',
-        ],
-        [
-            'name' => 'SNS Bank',
-            'code' => 'SNSBNL2A',
-        ],
-        [
-            'name' => 'RegioBank',
-            'code' => 'RBRBNL21',
-        ],
-        [
-            'name' => 'Triodos Bank',
-            'code' => 'TRIONL2U',
-        ],
-        [
-            'name' => 'Van Lanschot',
-            'code' => 'FVLBNL22',
-        ],
-        [
-            'name' => 'Knab Bank',
-            'code' => 'KNABNL2H',
-        ],
-    ];
-
     /**
-     * Get the list of banks. This is used in the iDeal payment model.
+     * Options getter
      *
      * @return array
      */
-    public function getIssuers()
+    public function toOptionArray()
     {
-        return $this->issuers;
-    }
-
-    /**
-     * Format the issuers list so the img index is filled with the correct url.
-     *
-     * @return array
-     */
-    protected function formatIssuers()
-    {
-        return array_map(function ($issuer) {
-            $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
-
-            return $issuer;
-        }, $this->issuers);;
-    }
-
-    /**
-     * @return array|void
-     */
-    public function getConfig()
-    {
-        $issuers = $this->formatIssuers();
-
-        // @TODO: get banks dynamic
-        $config = [
-            'payment' => [
-                'buckaroo' => [
-                    'banks' => $issuers,
-                    'response' => [],
-                ],
-            ],
+        return [
+            ['value' => 1, 'label' => __('1')],
+            ['value' => 2, 'label' => __('2')],
+            ['value' => 3, 'label' => __('3')],
+            ['value' => 4, 'label' => __('4')]
         ];
+    }
 
-        return $config;
+    /**
+     * Get options in "key-value" format
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return [
+            1 => __('1'),
+            2 => __('2'),
+            3 => __('3'),
+            4 => __('4')
+        ];
     }
 }
