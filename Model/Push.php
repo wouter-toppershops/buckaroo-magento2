@@ -84,9 +84,14 @@ class Push implements PushInterface
     public $orderSender;
 
     /**
-     * @var array
+     * @var array $postData
      */
     public $postData;
+
+    /**
+     * @var array $orignalPostData
+     */
+    public $orignalPostData;
 
     /**
      * @var \TIG\Buckaroo\Helper\Data
@@ -136,12 +141,14 @@ class Push implements PushInterface
      */
     public function receivePush()
     {
+        //Set orginal postdata before setting it to case lower.
+        $this->orignalPostData = $this->request->getParams();
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
-        //Check if the push can be procesed and if the order can be updtated.
-        $validSignature = $this->validator->validateSignature($this->postData);
+        //Check if the push can be procesed and if the order can be updated IMPORTANT => use the original post data.
+        $validSignature = $this->validator->validateSignature($this->orignalPostData);
         //Check if the order can recieve further status updates
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);

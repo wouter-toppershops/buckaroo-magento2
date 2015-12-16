@@ -133,9 +133,6 @@ class Push implements ValidatorInterface
         $signature = $this->calculateSignature($postData);
 
         if ($signature !== $postData['brq_signature']) {
-            /**
-             * @todo Add to error log.
-             */
             return false;
         }
 
@@ -159,8 +156,8 @@ class Push implements ValidatorInterface
         $signatureString = '';
 
         foreach ($sortableArray as $brq_key => $value) {
-            if ('brq_service_masterpass_customerphonenumber' !== $brq_key
-                && 'brq_service_masterpass_shippingrecipientphonenumber' !== $brq_key
+            if ('brq_SERVICE_masterpass_CustomerPhoneNumber' !== $brq_key
+                && 'brq_SERVICE_masterpass_ShippingRecipientPhoneNumber' !== $brq_key
             ) {
                 $value = urldecode($value);
             }
@@ -195,8 +192,8 @@ class Push implements ValidatorInterface
         $originalArray = [];
 
         foreach ($arrayToUse as $key => $value) {
-            $arrayToSort[$key]   = $value;
-            $originalArray[$key] = $key;
+            $arrayToSort[strtolower($key)]   = $value;
+            $originalArray[strtolower($key)] = $key;
         }
 
         ksort($arrayToSort);
