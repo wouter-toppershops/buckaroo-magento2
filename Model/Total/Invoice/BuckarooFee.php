@@ -36,68 +36,37 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Total\Quote;
 
-class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
+namespace TIG\Buckaroo\Total\Invoice;
+
+class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
 {
     /**
-     */
-    public function __construct()
-    {
-        $this->setCode('buckaroo_fee');
-    }
-
-    /**
-     * Collect grand total address amount
+     * Collect Buckaroo fee total for invoice
      *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
+     * @param \Magento\Sales\Model\Order\Invoice $invoice
      * @return $this
      */
-    public function collect(
-        \Magento\Quote\Model\Quote $quote,
-        \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
-        \Magento\Quote\Model\Quote\Address\Total $total
-    ) {
-        $totals = 9.8752;
-        $baseTotals = 41.9541;
+    public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
+    {
+        $order = $invoice->getOrder();
+        $buckarooFeeLeft = $order->getBuckarooFee() - $order->getBuckarooFeeInvoiced();
+        $baseBuckarooFeeLeft = $order->getBaseBuckarooFee() - $order->getBaseBuckarooFeeInvoiced();
+        if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
+            if ($baseBuckarooFeeLeft < $invoice->getBaseGrandTotal()) {
+                $invoice->setGrandTotal($invoice->getGrandTotal() - $buckarooFeeLeft);
+                $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() - $baseBuckarooFeeLeft);
+            } else {
+                $buckarooFeeLeft = $invoice->getGrandTotal();
+                $baseBuckarooFeeLeft = $invoice->getBaseGrandTotal();
 
-        $quote->setBuckarooFee($totals);
-        $quote->setBaseBuckarooFee($baseTotals);
+                $invoice->setGrandTotal(0);
+                $invoice->setBaseGrandTotal(0);
+            }
 
-        $total->setTotalAmount('buckaroo_fee', $totals);
-        $total->setBaseTotalAmount('buckaroo_fee', $baseTotals);
-
-        $quote->save();
-
+            $invoice->setBuckarooFee($buckarooFeeLeft);
+            $invoice->setBaseBuckarooFee($baseBuckarooFeeLeft);
+        }
         return $this;
-    }
-
-    /**
-     * Add buckaroo fee information to address
-     *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
-     * @return $this
-     */
-    public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
-    {
-        return [
-            'code' => $this->getCode(),
-            'title' => $this->getLabel(),
-            'value' => $total->getTotalAmount('buckaroo_fee'),
-        ];
-    }
-
-
-    /**
-     * Get Buckaroo label
-     *
-     * @return \Magento\Framework\Phrase
-     */
-    public function getLabel()
-    {
-        return __('Payment Fee');
     }
 }

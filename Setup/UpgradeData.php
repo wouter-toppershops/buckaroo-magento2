@@ -175,17 +175,6 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                 'buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
-
-            $quoteInstaller->addAttribute(
-                'quote',
-                'base_buckaroo_fee',
-                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
-            );
-            $quoteInstaller->addAttribute(
-                'quote',
-                'buckaroo_fee',
-                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
-            );
         }
     }
 }
