@@ -92,7 +92,7 @@
                 <field id="certificate_label" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Certificate label</label>
                     <comment><![CDATA[Enter a name for the certificate. This is purely administrative.]]></comment>
-                    <config_path>payment/tig_buckaroo_account/certificate_label</config_path>
+                    <backend_model>TIG\Buckaroo\Model\Config\Backend\CertificateLabel</backend_model>
                 </field>
 
                 <field id="certificate_upload" translate="label" type="file" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
@@ -103,6 +103,7 @@
 
                 <field id="certificate_file" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Certificate file</label>
+                    <source_model>TIG\Buckaroo\Model\Config\Source\Certificates</source_model>
                     <config_path>payment/tig_buckaroo_account/certificate_file</config_path>
                 </field>
 

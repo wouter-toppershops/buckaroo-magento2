@@ -38,7 +38,7 @@
  */
 namespace TIG\Buckaroo\Model\Config\Backend;
 
-class Certificate extends \Magento\Framework\App\Config\Value
+class CertificateLabel extends \Magento\Framework\App\Config\Value
 {
     /**
      * @var \Magento\Framework\ObjectManagerInterface
@@ -46,7 +46,8 @@ class Certificate extends \Magento\Framework\App\Config\Value
     protected $objectManager;
 
     /**
-     * Test
+     * Construct
+     *
      * @param \Magento\Framework\ObjectManagerInterface $objectmanager
      */
     public function __construct(
@@ -64,43 +65,16 @@ class Certificate extends \Magento\Framework\App\Config\Value
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection);
     }
 
+    /**
+     * Prevent saving the value by returning from the function immediatelly
+     *
+     * We don't need to safe certificate_label since it's handled in the certificate backend model.
+     * By returning $this immediatly we exit the function without saving or breaking anything.
+     *
+     * @return $this
+     */
     public function save()
     {
-        //type == application/x-x509-ca-cert
-        if (!empty($this->getFieldsetDataValue('certificate_upload')['name'])) {
-            $certFile = $this->getFieldsetDataValue('certificate_upload');
-            $certLabel = $this->getFieldsetDataValue('certificate_label');
-
-            if (!$this->validExtension($certFile['name'])) {
-                throw new \Exception('Disallowed file type.');
-            }
-
-            if (strlen(trim($certLabel)) <= 0) {
-                throw new \Exception('Enter a name for the certificate.');
-            }
-
-            $certDB = $this->objectManager->create('TIG\Buckaroo\Model\Certificate');
-            $certDB->setCertificate(file_get_contents($certFile['tmp_name']));
-            $certDB->setName($certLabel);
-            $certDB->save();
-        }
-
         return $this;
-    }
-
-    /**
-     * Check if extension is valid
-     *
-     * @param String $filename Name of uplpaded file
-     *
-     * @return bool
-     */
-    protected function validExtension($filename)
-    {
-        $allowedExtensions = ['pem'];
-
-        $extension = pathinfo($filename, PATHINFO_EXTENSION);
-
-        return in_array(strtolower($extension), $allowedExtensions);
     }
 }
