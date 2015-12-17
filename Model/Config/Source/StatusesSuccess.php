@@ -62,7 +62,7 @@ class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         $this->_orderConfig = $orderConfig;
-        $this->$configProviderFactory = $configProviderFactory;
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
