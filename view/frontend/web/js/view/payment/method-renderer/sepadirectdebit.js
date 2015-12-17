@@ -89,7 +89,22 @@ define(
          * */
 
         return Component.extend({
+            /**
+             *
+             * Include template
+             *
+             */
+
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit',
+                bankaccountholder: '',
+                bankaccountnumber: '',
+                bicnumber: '',
+                minimumWords: 2
+            },
+
             initObservable: function () {
+                this._super().observe(['bankaccountholder', 'bankaccountnumber', 'bicnumber', 'minimumWords']);
 
                 /**
                  * check if country is NL, if so load: bank account number | ifnot load: bicnumber
@@ -106,13 +121,6 @@ define(
                 }, this);
 
                 /**
-                 * Bind this values to the input field.
-                 */
-                this.bankaccountholder = ko.observable('');
-                this.bankaccountnumber = ko.observable('');
-                this.bicnumber = ko.observable('');
-
-                /**
                  * Run validation on the three inputfields
                  */
 
@@ -126,8 +134,6 @@ define(
                 /**
                  * Check if the required fields are filled. If so: enable place order button | if not: disable place order button
                  */
-                this.minimumWords = 2;
-
                 this.accountNumberIsValid = ko.computed( function () {
                     if (this.isnl())
                     {
@@ -147,17 +153,6 @@ define(
 
             validate: function () {
                 return $('.' + this.getCode() + ' [data-validate]').valid();
-            },
-
-
-            /**
-             *
-             * Include template
-             *
-             */
-
-            defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
             },
 
             getData: function() {
