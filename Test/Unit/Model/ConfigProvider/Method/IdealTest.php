@@ -36,17 +36,17 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider;
+namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider\Method;
 
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
-use TIG\Buckaroo\Model\ConfigProvider\Creditcard;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal;
 use Magento\Framework\View\Asset\Repository;
 
-class CreditcardTest extends BaseTest
+class IdealTest extends BaseTest
 {
     /**
-     * @var Creditcard
+     * @var iDEAL
      */
     protected $object;
 
@@ -60,7 +60,7 @@ class CreditcardTest extends BaseTest
         parent::setUp();
 
         $this->assetRepository = m::mock(Repository::class);
-        $this->object = $this->objectManagerHelper->getObject(Creditcard::class, [
+        $this->object = $this->objectManagerHelper->getObject(Ideal::class, [
             'assetRepo' => $this->assetRepository
         ]);
     }
@@ -73,10 +73,10 @@ class CreditcardTest extends BaseTest
 
         $options = $this->object->getConfig();
 
-        $shouldReceive->times(count($options['payment']['buckaroo']['creditcards']));
+        $shouldReceive->times(count($options['payment']['buckaroo']['banks']));
 
         $this->assertTrue(array_key_exists('payment', $options));
         $this->assertTrue(array_key_exists('buckaroo', $options['payment']));
-        $this->assertTrue(array_key_exists('creditcards', $options['payment']['buckaroo']));
+        $this->assertTrue(array_key_exists('banks', $options['payment']['buckaroo']));
     }
 }
