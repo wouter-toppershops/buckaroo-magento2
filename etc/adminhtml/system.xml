@@ -1340,6 +1340,30 @@
                     </group>
                 </group>
             </group>
+
+            <group id="tig_buckaroo_refund_section" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Refunding</label>
+                <fieldset_css>tig_buckaroo-section</fieldset_css>
+
+                <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enabled</label>
+                    <comment><![CDATA[Enable or disable refunding.]]></comment>
+                    <tooltip>Set to 'No' refunds must be done manualy in Payment Plaza.</tooltip>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/tig_buckaroo_refund/active</config_path>
+                </field>
+
+                <field id="allow_push" translate="label comment tooltip" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Push Payment Plaza refunds to Magento</label>
+                    <comment><![CDATA[Allow 2-way refunding from Magento and Payment Plaza.]]></comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                    <config_path>payment/tig_buckaroo_refund/allow_push</config_path>
+                    <depends>
+                        <field id="active">1</field>
+                    </depends>
+                </field>
+            </group>
+
         </section>
     </system>
 </config>
