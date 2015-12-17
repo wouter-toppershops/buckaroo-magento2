@@ -144,5 +144,12 @@
                 <cancel_on_failure>0</cancel_on_failure>
             </tig_buckaroo_advanced>
         </tig_states>
+
+        <tig_buckaroo_predefined>
+            <locations>
+                <live>http://checkout.buckaroo.nl/soap/Soap.svc</live>
+                <test>http://testcheckout.buckaroo.nl/soap/Soap.svc</test>
+            </locations>
+        </tig_buckaroo_predefined>
     </default>
 </config>

@@ -40,8 +40,6 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
-use Magento\Store\Model\ScopeInterface;
-
 class Order extends AbstractTransactionBuilder
 {
     /**
@@ -51,6 +49,9 @@ class Order extends AbstractTransactionBuilder
     {
         $order = $this->getOrder();
 
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
+
         $body = [
             'test' => '1',
             'Currency' => $order->getOrderCurrencyCode(),
@@ -58,10 +59,7 @@ class Order extends AbstractTransactionBuilder
             'AmountCredit' => 0,
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $this->scopeConfig->getValue(
-                self::XPATH_PAYMENT_DESCRIPTION,
-                ScopeInterface::SCOPE_STORE
-            ),
+            'Description' => $accountConfig->getTransactionLabel(),
             'ClientIP' => [
                 '_' => $order->getRemoteIp(),
                 'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
