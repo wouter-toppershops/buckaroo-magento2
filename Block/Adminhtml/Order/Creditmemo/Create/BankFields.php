@@ -57,8 +57,10 @@ class BankFields extends \Magento\Backend\Block\Template
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null
     ) {
+        $this->refundFieldsFactory = $refundFieldsFactory;
         $this->transactionBuilder = $transactionBuilderFactory;
         return parent::__construct($context);
     }
@@ -73,9 +75,6 @@ class BankFields extends \Magento\Backend\Block\Template
         $extraFields = array();
         $paymentMethod = $this->getPaymentMethod();
 
-        $xpathFields = self::XPATH_PAYMENT . $paymentMethod . self::XPATH_EXTRA_FIELDS;
-        $xpathLabels = self::XPATH_PAYMENT . $paymentMethod . self::XPATH_EXTRA_FIELDS_LABELS;
-
         /** If no payment method is found, return the empty array. */
         if(!$paymentMethod) {
             return $extraFields;
@@ -85,15 +84,11 @@ class BankFields extends \Magento\Backend\Block\Template
          * get both the field codes and labels. These are used for the Buckaroo request (codes)
          * and human readability (labels)
          */
-        $fields = $this->_scopeConfig->getValue($xpathFields);
-        $fields = explode(',', $fields);
-
-        $labels = $this->_scopeConfig->getValue($xpathLabels);
-        $labels = explode(',', $labels);
+        $fields = $this->refundFieldsFactory->get($paymentMethod);
 
         /** Parse the code and label in the same array, to keep the data paired. */
-        foreach($fields as $key => $field) {
-            $extraFields[$labels[$key]] = $field;
+        foreach($fields as $field) {
+            $extraFields[$field['label']] = $field['code'];
         }
 
         return $extraFields;

@@ -174,17 +174,17 @@ class Mrcash extends AbstractMethod
         $requestParams = $this->request->getparams();
         $creditMemoParams = $requestParams['creditmemo'];
 
-        $extraFields = $this->_scopeConfig->getValue(self::REFUND_EXTRA_FIELDS_XPATH);
-        $extraFields = explode(',', $extraFields);
+        $extraFields = $this->refundFieldsFactory->get(self::PAYMENT_METHOD_BUCKAROO_MRCASH_CODE);
 
         /**
          * If extra fields are found, attach these as 'RequestParameter' to the services.
          */
         if (!empty($extraFields)) {
             foreach ($extraFields as $extraField) {
+                $code = $extraField['code'];
                 $services['RequestParameter'][] = [
-                    '_' => "$creditMemoParams[$extraField]",
-                    'Name' => $extraField,
+                    '_' => "$creditMemoParams[$code]",
+                    'Name' => $code,
                 ];
             }
         }

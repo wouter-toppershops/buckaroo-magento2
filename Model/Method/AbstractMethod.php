@@ -126,6 +126,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Framework\Message\ManagerInterface                       $messageManager
      * @param \Magento\Framework\App\RequestInterface                           $request
      * @param \TIG\Buckaroo\Helper\Data                                         $helper
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                           $refundFieldsFactory
      * @param array                                                             $data
      */
     public function __construct(
@@ -144,6 +145,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
         array $data = []
     ) {
         parent::__construct(
@@ -165,6 +167,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->messageManager = $messageManager;
         $this->helper = $helper;
         $this->request = $request;
+        $this->refundFieldsFactory = $refundFieldsFactory;
     }
 
     /**

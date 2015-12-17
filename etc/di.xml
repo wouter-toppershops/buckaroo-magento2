@@ -52,6 +52,7 @@
             <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
             <argument name="helper" xsi:type="object">TIG\Buckaroo\Helper\Data</argument>
             <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
+            <argument name="refundFieldsFactory" xsi:type="object">TIG\Buckaroo\Model\RefundFieldsFactory</argument>
         </arguments>
     </type>
 
@@ -139,6 +140,12 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Block\Adminhtml\Order\Creditmemo\Create\BankFields">
+        <arguments>
+            <argument name="refundFieldsFactory" xsi:type="object">TIG\Buckaroo\Model\RefundFieldsFactory</argument>
+        </arguments>
+    </type>
+
     <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
         <arguments>
             <argument name="deserializers" xsi:type="array">
@@ -161,6 +168,27 @@
                 <item name="text_xml" xsi:type="array">
                     <item name="type" xsi:type="string">text/xml</item>
                     <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Model\RefundFieldsFactory">
+        <arguments>
+            <argument name="refundFields" xsi:type="array">
+                <item name="tig_buckaroo_mrcash" xsi:type="array">
+                    <item name="customeraccountname" xsi:type="array">
+                        <item name="label" xsi:type="string">Customer Account Name</item>
+                        <item name="code" xsi:type="string">customeraccountname</item>
+                    </item>
+                    <item name="customeriban" xsi:type="array">
+                        <item name="label" xsi:type="string">Customer Iban</item>
+                        <item name="code" xsi:type="string">customeriban</item>
+                    </item>
+                    <item name="customerbic" xsi:type="array">
+                        <item name="label" xsi:type="string">Customer BIC</item>
+                        <item name="code" xsi:type="string">customerbic</item>
+                    </item>
                 </item>
             </argument>
         </arguments>
