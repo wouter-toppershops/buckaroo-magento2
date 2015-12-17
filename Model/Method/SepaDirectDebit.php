@@ -132,7 +132,8 @@ class SepaDirectDebit extends AbstractMethod
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
         array $data = []
     ) {
@@ -153,6 +154,7 @@ class SepaDirectDebit extends AbstractMethod
             $helper,
             $request,
             $configProviderFactory,
+            $configProviderMethodFactory,
             $priceHelper,
             $data
         );
