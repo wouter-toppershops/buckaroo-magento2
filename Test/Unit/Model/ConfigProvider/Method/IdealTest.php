@@ -42,6 +42,7 @@ use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal;
 use Magento\Framework\View\Asset\Repository;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 class IdealTest extends BaseTest
 {
@@ -55,16 +56,29 @@ class IdealTest extends BaseTest
      */
     protected $assetRepository;
 
+    /**
+     * @var m\MockInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * Setup our dependencies
+     */
     public function setUp()
     {
         parent::setUp();
 
         $this->assetRepository = m::mock(Repository::class);
+        $this->scopeConfig = m::mock(ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(Ideal::class, [
-            'assetRepo' => $this->assetRepository
+            'assetRepo' => $this->assetRepository,
+            'scopeConfig' => $this->scopeConfig,
         ]);
     }
 
+    /**
+     * Check if the getImageUrl function is called for every record.
+     */
     public function testGetImageUrl()
     {
         $shouldReceive = $this->assetRepository
@@ -78,5 +92,40 @@ class IdealTest extends BaseTest
         $this->assertTrue(array_key_exists('payment', $options));
         $this->assertTrue(array_key_exists('buckaroo', $options['payment']));
         $this->assertTrue(array_key_exists('banks', $options['payment']['buckaroo']));
+    }
+
+    /**
+     * Check if the returned issuers list contains the necessary attributes.
+     */
+    public function testIssuers()
+    {
+        $issuers = $this->object->getIssuers();
+
+        foreach($issuers as $issuer)
+        {
+            $this->assertTrue(array_key_exists('name', $issuer));
+            $this->assertTrue(array_key_exists('code', $issuer));
+        }
+    }
+
+    /**
+     * Check that the payment fee is return as a false boolean when we have a false-ish value.
+     */
+    public function testGetPaymentFee()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->once()->andReturn(0);
+
+        $this->assertFalse($this->object->getPaymentFee());
+    }
+
+    /**
+     * Check if the payment free is return as a float.
+     */
+    public function testGetPaymentFeeReturnNumber()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->twice()->andReturn('10');
+
+        $this->assertEquals(10, $this->object->getPaymentFee());
+        $this->assertTrue(is_float($this->object->getPaymentFee()));
     }
 }
