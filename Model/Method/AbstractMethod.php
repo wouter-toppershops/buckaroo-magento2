@@ -44,6 +44,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
 
     /**
+     * The regex used to validate the entered BIC number
+     */
+    const BIC_NUMBER_REGEX = '^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$^';
+
+    /**
      * @var string
      */
     public $buckarooPaymentMethodCode;
