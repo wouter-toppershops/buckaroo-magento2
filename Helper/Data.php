@@ -133,6 +133,10 @@ class Data extends AbstractHelper
                 continue;
             }
 
+            if (is_bool($value)) {
+                $value = $value ? 'true' : 'false';
+            }
+
             $rawInfo[$key] = $value;
         }
 

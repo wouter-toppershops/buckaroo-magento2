@@ -40,7 +40,7 @@ namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider;
 
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
-use TIG\Buckaroo\Model\ConfigProvider\Ideal;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal;
 use Magento\Framework\View\Asset\Repository;
 
 class IdealTest extends BaseTest

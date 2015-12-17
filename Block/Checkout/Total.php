@@ -37,31 +37,24 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\Method\Plugin;
+namespace TIG\Buckaroo\Block\Checkout;
 
-class SepaDirectDebit
+class Total extends \Magento\Checkout\Block\Total\DefaultTotal
 {
     /**
-     * @param \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment
-     * @param array|\StdCLass                            $response
+     * Totals calculation template when checkout using reward points
      *
-     * @return $this
+     * @var string
      */
-    public function afterAuthorizeTransaction(
-        \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment,
-        $response
-    ) {
-        if (!empty($response[0]->ConsumerMessage) && $response[0]->ConsumerMessage->MustRead == 1) {
-            $consumerMessage = $response[0]->ConsumerMessage;
+    protected $_template = 'checkout/total.phtml';
 
-            $payment->messageManager->addSuccessMessage(
-                __($consumerMessage->Title)
-            );
-            $payment->messageManager->addSuccessMessage(
-                __($consumerMessage->PlainText)
-            );
-        }
-
-        return $response;
+    /**
+     * Return url to remove reward points from totals calculation
+     *
+     * @return string
+     */
+    public function getRemoveRewardTotalUrl()
+    {
+        return $this->getUrl('magento_reward/cart/remove');
     }
 }

@@ -43,6 +43,11 @@ class Creditcard extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_CREDITCARD_CODE = 'tig_buckaroo_creditcard';
 
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'creditcard';
+
     // @codingStandardsIgnoreStart
     /**
      * Payment method code

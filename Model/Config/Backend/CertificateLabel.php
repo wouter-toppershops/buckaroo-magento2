@@ -36,38 +36,45 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider;
+namespace TIG\Buckaroo\Model\Config\Backend;
 
-use Magento\Framework\View\Asset\Repository;
-use Magento\Checkout\Model\ConfigProviderInterface;
-
-abstract class AbstractConfigProvider implements ConfigProviderInterface
+class CertificateLabel extends \Magento\Framework\App\Config\Value
 {
     /**
-     * The asset repository to generate the correct url to our assets.
-     *
-     * @var Repository
+     * @var \Magento\Framework\ObjectManagerInterface
      */
-    protected $assetRepo;
+    protected $objectManager;
 
     /**
-     * @param Repository $assetRepo
+     * Construct
+     *
+     * @param \Magento\Framework\ObjectManagerInterface $objectmanager
      */
     public function __construct(
-        Repository $assetRepo
+        \Magento\Framework\ObjectManagerInterface $objectmanager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\App\Config\ScopeConfigInterface $config,
+        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        array $data = []
     ) {
-        $this->assetRepo = $assetRepo;
+        $this->objectManager = $objectmanager;
+
+        parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection);
     }
 
     /**
-     * Generate the url to the desired asset.
+     * Prevent saving the value by returning from the function immediatelly
      *
-     * @param $imgName
+     * We don't need to safe certificate_label since it's handled in the certificate backend model.
+     * By returning $this immediatly we exit the function without saving or breaking anything.
      *
-     * @return string
+     * @return $this
      */
-    protected function getImageUrl($imgName)
+    public function save()
     {
-        return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
+        return $this;
     }
 }

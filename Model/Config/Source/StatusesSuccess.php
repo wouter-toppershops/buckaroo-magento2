@@ -73,7 +73,7 @@ class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $state = $this->_scopeConfig->getValue(
-            'payment/tig_buckaroo_advanced/order_state_success',
+            'tig_states/tig_buckaroo_advanced/order_state_success',
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
         $statuses = $this->_orderConfig->getStateStatuses($state);

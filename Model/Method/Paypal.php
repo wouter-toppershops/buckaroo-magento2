@@ -43,6 +43,11 @@ class Paypal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE = 'tig_buckaroo_paypal';
 
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'paypal';
+
     // @codingStandardsIgnoreStart
     /**
      * Payment method code
