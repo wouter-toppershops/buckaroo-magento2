@@ -38,7 +38,7 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
+class StatusesPending implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * Core order config
@@ -54,15 +54,14 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
     /**
      * Class constructor
      *
-     * @param \Magento\Sales\Model\Order\Config                  $orderConfig
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         \Magento\Sales\Model\Order\Config $orderConfig,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         $this->_orderConfig = $orderConfig;
-        $this->$configProviderFactory = $configProviderFactory;
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
@@ -74,7 +73,7 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
     {
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
         $statesConfig = $this->configProviderFactory->get('states');
-        $state = $statesConfig->getStateFailed();
+        $state = $statesConfig->getStatePendingpayment();
 
         $statuses = $this->_orderConfig->getStateStatuses($state);
 
