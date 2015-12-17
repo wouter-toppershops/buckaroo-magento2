@@ -37,10 +37,15 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\ConfigProvider;
+namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 class Ideal extends AbstractConfigProvider
 {
+    const XPATH_IDEAL_PAYMENT_FEE = 'payment/tig_buckaroo_ideal/payment_fee';
+
+    /**
+     * @var array
+     */
     protected $issuers = [
         [
             'name' => 'ABN AMRO',
@@ -81,6 +86,11 @@ class Ideal extends AbstractConfigProvider
     ];
 
     /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * Get the list of banks. This is used in the iDeal payment model.
      *
      * @return array
@@ -97,11 +107,16 @@ class Ideal extends AbstractConfigProvider
      */
     protected function formatIssuers()
     {
-        return array_map(function ($issuer) {
-            $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
+        $issuers = array_map(
+            function ($issuer) {
+                $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
 
-            return $issuer;
-        }, $this->issuers);;
+                return $issuer;
+            },
+            $this->issuers
+        );
+
+        return $issuers;
     }
 
     /**
@@ -122,5 +137,18 @@ class Ideal extends AbstractConfigProvider
         ];
 
         return $config;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPaymentFee()
+    {
+        $paymentFee = $this->scopeConfig->getValue(
+            self::XPATH_IDEAL_PAYMENT_FEE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $paymentFee ? (float) $paymentFee : false;
     }
 }
