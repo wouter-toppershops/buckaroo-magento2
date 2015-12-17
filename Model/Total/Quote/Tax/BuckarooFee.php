@@ -36,10 +36,16 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Total\Quote;
+
+namespace TIG\Buckaroo\Model\Total\Quote\Tax;
+
+use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
 class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
+    const QUOTE_TYPE = 'buckaroo_fee';
+    const CODE_QUOTE_GW = 'buckaroo_fee';
+
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
      */
@@ -58,21 +64,19 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
-        $this->setCode('buckaroo_fee');
+        $this->setCode('pretax_ buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
         $this->priceCurrency = $priceCurrency;
     }
 
     /**
-     * Collect grand total address amount
+     * Collect gift wrapping related items and add them to tax calculation
      *
      * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
      * @param \Magento\Quote\Model\Quote\Address\Total $total
      * @return $this
-     *
-     * @throws \LogicException
      */
     public function collect(
         \Magento\Quote\Model\Quote $quote,
@@ -98,56 +102,34 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 //        }
 //
 //        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
-
+//
 //        $basePaymentFee = $configProvider->getPaymentFee();
         $basePaymentFee = 10;
 
         $paymentFee = $this->priceCurrency->convert($basePaymentFee, $quote->getStore());
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        $quote->setBuckarooFee($paymentFee);
-        /** @noinspection PhpUndefinedMethodInspection */
-        $quote->setBaseBuckarooFee($basePaymentFee);
+        $productTaxClassId = 4; /** @todo make dynamic (get from configprovider) */
 
-        $total->setBuckarooFee($paymentFee);
-        $total->setBaseBuckarooFee($basePaymentFee);
+        $address = $shippingAssignment->getShipping()->getAddress();
+        $associatedTaxables = $address->getAssociatedTaxables();
+        if (!$associatedTaxables) {
+            $associatedTaxables = [];
+        }
 
-        $quote->save();
-
-        return $this;
-    }
-
-    /**
-     * Add buckaroo fee information to address
-     *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
-     * @return $this
-     */
-    public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
-    {
-        $totals = [
-            'code' => $this->getCode(),
-            'title' => $this->getLabel(),
-            'buckaroo_fee' => $total->getBuckarooFee(),
-            'base_buckaroo_fee' => $total->getBaseBuckarooFee(),
-            'buckaroo_fee_incl_tax' => $total->getBuckarooFeeInclTax(),
-            'base_buckaroo_fee_incl_tax' => $total->getBaseBuckarooFeeInclTax(),
-            'buckaroo_fee_tax_amount' => $total->getBuckarooFeeTaxAmount(),
-            'buckaroo_fee_base_tax_amount' => $total->getBuckarooFeeBaseTaxAmount(),
+        $associatedTaxables[] = [
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_TYPE => self::QUOTE_TYPE,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_CODE => self::CODE_QUOTE_GW,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_UNIT_PRICE => $paymentFee,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_BASE_UNIT_PRICE => $basePaymentFee,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_QUANTITY => 1,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_TAX_CLASS_ID => $productTaxClassId,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_PRICE_INCLUDES_TAX => false,
+            CommonTaxCollector::KEY_ASSOCIATED_TAXABLE_ASSOCIATION_ITEM_CODE
+            => CommonTaxCollector::ASSOCIATION_ITEM_CODE_FOR_QUOTE,
         ];
 
-        return $totals;
-    }
+        $address->setAssociatedTaxables($associatedTaxables);
 
-
-    /**
-     * Get Buckaroo label
-     *
-     * @return \Magento\Framework\Phrase
-     */
-    public function getLabel()
-    {
-        return __('Payment Fee');
+        return $this;
     }
 }

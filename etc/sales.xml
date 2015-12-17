@@ -41,7 +41,11 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Sales:etc/sales.xsd">
     <section name="quote">
         <group name="totals">
-            <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\BuckarooFee" sort_order="125"/>
+            <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\BuckarooFee" sort_order="900">
+                <renderer name="frontend" instance="TIG\Buckaroo\Block\Checkout\Totals"/>
+            </item>
+            <item name="pretax_buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\Tax\BuckarooFee" sort_order="425"/>
+            <item name="tax_buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Quote\Tax\BuckarooFeeAfterTax" sort_order="475"/>
         </group>
     </section>
     <section name="order_invoice">

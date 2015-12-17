@@ -42,19 +42,56 @@ namespace TIG\Buckaroo\Block\Checkout;
 class Total extends \Magento\Checkout\Block\Total\DefaultTotal
 {
     /**
-     * Totals calculation template when checkout using reward points
+     * Template file path
      *
      * @var string
      */
-    protected $_template = 'checkout/total.phtml';
+    protected $_template = 'checkout/totals.phtml';
 
     /**
-     * Return url to remove reward points from totals calculation
+     * Gift wrapping data
      *
-     * @return string
+     * @var \Magento\GiftWrapping\Helper\Data|null
      */
-    public function getRemoveRewardTotalUrl()
+    protected $_giftWrappingData = null;
+
+    /**
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Magento\Customer\Model\Session $customerSession
+     * @param \Magento\Checkout\Model\Session $checkoutSession
+     * @param \Magento\Sales\Model\Config $salesConfig
+     * @param \Magento\GiftWrapping\Helper\Data $giftWrappingData
+     * @param array $layoutProcessors
+     * @param array $data
+     */
+    public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Customer\Model\Session $customerSession,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \Magento\Sales\Model\Config $salesConfig,
+        \Magento\GiftWrapping\Helper\Data $giftWrappingData,
+        array $layoutProcessors = [],
+        array $data = []
+    ) {
+        $this->_giftWrappingData = $giftWrappingData;
+        parent::__construct($context, $customerSession, $checkoutSession, $salesConfig, $layoutProcessors, $data);
+        $this->_isScopePrivate = true;
+    }
+
+    /**
+     * Return information for showing
+     *
+     * @return array
+     */
+    public function getValues()
     {
-        return $this->getUrl('magento_reward/cart/remove');
+        $values = [];
+        $total = $this->getTotal();
+        $totals = $this->_giftWrappingData->getTotals($total);
+        foreach ($totals as $total) {
+            $label = (string)$total['label'];
+            $values[$label] = $total['value'];
+        }
+        return $values;
     }
 }

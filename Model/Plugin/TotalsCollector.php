@@ -49,13 +49,22 @@ class TotalsCollector
      * @param Quote $quote
      *
      * @return void
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function beforeCollect(
         \Magento\Quote\Model\Quote\TotalsCollector $subject,
         Quote $quote
     ) {
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBuckarooFee(0);
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBaseBuckarooFee(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $quote->setBuckarooFeeTaxAmount(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $quote->setBuckarooFeeBaseTaxAmount(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $quote->setBuckarooFeeInclTax(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $quote->setBaseBuckarooFeeInclTax(0);
     }
 }
