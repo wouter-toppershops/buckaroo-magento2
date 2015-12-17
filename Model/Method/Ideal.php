@@ -40,11 +40,16 @@
 namespace TIG\Buckaroo\Model\Method;
 
 use Magento\Framework\Validator\Exception;
-use TIG\Buckaroo\Model\ConfigProvider\Ideal as IdealConfig;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal as IdealConfig;
 
 class Ideal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
+
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'ideal';
 
     // @codingStandardsIgnoreStart
     /**
@@ -105,6 +110,9 @@ class Ideal extends AbstractMethod
     protected $_canRefundInvoicePartial = true;
     // @codingStandardsIgnoreEnd
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Model\Context $context,
@@ -122,6 +130,8 @@ class Ideal extends AbstractMethod
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -140,6 +150,8 @@ class Ideal extends AbstractMethod
             $messageManager,
             $helper,
             $request,
+            $configProviderFactory,
+            $priceHelper,
             $data
         );
 

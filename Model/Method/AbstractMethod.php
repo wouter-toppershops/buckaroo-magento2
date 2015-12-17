@@ -44,6 +44,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
 
     /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode;
+
+    /**
      * @var \TIG\Buckaroo\Gateway\GatewayInterface
      */
     protected $gateway;
@@ -69,9 +74,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $helper;
 
     /**
+     * @var \Magento\Framework\Pricing\Helper\Data
+     */
+    public $priceHelper;
+
+    /**
      * @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
      */
     public $payment;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    public $configProviderFactory;
 
     /**
      * @var bool
@@ -111,22 +126,24 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * AbstractMethod constructor.
      *
-     * @param \Magento\Framework\Model\Context                                  $context
-     * @param \Magento\Framework\Registry                                       $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory                 $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory                      $customAttributeFactory
-     * @param \Magento\Payment\Helper\Data                                      $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface                $scopeConfig
-     * @param \Magento\Payment\Model\Method\Logger                              $logger
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null      $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null                $resourceCollection
-     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                       $gateway
-     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null         $transactionBuilderFactory
-     * @param \TIG\Buckaroo\Model\ValidatorFactory                              $validatorFactory
-     * @param \Magento\Framework\Message\ManagerInterface                       $messageManager
-     * @param \Magento\Framework\App\RequestInterface                           $request
-     * @param \TIG\Buckaroo\Helper\Data                                         $helper
-     * @param array                                                             $data
+     * @param \Magento\Framework\Model\Context                             $context
+     * @param \Magento\Framework\Registry                                  $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory            $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory                 $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                                 $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                         $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                  $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                         $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
+     * @param \TIG\Buckaroo\Helper\Data                                    $helper
+     * @param \Magento\Framework\App\RequestInterface                      $request
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory            $configProviderFactory
+     * @param \Magento\Framework\Pricing\Helper\Data                       $priceHelper
+     * @param array                                                        $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
@@ -144,6 +161,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -159,12 +178,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $data
         );
 
-        $this->gateway = $gateway;
+        $this->gateway                   = $gateway;
         $this->transactionBuilderFactory = $transactionBuilderFactory;
-        $this->validatorFactory = $validatorFactory;
-        $this->messageManager = $messageManager;
-        $this->helper = $helper;
-        $this->request = $request;
+        $this->validatorFactory          = $validatorFactory;
+        $this->messageManager            = $messageManager;
+        $this->helper                    = $helper;
+        $this->request                   = $request;
+        $this->configProviderFactory     = $configProviderFactory;
+        $this->priceHelper               = $priceHelper;
     }
 
     /**
@@ -181,6 +202,27 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this->getOrderPlaceRedirectUrl();
         }
         return parent::getConfigData($field, $storeId);
+    }
+
+    /**
+     * @return mixed|string
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getTitle()
+    {
+        $title = $this->getConfigData('title');
+
+        if (!$this->configProviderFactory->has($this->buckarooPaymentMethodCode)) {
+            return $title;
+        }
+
+        $paymentFee = $this->configProviderFactory->get($this->buckarooPaymentMethodCode)->getPaymentFee();
+        if (!$paymentFee || $paymentFee < 0.01) {
+            return $title;
+        }
+
+        $title .= ' + ' . $this->priceHelper->currency(number_format($paymentFee, 2), true, false);
+        return $title;
     }
 
     /**

@@ -43,6 +43,11 @@ class Sofortbanking extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_SOFORTBANKING_CODE = 'tig_buckaroo_sofortbanking';
 
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'sofortbanking';
+
     // @codingStandardsIgnoreStart
     /**
      * Payment method code

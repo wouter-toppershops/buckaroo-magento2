@@ -36,12 +36,12 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider;
+namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 use Magento\Framework\View\Asset\Repository;
-use Magento\Checkout\Model\ConfigProviderInterface;
+use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
 
-abstract class AbstractConfigProvider implements ConfigProviderInterface
+abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
 {
     /**
      * The asset repository to generate the correct url to our assets.
@@ -51,12 +51,15 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     protected $assetRepo;
 
     /**
-     * @param Repository $assetRepo
+     * @param \Magento\Framework\View\Asset\Repository           $assetRepo
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        Repository $assetRepo
+        \Magento\Framework\View\Asset\Repository $assetRepo,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
         $this->assetRepo = $assetRepo;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -69,5 +72,13 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     protected function getImageUrl($imgName)
     {
         return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getPaymentFee()
+    {
+        return false;
     }
 }

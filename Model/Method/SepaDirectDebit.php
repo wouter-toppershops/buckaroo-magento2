@@ -43,6 +43,11 @@ class SepaDirectDebit extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE = 'tig_buckaroo_sepadirectdebit';
 
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'sepadirectdebit';
+
     // @codingStandardsIgnoreStart
     /**
      * Payment method code

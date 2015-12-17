@@ -37,7 +37,7 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\ConfigProvider;
+namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 class Creditcard extends AbstractConfigProvider
 {
@@ -53,6 +53,8 @@ class Creditcard extends AbstractConfigProvider
     const CREDITCARD_SERVICE_CODE_CARTEBLEUE    = 'cartebleuevisa';
     const CREDITCARD_SERVICE_CODE_CARTEBANCAIRE = 'cartebancaire';
     /**#@-*/
+
+    const XPATH_CREDITCARD_PAYMENT_FEE = 'payment/tig_buckaroo_creditcard/payment_fee';
 
     /**
      * @return array|void
@@ -111,5 +113,18 @@ class Creditcard extends AbstractConfigProvider
         ];
 
         return $config;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPaymentFee()
+    {
+        $paymentFee = $this->scopeConfig->getValue(
+            self::XPATH_CREDITCARD_PAYMENT_FEE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $paymentFee ? (float) $paymentFee : false;
     }
 }

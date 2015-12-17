@@ -41,10 +41,18 @@ namespace TIG\Buckaroo\Model\Total\Quote;
 class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
     /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
      */
-    public function __construct()
-    {
+    protected $configProviderFactory;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
+    ) {
         $this->setCode('buckaroo_fee');
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
@@ -54,20 +62,39 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
      * @param \Magento\Quote\Model\Quote\Address\Total $total
      * @return $this
+     *
+     * @throws \LogicException
      */
     public function collect(
         \Magento\Quote\Model\Quote $quote,
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
     ) {
-        $totals = 10;
-        $baseTotals = 10;
+        $paymentMethod = $quote->getPayment()->getMethod();
+        if (!$paymentMethod || strpos($paymentMethod, 'tig_buckaroo_') !== 0) {
+            return $this;
+        }
 
-        $quote->setBuckarooFee($totals);
-        $quote->setBaseBuckarooFee($baseTotals);
+        $methodInstance = $quote->getPayment()->getMethodInstance();
+        if (!$methodInstance instanceof \TIG\Buckaroo\Model\Method\AbstractMethod) {
+            throw new \LogicException('Buckaroo payment fee is only available for Buckaroo payment methods.');
+        }
 
-        $total->setTotalAmount('buckaroo_fee', $totals);
-        $total->setBaseTotalAmount('buckaroo_fee', $baseTotals);
+        $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
+        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
+            return $this;
+        }
+
+        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
+
+        $basePaymentFee = $configProvider->getPaymentFee();
+        $paymentFee = $basePaymentFee; /** @todo convert currency */
+
+        $quote->setBuckarooFee($paymentFee);
+        $quote->setBaseBuckarooFee($basePaymentFee);
+
+        $total->setTotalAmount('buckaroo_fee', $paymentFee);
+        $total->setBaseTotalAmount('buckaroo_fee', $basePaymentFee);
 
         $quote->save();
 
