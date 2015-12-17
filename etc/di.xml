@@ -53,7 +53,8 @@
             <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
             <argument name="helper" xsi:type="object">TIG\Buckaroo\Helper\Data</argument>
             <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
-            <argument name="configProviderFactory" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Factory</argument>
+            <argument name="configProviderFactory" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Factory</argument>
+            <argument name="configProviderMethodFactory" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Factory</argument>
             <argument name="priceHelper" xsi:type="object">Magento\Framework\Pricing\Helper\Data</argument>
         </arguments>
     </type>
@@ -152,6 +153,33 @@
                 <item name="creditcard" xsi:type="array">
                     <item name="type" xsi:type="string">creditcard</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Model\ConfigProvider\Factory">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="account" xsi:type="array">
+                    <item name="type" xsi:type="string">account</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Account</item>
+                </item>
+                <item name="private_key" xsi:type="array">
+                    <item name="type" xsi:type="string">private_key</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\PrivateKey</item>
+                </item>
+                <item name="public_key" xsi:type="array">
+                    <item name="type" xsi:type="string">public_key</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\PublicKey</item>
+                </item>
+                <item name="predefined" xsi:type="array">
+                    <item name="type" xsi:type="string">predefined</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Predefined</item>
+                </item>
+                <item name="states" xsi:type="array">
+                    <item name="type" xsi:type="string">states</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\States</item>
                 </item>
             </argument>
         </arguments>

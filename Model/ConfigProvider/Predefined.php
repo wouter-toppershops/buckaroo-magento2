@@ -33,53 +33,85 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2014 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-use Magento\Framework\View\Asset\Repository;
-use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
+namespace TIG\Buckaroo\Model\ConfigProvider;
 
-abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+use \Magento\Checkout\Model\ConfigProviderInterface;
+
+class Predefined implements ConfigProviderInterface
 {
-    /**
-     * The asset repository to generate the correct url to our assets.
-     *
-     * @var Repository
-     */
-    protected $assetRepo;
 
     /**
-     * @param \Magento\Framework\View\Asset\Repository           $assetRepo
+     * XPATHs to configuration values for tig_buckaroo_predefined
+     */
+    const XPATH_PREDEFINED_LOCATIONS        = 'tig_buckaroo_predefined/locations';
+    const XPATH_PREDEFINED_LOCATIONS_LIVE   = 'tig_buckaroo_predefined/locations/live';
+    const XPATH_PREDEFINED_LOCATIONS_TEST   = 'tig_buckaroo_predefined/locations/test';
+
+    /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\View\Asset\Repository $assetRepo,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
-        $this->assetRepo = $assetRepo;
         $this->scopeConfig = $scopeConfig;
     }
 
     /**
-     * Generate the url to the desired asset.
-     *
-     * @param $imgName
-     *
-     * @return string
+     * @return array|void
      */
-    protected function getImageUrl($imgName)
+    public function getConfig()
     {
-        return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
+        $config = [
+            'locations' => $this->getLocations(),
+        ];
+        return $config;
     }
 
     /**
-     * {@inheritdoc}
+     * Returns the config value for predefined/locations
+     *
+     * @return mixed
      */
-    public function getPaymentFee()
+    public function getLocations()
     {
-        return false;
+        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS);
+    }
+
+    /**
+     * Returns the config value for predefined/locations/live
+     *
+     * @return mixed
+     */
+    public function getLocationsLive()
+    {
+        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_LIVE);
+    }
+
+    /**
+     * Returns the config value for predefined/locations/test
+     *
+     * @return mixed
+     */
+    public function getLocationsTest()
+    {
+        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_TEST);
+    }
+
+    /**
+     * Returns the config value for the given Xpath
+     *
+     * @return mixed
+     */
+    protected function getConfigFromXpath($xpath)
+    {
+        return $this->scopeConfig->getValue(
+            $xpath,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
 }
