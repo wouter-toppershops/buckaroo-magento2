@@ -2,7 +2,8 @@
     "name": "tig/buckaroo",
     "description": "TIG Magento 2 Buckaroo extension",
     "require": {
-        "php": "~5.5.0|~5.6.0|~7.0.0"
+        "php": "~5.5.0|~5.6.0|~7.0.0",
+        "mockery/mockery": "^0.9.4"
     },
     "type": "magento2-module",
     "version": "100.0.0",

@@ -131,7 +131,9 @@
                 <group>tig_buckaroo_sofortbanking</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_sofortbanking>
+        </payment>
 
+        <tig_states>
             <tig_buckaroo_advanced>
                 <model>TIG\Buckaroo\Model\Method\Mrcash</model> <!-- placeholder -->
                 <order_state_success>processing</order_state_success>
@@ -141,6 +143,13 @@
                 <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
                 <cancel_on_failure>0</cancel_on_failure>
             </tig_buckaroo_advanced>
-        </payment>
+        </tig_states>
+
+        <tig_buckaroo_predefined>
+            <locations>
+                <live>http://checkout.buckaroo.nl/soap/Soap.svc</live>
+                <test>http://testcheckout.buckaroo.nl/soap/Soap.svc</test>
+            </locations>
+        </tig_buckaroo_predefined>
     </default>
 </config>

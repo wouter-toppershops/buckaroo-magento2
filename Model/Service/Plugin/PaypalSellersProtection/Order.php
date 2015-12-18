@@ -75,7 +75,7 @@ class Order
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         )
         ) {
-            return $this;
+            return $result;
         }
 
         $payment = $paymentMethod->payment;

@@ -60,9 +60,11 @@ define(
             },
             banktypes: [],
             redirectAfterPlaceOrder: false,
+            selectedBank: null,
 
             initObservable: function () {
-                this.selectedBank = ko.observable(null);
+                this._super().observe(['selectedBank', 'banktypes']);
+
                 this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
 
                 /**
@@ -70,7 +72,6 @@ define(
                  * check if selected
                  */
                 var self = this;
-                this.selectedBank = ko.observable(null);
                 this.setSelectedBank = function (value) {
                     self.selectedBank(value);
                     return true;

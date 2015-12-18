@@ -41,28 +41,28 @@ namespace TIG\Buckaroo\Model\Config\Source;
 class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * Core store config
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $_scopeConfig;
-
-    /**
      * Core order config
      * @var \Magento\Sales\Model\Order\Config
      */
     protected $_orderConfig;
 
     /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
+    protected $configProviderFactory;
+
+    /**
      * Class constructor
      *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Sales\Model\Order\Config                  $orderConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Sales\Model\Order\Config $orderConfig
+        \Magento\Sales\Model\Order\Config $orderConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->_scopeConfig = $scopeConfig;
         $this->_orderConfig = $orderConfig;
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
@@ -72,10 +72,10 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $state = $this->_scopeConfig->getValue(
-            'payment/tig_buckaroo_advanced/order_state_failed',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
+        $statesConfig = $this->configProviderFactory->get('states');
+        $state = $statesConfig->getStateFailed();
+
         $statuses = $this->_orderConfig->getStateStatuses($state);
 
         $options = array();

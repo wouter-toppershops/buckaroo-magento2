@@ -89,7 +89,22 @@ define(
          * */
 
         return Component.extend({
+            /**
+             *
+             * Include template
+             *
+             */
+
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit',
+                bankaccountholder: '',
+                bankaccountnumber: '',
+                bicnumber: '',
+                minimumWords: 2
+            },
+
             initObservable: function () {
+                this._super().observe(['bankaccountholder', 'bankaccountnumber', 'bicnumber', 'minimumWords']);
 
                 /**
                  * check if country is NL, if so load: bank account number | ifnot load: bicnumber
@@ -106,13 +121,6 @@ define(
                 }, this);
 
                 /**
-                 * Bind this values to the input field.
-                 */
-                this.bankaccountholder = ko.observable('');
-                this.bankaccountnumber = ko.observable('');
-                this.bicnumber = ko.observable('');
-
-                /**
                  * Run validation on the three inputfields
                  */
 
@@ -126,14 +134,12 @@ define(
                 /**
                  * Check if the required fields are filled. If so: enable place order button | if not: disable place order button
                  */
-                this.minimumWords = 2;
-
                 this.accountNumberIsValid = ko.computed( function () {
                     if (this.isnl())
                     {
-                        return (this.bankaccountholder().length >= this.minimumWords && this.bankaccountnumber().length > 0);
+                        return (this.bankaccountholder().length >= this.minimumWords() && this.bankaccountnumber().length > 0);
                     } else {
-                        return (this.bankaccountholder().length >= this.minimumWords && this.bicnumber().length > 0);
+                        return (this.bankaccountholder().length >= this.minimumWords() && this.bicnumber().length > 0);
 
                     }
                 }, this);
@@ -149,23 +155,12 @@ define(
                 return $('.' + this.getCode() + ' [data-validate]').valid();
             },
 
-
-            /**
-             *
-             * Include template
-             *
-             */
-
-            defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_sepadirectdebit'
-            },
-
             getData: function() {
                 return {
                     "method": this.item.method,
                     "po_number": null,
                     "additional_data": {
-                        "customer_bin": this.bicnumber(),
+                        "customer_bic": this.bicnumber(),
                         "customer_iban": this.bankaccountnumber(),
                         "customer_account_name": this.bankaccountholder()
                     }
