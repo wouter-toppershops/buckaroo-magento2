@@ -47,14 +47,27 @@ class SetBuckarooFee implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         /* @var $order \Magento\Sales\Model\Order */
         $order = $observer->getEvent()->getOrder();
+        /** @noinspection PhpUndefinedMethodInspection */
         /** @var $quote \Magento\Quote\Model\Quote $quote */
         $quote = $observer->getEvent()->getQuote();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         if ($quote->getBaseBuckarooFee() > 0) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $order->setBuckarooFee($quote->getBuckarooFee());
+            /** @noinspection PhpUndefinedMethodInspection */
             $order->setBaseBuckarooFee($quote->getBaseBuckarooFee());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeTaxAmount($quote->getBuckarooFeeTaxAmount());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeBaseTaxAmount($quote->getBuckarooFeeBaseTaxAmount());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeInclTax($quote->getBuckarooFeeInclTax());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBaseBuckarooFeeInclTax($quote->getBaseBuckarooFeeInclTax());
         }
     }
 }

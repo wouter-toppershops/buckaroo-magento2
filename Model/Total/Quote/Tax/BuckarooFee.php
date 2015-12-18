@@ -57,17 +57,25 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     public $priceCurrency;
 
     /**
+     * @var \TIG\Buckaroo\Helper\PaymentFee
+     */
+    protected $helper;
+
+    /**
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \TIG\Buckaroo\Helper\PaymentFee                   $helper
      */
     public function __construct(
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
+        \TIG\Buckaroo\Helper\PaymentFee $helper
     ) {
         $this->setCode('pretax_ buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
         $this->priceCurrency = $priceCurrency;
+        $this->helper = $helper;
     }
 
     /**
@@ -87,13 +95,30 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             return $this;
         }
 
-        $basePaymentFee = 10;
+        $paymentMethod = $quote->getPayment()->getMethod();
+        if (!$paymentMethod || strpos($paymentMethod, 'tig_buckaroo_') !== 0) {
+            return $this;
+        }
+
+        $methodInstance = $quote->getPayment()->getMethodInstance();
+        if (!$methodInstance instanceof \TIG\Buckaroo\Model\Method\AbstractMethod) {
+            throw new \LogicException('Buckaroo payment fee is only available for Buckaroo payment methods.');
+        }
+
+        $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
+        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
+            return $this;
+        }
+
+        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
+        $basePaymentFee = $configProvider->getPaymentFee();
 
         $paymentFee = $this->priceCurrency->convert($basePaymentFee, $quote->getStore());
 
-        $productTaxClassId = 4; /** @todo make dynamic (get from configprovider) */
+        $productTaxClassId = $this->helper->getBuckarooFeeTaxClass($quote->getStore());
 
         $address = $shippingAssignment->getShipping()->getAddress();
+        /** @noinspection PhpUndefinedMethodInspection */
         $associatedTaxables = $address->getAssociatedTaxables();
         if (!$associatedTaxables) {
             $associatedTaxables = [];
@@ -111,6 +136,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             => CommonTaxCollector::ASSOCIATION_ITEM_CODE_FOR_QUOTE,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $address->setAssociatedTaxables($associatedTaxables);
 
         return $this;

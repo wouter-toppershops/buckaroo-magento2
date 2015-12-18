@@ -50,6 +50,7 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
+
         /** @noinspection PhpUndefinedMethodInspection */
         $buckarooFeeLeft = $order->getBuckarooFee() - $order->getBuckarooFeeInvoiced();
         /** @noinspection PhpUndefinedMethodInspection */
@@ -72,6 +73,7 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
             /** @noinspection PhpUndefinedMethodInspection */
             $invoice->setBaseBuckarooFee($baseBuckarooFeeLeft);
         }
+
         return $this;
     }
 }
