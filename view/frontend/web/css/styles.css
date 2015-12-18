@@ -23,6 +23,16 @@
     width: 50%;
 }
 
+@media screen and (max-width: 767px){
+    .tig_buckaroo_ideal .payment-method-billing-address,
+    .tig_buckaroo_sepadirectdebit .payment-method-billing-address,
+    .tig_buckaroo_creditcard .payment-method-billing-address,
+    .tig_buckaroo_giropay .payment-method-billing-address{
+        float:left;
+        width: 100%;
+    }
+}
+
 .payment-method-billing-address .actions-toolbar .primary {
     margin :20px 0;
 }
@@ -41,6 +51,10 @@
     .payment-method-billing-address {
         float:left;
         width: 100%;
+    }
+
+    .checkout-payment-method .payment-method-title {
+        padding: 15px 0;
     }
 }
 

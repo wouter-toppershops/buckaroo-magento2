@@ -53,6 +53,8 @@ class Push implements ValidatorInterface
 {
     public $scopeConfig;
 
+    public $configProviderFactory;
+
     public $helper;
 
     public $bpeResponseMessages = [
@@ -70,15 +72,18 @@ class Push implements ValidatorInterface
     ];
 
     /**
-     * @param \TIG\Buckaroo\Helper\Data $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
+     * @param \TIG\Buckaroo\Helper\Data                             $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
      */
     public function __construct(
         DataHelper $helper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->helper      = $helper;
-        $this->scopeConfig = $scopeConfig;
+        $this->helper                   = $helper;
+        $this->scopeConfig              = $scopeConfig;
+        $this->configProviderFactory    = $configProviderFactory;
     }
 
     /**
@@ -132,7 +137,7 @@ class Push implements ValidatorInterface
 
         $signature = $this->calculateSignature($postData);
 
-        if (!$signature === $postData['brq_signature']) {
+        if ($signature !== $postData['brq_signature']) {
             return false;
         }
 
@@ -156,8 +161,8 @@ class Push implements ValidatorInterface
         $signatureString = '';
 
         foreach ($sortableArray as $brq_key => $value) {
-            if ('brq_service_masterpass_customerphonenumber' !== $brq_key
-                && 'brq_service_masterpass_shippingrecipientphonenumber' !== $brq_key
+            if ('brq_SERVICE_masterpass_CustomerPhoneNumber' !== $brq_key
+                && 'brq_SERVICE_masterpass_ShippingRecipientPhoneNumber' !== $brq_key
             ) {
                 $value = urldecode($value);
             }
@@ -165,18 +170,17 @@ class Push implements ValidatorInterface
             $signatureString .= $brq_key. '=' . $value;
         }
 
-        /**
-         * @todo create this config value.
-         */
-        $digitalSignature = $this->scopeConfig->getValue(
-            'payment/tig_buckaroo_advanced/digital_signature',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
+        $statesConfig = $this->configProviderFactory->get('states');
+
+        $digitalSignature = $statesConfig->getDigitalSignature();
 
         $signatureString .= $digitalSignature;
 
         $signature = SHA1($signatureString);
-
+        /**
+         * @todo Add the signature to the debug mail.
+         */
         return $signature;
     }
 
@@ -193,8 +197,8 @@ class Push implements ValidatorInterface
         $originalArray = [];
 
         foreach ($arrayToUse as $key => $value) {
-            $arrayToSort[$key]   = $value;
-            $originalArray[$key] = $key;
+            $arrayToSort[strtolower($key)]   = $value;
+            $originalArray[strtolower($key)] = $key;
         }
 
         ksort($arrayToSort);

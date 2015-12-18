@@ -50,6 +50,149 @@ class SepaDirectDebitTest extends BaseTest
      */
     protected $object;
 
+    /**
+     * Create a mock of the info instance with some defaults.
+     *
+     * @param string $country
+     * @param string $class
+     *
+     * @return m\MockInterface
+     */
+    public function getInfoInstanceMock($country = 'NL', $class = 'Magento\Payment\Model\Info')
+    {
+        $infoInstanceMock = m::mock($class);
+        $infoInstanceMock
+            ->shouldReceive($class == 'Magento\Payment\Model\Info' ? 'getQuote' : 'getOrder')
+            ->twice()
+            ->andReturnSelf();
+        $infoInstanceMock->shouldReceive('getBillingAddress')->twice()->andReturnSelf();
+        $infoInstanceMock->shouldReceive('getCountryId')->twice()->andReturn($country);
+
+        return $infoInstanceMock;
+    }
+
+    /**
+     * Test the happy path.
+     *
+     * @throws \Magento\Framework\Validator\Exception
+     */
+    public function testValidateHappyPath()
+    {
+        $iban = 'NL91ABNA0417164300';
+
+        $infoInstanceMock = $this->getInfoInstanceMock();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+
+        $ibanValidator = m::mock(\Zend\Validator\Iban::class);
+        $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
+
+        $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit', [
+            'ibanValidator' => $ibanValidator,
+        ]);
+        $this->object->setData('info_instance', $infoInstanceMock);
+
+        $this->assertEquals($this->object, $this->object->validate());
+    }
+
+    /**
+     * Test the validation with an invalid account name.
+     */
+    public function testValidateInvalidAccountName()
+    {
+        $infoInstanceMock = $this->getInfoInstanceMock();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first');
+
+        $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit');
+        $this->object->setData('info_instance', $infoInstanceMock);
+
+        try {
+            $this->object->validate();
+            $this->fail();
+        } catch(\Exception $e) {
+            $this->assertInstanceOf(\Magento\Framework\Validator\Exception::class, $e);
+        }
+    }
+
+    /**
+     * Test the path with an invalid IBAN.
+     */
+    public function testValidateInvalidIban()
+    {
+        $iban = 'wrong';
+
+        $infoInstanceMock = $this->getInfoInstanceMock('BE');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+
+        $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit');
+        $this->object->setData('info_instance', $infoInstanceMock);
+
+        try {
+            $this->object->validate();
+            $this->fail();
+        } catch(\Exception $e) {
+            $this->assertInstanceOf(\Magento\Framework\Validator\Exception::class, $e);
+        }
+    }
+
+    /**
+     * Test the path with a non-NL account and an non-valid BIC number.
+     */
+    public function testValidateInvalidBic()
+    {
+        $iban = 'wrong';
+
+        $infoInstanceMock = $this->getInfoInstanceMock();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+
+        $ibanValidator = m::mock(\Zend\Validator\Iban::class);
+        $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(false);
+
+        $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit', [
+            'ibanValidator' => $ibanValidator,
+        ]);
+        $this->object->setData('info_instance', $infoInstanceMock);
+
+        try {
+            $this->object->validate();
+            $this->fail();
+        } catch(\Exception $e) {
+            $this->assertInstanceOf(\Magento\Framework\Validator\Exception::class, $e);
+        }
+    }
+
+    /**
+     * Test the path with a Payment instance instead of the quote instance.
+     *
+     * @throws \Magento\Framework\Validator\Exception
+     */
+    public function testValidatePaymentInstance()
+    {
+        $iban = 'NL91ABNA0417164300';
+
+        $infoInstanceMock = $this->getInfoInstanceMock('NL', 'Magento\Sales\Model\Order\Payment');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+
+        $ibanValidator = m::mock(\Zend\Validator\Iban::class);
+        $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
+
+        $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit', [
+            'ibanValidator' => $ibanValidator,
+        ]);
+        $this->object->setData('info_instance', $infoInstanceMock);
+
+        $this->assertEquals($this->object, $this->object->validate());
+    }
+
     public function testCapture()
     {
         $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');

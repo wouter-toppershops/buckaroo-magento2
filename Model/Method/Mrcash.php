@@ -45,6 +45,11 @@ class Mrcash extends AbstractMethod
 
     const REFUND_EXTRA_FIELDS_XPATH = 'payment/tig_buckaroo_mrcash/refund_extra_fields';
 
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'mrcash';
+
     // @codingStandardsIgnoreStart
     /**
      * Payment method code
