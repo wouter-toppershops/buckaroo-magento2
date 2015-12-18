@@ -89,8 +89,6 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
         $quote->setBuckarooFeeBaseTaxAmount($buckarooFeeBaseTaxAmount);
         $quote->setBuckarooFeeTaxAmount($buckarooFeeTaxAmount);
 
-        $quote->save();
-
         return $this;
     }
 
