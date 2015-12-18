@@ -928,6 +928,7 @@
                 <!-- SEPA direct debit Payment method group -->
                 <group id="tig_buckaroo_sepadirectdebit" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SEPA direct debit</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable SEPA direct debit</label>
@@ -1099,6 +1100,7 @@
                 <!-- Bancontact / Mister Cash Payment method group -->
                 <group id="tig_buckaroo_mrcash" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Bancontact / Mister Cash</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Bancontact / Mister Cash</label>
@@ -1217,6 +1219,7 @@
                 <!-- SOFORT Banking Payment method group -->
                 <group id="tig_buckaroo_sofortbanking" translate="label" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>SOFORT Banking</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable SOFORT Banking</label>
@@ -1335,6 +1338,7 @@
                 <!-- Giropay Payment method group -->
                 <group id="tig_buckaroo_giropay" translate="label" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Giropay</label>
+                    <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
                     <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Enable Giropay</label>
