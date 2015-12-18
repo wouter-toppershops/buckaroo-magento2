@@ -43,6 +43,7 @@ class Creditcard extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_CREDITCARD_CODE = 'tig_buckaroo_creditcard';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -54,6 +55,11 @@ class Creditcard extends AbstractMethod
      * @var bool
      */
     protected $_isGateway               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canOrder                = true;
 
     /**
      * @var bool
@@ -94,6 +100,12 @@ class Creditcard extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
+
+    /**
+     * @var bool
+     */
+    public $closeAuthorizeTransaction = false;
 
     /**
      * {@inheritdoc}
@@ -103,9 +115,45 @@ class Creditcard extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('card_type', $data['card_type']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('card_type', $data->getCardType());
         }
         return $this;
+    }
+
+    /**
+     * Check capture availability
+     *
+     * @return bool
+     * @api
+     */
+    public function canCapture()
+    {
+        if ($this->getConfigData('payment_action') == 'order') {
+            return false;
+        }
+        return $this->_canCapture;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrderTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => $payment->getAdditionalInformation('card_type'),
+            'Action'           => 'Pay',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
     }
 
     /**
@@ -115,26 +163,22 @@ class Creditcard extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        $action = 'Pay';
-        if ($payment->getAmountAuthorized()) {
-            $action = 'Capture';
-            $transactionBuilder->setOriginalTransactionKey(
+        $services = [
+            'Name'             => $payment->getAdditionalInformation('card_type'),
+            'Action'           => 'Capture',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setChannel('CallCenter')
+            ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
                 )
             );
-            $transactionBuilder->setChannel('CallCenter');
-        }
-
-        $services = [
-            'Name'             => $payment->getAdditionalInformation('card_type'),
-            'Action'           => $action,
-            'Version'          => 1,
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
     }
@@ -152,6 +196,7 @@ class Creditcard extends AbstractMethod
             'Version'          => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
@@ -172,6 +217,7 @@ class Creditcard extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -179,6 +225,31 @@ class Creditcard extends AbstractMethod
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
             ->setChannel('CallCenter');
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'    => $payment->getAdditionalInformation('card_type'),
+            'Action'  => 'CancelAuthorize',
+            'Version' => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest')
+                           ->setOriginalTransactionKey(
+                               $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+                           )
+                           ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }

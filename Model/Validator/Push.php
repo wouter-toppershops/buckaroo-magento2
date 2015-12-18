@@ -40,13 +40,18 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
+use \TIG\Buckaroo\Helper\Data as DataHelper;
+use \TIG\Buckaroo\Model\ValidatorInterface;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
+
 /**
  * Class Push
  *
  * @package TIG\Buckaroo\Model\Validator
  */
-class Push implements \TIG\Buckaroo\Model\ValidatorInterface
+class Push implements ValidatorInterface
 {
+    public $scopeConfig;
 
     public $helper;
 
@@ -66,10 +71,14 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
 
     /**
      * @param \TIG\Buckaroo\Helper\Data $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
      */
-    public function __construct(\TIG\Buckaroo\Helper\Data $helper)
-    {
-        $this->helper = $helper;
+    public function __construct(
+        DataHelper $helper,
+        ScopeConfigInterface $scopeConfig
+    ) {
+        $this->helper      = $helper;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -90,7 +99,7 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
      */
     public function validateStatusCode($code)
     {
-        if( null !== $this->helper->getStatusByValue($code)
+        if (null !== $this->helper->getStatusByValue($code)
             && isset($this->bpeResponseMessages[$code])
         ) {
             return [
@@ -108,14 +117,95 @@ class Push implements \TIG\Buckaroo\Model\ValidatorInterface
     }
 
     /**
-     * @param $signature
+     * Generate/calculate the signature with the buckaroo config value and check if thats equal to the signature
+     * received from the push
      *
-     * @todo build the validator that determines the signature using array sorting and the SHA1 hash algorithm
+     * @param $postData
+     *
      * @return bool
      */
-    public function validateSignature($signature)
+    public function validateSignature($postData)
     {
+        if (!isset($postData['brq_signature'])) {
+            return false;
+        }
+
+        $signature = $this->calculateSignature($postData);
+
+        if (!$signature === $postData['brq_signature']) {
+            return false;
+        }
+
         return true;
     }
 
+    /**
+     * Determines the signature using array sorting and the SHA1 hash algorithm
+     *
+     * @param $postData
+     *
+     * @return string
+     */
+    protected function calculateSignature($postData)
+    {
+        $copyData = $postData;
+        unset($copyData['brq_signature']);
+
+        $sortableArray = $this->buckarooArraySort($copyData);
+
+        $signatureString = '';
+
+        foreach ($sortableArray as $brq_key => $value) {
+            if ('brq_service_masterpass_customerphonenumber' !== $brq_key
+                && 'brq_service_masterpass_shippingrecipientphonenumber' !== $brq_key
+            ) {
+                $value = urldecode($value);
+            }
+
+            $signatureString .= $brq_key. '=' . $value;
+        }
+
+        /**
+         * @todo create this config value.
+         */
+        $digitalSignature = $this->scopeConfig->getValue(
+            'payment/tig_buckaroo_advanced/digital_signature',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        $signatureString .= $digitalSignature;
+
+        $signature = SHA1($signatureString);
+
+        return $signature;
+    }
+
+    /**
+     * Sort the array so that the signature can be calculated identical to the way buckaroo does.
+     *
+     * @param $arrayToUse
+     *
+     * @return array $sortableArray
+     */
+    protected function buckarooArraySort($arrayToUse)
+    {
+        $arrayToSort   = [];
+        $originalArray = [];
+
+        foreach ($arrayToUse as $key => $value) {
+            $arrayToSort[$key]   = $value;
+            $originalArray[$key] = $key;
+        }
+
+        ksort($arrayToSort);
+
+        $sortableArray = [];
+
+        foreach ($arrayToSort as $key => $value) {
+            $key = $originalArray[$key];
+            $sortableArray[$key] = $value;
+        }
+
+        return $sortableArray;
+    }
 }

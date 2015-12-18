@@ -45,6 +45,7 @@ class Mrcash extends AbstractMethod
 
     const REFUND_EXTRA_FIELDS_XPATH = 'payment/tig_buckaroo_mrcash/refund_extra_fields';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -60,7 +61,12 @@ class Mrcash extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -96,6 +102,7 @@ class Mrcash extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -105,9 +112,31 @@ class Mrcash extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
         }
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrderTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'bancontactmrcash',
+            'Action'           => 'Pay',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
     }
 
     /**
@@ -123,19 +152,7 @@ class Mrcash extends AbstractMethod
      */
     public function getAuthorizeTransactionBuilder($payment)
     {
-        $transactionBuilder = $this->transactionBuilderFactory->get('order');
-
-        $services = [
-            'Name'             => 'bancontactmrcash',
-            'Action'           => 'Pay',
-            'Version'          => 1,
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
-
-        return $transactionBuilder;
+        return false;
     }
 
     /**
@@ -157,21 +174,22 @@ class Mrcash extends AbstractMethod
         $requestParams = $this->request->getparams();
         $creditMemoParams = $requestParams['creditmemo'];
 
-        $extraFields = $this->_scopeConfig->getValue(self::REFUND_EXTRA_FIELDS_XPATH);
-        $extraFields = explode(',', $extraFields);
+        $extraFields = $this->refundFieldsFactory->get(self::PAYMENT_METHOD_BUCKAROO_MRCASH_CODE);
 
         /**
          * If extra fields are found, attach these as 'RequestParameter' to the services.
          */
         if (!empty($extraFields)) {
             foreach ($extraFields as $extraField) {
+                $code = $extraField['code'];
                 $services['RequestParameter'][] = [
-                    '_' => "$creditMemoParams[$extraField]",
-                    'Name' => $extraField,
+                    '_' => "$creditMemoParams[$code]",
+                    'Name' => $code,
                 ];
             }
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -181,5 +199,13 @@ class Mrcash extends AbstractMethod
             ->setChannel('CallCenter');
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }

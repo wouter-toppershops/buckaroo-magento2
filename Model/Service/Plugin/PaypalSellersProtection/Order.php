@@ -39,20 +39,47 @@
 
 namespace TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection;
 
-class Authorize
+class Order
 {
+    /**
+     * Xpath to the paypal seller's protection setting.
+     */
+    const XPATH_PAYPAL_SELLERS_PROTECTION = 'payment/tig_buckaroo_paypal/sellers_protection';
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->scopeConfig = $scopeConfig;
+    }
+
     /**
      * @param \TIG\Buckaroo\Model\Method\Paypal                      $paymentMethod
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $result
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
      */
-    public function afterGetAuthorizeTransactionBuilder(
+    public function afterGetOrderTransactionBuilder(
         \TIG\Buckaroo\Model\Method\Paypal $paymentMethod,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $result
-    )
-    {
+    ) {
+        if (!(bool) $this->scopeConfig->getValue(
+            self::XPATH_PAYPAL_SELLERS_PROTECTION,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )
+        ) {
+            return $this;
+        }
+
         $payment = $paymentMethod->payment;
+        /** @noinspection PhpUndefinedMethodInspection */
         /** @var \Magento\Sales\Model\Order $order */
         $order = $payment->getOrder();
         $shippingAddress = $order->getShippingAddress();

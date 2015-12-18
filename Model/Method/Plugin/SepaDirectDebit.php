@@ -50,8 +50,7 @@ class SepaDirectDebit
     public function afterAuthorizeTransaction(
         \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment,
         $response
-    )
-    {
+    ) {
         if (!empty($response[0]->ConsumerMessage) && $response[0]->ConsumerMessage->MustRead == 1) {
             $consumerMessage = $response[0]->ConsumerMessage;
 

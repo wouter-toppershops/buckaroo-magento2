@@ -43,6 +43,7 @@ class Sofortbanking extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_SOFORTBANKING_CODE = 'tig_buckaroo_sofortbanking';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -58,7 +59,12 @@ class Sofortbanking extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -94,6 +100,7 @@ class Sofortbanking extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -103,9 +110,31 @@ class Sofortbanking extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
         }
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getOrderTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'Sofortueberweisung',
+            'Action'           => 'Pay',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
     }
 
     /**
@@ -121,19 +150,7 @@ class Sofortbanking extends AbstractMethod
      */
     public function getAuthorizeTransactionBuilder($payment)
     {
-        $transactionBuilder = $this->transactionBuilderFactory->get('order');
-
-        $services = [
-            'Name'             => 'Sofortueberweisung',
-            'Action'           => 'Pay',
-            'Version'          => 1,
-        ];
-
-        $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
-
-        return $transactionBuilder;
+        return false;
     }
 
     /**
@@ -149,6 +166,7 @@ class Sofortbanking extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -158,5 +176,13 @@ class Sofortbanking extends AbstractMethod
             ->setChannel('CallCenter');
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }

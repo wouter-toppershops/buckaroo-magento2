@@ -43,6 +43,7 @@ class Transfer extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_TRANSFER_CODE = 'tig_buckaroo_transfer';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -58,7 +59,12 @@ class Transfer extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -94,6 +100,7 @@ class Transfer extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -103,6 +110,7 @@ class Transfer extends AbstractMethod
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
         }
         return $this;
@@ -111,18 +119,11 @@ class Transfer extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    public function getCaptureTransactionBuilder($payment)
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthorizeTransactionBuilder($payment)
+    public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
@@ -143,13 +144,28 @@ class Transfer extends AbstractMethod
             ],
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
-
-        $transaction = $transactionBuilder->build();
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCaptureTransactionBuilder($payment)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthorizeTransactionBuilder($payment)
+    {
+        return false;
     }
 
     /**
@@ -165,11 +181,20 @@ class Transfer extends AbstractMethod
             'Version' => 1,
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }

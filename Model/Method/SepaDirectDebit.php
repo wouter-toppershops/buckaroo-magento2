@@ -43,6 +43,7 @@ class SepaDirectDebit extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE = 'tig_buckaroo_sepadirectdebit';
 
+    // @codingStandardsIgnoreStart
     /**
      * Payment method code
      *
@@ -58,7 +59,12 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = true;
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = false;
 
     /**
      * @var bool
@@ -94,6 +100,7 @@ class SepaDirectDebit extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
 
     /**
      * {@inheritdoc}
@@ -105,9 +112,15 @@ class SepaDirectDebit extends AbstractMethod
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data['customer_iban']);
             $this->getInfoInstance()->setAdditionalInformation('customer_account_name', $data['customer_account_name']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data->getCustomerBic());
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data->getCustomerIban());
-            $this->getInfoInstance()->setAdditionalInformation('customer_account_name', $data->getCustomerAccountName());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_account_name',
+                $data->getCustomerAccountName()
+            );
         }
         return $this;
     }
@@ -115,15 +128,7 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    public function getCaptureTransactionBuilder($payment)
-    {
-        return false;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthorizeTransactionBuilder($payment)
+    public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
@@ -150,11 +155,28 @@ class SepaDirectDebit extends AbstractMethod
             ];
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCaptureTransactionBuilder($payment)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthorizeTransactionBuilder($payment)
+    {
+        return false;
     }
 
     /**
@@ -172,6 +194,7 @@ class SepaDirectDebit extends AbstractMethod
 
         ];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
                            ->setMethod('TransactionRequest')
@@ -203,5 +226,13 @@ class SepaDirectDebit extends AbstractMethod
         }
 
         return parent::afterAuthorize($payment, $response);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
     }
 }

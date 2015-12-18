@@ -50,16 +50,22 @@
             <argument name="transactionBuilderFactory" xsi:type="object">TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory</argument>
             <argument name="validatorFactory" xsi:type="object">TIG\Buckaroo\Model\ValidatorFactory</argument>
             <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
+            <argument name="helper" xsi:type="object">TIG\Buckaroo\Helper\Data</argument>
             <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
+            <argument name="refundFieldsFactory" xsi:type="object">TIG\Buckaroo\Model\RefundFieldsFactory</argument>
         </arguments>
     </type>
 
     <type name="TIG\Buckaroo\Model\Method\Paypal">
-        <plugin name="tig_buckaroo_paypal_sellersprotection" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Authorize" />
+        <plugin name="tig_buckaroo_paypal_sellersprotection_order" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Order" />
     </type>
 
     <type name="TIG\Buckaroo\Model\Method\SepaDirectDebit">
         <plugin name="tig_buckaroo_sepadirectdebit" type="TIG\Buckaroo\Model\Method\Plugin\SepaDirectDebit" />
+    </type>
+
+    <type name="TIG\Buckaroo\Model\Push">
+        <plugin name="tig_buckaroo_paypal_sellersprotection_push" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Push" />
     </type>
 
     <type name="TIG\Buckaroo\Model\PaymentInformationManagement">
@@ -93,6 +99,10 @@
                     <item name="type" xsi:type="string">redirect_return</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\RedirectProcess</item>
                 </item>
+                <item name="amount" xsi:type="array">
+                    <item name="type" xsi:type="string">amount</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\Validator\Amount</item>
+                </item>
             </argument>
         </arguments>
     </type>
@@ -124,6 +134,18 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Debug\Logger">
+        <arguments>
+            <argument name="name" xsi:type="string">TIG_Buckaroo</argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Block\Adminhtml\Order\Creditmemo\Create\BankFields">
+        <arguments>
+            <argument name="refundFieldsFactory" xsi:type="object">TIG\Buckaroo\Model\RefundFieldsFactory</argument>
+        </arguments>
+    </type>
+
     <type name="Magento\Framework\Webapi\Rest\Request\DeserializerFactory">
         <arguments>
             <argument name="deserializers" xsi:type="array">
@@ -146,6 +168,27 @@
                 <item name="text_xml" xsi:type="array">
                     <item name="type" xsi:type="string">text/xml</item>
                     <item name="model" xsi:type="string">Magento\Framework\Webapi\Rest\Request\Deserializer\Xml</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Model\RefundFieldsFactory">
+        <arguments>
+            <argument name="refundFields" xsi:type="array">
+                <item name="tig_buckaroo_mrcash" xsi:type="array">
+                    <item name="customeraccountname" xsi:type="array">
+                        <item name="label" xsi:type="string">Customer Account Name</item>
+                        <item name="code" xsi:type="string">customeraccountname</item>
+                    </item>
+                    <item name="customeriban" xsi:type="array">
+                        <item name="label" xsi:type="string">Customer Iban</item>
+                        <item name="code" xsi:type="string">customeriban</item>
+                    </item>
+                    <item name="customerbic" xsi:type="array">
+                        <item name="label" xsi:type="string">Customer BIC</item>
+                        <item name="code" xsi:type="string">customerbic</item>
+                    </item>
                 </item>
             </argument>
         </arguments>

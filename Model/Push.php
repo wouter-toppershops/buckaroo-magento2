@@ -43,9 +43,13 @@ namespace TIG\Buckaroo\Model;
 use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use TIG\Buckaroo\Api\PushInterface;
 use TIG\Buckaroo\Exception;
 use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
+use \TIG\Buckaroo\Model\Validator\Amount as ValidatorAmount;
+use \TIG\Buckaroo\Model\Method\AbstractMethod;
+use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Class Push
@@ -54,45 +58,74 @@ use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
  */
 class Push implements PushInterface
 {
-    const ORDER_TYPE_COMPLETED = 'complete';
-    const ORDER_TYPE_CANCELED  = 'canceled';
-    const ORDER_TYPE_HOLDED    = 'holded';
-    const ORDER_TYPE_CLOSED    = 'closed';
     /**
-     * @var Request
+     * @var \Magento\Framework\Webapi\Rest\Request $request
      */
-    protected $request;
+    public $request;
+
+    /**
+     * @var \TIG\Buckaroo\Model\Validator\Push $validator
+     */
+    public $validator;
+
+    /**
+     * @var \TIG\Buckaroo\Model\Validator\Amount $validateAmount;
+     */
+    public $validateAmount;
+
+    /**
+     * @var Order $order
+     */
+    public $order;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     */
+    public $orderSender;
 
     /**
      * @var array
      */
-    protected $_postData;
+    public $postData;
 
     /**
-     * \TIG\Buckaroo\Model\Validator\Push
-     * @var $_validator
+     * @var \TIG\Buckaroo\Helper\Data
      */
-    protected $_validator;
+    public $helper;
 
-    /** @var Order $order */
-    protected $_order;
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
+    public $scopeConfig;
+
     /**
      * Push constructor.
      *
-     * @param ObjectManagerInterface                 $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request $request
-     * @param \TIG\Buckaroo\Model\Validator\Push     $validator
+     * @param ObjectManagerInterface                              $objectManager
+     * @param \Magento\Framework\Webapi\Rest\Request              $request
+     * @param \TIG\Buckaroo\Model\Validator\Push                  $validator
+     * @param \TIG\Buckaroo\Model\Validator\Amount                $amountValidator
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \TIG\Buckaroo\Helper\Data                           $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
      */
     public function __construct(
         ObjectManagerInterface $objectManager,
         Request $request,
-        ValidatorPush $validator
-    )
-    {
-        $this->objectManager = $objectManager;
-        $this->request       = $request;
-        $this->_validator    = $validator;
-
+        ValidatorPush $validator,
+        ValidatorAmount $amountValidator,
+        OrderSender $orderSender,
+        \TIG\Buckaroo\Helper\Data $helper,
+        ScopeConfigInterface $scopeConfig,
+        \TIG\Buckaroo\Helper\Data $helper
+    ) {
+        $this->objectManager  = $objectManager;
+        $this->request        = $request;
+        $this->validator      = $validator;
+        $this->orderSender    = $orderSender;
+        $this->validateAmount = $amountValidator;
+        $this->helper         = $helper;
+        $this->scopeConfig    = $scopeConfig;
     }
 
     /**
@@ -100,71 +133,84 @@ class Push implements PushInterface
      *
      * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
      * @todo Debug mailing trough the push flow.
-     * @todo Check if the amount equals the amount of the order.
      */
     public function receivePush()
     {
         //Create post data array, change key values to lower case.
-        $this->_postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
+        $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
         //Validate status code and return response
-        $response        = $this->_validator->validateStatusCode($this->_postData['brq_statuscode']);
+        $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
         //Check if the push can be procesed and if the order can be updtated.
-        $validSignature  = $this->_validator->validateSignature($this->_postData['brq_signature']);
+        $validSignature = $this->validator->validateSignature($this->postData);
         //Check if the order can recieve further status updates
-        $this->_order    = $this->objectManager->create(Order::class)
-                                               ->loadByIncrementId($this->_postData['brq_invoicenumber']);
-        if ( !$this->_order->getId() ) {
+        $this->order = $this->objectManager->create(Order::class)
+            ->loadByIncrementId($this->postData['brq_invoicenumber']);
+        if (!$this->order->getId()) {
             // try to get order by transaction id on payment.
-            $this->_getOrderByTransactionKey($this->_postData['brq_transactions']);
+            $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
-        $canUpdateOrder = $this->_canUpdateOrderStatus();
+        $canUpdateOrder = $this->canUpdateOrderStatus();
 
         //Last validation before push can be completed
         if (!$validSignature) {
             return false;
             //If the signature is valid but the order cant be updated, try to add a notification to the order comments.
         } elseif ($validSignature && !$canUpdateOrder) {
-            $this->_setOrderNotifactionNote($response['message']);
+            $this->setOrderNotifactionNote($response['message']);
             return false;
         }
-
         //Make sure the transactions key is set.
-        $payment     = $this->_order->getPayment();
-        $originalKey = \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
+        $payment     = $this->order->getPayment();
+        $originalKey = AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
 
-        if (!$payment->getAdditionalInformation($originalKey) && !empty($this->_postData['brq_transactions'])
+        if (!$payment->getAdditionalInformation($originalKey) && !empty($this->postData['brq_transactions'])
         ) {
-            $payment->setAdditionalInformation($originalKey, $this->_postData['brq_transactions']);
+            $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
         }
 
-        /** @var  $newStates  @todo built the method that sets and gets the new states of the order.
-         */
-        $newStatus = 'closed';
+        $store = \Magento\Store\Model\ScopeInterface::SCOPE_STORE;
 
-        switch ( $response['status'] ) {
+        switch ($response['status']) {
             case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
             case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-                $this->_processFailedPush($newStatus, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_status_failed',
+                    $store
+                );
+                $this->processFailedPush($newSatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $this->_processSuccededPush($newStatus, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_status_success',
+                    $store
+                );
+                $this->processSucceededPush($newSatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
-                $this->_setOrderNotifactionNote($response['message']);
+                $this->setOrderNotifactionNote($response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $this->_processPendingPaymentPush($newStatus, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_status_pendingpayment',
+                    $store
+                );
+                $this->processPendingPaymentPush($newSatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $this->_processIncorrectPaymentPush($newStatus, $response['message']);
+                $newSatus = $this->scopeConfig->getValue(
+                    'payment/tig_buckaroo_advanced/order_incorrect_payment',
+                    $store
+                );
+                $this->processIncorrectPaymentPush($newSatus, $response['message']);
                 break;
         }
+        $this->order->save();
 
         return true;
     }
@@ -173,16 +219,19 @@ class Push implements PushInterface
      * Sometimes the push does not contain the order id, when thats the case try to get the order by his payment,
      * by using its own transactionkey.
      *
-     * @todo well, as you can see, named the method, didn't built it yet.
-     * @param $transaction
-     *
+     * @param $transactionId
      * @return bool
      */
-    protected function _getOrderByTransactionKey($transaction)
+    protected function getOrderByTransactionKey($transactionId)
     {
-        if ($transaction) {
-            //get invoice by transaction
-            // And get order by invoice
+        if ($transactionId) {
+            /** @var  \Magento\Sales\Model\Order\Payment\Transaction $transaction */
+            $transaction = $this->objectManager->create('Magento\Sales\Model\Order\Payment\Transaction');
+            $transaction->load($transactionId, 'txn_id');
+            $order = $transaction->getOrder();
+            if ($order) {
+                return $order;
+            }
         }
         return false;
     }
@@ -191,22 +240,21 @@ class Push implements PushInterface
      * Checks if the order can be updated by checking his state and status.
      * @return bool
      */
-    protected function _canUpdateOrderStatus()
+    protected function canUpdateOrderStatus()
     {
         //Types of statusses
-        $completedStateAndStatus = [self::ORDER_TYPE_COMPLETED, self::ORDER_TYPE_COMPLETED];
-        $cancelledStateAndStatus = [self::ORDER_TYPE_CANCELED, self::ORDER_TYPE_CANCELED];
-        $holdedStateAndStatus    = [self::ORDER_TYPE_HOLDED, self::ORDER_TYPE_HOLDED];
-        $closedStateAndStatus    = [self::ORDER_TYPE_CLOSED, self::ORDER_TYPE_CLOSED];
+        $completedStateAndStatus = [Order::STATE_COMPLETE, Order::STATE_COMPLETE];
+        $cancelledStateAndStatus = [Order::STATE_CANCELED, Order::STATE_CANCELED];
+        $holdedStateAndStatus    = [Order::STATE_HOLDED, Order::STATE_HOLDED];
+        $closedStateAndStatus    = [Order::STATE_CLOSED, Order::STATE_CLOSED];
         //Get current state and status of order
-        $currentStateAndStatus = array($this->_order->getState(), $this->_order->getStatus());
+        $currentStateAndStatus = [$this->order->getState(), $this->order->getStatus()];
         //If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
-        if (
-           $completedStateAndStatus != $currentStateAndStatus &&
-           $cancelledStateAndStatus != $currentStateAndStatus &&
-           $holdedStateAndStatus    != $currentStateAndStatus &&
-           $closedStateAndStatus    != $currentStateAndStatus &&
-           $this->_order->canInvoice()
+        if ($completedStateAndStatus != $currentStateAndStatus &&
+           $cancelledStateAndStatus  != $currentStateAndStatus &&
+           $holdedStateAndStatus     != $currentStateAndStatus &&
+           $closedStateAndStatus     != $currentStateAndStatus &&
+           $this->order->canInvoice()
         ) {
             return true;
         }
@@ -220,13 +268,21 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function _processFailedPush($newStatus, $message)
+    public function processFailedPush($newStatus, $message)
     {
-        //Create discription
-        $discription = ''.$message;
+        //Create description
+        $description = ''.$message;
 
-        /** @todo Check if the order can cancel ? */
-        $this->_updateOrderStatus(Order::STATE_CANCELED, $newStatus, $discription);
+        $buckarooCancelOnFailed = $this->scopeConfig->getValue(
+            'payment\tig_buckaroo_advanced/cancel_on_failure',
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        if ($this->order->canCancel() && $buckarooCancelOnFailed) {
+            $this->order->cancel()->save();
+        }
+
+        $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $description);
 
         return true;
     }
@@ -237,18 +293,19 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function _processSuccededPush($newStatus, $message)
+    public function processSucceededPush($newStatus, $message)
     {
-        if( !$this->_order->getEmailSent() ) {
-            // Sent new order mail.
+        if (!$this->order->getEmailSent()) {
+            $this->orderSender->send($this->order);
         }
-        //Create discription
-        $discription = ''.$message;
+
+        //Create description
+        $description = ''.$message;
 
         //Create invoice
-        $this->_saveInvoice();
+        $this->saveInvoice();
 
-        $this->_updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $discription);
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
         return true;
     }
@@ -256,13 +313,30 @@ class Push implements PushInterface
     /**
      * @param $newStatus
      * @param $message
-     * @todo well, as you can see, named the method, didn't built it yet.
      * @return bool
      */
-    protected function _processIncorrectPaymentPush($newStatus, $message)
+    public function processIncorrectPaymentPush($newStatus, $message)
     {
-        //Check if the paid amount is correct
-        //hold the order
+        $baseTotal    = round($this->order->getBaseGrandTotal(), 0);
+        $orderAmount  = $this->getCorrectOrderAmount();
+
+        /**
+         * Determine whether too much or not has been paid
+         */
+        $description = $this->validateAmount->validate([
+            'baseTotal'   => $baseTotal,
+            'orderAmount' => $orderAmount,
+            'message'     => $message,
+            'brq_amount'  => $this->postData['brq_amount']
+        ]);
+
+        if (!$description) {
+            return false;
+        }
+
+        $this->order->hold()->save()->addStatusHistoryComment($description, $newStatus);
+        $this->order->save();
+
         return true;
     }
 
@@ -272,11 +346,11 @@ class Push implements PushInterface
      *
      * @return bool
      */
-    protected function _processPendingPaymentPush($newStatus, $message)
+    public function processPendingPaymentPush($newStatus, $message)
     {
-        $discription = ''.$message;
+        $description = ''.$message;
 
-        $this->_updateOrderStatus(Order::STATE_NEW, $newStatus, $discription);
+        $this->updateOrderStatus(Order::STATE_NEW, $newStatus, $description);
 
         return true;
     }
@@ -284,15 +358,16 @@ class Push implements PushInterface
     /**
      * Try to add an notifaction note to the order comments.
      * @todo make note available trought translations.
-     * @todo What will be the notifactionnote ?
+     * @todo What will be the notifactionnote ? -> Create an class that would create the note dynamic
      *
      * @param $message
      */
-    protected function _setOrderNotifactionNote($message)
+    protected function setOrderNotifactionNote($message)
     {
-        $note  = 'Buckaroo attempted to update this order, but failed : ' .$message;
+        $note = 'Buckaroo attempted to update this order, but failed : ' .$message;
         try {
-            $this->_order->addStatusHistoryComment($note)->save();
+            $this->order->addStatusHistoryComment($note);
+            $this->order->save();
         } catch (Exception $e) {
             // parse exception into debug mail
         }
@@ -305,39 +380,103 @@ class Push implements PushInterface
      * @param $description
      * @param $newStatus
      */
-    protected function _updateOrderStatus($orderState, $newStatus, $description)
+    protected function updateOrderStatus($orderState, $newStatus, $description)
     {
-        if ( $this->_order->getState() ==  $orderState) {
-            $this->_order->addStatusHistoryComment($description, $newStatus)->save();
-            $this->_order->setStatus($newStatus)->save();
+        if ($this->order->getState() ==  $orderState) {
+            $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
-            $this->_order->addStatusHistoryComment($description)->save();
+            $this->order->addStatusHistoryComment($description);
         }
     }
 
     /**
      * Creates and saves the invoice and adds for each invoice the buckaroo transaction keys
+     * Only when the order can be invoiced and has not been invoiced before.
      *
      * @return bool
      */
-    protected function _saveInvoice()
+    protected function saveInvoice()
     {
-        //Only when the order can be invoiced and has not been invoiced before.
-        if( $this->_order->canInvoice() && !$this->_order->hasInvoices() ) {
-            $payment = $this->_order->getPayment();
-            $payment->registerCaptureNotification($this->_order->getBaseGrandTotal());
-            $this->_order->save();
+        if (!$this->order->canInvoice() && $this->order->hasInvoices()) {
+            return false;
+        }
 
-            foreach($this->_order->getInvoiceCollection() as $invoice)
-            {
-                if (!isset($this->_postData['brq_transactions'])) {
+        $this->addTransactionData();
+
+        $this->order->save();
+
+        //Only when the order can be invoiced and has not been invoiced before.
+        if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
+            $this->addTransactionData();
+
+            $this->order->save();
+
+            foreach ($this->order->getInvoiceCollection() as $invoice) {
+                if (!isset($this->postData['brq_transactions'])) {
                     continue;
                 }
-                $invoice->setTransactionId($this->_postData['brq_transactions'])
+                /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+                $invoice->setTransactionId($this->postData['brq_transactions'])
                     ->save();
             }
+
             return true;
         }
+
         return false;
+    }
+
+    /**
+     * @return Order\Payment
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function addTransactionData()
+    {
+        /** @var \Magento\Sales\Model\Order\Payment $payment */
+        $payment = $this->order->getPayment();
+
+        $transactionKey = $this->postData['brq_transactions'];
+
+        /**
+         * Save the transaction's response as additional info for the transaction.
+         */
+        $rawInfo = $this->helper->getTransactionAdditionalInfo($this->postData);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $payment->setTransactionAdditionalInfo(
+            \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
+            $rawInfo
+        );
+
+        /**
+         * Save the payment's transaction key.
+         */
+        /** @noinspection PhpUndefinedMethodInspection */
+        $payment->setTransactionId($transactionKey . '-capture');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $payment->setParentTransactionId($transactionKey);
+        $payment->setAdditionalInformation(
+            \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY,
+            $transactionKey
+        );
+
+        $payment->registerCaptureNotification($this->order->getBaseGrandTotal());
+
+        return $payment;
+    }
+
+    /**
+     * Get Correct order amount
+     * @return int $orderAmount
+     */
+    protected function getCorrectOrderAmount()
+    {
+        if ($this->postData['brq_currency'] == $this->order->getBaseCurrencyCode()) {
+            $orderAmount = $this->order->getBaseGrandTotal();
+        } else {
+            $orderAmount = $this->order->getGrandTotal();
+        }
+
+        return $orderAmount;
     }
 }

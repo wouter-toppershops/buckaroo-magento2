@@ -68,7 +68,8 @@ class ValidatorFactory
      * Retrieve proper transaction builder for the specified transaction type.
      *
      * @param string $validatorType
-     * @return \TIG\Buckaroo\Model\ValidatorInterface
+     *
+     * @return ValidatorInterface
      * @throws \LogicException|\TIG\Buckaroo\Exception
      */
     public function get($validatorType)
@@ -94,7 +95,7 @@ class ValidatorFactory
         }
 
         $validator = $this->objectManager->get($validatorClass);
-        if (!$validator instanceof \TIG\Buckaroo\Model\ValidatorInterface) {
+        if (!$validator instanceof ValidatorInterface) {
             throw new \LogicException(
                 'The transaction builder must implement "TIG\Buckaroo\Model\ValidatorInterface".'
             );
