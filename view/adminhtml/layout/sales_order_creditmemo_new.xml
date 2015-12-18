@@ -6,6 +6,9 @@
  */
 -->
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <css src="TIG_Buckaroo::css/adminstyles.css" />
+    </head>
     <body>
         <referenceContainer name="submit_before">
             <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Fee" name="buckaroo_fee_creditmemo" template="TIG_Buckaroo::sales/order/creditmemo/buckaroo_fee.phtml"/>
