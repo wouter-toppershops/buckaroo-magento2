@@ -60,7 +60,7 @@ class Totals extends \Magento\Framework\View\Element\Template
     }
 
     /**
-     * Initialize gift wrapping and printed card totals for order/invoice/creditmemo
+     * Initialize gbuckaroo fee totals for order/invoice/creditmemo
      *
      * @return $this
      */

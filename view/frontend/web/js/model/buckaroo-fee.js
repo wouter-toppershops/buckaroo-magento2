@@ -29,7 +29,7 @@ define(
                 },
 
                 /**
-                 * Get gift wrapping price display mode.
+                 * Get buckaroo fee price display mode.
                  * @returns {Boolean}
                  */
                 displayBothprices: function () {
@@ -37,7 +37,7 @@ define(
                 },
 
                 /**
-                 * Get printed card price display mode.
+                 * Get buckaroo fee price display mode.
                  * @returns {Boolean}
                  */
                 displayInclTaxPrice: function () {

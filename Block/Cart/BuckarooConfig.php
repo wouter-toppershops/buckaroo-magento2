@@ -42,7 +42,7 @@ class BuckarooConfig extends \Magento\Backend\Block\Template
     }
 
     /**
-     * Retrieve gift message configuration
+     * Retrieve buckaroo configuration
      *
      * @return array
      */

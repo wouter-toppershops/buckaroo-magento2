@@ -79,7 +79,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     }
 
     /**
-     * Collect gift wrapping related items and add them to tax calculation
+     * Collect buckaroo fee related items and add them to tax calculation
      *
      * @param \Magento\Quote\Model\Quote $quote
      * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment

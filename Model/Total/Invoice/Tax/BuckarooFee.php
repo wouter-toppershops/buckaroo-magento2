@@ -62,8 +62,8 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
                 $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeTaxAmountLeft);
                 $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseBuckarooFeeTaxAmountLeft);
             } else {
-                $buckarooFeeTaxAmountLeft = $invoice->getGrandTotal();
-                $baseBuckarooFeeTaxAmountLeft = $invoice->getBaseGrandTotal();
+                $buckarooFeeTaxAmountLeft = $invoice->getTaxAmount();
+                $baseBuckarooFeeTaxAmountLeft = $invoice->getBaseTaxAmount();
 
                 $invoice->setGrandTotal(0);
                 $invoice->setBaseGrandTotal(0);
