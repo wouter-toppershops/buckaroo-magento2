@@ -183,23 +183,25 @@
                         <config_path>payment/tig_buckaroo_account/cancel_on_failed</config_path>
                     </field>
 
-                    <!-- TODO: "Toon Buckaroo updates" field -->
-
-                    <field id="debug_email" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="debug_email" translate="label comment" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Debug email</label>
                         <comment><![CDATA[Transaction data send as raw data.]]></comment>
                         <config_path>payment/tig_buckaroo_account/debug_email</config_path>
                     </field>
 
-                    <field id="limit_by_ip" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="limit_by_ip" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Display only for selected IP's</label>
                         <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>payment/tig_buckaroo_account/limit_by_ip</config_path>
                     </field>
 
-                    <!-- TODO: "Geforceerd winkelwagen legen" field -->
-                    <!-- TODO: "Toeslag percentage modus" field -->
+                    <field id="fee_percentage_mode" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Fee percentage mode</label>
+                        <comment><![CDATA[This setting only applies to percentage-based Buckaroo fee's.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
+                        <source_model>TIG\Buckaroo\Model\Config\Source\FeePercentageMode</source_model>
+                        <config_path>payment/tig_buckaroo_account/fee_percentage_mode</config_path>
+                    </field>
                 </group>
             </group>
 
