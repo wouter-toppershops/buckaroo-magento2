@@ -1,16 +1,15 @@
 <!-- Gets extra fields if required for this payment method. Returns array of extra fields, or empty array -->
 <?php $extraFields = $block->getExtraFields(); ?>
 
-<table class="admin__table-secondary order-subtotal-table">
-<?php foreach ($extraFields as $name => $field): ?>
-    <tr>
-        <td class="label"><?php echo $name; ?><div id="tig_buckaroo_<?php echo $field; ?>"></div></td>
-        <td>
+<div class="refund-fields">
+    <?php foreach ($extraFields as $name => $field): ?>
+        <div class="admin__field" >
+            <label for="tig_buckaroo_<?php echo $field; ?>" class="label normal admin__field-label"><?php echo $name; ?></label>
             <input type="text"
                    name="creditmemo[<?php echo $field; ?>]"
-                   class="input-text"
-                   id="<?php echo $field; ?>" />
-        </td>
-    </tr>
-<?php endforeach; ?>
-</table>
+                   class="input-text input-text admin__control-text"
+                   id="tig_buckaroo_<?php echo $field; ?>"
+                />
+        </div>
+    <?php endforeach; ?>
+</div>
