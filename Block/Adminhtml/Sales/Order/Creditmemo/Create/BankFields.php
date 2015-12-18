@@ -42,23 +42,19 @@ namespace TIG\buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 class BankFields extends \Magento\Backend\Block\Template
 {
 
-    /**
-     * Xpath parts. Used in conjunction with the payment method code to find if any refund extra fields are used.
-     */
-    const XPATH_PAYMENT             = 'payment/';
-    const XPATH_EXTRA_FIELDS        = '/refund_extra_fields';
-    const XPATH_EXTRA_FIELDS_LABELS = '/refund_extra_fields_labels';
-
     protected $orderPaymentBlock    = 'order_payment';
 
     /**
      * @param \Magento\Backend\Block\Template\Context              $context
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory              $refundFieldsFactory
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
-        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null
     ) {
+        $this->refundFieldsFactory = $refundFieldsFactory;
         $this->transactionBuilder = $transactionBuilderFactory;
         return parent::__construct($context);
     }
@@ -73,11 +69,8 @@ class BankFields extends \Magento\Backend\Block\Template
         $extraFields = array();
         $paymentMethod = $this->getPaymentMethod();
 
-        $xpathFields = self::XPATH_PAYMENT . $paymentMethod . self::XPATH_EXTRA_FIELDS;
-        $xpathLabels = self::XPATH_PAYMENT . $paymentMethod . self::XPATH_EXTRA_FIELDS_LABELS;
-
         /** If no payment method is found, return the empty array. */
-        if(!$paymentMethod) {
+        if (!$paymentMethod) {
             return $extraFields;
         }
 
@@ -85,15 +78,13 @@ class BankFields extends \Magento\Backend\Block\Template
          * get both the field codes and labels. These are used for the Buckaroo request (codes)
          * and human readability (labels)
          */
-        $fields = $this->_scopeConfig->getValue($xpathFields);
-        $fields = explode(',', $fields);
-
-        $labels = $this->_scopeConfig->getValue($xpathLabels);
-        $labels = explode(',', $labels);
+        $fields = $this->refundFieldsFactory->get($paymentMethod);
 
         /** Parse the code and label in the same array, to keep the data paired. */
-        foreach($fields as $key => $field) {
-            $extraFields[$labels[$key]] = $field;
+        if ($fields) {
+            foreach ($fields as $field) {
+                $extraFields[$field['label']] = $field['code'];
+            }
         }
 
         return $extraFields;
@@ -112,7 +103,7 @@ class BankFields extends \Magento\Backend\Block\Template
         $layout = $this->getLayout();
         $paymentBlock = $layout->getBlock($this->orderPaymentBlock);
 
-        if($paymentBlock) {
+        if ($paymentBlock) {
             $paymentMethod = $paymentBlock->getPayment()->getMethod();
         }
 

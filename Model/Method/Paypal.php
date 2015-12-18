@@ -158,6 +158,9 @@ class Paypal extends AbstractMethod
             'Version' => 1,
         ];
 
+        $requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
+
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
