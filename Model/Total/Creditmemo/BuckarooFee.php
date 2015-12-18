@@ -50,21 +50,27 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $order = $creditmemo->getOrder();
+        /** @noinspection PhpUndefinedMethodInspection */
         $buckarooFeeLeft = $order->getBuckarooFeeInvoiced() - $order->getBuckarooFeeRefunded();
+        /** @noinspection PhpUndefinedMethodInspection */
         $baseBuckarooFeeLeft = $order->getBaseBuckarooFeeInvoiced() - $order->getBaseBuckarooFeeRefunded();
+        /** @noinspection PhpUndefinedMethodInspection */
         if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
             if ($baseBuckarooFeeLeft >= $creditmemo->getBaseGrandTotal()) {
                 $buckarooFeeLeft = $creditmemo->getGrandTotal();
                 $baseBuckarooFeeLeft = $creditmemo->getBaseGrandTotal();
                 $creditmemo->setGrandTotal(0);
                 $creditmemo->setBaseGrandTotal(0);
+                /** @noinspection PhpUndefinedMethodInspection */
                 $creditmemo->setAllowZeroGrandTotal(true);
             } else {
                 $creditmemo->setGrandTotal($creditmemo->getGrandTotal() - $buckarooFeeLeft);
                 $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() - $baseBuckarooFeeLeft);
             }
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $creditmemo->setBuckarooFee($buckarooFeeLeft);
+            /** @noinspection PhpUndefinedMethodInspection */
             $creditmemo->setBaseBuckarooFee($baseBuckarooFeeLeft);
         }
         return $this;

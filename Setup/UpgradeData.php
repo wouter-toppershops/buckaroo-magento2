@@ -97,10 +97,10 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             );
         }
 
-        if (version_compare($context->getVersion(), '0.1.3', '<')) {
-            $quoteInstaller = $this->quoteSetupFactory->create(['resourceName' => 'quote_setup', 'setup' => $setup]);
-            $salesInstaller = $this->salesSetupFactory->create(['resourceName' => 'sales_setup', 'setup' => $setup]);
+        $quoteInstaller = $this->quoteSetupFactory->create(['resourceName' => 'quote_setup', 'setup' => $setup]);
+        $salesInstaller = $this->salesSetupFactory->create(['resourceName' => 'sales_setup', 'setup' => $setup]);
 
+        if (version_compare($context->getVersion(), '0.1.3', '<')) {
             $quoteInstaller->addAttribute(
                 'quote',
                 'buckaroo_fee',
@@ -173,6 +173,119 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             $salesInstaller->addAttribute(
                 'creditmemo',
                 'buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+        }
+
+        if (version_compare($context->getVersion(), '0.1.4', '<')) {
+            $quoteInstaller->addAttribute(
+                'quote',
+                'base_buckaroo_fee_incl_tax',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote',
+                'buckaroo_fee_incl_tax',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $quoteInstaller->addAttribute(
+                'quote_address',
+                'base_buckaroo_fee_incl_tax',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote_address',
+                'buckaroo_fee_incl_tax',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote_address',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote_address',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'order',
+                'base_buckaroo_fee_incl_tax',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_incl_tax',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+        }
+
+        if (version_compare($context->getVersion(), '0.1.5', '<')) {
+            $salesInstaller->addAttribute(
+                'invoice',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'invoice',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'creditmemo',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'creditmemo',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+        }
+
+        if (version_compare($context->getVersion(), '0.1.6', '<')) {
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_base_tax_amount_invoiced',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_tax_amount_invoiced',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_base_tax_amount_refunded',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_tax_amount_refunded',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
         }

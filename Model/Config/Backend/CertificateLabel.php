@@ -66,10 +66,10 @@ class CertificateLabel extends \Magento\Framework\App\Config\Value
     }
 
     /**
-     * Prevent saving the value by returning from the function immediatelly
+     * Prevent saving the value by returning from the function immediately
      *
      * We don't need to safe certificate_label since it's handled in the certificate backend model.
-     * By returning $this immediatly we exit the function without saving or breaking anything.
+     * By returning $this immediately we exit the function without saving or breaking anything.
      *
      * @return $this
      */

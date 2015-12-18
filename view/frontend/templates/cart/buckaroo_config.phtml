@@ -36,25 +36,10 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-
-namespace TIG\Buckaroo\Block\Checkout;
-
-class Total extends \Magento\Checkout\Block\Total\DefaultTotal
-{
-    /**
-     * Totals calculation template when checkout using reward points
-     *
-     * @var string
-     */
-    protected $_template = 'checkout/total.phtml';
-
-    /**
-     * Return url to remove reward points from totals calculation
-     *
-     * @return string
-     */
-    public function getRemoveRewardTotalUrl()
-    {
-        return $this->getUrl('magento_reward/cart/remove');
-    }
-}
+?>
+<div id="gift-options-cart" data-bind="scope:'giftOptionsCart'">
+    <!-- ko template: getTemplate() --><!-- /ko -->
+    <script>
+        window.buckarooConfig = <?php /* @escapeNotVerified */ echo $block->getBuckarooConfigJson(); ?>;
+    </script>
+</div>

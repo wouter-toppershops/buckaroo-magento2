@@ -53,7 +53,9 @@
             <argument name="messageManager" xsi:type="object">Magento\Framework\Message\ManagerInterface</argument>
             <argument name="helper" xsi:type="object">TIG\Buckaroo\Helper\Data</argument>
             <argument name="request" xsi:type="object">Magento\Framework\App\RequestInterface</argument>
-            <argument name="configProviderFactory" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Factory</argument>
+            <argument name="refundFieldsFactory" xsi:type="object">TIG\Buckaroo\Model\RefundFieldsFactory</argument>
+            <argument name="configProviderFactory" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Factory</argument>
+            <argument name="configProviderMethodFactory" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Factory</argument>
             <argument name="priceHelper" xsi:type="object">Magento\Framework\Pricing\Helper\Data</argument>
         </arguments>
     </type>
@@ -157,9 +159,46 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Model\ConfigProvider\Factory">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="account" xsi:type="array">
+                    <item name="type" xsi:type="string">account</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Account</item>
+                </item>
+                <item name="private_key" xsi:type="array">
+                    <item name="type" xsi:type="string">private_key</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\PrivateKey</item>
+                </item>
+                <item name="public_key" xsi:type="array">
+                    <item name="type" xsi:type="string">public_key</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\PublicKey</item>
+                </item>
+                <item name="predefined" xsi:type="array">
+                    <item name="type" xsi:type="string">predefined</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Predefined</item>
+                </item>
+                <item name="states" xsi:type="array">
+                    <item name="type" xsi:type="string">states</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\States</item>
+                </item>
+                <item name="buckaroo_fee" xsi:type="array">
+                    <item name="type" xsi:type="string">buckaroo_fee</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
+                </item>
+            </argument>
+        </arguments>
+    </type>
+
     <type name="TIG\Buckaroo\Debug\Logger">
         <arguments>
             <argument name="name" xsi:type="string">TIG_Buckaroo</argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Create\BankFields">
+        <arguments>
+            <argument name="refundFieldsFactory" xsi:type="object">TIG\Buckaroo\Model\RefundFieldsFactory</argument>
         </arguments>
     </type>
 
@@ -190,11 +229,36 @@
         </arguments>
     </type>
 
+    <type name="TIG\Buckaroo\Model\RefundFieldsFactory">
+        <!--<arguments>-->
+            <!--<argument name="refundFields" xsi:type="array">-->
+                <!--<item name="tig_buckaroo_mrcash" xsi:type="array">-->
+                    <!--<item name="customeraccountname" xsi:type="array">-->
+                        <!--<item name="label" xsi:type="string">Customer Account Name</item>-->
+                        <!--<item name="code" xsi:type="string">customeraccountname</item>-->
+                    <!--</item>-->
+                    <!--<item name="customeriban" xsi:type="array">-->
+                        <!--<item name="label" xsi:type="string">Customer Iban</item>-->
+                        <!--<item name="code" xsi:type="string">customeriban</item>-->
+                    <!--</item>-->
+                    <!--<item name="customerbic" xsi:type="array">-->
+                        <!--<item name="label" xsi:type="string">Customer BIC</item>-->
+                        <!--<item name="code" xsi:type="string">customerbic</item>-->
+                    <!--</item>-->
+                <!--</item>-->
+            <!--</argument>-->
+        <!--</arguments>-->
+    </type>
+
     <type name="Magento\Quote\Model\Cart\CartTotalRepository">
         <plugin name="tig_buckaroo_fee_total" type="TIG\Buckaroo\Model\Plugin\CartTotalRepository" />
     </type>
 
     <type name="Magento\Quote\Model\Quote\TotalsCollector">
         <plugin name="tig_buckaroo_fee_total_collector" type="TIG\Buckaroo\Model\Plugin\TotalsCollector" />
+    </type>
+
+    <type name="Magento\Quote\Model\Cart\TotalsConverter">
+        <plugin name="tig_buckaroo_fee_total_converter" type="TIG\Buckaroo\Model\Plugin\TotalsConverter" />
     </type>
 </config>

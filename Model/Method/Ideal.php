@@ -130,7 +130,8 @@ class Ideal extends AbstractMethod
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
         array $data = []
     ) {
@@ -151,6 +152,7 @@ class Ideal extends AbstractMethod
             $helper,
             $request,
             $configProviderFactory,
+            $configProviderMethodFactory,
             $priceHelper,
             $data
         );
@@ -228,6 +230,9 @@ class Ideal extends AbstractMethod
             'Version' => 1,
         ];
 
+        $$requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
+
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
                            ->setServices($services)
@@ -266,17 +271,14 @@ class Ideal extends AbstractMethod
         $chosenIssuer = $paymentInfo->getAdditionalInformation('issuer');
 
         $valid = false;
-        foreach($config->getIssuers() as $issuer)
-        {
-            if($issuer['code'] == $chosenIssuer)
-            {
+        foreach ($config->getIssuers() as $issuer) {
+            if ($issuer['code'] == $chosenIssuer) {
                 $valid = true;
                 break;
             }
         }
 
-        if(!$valid)
-        {
+        if (!$valid) {
             throw new Exception(__('Please select a issuer from the list'));
         }
 

@@ -46,13 +46,22 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     protected $configProviderFactory;
 
     /**
+     * @var \Magento\Framework\Pricing\PriceCurrencyInterface
+     */
+    public $priceCurrency;
+
+    /**
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
+     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory,
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
         $this->setCode('buckaroo_fee');
+
         $this->configProviderFactory = $configProviderFactory;
+        $this->priceCurrency = $priceCurrency;
     }
 
     /**
@@ -70,6 +79,10 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
     ) {
+        if (!$shippingAssignment->getItems()) {
+            return $this;
+        }
+
         $paymentMethod = $quote->getPayment()->getMethod();
         if (!$paymentMethod || strpos($paymentMethod, 'tig_buckaroo_') !== 0) {
             return $this;
@@ -86,17 +99,24 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         }
 
         $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
-
         $basePaymentFee = $configProvider->getPaymentFee();
-        $paymentFee = $basePaymentFee; /** @todo convert currency */
 
+        $paymentFee = $this->priceCurrency->convert($basePaymentFee, $quote->getStore());
+
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBuckarooFee($paymentFee);
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBaseBuckarooFee($basePaymentFee);
 
-        $total->setTotalAmount('buckaroo_fee', $paymentFee);
-        $total->setBaseTotalAmount('buckaroo_fee', $basePaymentFee);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBuckarooFee($paymentFee);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBaseBuckarooFee($basePaymentFee);
 
-        $quote->save();
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBaseGrandTotal($total->getBaseGrandTotal() + $basePaymentFee);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setGrandTotal($total->getGrandTotal() + $paymentFee);
 
         return $this;
     }
@@ -110,11 +130,18 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
-        return [
+        $totals = [
             'code' => $this->getCode(),
             'title' => $this->getLabel(),
-            'value' => $total->getTotalAmount('buckaroo_fee'),
+            'buckaroo_fee' => $total->getBuckarooFee(),
+            'base_buckaroo_fee' => $total->getBaseBuckarooFee(),
+            'buckaroo_fee_incl_tax' => $total->getBuckarooFeeInclTax(),
+            'base_buckaroo_fee_incl_tax' => $total->getBaseBuckarooFeeInclTax(),
+            'buckaroo_fee_tax_amount' => $total->getBuckarooFeeTaxAmount(),
+            'buckaroo_fee_base_tax_amount' => $total->getBuckarooFeeBaseTaxAmount(),
         ];
+
+        return $totals;
     }
 
 

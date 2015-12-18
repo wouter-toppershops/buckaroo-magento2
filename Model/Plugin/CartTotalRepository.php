@@ -40,7 +40,6 @@ class CartTotalRepository
      * @param \Closure $proceed
      * @param int $cartId
      * @return TotalsInterface
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function aroundGet(TotalRepository $subject, \Closure $proceed, $cartId)
     {
@@ -56,8 +55,20 @@ class CartTotalRepository
             $extensionAttributes = $this->totalsExtensionFactory->create();
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $extensionAttributes->setBuckarooFee($quote->getBuckarooFee());
+        /** @noinspection PhpUndefinedMethodInspection */
         $extensionAttributes->setBaseBuckarooFee($quote->getBaseBuckarooFee());
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $extensionAttributes->setBuckarooFeeTaxAmount($quote->getBuckarooFeeTaxAmount());
+        /** @noinspection PhpUndefinedMethodInspection */
+        $extensionAttributes->setBuckarooFeeBaseTaxAmount($quote->getBuckarooFeeBaseTaxAmount());
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $extensionAttributes->setBuckarooFeeInclTax($quote->getBuckarooFeeInclTax());
+        /** @noinspection PhpUndefinedMethodInspection */
+        $extensionAttributes->setBaseBuckarooFeeInclTax($quote->getBaseBuckarooFeeInclTax());
 
         $totals->setExtensionAttributes($extensionAttributes);
 

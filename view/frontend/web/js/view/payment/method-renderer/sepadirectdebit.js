@@ -137,9 +137,9 @@ define(
                 this.accountNumberIsValid = ko.computed( function () {
                     if (this.isnl())
                     {
-                        return (this.bankaccountholder().length >= this.minimumWords && this.bankaccountnumber().length > 0);
+                        return (this.bankaccountholder().length >= this.minimumWords() && this.bankaccountnumber().length > 0);
                     } else {
-                        return (this.bankaccountholder().length >= this.minimumWords && this.bicnumber().length > 0);
+                        return (this.bankaccountholder().length >= this.minimumWords() && this.bicnumber().length > 0);
 
                     }
                 }, this);
@@ -160,7 +160,7 @@ define(
                     "method": this.item.method,
                     "po_number": null,
                     "additional_data": {
-                        "customer_bin": this.bicnumber(),
+                        "customer_bic": this.bicnumber(),
                         "customer_iban": this.bankaccountnumber(),
                         "customer_account_name": this.bankaccountholder()
                     }

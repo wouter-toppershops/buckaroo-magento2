@@ -44,6 +44,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
 
     /**
+     * The regex used to validate the entered BIC number
+     */
+    const BIC_NUMBER_REGEX = '^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$^';
+
+    /**
      * @var string
      */
     public $buckarooPaymentMethodCode;
@@ -141,8 +146,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
      * @param \TIG\Buckaroo\Helper\Data                                    $helper
      * @param \Magento\Framework\App\RequestInterface                      $request
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory            $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                   $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory            $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                       $priceHelper
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                      $refundFieldsFactory
      * @param array                                                        $data
      */
     public function __construct(
@@ -161,7 +168,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
         array $data = []
     ) {
@@ -178,14 +187,37 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $data
         );
 
-        $this->gateway                   = $gateway;
+        $this->gateway = $gateway;
         $this->transactionBuilderFactory = $transactionBuilderFactory;
-        $this->validatorFactory          = $validatorFactory;
-        $this->messageManager            = $messageManager;
-        $this->helper                    = $helper;
-        $this->request                   = $request;
-        $this->configProviderFactory     = $configProviderFactory;
-        $this->priceHelper               = $priceHelper;
+        $this->validatorFactory = $validatorFactory;
+        $this->messageManager = $messageManager;
+        $this->helper = $helper;
+        $this->request = $request;
+        $this->refundFieldsFactory = $refundFieldsFactory;
+        $this->gateway                      = $gateway;
+        $this->transactionBuilderFactory    = $transactionBuilderFactory;
+        $this->validatorFactory             = $validatorFactory;
+        $this->messageManager               = $messageManager;
+        $this->helper                       = $helper;
+        $this->request                      = $request;
+        $this->configProviderFactory        = $configProviderFactory;
+        $this->configProviderMethodFactory  = $configProviderMethodFactory;
+        $this->priceHelper                  = $priceHelper;
+    }
+
+    /**
+     * Check whether payment method can be used
+     *
+     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @return bool
+     */
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $accountConfig = $this->configProviderFactory->get('account');
+        if ($accountConfig->getActive() == 0) {
+            return false;
+        }
+        return parent::isAvailable($quote);
     }
 
     /**
@@ -212,11 +244,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     {
         $title = $this->getConfigData('title');
 
-        if (!$this->configProviderFactory->has($this->buckarooPaymentMethodCode)) {
+        if (!$this->configProviderMethodFactory->has($this->buckarooPaymentMethodCode)) {
             return $title;
         }
 
-        $paymentFee = $this->configProviderFactory->get($this->buckarooPaymentMethodCode)->getPaymentFee();
+        $paymentFee = $this->configProviderMethodFactory->get($this->buckarooPaymentMethodCode)->getPaymentFee();
         if (!$paymentFee || $paymentFee < 0.01) {
             return $title;
         }
@@ -759,6 +791,31 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public function getTransactionAdditionalInfo(array $array)
     {
         return $this->helper->getTransactionAdditionalInfo($array);
+    }
+
+    public function addExtraFields($paymentMethodCode)
+    {
+        $requestParams = $this->request->getparams();
+        $creditMemoParams = $requestParams['creditmemo'];
+
+        $extraFields = $this->refundFieldsFactory->get($paymentMethodCode);
+
+        $services = array();
+
+        /**
+         * If extra fields are found, attach these as 'RequestParameter' to the services.
+         */
+        if (!empty($extraFields)) {
+            foreach ($extraFields as $extraField) {
+                $code = $extraField['code'];
+                $services['RequestParameter'][] = [
+                    '_' => "$creditMemoParams[$code]",
+                    'Name' => $code,
+                ];
+            }
+        }
+
+        return $services;
     }
 
     /**

@@ -61,10 +61,13 @@ class BuckarooFeeRefund
         /* @var $order \Magento\Sales\Model\Order */
         $order = $creditmemo->getOrder();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         if ($creditmemo->getBaseBuckarooFee()) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $order->setBuckarooFeeRefunded(
                 $order->getBuckarooFeeRefunded() + $creditmemo->getBuckarooFee()
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $order->setBaseBuckarooFeeRefunded(
                 $order->getBaseBuckarooFeeRefunded() + $creditmemo->getBaseBuckarooFee()
             );

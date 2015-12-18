@@ -173,26 +173,8 @@ class Mrcash extends AbstractMethod
             'Version' => 1,
         ];
 
-        /**
-         * Get the possible extra fields from the refund Request.
-         */
-        $requestParams = $this->request->getparams();
-        $creditMemoParams = $requestParams['creditmemo'];
-
-        $extraFields = $this->_scopeConfig->getValue(self::REFUND_EXTRA_FIELDS_XPATH);
-        $extraFields = explode(',', $extraFields);
-
-        /**
-         * If extra fields are found, attach these as 'RequestParameter' to the services.
-         */
-        if (!empty($extraFields)) {
-            foreach ($extraFields as $extraField) {
-                $services['RequestParameter'][] = [
-                    '_' => "$creditMemoParams[$extraField]",
-                    'Name' => $extraField,
-                ];
-            }
-        }
+        $requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
 
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())

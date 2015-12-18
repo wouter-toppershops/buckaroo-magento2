@@ -49,15 +49,27 @@ class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         /* @var $invoice \Magento\Sales\Model\Order\Invoice */
         $invoice = $observer->getEvent()->getInvoice();
+        /** @noinspection PhpUndefinedMethodInspection */
         if ($invoice->getBaseBuckarooFee()) {
             $order = $invoice->getOrder();
+            /** @noinspection PhpUndefinedMethodInspection */
             $order->setBuckarooFeeInvoiced(
                 $order->getBuckarooFeeInvoiced() + $invoice->getBuckarooFee()
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $order->setBaseBuckarooFeeInvoiced(
                 $order->getBaseBuckarooFeeInvoiced() + $invoice->getBaseBuckarooFee()
+            );
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeTaxAmountInvoiced(
+                $order->getBuckarooFeeTaxAmountInvoiced() + $invoice->getBuckarooFeeTaxAmount()
+            );
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeBaseTaxAmountInvoiced(
+                $order->getBuckarooFeeBaseTaxAmountInvoiced() + $invoice->getBuckarooFeeBaseTaxAmount()
             );
         }
 

@@ -81,4 +81,5 @@ abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigP
     {
         return false;
     }
+
 }
