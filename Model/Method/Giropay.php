@@ -46,8 +46,6 @@ class Giropay extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_GIROPAY_CODE = 'tig_buckaroo_giropay';
 
-    const BIC_NUMBER_REGEX = '^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$^';
-
     /**
      * @var string
      */

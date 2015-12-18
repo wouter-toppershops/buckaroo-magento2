@@ -58,26 +58,23 @@ define(
          * Add validation methods
          * */
 
-        $.validator.addMethod(
-            'BIC', function (value) {
-                var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
-                return patternBIC.test(value);
-            }, $.mage.__('Enter Valid BIC number'));
-
+        $.validator.addMethod('BIC', function (value) {
+            var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
+            return patternBIC.test(value);
+        }, $.mage.__('Enter Valid BIC number'));
 
         return Component.extend({
             defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay'
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay',
+                bicnumber: ''
             },
 
             initObservable: function () {
+                this._super().observe(['bicnumber']);
 
                 /**
                  * Bind this values to the input field.
                  */
-
-                this.bicnumber = ko.observable('');
-
                 this.bicnumber.subscribe( function () {
                     $('.' + this.getCode() + ' [data-validate]').valid();
                 }, this);
@@ -86,11 +83,9 @@ define(
                 /**
                  * Run validation on the inputfield
                  */
-
-                var runValidation = function () {
+                this.bicnumber.subscribe(function () {
                     $('.' + this.getCode() + ' [data-validate]').valid();
-                };
-                this.bicnumber.subscribe(runValidation,this);
+                }, this);
 
 
                 /**

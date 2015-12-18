@@ -53,6 +53,8 @@ class Push implements ValidatorInterface
 {
     public $scopeConfig;
 
+    public $configProviderFactory;
+
     public $helper;
 
     public $bpeResponseMessages = [
@@ -70,15 +72,18 @@ class Push implements ValidatorInterface
     ];
 
     /**
-     * @param \TIG\Buckaroo\Helper\Data $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
+     * @param \TIG\Buckaroo\Helper\Data                             $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
      */
     public function __construct(
         DataHelper $helper,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->helper      = $helper;
-        $this->scopeConfig = $scopeConfig;
+        $this->helper                   = $helper;
+        $this->scopeConfig              = $scopeConfig;
+        $this->configProviderFactory    = $configProviderFactory;
     }
 
     /**
@@ -165,10 +170,10 @@ class Push implements ValidatorInterface
             $signatureString .= $brq_key. '=' . $value;
         }
 
-        $digitalSignature = $this->scopeConfig->getValue(
-            'payment/tig_buckaroo_advanced/digital_signature',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
+        $statesConfig = $this->configProviderFactory->get('states');
+
+        $digitalSignature = $statesConfig->getDigitalSignature();
 
         $signatureString .= $digitalSignature;
 

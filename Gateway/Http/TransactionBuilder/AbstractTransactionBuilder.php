@@ -52,10 +52,12 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     const MODULE_CODE = 'TIG_Buckaroo';
 
-    /**#@+
+    /**
      * Config Xpaths
      */
     const XPATH_PAYMENT_DESCRIPTION = 'buckaroo/advanced/payment_description';
+    const XPATH_MERCHANT_KEY = 'payment/tig_buckaroo_account/merchant_key';
+
     /**#@-*/
 
     /**
@@ -89,9 +91,9 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $urlBuilder;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
-    protected $scopeConfig;
+    protected $configProviderFactory;
 
     /**
      * @var bool
@@ -159,21 +161,21 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     /**
      * TransactionBuilder constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadataInterface    $productMetadata
-     * @param \Magento\Framework\Module\ModuleListInterface      $moduleList
-     * @param \Magento\Framework\UrlInterface                    $urlBuilder
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Framework\App\ProductMetadataInterface   $productMetadata
+     * @param \Magento\Framework\Module\ModuleListInterface     $moduleList
+     * @param \Magento\Framework\UrlInterface                   $urlBuilder
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\UrlInterface $urlBuilder,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         $this->productMetadata = $productMetadata;
         $this->moduleList = $moduleList;
         $this->urlBuilder = $urlBuilder;
-        $this->scopeConfig = $scopeConfig;
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
@@ -252,23 +254,26 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     {
         $module = $this->moduleList->getOne(self::MODULE_CODE);
 
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
+
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
             'MessageControlBlock',
             [
-                'Id' => '_control',
-                'WebsiteKey' => 'SniACG6eSj',
-                'Culture' => 'nl-NL',
-                'TimeStamp' => time(),
-                'Channel' => $this->channel,
-                'Software' => [
-                    'PlatformName' => $this->productMetadata->getName()
-                                      . ' - '
-                                      . $this->productMetadata->getEdition(),
-                    'PlatformVersion' => $this->productMetadata->getVersion(),
-                    'ModuleSupplier' => self::MODULE_SUPPLIER,
-                    'ModuleName' => $module['name'],
-                    'ModuleVersion' => $module['setup_version'],
+                'Id'                => '_control',
+                'WebsiteKey'        => $accountConfig->getMerchantKey(),
+                'Culture'           => 'nl-NL',
+                'TimeStamp'         => time(),
+                'Channel'           => $this->channel,
+                'Software'          => [
+                    'PlatformName'      => $this->productMetadata->getName()
+                                         . ' - '
+                                         . $this->productMetadata->getEdition(),
+                    'PlatformVersion'   => $this->productMetadata->getVersion(),
+                    'ModuleSupplier'    => self::MODULE_SUPPLIER,
+                    'ModuleName'        => $module['name'],
+                    'ModuleVersion'     => $module['setup_version'],
                 ]
             ],
             false

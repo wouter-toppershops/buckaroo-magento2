@@ -36,47 +36,54 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider;
+namespace TIG\Buckaroo\Model\Config\Source;
 
-use Mockery as m;
-use TIG\Buckaroo\Test\BaseTest;
-use TIG\Buckaroo\Model\ConfigProvider\Creditcard;
-use Magento\Framework\View\Asset\Repository;
-
-class CreditcardTest extends BaseTest
+class StatusesPending implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * @var Creditcard
+     * Core order config
+     * @var \Magento\Sales\Model\Order\Config
      */
-    protected $object;
+    protected $_orderConfig;
 
     /**
-     * @var m\MockInterface
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
-    protected $assetRepository;
+    protected $configProviderFactory;
 
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->assetRepository = m::mock(Repository::class);
-        $this->object = $this->objectManagerHelper->getObject(Creditcard::class, [
-            'assetRepo' => $this->assetRepository
-        ]);
+    /**
+     * Class constructor
+     *
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
+    public function __construct(
+        \Magento\Sales\Model\Order\Config $orderConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+    ) {
+        $this->_orderConfig = $orderConfig;
+        $this->configProviderFactory = $configProviderFactory;
     }
 
-    public function testGetImageUrl()
+    /**
+     * Options getter
+     *
+     * @return array
+     */
+    public function toOptionArray()
     {
-        $shouldReceive = $this->assetRepository
-            ->shouldReceive('getUrl')
-            ->with(\Mockery::type('string'));
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
+        $statesConfig = $this->configProviderFactory->get('states');
+        $state = $statesConfig->getStatePendingpayment();
 
-        $options = $this->object->getConfig();
+        $statuses = $this->_orderConfig->getStateStatuses($state);
 
-        $shouldReceive->times(count($options['payment']['buckaroo']['creditcards']));
+        $options = array();
+        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
 
-        $this->assertTrue(array_key_exists('payment', $options));
-        $this->assertTrue(array_key_exists('buckaroo', $options['payment']));
-        $this->assertTrue(array_key_exists('creditcards', $options['payment']['buckaroo']));
+        foreach ($statuses as $value => $label) {
+            $options[] = array('value' => $value, 'label' => $label);
+        }
+
+        return $options;
     }
 }

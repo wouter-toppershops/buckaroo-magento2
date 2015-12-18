@@ -39,6 +39,10 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+use Zend\Validator\Iban;
+use Magento\Sales\Model\Order\Payment;
+use Magento\Framework\Validator\Exception;
+
 class SepaDirectDebit extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE = 'tig_buckaroo_sepadirectdebit';
@@ -106,6 +110,58 @@ class SepaDirectDebit extends AbstractMethod
      */
     protected $_canRefundInvoicePartial = true;
     // @codingStandardsIgnoreEnd
+
+    /**
+     * {@inheritdoc}
+     */
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        Iban $ibanValidator,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \Magento\Framework\Message\ManagerInterface $messageManager = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $messageManager,
+            $helper,
+            $request,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
+            $data
+        );
+
+        $this->objectManager = $objectManager;
+        $this->ibanValidator = $ibanValidator;
+    }
 
     /**
      * {@inheritdoc}
@@ -239,5 +295,41 @@ class SepaDirectDebit extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return true;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function validate()
+    {
+        parent::validate();
+
+        $paymentInfo = $this->getInfoInstance();
+        if ($paymentInfo instanceof Payment) {
+            $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
+        } else {
+            $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
+        }
+
+        $customerBic = $paymentInfo->getAdditionalInformation('customer_bic');
+        $customerIban = $paymentInfo->getAdditionalInformation('customer_iban');
+        $customerAccountName = $paymentInfo->getAdditionalInformation('customer_account_name');
+
+        if(empty($customerAccountName) or str_word_count($customerAccountName) < 2)
+        {
+            throw new Exception(__('Please enter a valid bank account holder name'));
+        }
+
+        if($billingCountry == 'NL') {
+            if(empty($customerIban) || !$this->ibanValidator->isValid($customerIban)) {
+                throw new Exception(__('Please enter a valid bank account number'));
+            }
+        } else {
+            if(!preg_match(self::BIC_NUMBER_REGEX, $customerBic)) {
+                throw new Exception(__('Please enter a valid BIC number'));
+            }
+        }
+
+        return $this;
     }
 }
