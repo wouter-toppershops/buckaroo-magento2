@@ -1,12 +1,14 @@
 <?php
 /** @var \TIG\Buckaroo\Block\Adminhtml\Config\Support\SupportTab $this */
 ?>
-<div id="supporttab">
+<div id="supporttab" class="tig-buckaroo-supporttab" data-mage-init='{"buckarooConfig": true}'>
 
-    <div class ="col-left">
-
-        <div class="text-box">
-            <h3><?php echo $block->escapeHtml(__('Quick reference guide'));?></h3>
+    <?php // section 1 ?>
+    <div id="section">
+        <div class="collapse-title" data-role="title">
+            <h3 data-role="trigger" ><?php echo $block->escapeHtml(__('Quick reference guide'));?></h3>
+        </div>
+        <div class="collapse-content" data-role="content" style="display:none;">
             <ol>
                 <li><strong><?php echo $block->escapeHtml(__('Log in to the '));?> <a target="_blank" href="https://payment.buckaroo.nl/"><?php echo $block->escapeHtml(__('Buckaroo Payment Plaza'));?></a> <?php echo $block->escapeHtml(__(' to collect the following security settings:'));?></strong>
                     <ol>
@@ -46,38 +48,71 @@
                 </li>
             </ol>
         </div>
-
-        <div class="text-box">
-            <h3><?php echo $block->escapeHtml(__('Legend'));?></h3>
-            <ul id="legend">
-                <li class="disabled"><span></span><?php echo $block->escapeHtml(__('Payment method - Disabled'));?></li>
-                <li class="test"><span></span><?php echo $block->escapeHtml(__('Payment method - Test Modus'));?></li>
-                <li class="live"><span></span><?php echo $block->escapeHtml(__('Payment method - Live Modus'));?></li>
-<!--                <li class="advanced"><span></span>--><?php //echo $block->escapeHtml(__('Advanced Configuration'));?><!--</li>-->
-            </ul>
-        </div>
-
     </div>
 
-    <div class="col-right">
-
-        <div class="text-box">
-            <h3><?php echo $block->escapeHtml(__('Magento &amp; 3rd party version compatibility'));?></h3>
-            <ul>
-                <li><?php echo $block->escapeHtml(__('Magento Community Edition version'));?> 1.7, 1.8 &amp; 1.9</li>
-                <li><?php echo $block->escapeHtml(__('Magento Enterprise Edition version'));?> 1.12, 1.13 &amp; 1.14</li>
-            </ul>
-            <ul>
-                <li><?php echo $block->escapeHtml(__('OneStepCheckout version'));?> 4.0.7</li>
+    <?php // section 2 ?>
+    <div id="section">
+        <div class="collapse-title" data-role="title">
+            <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Legend'));?></h3>
+        </div>
+        <div class="collapse-content" data-role="content" style="display:none;">
+            <ul id="legend">
+                <li class="disabled">
+                    <span class="img"></span>
+                    <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?> : </span>
+                    <span class="status"><?php echo $block->escapeHtml(__('Disabled'));?></span>
+                </li>
+                <li class="test">
+                    <span class="img"></span>
+                    <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?> : </span>
+                    <span class="status"><?php echo $block->escapeHtml(__('Test Modus'));?></span>
+                </li>
+                <li class="live">
+                    <span class="img"></span>
+                    <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?> : </span>
+                    <span class="status"><?php echo $block->escapeHtml(__('Live Modus'));?></span>
+                </li>
+                <!--                <li class="advanced"><span></span>--><?php //echo $block->escapeHtml(__('Advanced Configuration'));?><!--</li>-->
             </ul>
         </div>
+    </div>
 
-        <div class="text-box">
-            <h3><?php echo $block->escapeHtml(__('Support'));?></h3>
-            <p><?php echo $block->escapeHtml(__('This extension is developed by TIG, commissioned by Buckaroo.'));?></p>
-            <h4><?php echo $block->escapeHtml(__('Module basic configuration and account information'));?></h4>
-            <p><?php echo $block->escapeHtml(__('Acquire your (Merchant) key, Secret key, certificate and certificate thumbprint prior contacting Buckaroo technical support:'));?></p>
+    <?php // section 3 ?>
+    <div id="section">
+        <div class="collapse-title" data-role="title">
+            <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Magento &amp; 3rd party version compatibility'));?></h3>
+        </div>
+        <div class="collapse-content" data-role="content" style="display:none;">
+            <ul class="version-compatibility">
+                <li>
+                    <span class="text"><?php echo $block->escapeHtml(__('Magento Community Edition version'));?> :</span>
+                    <span class="version"> 1.7, 1.8 &amp; 1.9 </span>
+                </li>
+                <li>
+                    <span class="text"><?php echo $block->escapeHtml(__('Magento Enterprise Edition version'));?> :</span>
+                    <span class="version"> 1.12, 1.13 &amp; 1.14 </span>
+                </li>
+            </ul>
+            <ul class="version-compatibility">
+                <li>
+                    <span class="text"><?php echo $block->escapeHtml(__('OneStepCheckout version'));?> :</span>
+                    <span class="version"> 4.0.7 </span>
+                </li>
+            </ul>
+        </div>
+    </div>
 
+    <?php // section 4 ?>
+    <div id="section">
+        <div class="collapse-title" data-role="title">
+            <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Support'));?></h3>
+        </div>
+        <div class="collapse-content support-buck-tig" data-role="content" style="display:none;">
+            <ul>
+                <p><?php echo $block->escapeHtml(__('This extension is developed by TIG, commissioned by Buckaroo.'));?></p>
+                <h4><?php echo $block->escapeHtml(__('Module basic configuration and account information'));?></h4>
+                <p><?php echo $block->escapeHtml(__('Acquire your (Merchant) key, Secret key, certificate and certificate thumbprint prior contacting Buckaroo technical support:'));?></p>
+            </ul>
             <ul>
                 <li class="buckaroo_logo" ><a href="http://www.buckaroo.nl" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/buckaroo_small.png'); ?> " alt="" /></a></li>
                 <li class="first"><?php echo $block->escapeHtml(__('Buckaroo Payment Plaza:'));?></li>
@@ -91,9 +126,9 @@
                 <li class="first"><?php echo $block->escapeHtml(__('E-mail:'));?></li>
                 <li class="last"><a href="mailto:support@buckaroo.nl">support@buckaroo.nl</a></li>
             </ul>
-
-            <h4><?php echo $block->escapeHtml(__('Extension support and advanced configuration'));?></h4>
             <ul>
+                <h4><?php echo $block->escapeHtml(__('Extension support and advanced configuration'));?></h4>
+
                 <li class="tig_logo"><a href="http://www.tig.nl" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/tig_logo_medium.png'); ?>" alt="" /></a></li>
                 <li class="first"><?php echo $block->escapeHtml(__('Online documentation and FAQ:'));?></li>
                 <li class="last"><a target="_blank" href="http://kb.tig.nl/">kb.tig.nl</a></li>
@@ -106,19 +141,28 @@
                 <li class="first"><?php echo $block->escapeHtml(__('Misc. questions by email:'));?></li>
                 <li class="last"><a href="mailto:servicedesk@tig.nl">servicedesk@tig.nl</a></li>
             </ul>
-
         </div>
+    </div>
 
-
-        <div class="text-box">
-            <h3><?php echo $block->escapeHtml(__('Documentation'));?></h3>
-            <p><?php echo $block->escapeHtml(__('A list of documents regarding the module.'));?></p>
+    <?php // section 5 ?>
+    <div id="section">
+        <div class="collapse-title" data-role="title">
+            <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Documentation'));?></h3>
+        </div>
+        <div class="collapse-content" data-role="content" style="display:none;">
             <ul>
-                <li><a class="pdf" target="_blank" href="http://kb.tig.nl/topic/22098908" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('installation manual buckaroo bpe3 %s.pdf (NL)', 'v4.6.1'));?></a></li>
-                <li><a target="_blank" href="http://kb.tig.nl/topic/23902302" title="<?php echo $block->escapeHtml(__('View the complete changelog of the module. Currently the changelog is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('full changelog'));?></a></li>
+                <p><?php echo $block->escapeHtml(__('A list of documents regarding the module.'));?></p>
+                <li><a class="pdf" target="_blank" href="http://kb.tig.nl/topic/22098908" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Installation Manual Buckaroo BPE3.pdf (NL)', 'v4.6.1'));?></a></li>
+                <li><a target="_blank" href="http://kb.tig.nl/topic/23902302" title="<?php echo $block->escapeHtml(__('View the complete changelog of the module. Currently the changelog is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Full Changelog'));?></a></li>
+                <li><a class="pdf" target="_blank" href="http://kb.tig.nl/topic/22098908" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Installation Manual Buckaroo BPE3.pdf (NL)', 'v4.6.1'));?></a></li>
+                <li><a target="_blank" href="http://kb.tig.nl/topic/23902302" title="<?php echo $block->escapeHtml(__('View the complete changelog of the module. Currently the changelog is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Full Changelog'));?></a></li>
+                <li><a class="pdf" target="_blank" href="http://kb.tig.nl/topic/22098908" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Installation Manual Buckaroo BPE3.pdf (NL)', 'v4.6.1'));?></a></li>
+                <li><a target="_blank" href="http://kb.tig.nl/topic/23902302" title="<?php echo $block->escapeHtml(__('View the complete changelog of the module. Currently the changelog is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Full Changelog'));?></a></li>
+                <li><a class="pdf" target="_blank" href="http://kb.tig.nl/topic/22098908" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Installation Manual Buckaroo BPE3.pdf (NL)', 'v4.6.1'));?></a></li>
+                <li><a target="_blank" href="http://kb.tig.nl/topic/23902302" title="<?php echo $block->escapeHtml(__('View the complete changelog of the module. Currently the changelog is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Full Changelog'));?></a></li>
+
             </ul>
         </div>
-
     </div>
 
 </div>

@@ -5,33 +5,72 @@
     padding-left: 10px;
 }
 
-.payment_method_payment_method_inactive {
-    border-left: 3px solid #CCCCCC !important;
+.payment_method_payment_method_inactive > .entry-edit-head {
+    background-image: url(../images/tig_buckaroo_disabled.png);
+    background-size:16px;
+    background-repeat: no-repeat;
+
+    box-sizing: border-box;
+    background-position: calc(100% - 1.3rem);
 }
 
-.payment_method_live {
-    border-left: 3px solid rgba(73,171,67,1) !important;
+.payment_method_live  > .entry-edit-head {
+    background-image: url(../images/tig_buckaroo_live.png);
+    background-size:16px;
+    background-repeat: no-repeat;
+
+    box-sizing: border-box;
+    background-position: calc(100% - 1.3rem);
 }
 
-.payment_method_test {
-    border-left: 3px solid #FFC107 !important;
+.payment_method_test  > .entry-edit-head {
+    background-image: url(../images/tig_buckaroo_test.png);
+    background-size:16px;
+    background-repeat: no-repeat;
+    box-sizing: border-box;
+    background-position: calc(100% - 1.3rem);
 }
 
-/* ==================================== SupportTab ==================================== */
 
-#supporttab { margin-top: -40px; }
+/* ==================================== SupportTab - Default styling ==================================== */
 
-.buckaroo_logo, .tig_logo {
+#section { float: left; width: 100%; clear: both; }
+#supporttab { margin-left: 4rem;  }
+#supporttab #section { border-bottom: 1px solid #cccccc; }
+#supporttab #section:last-child { border-bottom: none; }
 
-    padding:10px 10px 10px 0;
+/* Default styling collapsible tabs */
+.collapse-title[aria-expanded=true] h3:before {
+    font-family:'Admin Icons';
+    content: '\e615';
+
+}
+.collapse-title h3:before {
+    font-family:'Admin Icons';
+    font-weight: lighter;
+    content: '\e616';
+    padding-right: 10px;
+    -webkit-font-smoothing: antialiased;
 }
 
-/* Default styling H elements */
+.collapse-title h3:active:before{
+    transform :scale(0.2); /* doesn't work yet */
+}
+
+.collapse-content {
+    box-sizing: border-box;
+    padding:0 15px 15px 15px;
+    height:auto !important;
+    float:left; width: 100%;
+}
+
 #supporttab h3 {
-    font-size: 1.4em;
-    margin:30px 0 10px 0;
-    padding:0;
-    color: rgba(73,171,67,1);
+    font-size: 1.7rem;
+    margin:0 !important;
+    padding:1.9rem 2.7rem 1.9rem 1rem;
+    color: black;
+    font-weight: 600;
+    cursor: pointer;
 }
 
 #supporttab h4 {
@@ -41,19 +80,13 @@
     color: rgba(0,136,204,1);
 }
 
-/* list styling */
-#supporttab ol, ul {
-    margin-left: 20px;
-    position :relative;
-}
-
-#supporttab ol li {
-    list-style-type: upper-roman;
+#supporttab p {
     line-height: 2em;
 }
 
-#supporttab li > ol > li {
-    list-style-type: square;
+#supporttab ol, ul {
+    margin-left: 20px;
+    position :relative;
 }
 
 #supporttab ul li {
@@ -61,89 +94,140 @@
     list-style-type: none;
 }
 
-#supporttab li.first {
-    float: left;
-    margin-right:
-    5px;
-}
-#supporttab li.first,
-#supporttab li.last {
-    line-height: normal;
+/* ==================================== SupportTab - Quick guide ==================================== */
+
+#supporttab ol {
+    margin-left: 40px;
 }
 
-/* paragraph styling */
-#supporttab p {
+#supporttab ol li {
+    list-style-type: upper-roman;
     line-height: 2em;
 }
 
-/* legend styling */
-.disabled span {
-     display:block;
-     float:left;
-     margin-top: 8px; margin-right:5px;
-     border: 6px solid;
-     border-color: transparent transparent transparent #CCCCCC;
-     width:0;
-     height:0;
- }
-
-.live span {
-    display:block;
-    float:left;
-    margin-top: 8px; margin-right:5px;
-    border: 6px solid;
-    border-color: transparent transparent transparent rgba(73,171,67,1);
-    width:0;
-    height:0;
+#supporttab ol li ol {
+    margin-bottom: 10px;
 }
 
-.test span {
-    display:block;
-    float:left;
-    margin-top: 8px; margin-right:5px;
-    border: 6px solid;
-    border-color: transparent transparent transparent #FFC107;
-    width:0;
-    height:0;
+#supporttab ol li ol li {
+    list-style-type: lower-alpha;
 }
 
-.advanced span {
+/* ==================================== SupportTab - Legend ==================================== */
+
+.disabled span.text,
+.live span.text,
+.test span.text {
+    margin-right: 15px;
+    font-weight: 600;
+}
+
+.disabled span.img {
     display:block;
     float:left;
-    margin-top: 8px; margin-right:5px;
+    margin-top: 5px; margin-right:15px;
+
+    width:16px;
+    height:16px;
+    background-image: url(../images/tig_buckaroo_disabled.png);
+    background-size:16px;
+}
+
+.live span.img {
+    display:block;
+    float:left;
+    margin-top: 5px; margin-right:15px;
+
+    width:16px;
+    height:16px;
+    background-image: url(../images/tig_buckaroo_live.png);
+    background-size:16px;
+}
+
+.test span.img {
+    display:block;
+    float:left;
+    margin-top: 5px; margin-right:15px;
+
+    width:16px;
+    height:16px;
+    background-image: url(../images/tig_buckaroo_test.png);
+    background-size:16px;
+}
+
+.advanced span.img {
+    display:block;
+    float:left;
+    margin-top: 2px; margin-right:10px;
     border: 6px solid;
     border-color: transparent transparent transparent #ff2e31;
     width:0;
     height:0;
 }
 
-/* responsive columns */
-.col-left, .col-right {
+/* ==================================== SupportTab - 3rd Party | Version compatibility ==================================== */
+
+#supporttab .version-compatibility {
+    clear: both;
     float:left;
-    width: 50%;
+    width:100%;
+}
+#supporttab .version-compatibility li {
+    clear:both;
+    float:left;
+    width:100%;
+}
+
+#supporttab .version-compatibility  span.text {
+    float:left;
+    width: 300px;
+    font-weight: 600;
+}
+
+#supporttab .version-compatibility  span.version {
+    text-align: right;
+    width: 150px;
+    display: block;
+    float: left;
     height: auto;
-    box-sizing: border-box;
-    padding: 20px;
-}
-@media screen and (max-width: 1300px){
-    .col-left, .col-right {
-        float:left;
-        width: 100%;
-        height: auto;
-        box-sizing: border-box;
-        padding: 20px;
-    }
-    .col-left {
-        padding-bottom: 0;
-    }
-
-    .col-right {
-        padding-top: 0;
-    }
 }
 
+/* ==================================== SupportTab - Support ==================================== */
 
-/* ============================ Refund input-field styling ============================ */
+.buckaroo_logo, .tig_logo {
+    padding:10px 10px 10px 0;
+}
+
+.support-buck-tig ul {
+    float:left;
+    width:100%;
+    clear:both;
+}
+
+.support-buck-tig li.first {
+    font-weight :600;
+    width: 300px;
+}
+.support-buck-tig li.last {
+    width: 200px;
+}
+
+.support-buck-tig li.first,
+.support-buck-tig li.last {
+    line-height: normal;
+    float:left;
+}
+
+/* ==================================== SupportTab - Documentation ==================================== */
+
+/**
+*
+* Space
+*
+**/
+
+
+/* ============================ Refund Page -  input-field styling ============================ */
 
 .refund-fields {
     width: 100%;
