@@ -62,7 +62,8 @@ define(
             redirectAfterPlaceOrder: false,
 
             initObservable: function () {
-                this.selectedCard = ko.observable(null);
+                this._super().observe(['selectedCard', 'creditcards']);
+
                 this.creditcards = ko.observableArray(window.checkoutConfig.payment.buckaroo.creditcards);
 
                 /**
@@ -70,7 +71,6 @@ define(
                  * check if selected
                  */
                 var self = this;
-                this.selectedCard = ko.observable(null);
                 this.setSelectedCard= function (value)
                 {
                     self.selectedCard(value);

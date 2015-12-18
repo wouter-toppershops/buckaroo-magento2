@@ -39,69 +39,25 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-class Ideal extends AbstractConfigProvider
+use \Magento\Checkout\Model\ConfigProviderInterface;
+
+class Predefined implements ConfigProviderInterface
 {
-    protected $issuers = [
-        [
-            'name' => 'ABN AMRO',
-            'code' => 'ABNANL2A',
-        ],
-        [
-            'name' => 'ASN Bank',
-            'code' => 'ASNBNL21',
-        ],
-        [
-            'name' => 'ING',
-            'code' => 'INGBNL2A',
-        ],
-        [
-            'name' => 'Rabobank',
-            'code' => 'RABONL2U',
-        ],
-        [
-            'name' => 'SNS Bank',
-            'code' => 'SNSBNL2A',
-        ],
-        [
-            'name' => 'RegioBank',
-            'code' => 'RBRBNL21',
-        ],
-        [
-            'name' => 'Triodos Bank',
-            'code' => 'TRIONL2U',
-        ],
-        [
-            'name' => 'Van Lanschot',
-            'code' => 'FVLBNL22',
-        ],
-        [
-            'name' => 'Knab Bank',
-            'code' => 'KNABNL2H',
-        ],
-    ];
 
     /**
-     * Get the list of banks. This is used in the iDeal payment model.
-     *
-     * @return array
+     * XPATHs to configuration values for tig_buckaroo_predefined
      */
-    public function getIssuers()
-    {
-        return $this->issuers;
-    }
+    const XPATH_PREDEFINED_LOCATIONS        = 'tig_buckaroo_predefined/locations';
+    const XPATH_PREDEFINED_LOCATIONS_LIVE   = 'tig_buckaroo_predefined/locations/live';
+    const XPATH_PREDEFINED_LOCATIONS_TEST   = 'tig_buckaroo_predefined/locations/test';
 
     /**
-     * Format the issuers list so the img index is filled with the correct url.
-     *
-     * @return array
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
-    protected function formatIssuers()
-    {
-        return array_map(function ($issuer) {
-            $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
-
-            return $issuer;
-        }, $this->issuers);;
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -109,18 +65,53 @@ class Ideal extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        $issuers = $this->formatIssuers();
-
-        // @TODO: get banks dynamic
         $config = [
-            'payment' => [
-                'buckaroo' => [
-                    'banks' => $issuers,
-                    'response' => [],
-                ],
-            ],
+            'locations' => $this->getLocations(),
         ];
-
         return $config;
     }
+
+    /**
+     * Returns the config value for predefined/locations
+     *
+     * @return mixed
+     */
+    public function getLocations()
+    {
+        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS);
+    }
+
+    /**
+     * Returns the config value for predefined/locations/live
+     *
+     * @return mixed
+     */
+    public function getLocationsLive()
+    {
+        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_LIVE);
+    }
+
+    /**
+     * Returns the config value for predefined/locations/test
+     *
+     * @return mixed
+     */
+    public function getLocationsTest()
+    {
+        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_TEST);
+    }
+
+    /**
+     * Returns the config value for the given Xpath
+     *
+     * @return mixed
+     */
+    protected function getConfigFromXpath($xpath)
+    {
+        return $this->scopeConfig->getValue(
+            $xpath,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+    }
+
 }

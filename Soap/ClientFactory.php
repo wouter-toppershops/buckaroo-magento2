@@ -42,16 +42,17 @@ namespace TIG\Buckaroo\Soap;
 class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
 {
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
-    public $privateKeyProvider;
+    public $configProviderFactory;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyProvider
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
-    public function __construct(\TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyProvider)
-    {
-        $this->privateKeyProvider = $privateKeyProvider;
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+    ) {
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
@@ -66,8 +67,18 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     {
         $client = new Client\SoapClientWSSEC($wsdl, $options);
 
-        $client->__setLocation('http://testcheckout.buckaroo.nl/soap/Soap.svc');
-        $client->loadPem($this->privateKeyProvider->getConfig()['private_key']);
+        $accountConfig = $this->configProviderFactory->get('account');
+        $predefinedConfig = $this->configProviderFactory->get('predefined');
+        $privateKeyConfig = $this->configProviderFactory->get('private_key');
+
+        if ($accountConfig->getActive() == 1) {
+            $location = $predefinedConfig->getLocationsTest();
+        } elseif ($accountConfig->getActive() == 2) {
+            $location = $predefinedConfig->getLocationsLive();
+        }
+
+        $client->__setLocation($location);
+        $client->loadPem($privateKeyConfig->getConfig()['private_key']);
 
         return $client;
     }

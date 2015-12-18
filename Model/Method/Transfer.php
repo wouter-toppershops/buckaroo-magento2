@@ -43,6 +43,11 @@ class Transfer extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_TRANSFER_CODE = 'tig_buckaroo_transfer';
 
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'transfer';
+
     // @codingStandardsIgnoreStart
     /**
      * Payment method code

@@ -40,11 +40,16 @@
 namespace TIG\Buckaroo\Model\Method;
 
 use Magento\Framework\Validator\Exception;
-use TIG\Buckaroo\Model\ConfigProvider\Ideal as IdealConfig;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal as IdealConfig;
 
 class Ideal extends AbstractMethod
 {
     const PAYMENT_METHOD_BUCKAROO_IDEAL_CODE = 'tig_buckaroo_ideal';
+
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'ideal';
 
     // @codingStandardsIgnoreStart
     /**
@@ -105,6 +110,9 @@ class Ideal extends AbstractMethod
     protected $_canRefundInvoicePartial = true;
     // @codingStandardsIgnoreEnd
 
+    /**
+     * {@inheritdoc}
+     */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Model\Context $context,
@@ -122,6 +130,9 @@ class Ideal extends AbstractMethod
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -140,6 +151,9 @@ class Ideal extends AbstractMethod
             $messageManager,
             $helper,
             $request,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
             $data
         );
 
@@ -254,17 +268,14 @@ class Ideal extends AbstractMethod
         $chosenIssuer = $paymentInfo->getAdditionalInformation('issuer');
 
         $valid = false;
-        foreach($config->getIssuers() as $issuer)
-        {
-            if($issuer['code'] == $chosenIssuer)
-            {
+        foreach ($config->getIssuers() as $issuer) {
+            if ($issuer['code'] == $chosenIssuer) {
                 $valid = true;
                 break;
             }
         }
 
-        if(!$valid)
-        {
+        if (!$valid) {
             throw new Exception(__('Please select a issuer from the list'));
         }
 

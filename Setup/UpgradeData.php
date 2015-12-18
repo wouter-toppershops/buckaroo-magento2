@@ -45,13 +45,40 @@ use Magento\Framework\Setup\ModuleDataSetupInterface;
 class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
 {
     /**
+     * @var \Magento\Sales\Setup\SalesSetupFactory
+     */
+    protected $salesSetupFactory;
+
+    /**
+     * @var \Magento\Quote\Setup\QuoteSetupFactory
+     */
+    protected $quoteSetupFactory;
+
+    /**
+     * @param \Magento\Sales\Setup\SalesSetupFactory $salesSetupFactory
+     * @param \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory
+     */
+    public function __construct(
+        \Magento\Sales\Setup\SalesSetupFactory $salesSetupFactory,
+        \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory
+    ) {
+        $this->salesSetupFactory = $salesSetupFactory;
+        $this->quoteSetupFactory = $quoteSetupFactory;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function upgrade(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
         $setup->startSetup();
 
-        if (version_compare($context->getVersion(), '0.1.1', '<')) {
+        if (version_compare($context->getVersion(), '0.1.1', '<')
+            && version_compare($context->getVersion(), '0.1.0', '>=')
+        ) {
+            /**
+             * Install order statuses from config
+             */
             $setup->getConnection()->insert(
                 $setup->getTable('sales_order_status'),
                 [
@@ -67,6 +94,86 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                     'state'      => 'processing',
                     'is_default' =>  0,
                 ]
+            );
+        }
+
+        if (version_compare($context->getVersion(), '0.1.3', '<')) {
+            $quoteInstaller = $this->quoteSetupFactory->create(['resourceName' => 'quote_setup', 'setup' => $setup]);
+            $salesInstaller = $this->salesSetupFactory->create(['resourceName' => 'sales_setup', 'setup' => $setup]);
+
+            $quoteInstaller->addAttribute(
+                'quote',
+                'buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote',
+                'base_buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $quoteInstaller->addAttribute(
+                'quote_address',
+                'buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $quoteInstaller->addAttribute(
+                'quote_address',
+                'base_buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'base_buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_invoiced',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'base_buckaroo_fee_invoiced',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_refunded',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'base_buckaroo_fee_refunded',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'invoice',
+                'base_buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'invoice',
+                'buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'creditmemo',
+                'base_buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'creditmemo',
+                'buckaroo_fee',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
         }
     }
