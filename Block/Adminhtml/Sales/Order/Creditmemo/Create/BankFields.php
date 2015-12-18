@@ -42,18 +42,12 @@ namespace TIG\buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Create;
 class BankFields extends \Magento\Backend\Block\Template
 {
 
-    /**
-     * Xpath parts. Used in conjunction with the payment method code to find if any refund extra fields are used.
-     */
-    const XPATH_PAYMENT             = 'payment/';
-    const XPATH_EXTRA_FIELDS        = '/refund_extra_fields';
-    const XPATH_EXTRA_FIELDS_LABELS = '/refund_extra_fields_labels';
-
     protected $orderPaymentBlock    = 'order_payment';
 
     /**
      * @param \Magento\Backend\Block\Template\Context              $context
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory              $refundFieldsFactory
      */
     public function __construct(
         \Magento\Backend\Block\Template\Context $context,
@@ -76,7 +70,7 @@ class BankFields extends \Magento\Backend\Block\Template
         $paymentMethod = $this->getPaymentMethod();
 
         /** If no payment method is found, return the empty array. */
-        if(!$paymentMethod) {
+        if (!$paymentMethod) {
             return $extraFields;
         }
 
@@ -87,8 +81,10 @@ class BankFields extends \Magento\Backend\Block\Template
         $fields = $this->refundFieldsFactory->get($paymentMethod);
 
         /** Parse the code and label in the same array, to keep the data paired. */
-        foreach($fields as $field) {
-            $extraFields[$field['label']] = $field['code'];
+        if ($fields) {
+            foreach ($fields as $field) {
+                $extraFields[$field['label']] = $field['code'];
+            }
         }
 
         return $extraFields;
@@ -107,7 +103,7 @@ class BankFields extends \Magento\Backend\Block\Template
         $layout = $this->getLayout();
         $paymentBlock = $layout->getBlock($this->orderPaymentBlock);
 
-        if($paymentBlock) {
+        if ($paymentBlock) {
             $paymentMethod = $paymentBlock->getPayment()->getMethod();
         }
 

@@ -25,10 +25,8 @@ class RefundFieldsFactory
      * @param array $refundFields
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         array $refundFields = []
     ) {
-        $this->objectManager = $objectManager;
         $this->refundFields = $refundFields;
     }
 

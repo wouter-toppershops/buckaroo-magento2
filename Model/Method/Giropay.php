@@ -180,6 +180,9 @@ class Giropay extends AbstractMethod
             'Version' => 2,
         ];
 
+        $requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
+
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
