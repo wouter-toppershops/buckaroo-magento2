@@ -67,9 +67,17 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
         if (!$shippingAssignment->getItems()) {
             return $this;
         }
+        /** @noinspection PhpUndefinedMethodInspection */
         $extraTaxableDetails = $total->getExtraTaxableDetails();
+
+        if (empty($extraTaxableDetails[BuckarooFee::QUOTE_TYPE])) {
+            return $this;
+        }
         $itemTaxDetails = $extraTaxableDetails[BuckarooFee::QUOTE_TYPE];
 
+        if (empty($itemTaxDetails[CommonTaxCollector::ASSOCIATION_ITEM_CODE_FOR_QUOTE][0])) {
+            return $this;
+        }
         $buckarooFeeTaxDetails = $itemTaxDetails[CommonTaxCollector::ASSOCIATION_ITEM_CODE_FOR_QUOTE][0];
 
         $buckarooFeeBaseTaxAmount = $buckarooFeeTaxDetails['base_row_tax'];
@@ -77,16 +85,24 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
         $buckarooFeeInclTax = $buckarooFeeTaxDetails['price_incl_tax'];
         $buckarooFeeBaseInclTax = $buckarooFeeTaxDetails['base_price_incl_tax'];
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBuckarooFeeInclTax($buckarooFeeInclTax);
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBaseBuckarooFeeInclTax($buckarooFeeBaseInclTax);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBuckarooFeeBaseTaxAmount($buckarooFeeBaseTaxAmount);
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBuckarooFeeTaxAmount($buckarooFeeTaxAmount);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBuckarooFeeInclTax($buckarooFeeInclTax);
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBaseBuckarooFeeInclTax($buckarooFeeBaseInclTax);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBuckarooFeeBaseTaxAmount($buckarooFeeBaseTaxAmount);
+        /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBuckarooFeeTaxAmount($buckarooFeeTaxAmount);
 
         return $this;
@@ -102,6 +118,7 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         return [
             'code' => 'buckaroo_fee',
             'title' => $this->getLabel(),

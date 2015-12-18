@@ -40,6 +40,27 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
     <system>
+        <section id="tax">
+            <group id="classes">
+                <field id="buckaroo_fee_tax_class" translate="label" type="select" sortOrder="12" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Tax Class for Buckaroo Fee</label>
+                    <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
+                </field>
+            </group>
+            <group id="cart_display">
+                <field id="buckaroo_fee" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display Buckaroo Fee Prices</label>
+                    <source_model>TIG\Buckaroo\Model\Config\Source\Display\Type</source_model>
+                </field>
+            </group>
+            <group id="sales_display">
+                <field id="buckaroo_fee" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <label>Display Buckaroo Fee Prices</label>
+                    <source_model>TIG\Buckaroo\Model\Config\Source\Display\Type</source_model>
+                </field>
+            </group>
+        </section>
+
         <section id="tig_buckaroo" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Buckaroo</label>
             <tab>sales</tab>

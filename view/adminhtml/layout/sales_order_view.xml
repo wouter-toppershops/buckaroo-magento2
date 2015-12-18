@@ -41,19 +41,7 @@
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <body>
         <referenceBlock name="order_totals">
-            <block class="Magento\Sales\Block\Adminhtml\Order\Totals\Item" name="buckaroo_fee" template="TIG_Buckaroo::sales/order/total.phtml">
-                <action method="setBeforeCondition">
-                    <argument name="condition" xsi:type="string">customerbalance</argument>
-                </action>
-            </block>
-            <block class="Magento\Sales\Block\Adminhtml\Order\Totals\Item" name="buckaroo.fee.refunded" template="TIG_Buckaroo::sales/order/refunded.phtml">
-                <action method="setDisplayArea">
-                    <argument name="area" xsi:type="string">footer</argument>
-                </action>
-                <action method="setAfterCondition">
-                    <argument name="condition" xsi:type="string">last</argument>
-                </action>
-            </block>
+            <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Totals" name="buckaroo_fee_totals"/>
         </referenceBlock>
     </body>
 </page>

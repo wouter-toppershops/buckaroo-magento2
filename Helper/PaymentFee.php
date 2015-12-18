@@ -44,39 +44,19 @@ use \TIG\Buckaroo\Model\Config\Source\Display\Type as DisplayType;
 class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * Gift wrapping allow section in configuration
-     */
-    const XML_PATH_ALLOWED_FOR_ITEMS = 'sales/gift_options/wrapping_allow_items';
-
-    const XML_PATH_ALLOWED_FOR_ORDER = 'sales/gift_options/wrapping_allow_order';
-
-    /**
      * Gift wrapping tax class
      */
-    const XML_PATH_TAX_CLASS = 'tax/classes/wrapping_tax_class';
+    const XML_PATH_TAX_CLASS = 'tax/classes/buckaroo_fee_tax_class';
 
     /**
      * Shopping cart display settings
      */
-    const XML_PATH_PRICE_DISPLAY_CART_WRAPPING = 'tax/cart_display/gift_wrapping';
-
-    const XML_PATH_PRICE_DISPLAY_CART_PRINTED_CARD = 'tax/cart_display/printed_card';
+    const XML_PATH_PRICE_DISPLAY_CART = 'tax/cart_display/buckaroo_fee';
 
     /**
      * Sales display settings
      */
-    const XML_PATH_PRICE_DISPLAY_SALES_WRAPPING = 'tax/sales_display/gift_wrapping';
-
-    const XML_PATH_PRICE_DISPLAY_SALES_PRINTED_CARD = 'tax/sales_display/printed_card';
-
-    /**
-     * Gift receipt and printed card settings
-     */
-    const XML_PATH_ALLOW_GIFT_RECEIPT = 'sales/gift_options/allow_gift_receipt';
-
-    const XML_PATH_ALLOW_PRINTED_CARD = 'sales/gift_options/allow_printed_card';
-
-    const XML_PATH_PRINTED_CARD_PRICE = 'sales/gift_options/printed_card_price';
+    const XML_PATH_PRICE_DISPLAY_SALES = 'tax/sales_display/buckaroo_fee';
 
     /**
      * Return totals of data object
@@ -91,113 +71,47 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     {
         $totals = [];
 
-        $displayWrappingBothPrices = false;
-        $displayWrappingIncludeTaxPrice = false;
-        $displayCardBothPrices = false;
-        $displayCardIncludeTaxPrice = false;
+        $displayBothPrices = false;
+        $displayIncludeTaxPrice = false;
 
         if ($dataObject instanceof \Magento\Sales\Model\Order ||
             $dataObject instanceof \Magento\Sales\Model\Order\Invoice ||
             $dataObject instanceof \Magento\Sales\Model\Order\Creditmemo
         ) {
-            $displayWrappingBothPrices = $this->displaySalesWrappingBothPrices();
-            $displayWrappingIncludeTaxPrice = $this->displaySalesWrappingIncludeTaxPrice();
-            $displayCardBothPrices = $this->displaySalesCardBothPrices();
-            $displayCardIncludeTaxPrice = $this->displaySalesCardIncludeTaxPrice();
+            $displayBothPrices = $this->displaySalesBothPrices();
+            $displayIncludeTaxPrice = $this->displaySalesIncludeTaxPrice();
         } elseif ($dataObject instanceof \Magento\Quote\Model\Quote\Address\Total) {
-            $displayWrappingBothPrices = $this->displayCartWrappingBothPrices();
-            $displayWrappingIncludeTaxPrice = $this->displayCartWrappingIncludeTaxPrice();
-            $displayCardBothPrices = $this->displayCartCardBothPrices();
-            $displayCardIncludeTaxPrice = $this->displayCartCardIncludeTaxPrice();
+            $displayBothPrices = $this->displayCartBothPrices();
+            $displayIncludeTaxPrice = $this->displayCartIncludeTaxPrice();
         }
 
         /**
          * Gift wrapping for order totals
          */
-        if ($displayWrappingBothPrices || $displayWrappingIncludeTaxPrice) {
-            if ($displayWrappingBothPrices) {
+        if ($displayBothPrices || $displayIncludeTaxPrice) {
+            if ($displayBothPrices) {
                 $this->addTotalToTotals(
                     $totals,
-                    'gw_order_excl',
-                    $dataObject->getGwPrice(),
-                    $dataObject->getGwBasePrice(),
-                    'Gift Wrapping for Order (Excl. Tax)'
+                    'buckaroo_fee_excl',
+                    $dataObject->getBuckarooFee(),
+                    $dataObject->getBasebuckarooFee(),
+                    'Buckaroo Fee (Excl. Tax)'
                 );
             }
             $this->addTotalToTotals(
                 $totals,
-                'gw_order_incl',
-                $dataObject->getGwPrice() + $dataObject->getGwTaxAmount(),
-                $dataObject->getGwBasePrice() + $dataObject->getGwBaseTaxAmount(),
-                'Gift Wrapping for Order (Incl. Tax)'
+                'buckaroo_fee_incl',
+                $dataObject->getBuckarooFee() + $dataObject->getBuckarooFeeTaxAmount(),
+                $dataObject->getBasebuckarooFee() + $dataObject->getBuckarooFeeBaseTaxAmount(),
+                'Buckaroo Fee (Incl. Tax)'
             );
         } else {
             $this->addTotalToTotals(
                 $totals,
-                'gw_order',
-                $dataObject->getGwPrice(),
-                $dataObject->getGwBasePrice(),
-                'Gift Wrapping for Order'
-            );
-        }
-
-        /**
-         * Gift wrapping for items totals
-         */
-        if ($displayWrappingBothPrices || $displayWrappingIncludeTaxPrice) {
-            $this->addTotalToTotals(
-                $totals,
-                'gw_items_incl',
-                $dataObject->getGwItemsPrice() + $dataObject->getGwItemsTaxAmount(),
-                $dataObject->getGwItemsBasePrice() + $dataObject->getGwItemsBaseTaxAmount(),
-                'Gift Wrapping for Items (Incl. Tax)'
-            );
-            if ($displayWrappingBothPrices) {
-                $this->addTotalToTotals(
-                    $totals,
-                    'gw_items_excl',
-                    $dataObject->getGwItemsPrice(),
-                    $dataObject->getGwItemsBasePrice(),
-                    'Gift Wrapping for Items (Excl. Tax)'
-                );
-            }
-        } else {
-            $this->addTotalToTotals(
-                $totals,
-                'gw_items',
-                $dataObject->getGwItemsPrice(),
-                $dataObject->getGwItemsBasePrice(),
-                'Gift Wrapping for Items'
-            );
-        }
-
-        /**
-         * Printed card totals
-         */
-        if ($displayCardBothPrices || $displayCardIncludeTaxPrice) {
-            $this->addTotalToTotals(
-                $totals,
-                'gw_printed_card_incl',
-                $dataObject->getGwCardPrice() + $dataObject->getGwCardTaxAmount(),
-                $dataObject->getGwCardBasePrice() + $dataObject->getGwCardBaseTaxAmount(),
-                'Printed Card (Incl. Tax)'
-            );
-            if ($displayCardBothPrices) {
-                $this->addTotalToTotals(
-                    $totals,
-                    'gw_printed_card_excl',
-                    $dataObject->getGwCardPrice(),
-                    $dataObject->getGwCardBasePrice(),
-                    'Printed Card (Excl. Tax)'
-                );
-            }
-        } else {
-            $this->addTotalToTotals(
-                $totals,
-                'gw_printed_card',
-                $dataObject->getGwCardPrice(),
-                $dataObject->getGwCardBasePrice(),
-                'Printed Card'
+                'buckaroo_fee',
+                $dataObject->getBuckarooFee(),
+                $dataObject->getBasebuckarooFee(),
+                'Buckaroo Fee'
             );
         }
 
@@ -210,10 +124,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
      */
-    public function displayCartWrappingIncludeTaxPrice($store = null)
+    public function displayCartIncludeTaxPrice($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART_WRAPPING,
+            self::XML_PATH_PRICE_DISPLAY_CART,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -227,10 +141,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
      */
-    public function displayCartWrappingExcludeTaxPrice($store = null)
+    public function displayCartExcludeTaxPrice($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART_WRAPPING,
+            self::XML_PATH_PRICE_DISPLAY_CART,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -243,43 +157,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
      */
-    public function displayCartWrappingBothPrices($store = null)
+    public function displayCartBothPrices($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART_WRAPPING,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
-        return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
-    }
-
-    /**
-     * Check ability to display prices including tax for printed card in shopping cart
-     *
-     * @param \Magento\Store\Model\Store|int|null $store
-     * @return bool
-     */
-    public function displayCartCardIncludeTaxPrice($store = null)
-    {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART_PRINTED_CARD,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
-        return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
-        $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
-    }
-
-    /**
-     * Check ability to display both prices for printed card in shopping cart
-     *
-     * @param \Magento\Store\Model\Store|int|null $store
-     * @return bool
-     */
-    public function displayCartCardBothPrices($store = null)
-    {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART_PRINTED_CARD,
+            self::XML_PATH_PRICE_DISPLAY_CART,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -292,10 +173,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
      */
-    public function displaySalesWrappingIncludeTaxPrice($store = null)
+    public function displaySalesIncludeTaxPrice($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES_WRAPPING,
+            self::XML_PATH_PRICE_DISPLAY_SALES,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -309,10 +190,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
      */
-    public function displaySalesWrappingExcludeTaxPrice($store = null)
+    public function displaySalesExcludeTaxPrice($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES_WRAPPING,
+            self::XML_PATH_PRICE_DISPLAY_SALES,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -325,10 +206,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
      */
-    public function displaySalesWrappingBothPrices($store = null)
+    public function displaySalesBothPrices($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES_WRAPPING,
+            self::XML_PATH_PRICE_DISPLAY_SALES,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
@@ -336,36 +217,18 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display prices including tax for printed card in backend sales
-     *
      * @param \Magento\Store\Model\Store|int|null $store
-     * @return bool
+     *
+     * @return mixed
      */
-    public function displaySalesCardIncludeTaxPrice($store = null)
+    public function getBuckarooFeeTaxClass($store = null)
     {
         $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES_PRINTED_CARD,
+            self::XML_PATH_TAX_CLASS,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
             $store
         );
-        return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
-        $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
-    }
-
-    /**
-     * Check ability to display both prices for printed card in backend sales
-     *
-     * @param \Magento\Store\Model\Store|int|null $store
-     * @return bool
-     */
-    public function displaySalesCardBothPrices($store = null)
-    {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES_PRINTED_CARD,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
-        return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
+        return $configValue;
     }
 
     /**

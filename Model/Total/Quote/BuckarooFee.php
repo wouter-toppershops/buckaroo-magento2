@@ -82,7 +82,24 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         if (!$shippingAssignment->getItems()) {
             return $this;
         }
-        $basePaymentFee = 10;
+
+        $paymentMethod = $quote->getPayment()->getMethod();
+        if (!$paymentMethod || strpos($paymentMethod, 'tig_buckaroo_') !== 0) {
+            return $this;
+        }
+
+        $methodInstance = $quote->getPayment()->getMethodInstance();
+        if (!$methodInstance instanceof \TIG\Buckaroo\Model\Method\AbstractMethod) {
+            throw new \LogicException('Buckaroo payment fee is only available for Buckaroo payment methods.');
+        }
+
+        $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
+        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
+            return $this;
+        }
+
+        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
+        $basePaymentFee = $configProvider->getPaymentFee();
 
         $paymentFee = $this->priceCurrency->convert($basePaymentFee, $quote->getStore());
 
@@ -91,10 +108,14 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         /** @noinspection PhpUndefinedMethodInspection */
         $quote->setBaseBuckarooFee($basePaymentFee);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBuckarooFee($paymentFee);
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBaseBuckarooFee($basePaymentFee);
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setBaseGrandTotal($total->getBaseGrandTotal() + $basePaymentFee);
+        /** @noinspection PhpUndefinedMethodInspection */
         $total->setGrandTotal($total->getGrandTotal() + $paymentFee);
 
         return $this;

@@ -50,12 +50,14 @@
     </section>
     <section name="order_invoice">
         <group name="totals">
-           <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Invoice\BuckarooFee" sort_order="125"/>
+           <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Invoice\BuckarooFee" sort_order="400"/>
+            <item name="tax_buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Invoice\Tax\BuckarooFee" sort_order="300"/>
         </group>
     </section>
     <section name="order_creditmemo">
         <group name="totals">
-            <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Creditmemo\BuckarooFee" sort_order="125"/>
+            <item name="buckaroo_fee" instance="TIG\Buckaroo\Model\Total\Creditmemo\BuckarooFee" sort_order="400"/>
+            <!--<item name="tax_buckaroo_fee" instance="TIG\BuckarooModel\Total\Creditmemo\Tax\BuckarooFee" sort_order="300"/>-->
         </group>
     </section>
 </config>

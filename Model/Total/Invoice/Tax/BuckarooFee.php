@@ -36,41 +36,46 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Observer;
+namespace TIG\Buckaroo\Model\Total\Invoice\Tax;
 
-
-class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
+class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
 {
     /**
-     * Set invoiced buckaroo fee to order after invoice register
+     * Collect buckaroo fee tax totals
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param \Magento\Sales\Model\Order\Invoice $invoice
      * @return $this
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
+        $order = $invoice->getOrder();
+
         /** @noinspection PhpUndefinedMethodInspection */
-        /* @var $invoice \Magento\Sales\Model\Order\Invoice */
-        $invoice = $observer->getEvent()->getInvoice();
+        $buckarooFeeTaxAmountLeft = $order->getBuckarooFeeTaxAmount() - $order->getBuckarooFeeTaxAmountInvoiced();
         /** @noinspection PhpUndefinedMethodInspection */
-        if ($invoice->getBaseBuckarooFee()) {
-            $order = $invoice->getOrder();
+        $baseBuckarooFeeTaxAmountLeft = $order->getBuckarooFeeBaseTaxAmount()
+            - $order->getBuckarooFeeBaseTaxAmountInvoiced();
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($order->getBuckarooFeeBaseTaxAmount() && $baseBuckarooFeeTaxAmountLeft > 0) {
+            if ($baseBuckarooFeeTaxAmountLeft < $invoice->getBaseGrandTotal()) {
+                $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeTaxAmountLeft);
+                $invoice->setBaseGrandTotal($invoice->getBaseGrandTotal() + $baseBuckarooFeeTaxAmountLeft);
+            } else {
+                $buckarooFeeTaxAmountLeft = $invoice->getGrandTotal();
+                $baseBuckarooFeeTaxAmountLeft = $invoice->getBaseGrandTotal();
+
+                $invoice->setGrandTotal(0);
+                $invoice->setBaseGrandTotal(0);
+            }
+
+            $invoice->setTaxAmount($invoice->getTaxAmount() + $buckarooFeeTaxAmountLeft);
+            $invoice->setBaseTaxAmount($invoice->getBaseTaxAmount() + $baseBuckarooFeeTaxAmountLeft);
+
             /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeInvoiced(
-                $order->getBuckarooFeeInvoiced() + $invoice->getBuckarooFee()
-            );
+            $invoice->setBuckarooFeeTaxAmount($buckarooFeeTaxAmountLeft);
             /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBaseBuckarooFeeInvoiced(
-                $order->getBaseBuckarooFeeInvoiced() + $invoice->getBaseBuckarooFee()
-            );
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeTaxAmountInvoiced(
-                $order->getBuckarooFeeTaxAmountInvoiced() + $invoice->getBuckarooFeeTaxAmount()
-            );
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeBaseTaxAmountInvoiced(
-                $order->getBuckarooFeeBaseTaxAmountInvoiced() + $invoice->getBuckarooFeeBaseTaxAmount()
-            );
+            $invoice->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTaxAmountLeft);
         }
 
         return $this;

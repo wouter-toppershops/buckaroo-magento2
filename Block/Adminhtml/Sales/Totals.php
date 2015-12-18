@@ -36,43 +36,42 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Observer;
+namespace TIG\Buckaroo\Block\Adminhtml\Sales;
 
-
-class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
+class Totals extends \Magento\Framework\View\Element\Template
 {
     /**
-     * Set invoiced buckaroo fee to order after invoice register
+     * @var \TIG\Buckaroo\Helper\PaymentFee
+     */
+    protected $helper = null;
+
+    /**
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \TIG\Buckaroo\Helper\PaymentFee                  $helper
+     * @param array                                            $data
+     */
+    public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
+        \TIG\Buckaroo\Helper\PaymentFee $helper,
+        array $data = []
+    ) {
+        $this->helper = $helper;
+        parent::__construct($context, $data);
+    }
+
+    /**
+     * Initialize gift wrapping and printed card totals for order/invoice/creditmemo
      *
-     * @param \Magento\Framework\Event\Observer $observer
      * @return $this
      */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function initTotals()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /* @var $invoice \Magento\Sales\Model\Order\Invoice */
-        $invoice = $observer->getEvent()->getInvoice();
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($invoice->getBaseBuckarooFee()) {
-            $order = $invoice->getOrder();
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeInvoiced(
-                $order->getBuckarooFeeInvoiced() + $invoice->getBuckarooFee()
-            );
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBaseBuckarooFeeInvoiced(
-                $order->getBaseBuckarooFeeInvoiced() + $invoice->getBaseBuckarooFee()
-            );
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeTaxAmountInvoiced(
-                $order->getBuckarooFeeTaxAmountInvoiced() + $invoice->getBuckarooFeeTaxAmount()
-            );
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeBaseTaxAmountInvoiced(
-                $order->getBuckarooFeeBaseTaxAmountInvoiced() + $invoice->getBuckarooFeeBaseTaxAmount()
-            );
+        $parent = $this->getParentBlock();
+        $source = $parent->getSource();
+        $totals = $this->helper->getTotals($source);
+        foreach ($totals as $total) {
+            $this->getParentBlock()->addTotalBefore(new \Magento\Framework\DataObject($total), 'tax');
         }
-
         return $this;
     }
 }

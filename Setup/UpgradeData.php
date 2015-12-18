@@ -241,5 +241,53 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
         }
+
+        if (version_compare($context->getVersion(), '0.1.5', '<')) {
+            $salesInstaller->addAttribute(
+                'invoice',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'invoice',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'creditmemo',
+                'buckaroo_fee_base_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'creditmemo',
+                'buckaroo_fee_tax_amount',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+        }
+
+        if (version_compare($context->getVersion(), '0.1.6', '<')) {
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_base_tax_amount_invoiced',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_tax_amount_invoiced',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_base_tax_amount_refunded',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+            $salesInstaller->addAttribute(
+                'order',
+                'buckaroo_fee_tax_amount_refunded',
+                ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
+            );
+        }
     }
 }

@@ -40,6 +40,19 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <tax>
+            <classes>
+                <buckaroo_fee_tax_class/>
+            </classes>
+
+            <cart_display>
+                <buckaroo_fee>1</buckaroo_fee>
+            </cart_display>
+
+            <sales_display>
+                <buckaroo_fee>1</buckaroo_fee>
+            </sales_display>
+        </tax>
         <payment>
 
             <tig_buckaroo_ideal>
