@@ -51,7 +51,7 @@ class Total extends \Magento\Checkout\Block\Total\DefaultTotal
     // @codingStandardsIgnoreEnd
 
     /**
-     * Gift wrapping data
+     * Buckaroo fee helper
      *
      * @var \TIG\Buckaroo\Helper\PaymentFee
      */

@@ -157,6 +157,20 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->quote->setIsActive('1');
         $this->quote->setTriggerRecollect('1');
         $this->quote->setReservedOrderId(null);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->quote->setBuckarooFee(null);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->quote->setBaseBuckarooFee(null);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->quote->setBuckarooFeeTaxAmount(null);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->quote->setBuckarooFeeBaseTaxAmount(null);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->quote->setBuckarooFeeInclTax(null);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->quote->setBaseBuckarooFeeInclTax(null);
+
         if ($this->cart->setQuote($this->quote)->save()) {
             return true;
         }

@@ -44,7 +44,7 @@ use \TIG\Buckaroo\Model\Config\Source\Display\Type as DisplayType;
 class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * Gift wrapping tax class
+     * Buckaroo fee tax class
      */
     const XML_PATH_TAX_CLASS = 'tax/classes/buckaroo_fee_tax_class';
 
@@ -63,9 +63,6 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @param  \Magento\Framework\DataObject $dataObject
      * @return array
-     * @SuppressWarnings(PHPMD.CyclomaticComplexity)
-     * @SuppressWarnings(PHPMD.NPathComplexity)
-     * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
      */
     public function getTotals($dataObject)
     {
@@ -86,7 +83,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         /**
-         * Gift wrapping for order totals
+         * Buckaroo fee for order totals
          */
         if ($displayBothPrices || $displayIncludeTaxPrice) {
             if ($displayBothPrices) {
@@ -119,7 +116,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display prices including tax for gift wrapping in shopping cart
+     * Check ability to display prices including tax for buckaroo fee in shopping cart
      *
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
@@ -136,7 +133,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display prices excluding tax for gift wrapping in shopping cart
+     * Check ability to display prices excluding tax for buckaroo fee in shopping cart
      *
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
@@ -152,7 +149,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display both prices for gift wrapping in shopping cart
+     * Check ability to display both prices for buckaroo fee in shopping cart
      *
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
@@ -168,7 +165,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display prices including tax for gift wrapping in backend sales
+     * Check ability to display prices including tax for buckaroo fee in backend sales
      *
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
@@ -185,7 +182,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display prices excluding tax for gift wrapping in backend sales
+     * Check ability to display prices excluding tax for buckaroo fee in backend sales
      *
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool
@@ -201,7 +198,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
-     * Check ability to display both prices for gift wrapping in backend sales
+     * Check ability to display both prices for buckaroo fee in backend sales
      *
      * @param \Magento\Store\Model\Store|int|null $store
      * @return bool

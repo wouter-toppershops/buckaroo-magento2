@@ -32,7 +32,7 @@ define(
             },
 
             /**
-             * Get gift wrapping price based on options.
+             * Get buckaroo fee price based on options.
              * @returns {int}
              */
             getValue : function () {
@@ -59,7 +59,7 @@ define(
             },
 
             /**
-             * Get gift wrapping price (including tax) based on options.
+             * Get buckaroo fee price (including tax) based on options.
              * @returns {int}
              */
             getIncludingTaxValue : function () {
@@ -86,12 +86,11 @@ define(
             },
 
             /**
-             * Check gift wrapping option availability.
+             * Checkbuckaroo fee option availability.
              * @returns {Boolean}
              */
             isAvailable : function () {
-                var isAvailable = false,
-                    buckarooFeeSegment;
+                var isAvailable = false;
 
                 if (!this.isFullMode()) {
                     return false;
@@ -109,7 +108,7 @@ define(
             },
 
             /**
-             * Check if both gift wrapping prices should be displayed.
+             * Check if both buckaroo fee prices should be displayed.
              * @returns {Boolean}
              */
             displayBothPrices : function () {
@@ -125,7 +124,7 @@ define(
             },
 
             /**
-             * Check if gift wrapping prices should be displayed including tax.
+             * Check if buckaroo fee prices should be displayed including tax.
              * @returns {Boolean}
              */
             displayPriceInclTax : function () {
@@ -141,7 +140,7 @@ define(
             },
 
             /**
-             * Check if gift wrapping prices should be displayed excluding tax.
+             * Check if buckaroo fee prices should be displayed excluding tax.
              * @returns {Boolean}
              */
             displayPriceExclTax : function () {
