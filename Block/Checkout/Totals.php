@@ -41,39 +41,41 @@ namespace TIG\Buckaroo\Block\Checkout;
 
 class Total extends \Magento\Checkout\Block\Total\DefaultTotal
 {
+    // @codingStandardsIgnoreStart
     /**
      * Template file path
      *
      * @var string
      */
     protected $_template = 'checkout/totals.phtml';
+    // @codingStandardsIgnoreEnd
 
     /**
      * Gift wrapping data
      *
-     * @var \Magento\GiftWrapping\Helper\Data|null
+     * @var \TIG\Buckaroo\Helper\PaymentFee
      */
-    protected $_giftWrappingData = null;
+    protected $helper;
 
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Customer\Model\Session $customerSession
-     * @param \Magento\Checkout\Model\Session $checkoutSession
-     * @param \Magento\Sales\Model\Config $salesConfig
-     * @param \Magento\GiftWrapping\Helper\Data $giftWrappingData
-     * @param array $layoutProcessors
-     * @param array $data
+     * @param \Magento\Customer\Model\Session                  $customerSession
+     * @param \Magento\Checkout\Model\Session                  $checkoutSession
+     * @param \Magento\Sales\Model\Config                      $salesConfig
+     * @param \TIG\Buckaroo\Helper\PaymentFee                  $helper
+     * @param array                                            $layoutProcessors
+     * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Customer\Model\Session $customerSession,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Sales\Model\Config $salesConfig,
-        \Magento\GiftWrapping\Helper\Data $giftWrappingData,
+        \TIG\Buckaroo\Helper\PaymentFee $helper,
         array $layoutProcessors = [],
         array $data = []
     ) {
-        $this->_giftWrappingData = $giftWrappingData;
+        $this->helper = $helper;
         parent::__construct($context, $customerSession, $checkoutSession, $salesConfig, $layoutProcessors, $data);
         $this->_isScopePrivate = true;
     }
@@ -87,7 +89,7 @@ class Total extends \Magento\Checkout\Block\Total\DefaultTotal
     {
         $values = [];
         $total = $this->getTotal();
-        $totals = $this->_giftWrappingData->getTotals($total);
+        $totals = $this->helper->getTotals($total);
         foreach ($totals as $total) {
             $label = (string)$total['label'];
             $values[$label] = $total['value'];
