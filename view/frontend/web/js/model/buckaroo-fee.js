@@ -32,32 +32,16 @@ define(
                  * Get gift wrapping price display mode.
                  * @returns {Boolean}
                  */
-                displayWrappingBothPrices: function () {
-                    return !!buckarooFeeConfig.displayWrappingBothPrices;
+                displayBothprices: function () {
+                    return !!buckarooFeeConfig.displayBuckarooFeeBothPrices;
                 },
 
                 /**
                  * Get printed card price display mode.
                  * @returns {Boolean}
                  */
-                displayCardBothPrices: function () {
-                    return !!buckarooFeeConfig.displayCardBothPrices;
-                },
-
-                /**
-                 * Get gift wrapping price display mode.
-                 * @returns {Boolean}
-                 */
-                displayGiftWrappingInclTaxPrice: function () {
-                    return !!buckarooFeeConfig.displayGiftWrappingInclTaxPrice;
-                },
-
-                /**
-                 * Get printed card price display mode.
-                 * @returns {Boolean}
-                 */
-                displayCardInclTaxPrice: function () {
-                    return !!buckarooFeeConfig.displayCardInclTaxPrice;
+                displayInclTaxPrice: function () {
+                    return !!buckarooFeeConfig.displayBuckarooFeeInclTax;
                 }
             };
         };

@@ -102,9 +102,7 @@ define(
                     totals.getSegment('buckaroo_fee') &&
                     totals.getSegment('buckaroo_fee').hasOwnProperty('extension_attributes')
                 ) {
-                    buckarooFeeSegment = totals.getSegment('buckaroo_fee')['extension_attributes'];
-
-                    isAvailable = buckarooFeeSegment.length > 0;
+                    isAvailable = !!totals.getSegment('buckaroo_fee')['extension_attributes'];
                 }
 
                 return isAvailable;

@@ -181,6 +181,10 @@
                     <item name="type" xsi:type="string">states</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\States</item>
                 </item>
+                <item name="buckaroo_fee" xsi:type="array">
+                    <item name="type" xsi:type="string">buckaroo_fee</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
+                </item>
             </argument>
         </arguments>
     </type>
@@ -224,5 +228,9 @@
 
     <type name="Magento\Quote\Model\Quote\TotalsCollector">
         <plugin name="tig_buckaroo_fee_total_collector" type="TIG\Buckaroo\Model\Plugin\TotalsCollector" />
+    </type>
+
+    <type name="Magento\Quote\Model\Cart\TotalsConverter">
+        <plugin name="tig_buckaroo_fee_total_converter" type="TIG\Buckaroo\Model\Plugin\TotalsConverter" />
     </type>
 </config>

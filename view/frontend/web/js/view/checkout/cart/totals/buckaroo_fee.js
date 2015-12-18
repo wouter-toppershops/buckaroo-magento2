@@ -20,6 +20,13 @@ define(
              */
             isDisplayed: function () {
                 return true;
+            },
+
+            /**
+             * @override
+             */
+            isFullMode: function () {
+                return true;
             }
         });
     }

@@ -68,7 +68,7 @@ class Factory
      *
      * @param string $providerType
      *
-     * @return ConfigProviderInterface
+     * @return \Magento\Checkout\Model\ConfigProviderInterface
      * @throws \LogicException|\TIG\Buckaroo\Exception
      */
     public function get($providerType)

@@ -4,14 +4,35 @@
  * See COPYING.txt for license details.
  */
 -->
-<!-- ko if: isDisplayed() -->
-<tr class="totals discount">
-    <th class="mark" scope="row">
-        <span class="title" data-bind="text: title"></span>
-        <span class="discount coupon" data-bind="text: getCouponCode()"></span>
+<!-- ko if: isAvailable() -->
+<!-- ko if: displayBothPrices() -->
+<tr class="totals buckaroo_fee excl">
+    <th class="mark">
+        <span data-bind="text: $t(title) + ' ' + $t(excludingTaxMessage)"></span>
     </th>
-    <td class="amount">
-        <span class="price" data-bind="text: getValue(), attr: {'data-th': name}"></span>
-    </td>
+    <td data-bind="text: getValue(), attr: {'data-th': $t(excludingTaxMessage)}" class="amount"></td>
 </tr>
+<tr class="totals buckaroo_fee incl">
+    <th class="mark">
+        <span data-bind="text: $t(title) + ' ' + $t(includingTaxMessage)"></span>
+    </th>
+    <td data-bind="text: getIncludingTaxValue(), attr: {'data-th': $t(includingTaxMessage)}" class="amount"></td>
+</tr>
+<!-- /ko -->
+<!-- ko if: displayPriceInclTax() -->
+<tr class="totals buckaroo_fee">
+    <th class="mark">
+        <span data-bind="{i18n: title}"></span>
+    </th>
+    <td data-bind="{text: getIncludingTaxValue(), attr: {'data-th': $t(title)}}" class="amount"></td>
+</tr>
+<!-- /ko -->
+<!-- ko if: displayPriceExclTax() -->
+<tr class="totals buckaroo_fee">
+    <th class="mark">
+        <span data-bind="{i18n: title}"></span>
+    </th>
+    <td data-bind="{text: getValue(), attr: {'data-th': $t(title)}}" class="amount"></td>
+</tr>
+<!-- /ko -->
 <!-- /ko -->
