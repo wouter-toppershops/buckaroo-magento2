@@ -1,7 +1,7 @@
 <!-- Gets extra fields if required for this payment method. Returns array of extra fields, or empty array -->
 <?php $extraFields = $block->getExtraFields(); ?>
 
-<table>
+<table class="admin__table-secondary order-subtotal-table">
 <?php foreach ($extraFields as $name => $field): ?>
     <tr>
         <td class="label"><?php echo $name; ?><div id="tig_buckaroo_<?php echo $field; ?>"></div></td>

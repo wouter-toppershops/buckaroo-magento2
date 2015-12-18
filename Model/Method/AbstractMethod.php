@@ -149,6 +149,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                   $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory            $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                       $priceHelper
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                      $refundFieldsFactory
      * @param array                                                        $data
      */
     public function __construct(
@@ -167,6 +168,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
@@ -185,6 +187,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $data
         );
 
+        $this->gateway = $gateway;
+        $this->transactionBuilderFactory = $transactionBuilderFactory;
+        $this->validatorFactory = $validatorFactory;
+        $this->messageManager = $messageManager;
+        $this->helper = $helper;
+        $this->request = $request;
+        $this->refundFieldsFactory = $refundFieldsFactory;
         $this->gateway                      = $gateway;
         $this->transactionBuilderFactory    = $transactionBuilderFactory;
         $this->validatorFactory             = $validatorFactory;
@@ -782,6 +791,31 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public function getTransactionAdditionalInfo(array $array)
     {
         return $this->helper->getTransactionAdditionalInfo($array);
+    }
+
+    public function addExtraFields($paymentMethodCode)
+    {
+        $requestParams = $this->request->getparams();
+        $creditMemoParams = $requestParams['creditmemo'];
+
+        $extraFields = $this->refundFieldsFactory->get($paymentMethodCode);
+
+        $services = array();
+
+        /**
+         * If extra fields are found, attach these as 'RequestParameter' to the services.
+         */
+        if (!empty($extraFields)) {
+            foreach ($extraFields as $extraField) {
+                $code = $extraField['code'];
+                $services['RequestParameter'][] = [
+                    '_' => "$creditMemoParams[$code]",
+                    'Name' => $code,
+                ];
+            }
+        }
+
+        return $services;
     }
 
     /**
