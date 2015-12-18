@@ -130,6 +130,7 @@ class Ideal extends AbstractMethod
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
@@ -151,6 +152,7 @@ class Ideal extends AbstractMethod
             $messageManager,
             $helper,
             $request,
+            $refundFieldsFactory,
             $configProviderFactory,
             $configProviderMethodFactory,
             $priceHelper,
@@ -230,7 +232,7 @@ class Ideal extends AbstractMethod
             'Version' => 1,
         ];
 
-        $$requestParams = $this->addExtraFields($this->_code);
+        $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
         /** @noinspection PhpUndefinedMethodInspection */
