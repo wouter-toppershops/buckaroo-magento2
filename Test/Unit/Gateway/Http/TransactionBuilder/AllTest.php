@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
+use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Refund;
 
 class AllTest extends BaseTest
 {
@@ -50,7 +51,7 @@ class AllTest extends BaseTest
     protected $order;
 
     /**
-     * @var Order
+     * @var Order|Refund
      */
     protected $object;
 
@@ -72,14 +73,34 @@ class AllTest extends BaseTest
         $this->object = $this->objectManagerHelper->getObject(Order::class, [
             'configProviderFactory' => $this->configProvider,
         ]);
-
-        $this->object->setOrder($this->order);
     }
 
     /**
-     * Test the getBody method.
+     * Generate a mock for the getBody method of Order and refund.
+     *
+     * @param array $expected
+     *
+     * @return $this
      */
-    public function testGetBody()
+    public function createGetBodyMock(array $expected)
+    {
+        $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
+        $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
+        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+
+        $this->order->shouldReceive('getOrderCurrencyCode')->once()->andReturn($expected['Currency']);
+        $this->order->shouldReceive('getBaseGrandTotal')->once()->andReturn(max($expected['AmountDebit'], $expected['AmountCredit']));
+        $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
+        $this->order->shouldReceive('getRemoteIp')->twice()->andReturn($expected['ClientIP']['_']);
+        $this->object->setOrder($this->order);
+
+        return $this;
+    }
+
+    /**
+     * Test the getBody method of the Order.
+     */
+    public function testGetBodyOrder()
     {
         $expected = [
             'Currency' => 'EUR',
@@ -92,22 +113,111 @@ class AllTest extends BaseTest
                 '_' => '127.0.0.1',
                 'Type' => 'IPv4',
             ],
+            'StartRecurrent' => 1,
+            'Services' => [
+                'Service' => 'servicesString',
+            ],
         ];
 
-        $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
-        $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
-        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+        $this->object->setStartRecurrent($expected['StartRecurrent']);
+        $this->object->setServices($expected['Services']['Service']);
 
-        $this->order->shouldReceive('getOrderCurrencyCode')->once()->andReturn($expected['Currency']);
-        $this->order->shouldReceive('getBaseGrandTotal')->once()->andReturn($expected['AmountDebit']);
-        $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
-        $this->order->shouldReceive('getRemoteIp')->twice()->andReturn($expected['ClientIP']['_']);
+        $this->createGetBodyMock($expected);
 
         $result = $this->object->getBody();
-
         foreach($expected as $key => $value)
         {
             $this->assertEquals($value, $result[$key]);
+        }
+    }
+
+    /**
+     * Test the getBody method of the Refund.
+     */
+    public function testGetBodyRefund()
+    {
+        $expected = [
+            'Currency' => 'EUR',
+            'AmountDebit' => 0,
+            'AmountCredit' => 50,
+            'Invoice' => 999,
+            'Order' => 999,
+            'Description' => 'transactionLabel',
+            'ClientIP' => [
+                '_' => '127.0.0.1',
+                'Type' => 'IPv4',
+            ],
+        ];
+
+        /**
+         * The Order class is used by default, but in this case we want to test the Refund class specifically.
+         */
+        $this->object = $this->objectManagerHelper->getObject(Refund::class, [
+            'configProviderFactory' => $this->configProvider,
+        ]);
+
+        $this->createGetBodyMock($expected);
+
+        $result = $this->object->getBody();
+        foreach($expected as $key => $value)
+        {
+            $this->assertEquals($value, $result[$key]);
+        }
+    }
+
+    /**
+     * Test the getters and setters for the originalTransactionKey variable.
+     */
+    public function testOriginalTransactionKey()
+    {
+        $value = 'testString';
+        $this->object->setOriginalTransactionKey($value);
+
+        $this->assertEquals($value, $this->object->getOriginalTransactionKey());
+    }
+
+    /**
+     * Test the getters and setters for the channel variable.
+     */
+    public function testChannel()
+    {
+        $value = 'testString';
+        $this->object->setChannel($value);
+
+        $this->assertEquals($value, $this->object->getChannel());
+    }
+
+    /**
+     * Test the getters and setters for the method variable.
+     */
+    public function testMethod()
+    {
+        $value = 'testString';
+        $this->object->setMethod($value);
+
+        $this->assertEquals($value, $this->object->getMethod());
+    }
+
+    /**
+     * Test the getHeaders method. This returns an array with object of the SoapHeader class.
+     */
+    public function testGetHeaders()
+    {
+        $merchantKey = uniqid();
+
+        $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
+        $account->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
+        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+
+        $result = $this->object->GetHeaders();
+
+        $this->assertCount(2, $result);
+        $this->assertEquals('https://checkout.buckaroo.nl/PaymentEngine/', $result[0]->namespace);
+        $this->assertEquals($merchantKey, $result[0]->data['WebsiteKey']);
+
+        foreach($result as $header)
+        {
+            $this->assertInstanceOf(\SoapHeader::class, $header);
         }
     }
 }
