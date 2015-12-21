@@ -93,7 +93,7 @@ class SetBuckarooFeeTest extends BaseTest
     }
 
     /**
-     * Test thath the buckaroo fee and base buckaroo fee are set from the quote.
+     * Test that the buckaroo fee and base buckaroo fee are set from the quote.
      */
     public function testInvoiceRegisterWithFee()
     {
