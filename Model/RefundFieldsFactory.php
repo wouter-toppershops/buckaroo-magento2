@@ -9,19 +9,12 @@ namespace TIG\Buckaroo\Model;
  */
 class RefundFieldsFactory
 {
-
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $objectManager;
-
     /**
      * @var array
      */
     protected $refundFields;
 
     /**
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param array $refundFields
      */
     public function __construct(

@@ -187,13 +187,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $data
         );
 
-        $this->gateway = $gateway;
-        $this->transactionBuilderFactory = $transactionBuilderFactory;
-        $this->validatorFactory = $validatorFactory;
-        $this->messageManager = $messageManager;
-        $this->helper = $helper;
-        $this->request = $request;
-        $this->refundFieldsFactory = $refundFieldsFactory;
+        $this->gateway                      = $gateway;
+        $this->transactionBuilderFactory    = $transactionBuilderFactory;
+        $this->validatorFactory             = $validatorFactory;
+        $this->messageManager               = $messageManager;
+        $this->helper                       = $helper;
+        $this->request                      = $request;
+        $this->refundFieldsFactory          = $refundFieldsFactory;
         $this->gateway                      = $gateway;
         $this->transactionBuilderFactory    = $transactionBuilderFactory;
         $this->validatorFactory             = $validatorFactory;
@@ -770,12 +770,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
                 $rawInfo
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->setTransactionId($transactionKey);
+
             /**
              * Save the payment's transaction key.
              */
             if ($saveId) {
-                /** @noinspection PhpUndefinedMethodInspection */
-                $payment->setTransactionId($transactionKey);
                 $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
             }
         }
@@ -793,6 +794,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         return $this->helper->getTransactionAdditionalInfo($array);
     }
 
+    /**
+     * @param string $paymentMethodCode
+     *
+     * @return array
+     */
     public function addExtraFields($paymentMethodCode)
     {
         $requestParams = $this->request->getparams();
