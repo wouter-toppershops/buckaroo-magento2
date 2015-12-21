@@ -171,16 +171,9 @@ class Push implements PushInterface
         //Check if the push is a refund request.
         if (isset($this->postData['brq_amount_credit']) && $this->order->hasInvoices()) {
             $refund = $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
-
             if ($refund) {
-                /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-                $statesConfig = $this->configProviderFactory->get('states');
-                $newState     = $statesConfig->getStateSuccess();
-                $this->updateOrderStatus(Order::STATE_PROCESSING, $newState, $response['message']);
-
                 return true;
             }
-
             return false;
         }
         //Last validation before push can be completed
