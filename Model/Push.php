@@ -89,9 +89,14 @@ class Push implements PushInterface
     public $postData;
 
     /**
-     * @var array $orignalPostData
+     * @var array originalPostData
      */
-    public $orignalPostData;
+    public $originalPostData;
+
+    /**
+     * @var $refundPush
+     */
+    public $refundPush;
 
     /**
      * @var \TIG\Buckaroo\Helper\Data
@@ -124,7 +129,8 @@ class Push implements PushInterface
         \TIG\Buckaroo\Helper\Data $helper,
         ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Helper\Data $helper,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\Refund\Push $refundPush
     ) {
         $this->objectManager            = $objectManager;
         $this->request                  = $request;
@@ -134,6 +140,8 @@ class Push implements PushInterface
         $this->helper                   = $helper;
         $this->scopeConfig              = $scopeConfig;
         $this->configProviderFactory    = $configProviderFactory;
+        $this->refundPush               = $refundPush;
+
     }
 
     /**
@@ -145,13 +153,13 @@ class Push implements PushInterface
     public function receivePush()
     {
         //Set orginal postdata before setting it to case lower.
-        $this->orignalPostData = $this->request->getParams();
+        $this->originalPostData = $this->request->getParams();
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
         //Check if the push can be procesed and if the order can be updated IMPORTANT => use the original post data.
-        $validSignature = $this->validator->validateSignature($this->orignalPostData);
+        $validSignature = $this->validator->validateSignature($this->originalPostData);
         //Check if the order can recieve further status updates
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);
@@ -160,7 +168,11 @@ class Push implements PushInterface
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
         $canUpdateOrder = $this->canUpdateOrderStatus();
-
+        //Check if the push is a refund request.
+        if (isset($this->postData['brq_amount_credit']) && $this->order->hasInvoices()) {
+            $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
+            return true;
+        }
         //Last validation before push can be completed
         if (!$validSignature) {
             return false;
@@ -177,6 +189,21 @@ class Push implements PushInterface
         ) {
             $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
         }
+        $this->processPush($response);
+        $this->order->save();
+
+        return true;
+    }
+
+    /**
+     * Process the push according the response status
+     *
+     * @param $response
+     *
+     * @throws Exception
+     */
+    public function processPush($response)
+    {
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
         $statesConfig = $this->configProviderFactory->get('states');
@@ -209,9 +236,6 @@ class Push implements PushInterface
                 $this->processIncorrectPaymentPush($newStatus, $response['message']);
                 break;
         }
-        $this->order->save();
-
-        return true;
     }
 
     /**
