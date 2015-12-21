@@ -65,6 +65,7 @@
             <label>Buckaroo</label>
             <tab>sales</tab>
             <resource>Sales_Buckaroo::configuration</resource>
+            <class>buckaroo-section</class>
 
             <!-- TODO: Default values? -->
 
