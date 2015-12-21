@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Model\Refund;
 use \Magento\Sales\Model\Order\CreditmemoFactory;
 use \Magento\Framework\ObjectManagerInterface;
 use \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender;
+use \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader;
 
 /**
  * Class Creditmemo
@@ -62,19 +63,30 @@ class Push
     /** @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender */
     public $creditEmailSender;
 
+    /** @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader */
+    public $creditmemoLoader;
+
+    /** @var \Magento\Framework\Registry  */
+    protected $coreRegistry;
+
     /**
      * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender
+     * @param \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader
      */
     public function __construct(
         CreditmemoFactory $creditmemoFactory,
         ObjectManagerInterface $objectManager,
-        CreditmemoSender $creditEmailSender
+        CreditmemoSender $creditEmailSender,
+        CreditmemoLoader $creditmemoLoader,
+        \Magento\Framework\Registry $registry
     ) {
         $this->creditmemoFactory  = $creditmemoFactory;
         $this->objectManager      = $objectManager;
-        $this->$creditEmailSender = $creditEmailSender;
+        $this->creditEmailSender  = $creditEmailSender;
+        $this->creditmemoLoader   = $creditmemoLoader;
+        $this->coreRegistry      = $registry;
     }
 
     /**
@@ -143,6 +155,7 @@ class Push
         $creditmemoManagement = $this->objectManager->create(
             'Magento\Sales\Api\CreditmemoManagementInterface'
         );
+
         $creditmemoManagement->refund($creditmemo, $do_offline, $send_email);
     }
 
@@ -189,7 +202,7 @@ class Push
 
         $this->creditAmount = $totalAmountToRefund + $this->order->getBaseTotalRefunded();
 
-        if ($this->creditAmount !== $this->order->getBaseGrandTotal()) {
+        if ($this->creditAmount != $this->order->getBaseGrandTotal()) {
             $data['shipping_amount']     = '0';
             $data['adjustment_negative'] = '0';
             $data['adjustment_positive'] = $this->getAdjustmentRefundData();
