@@ -41,7 +41,6 @@ namespace TIG\Buckaroo\Model\Method;
 
 use Zend\Validator\Iban;
 use Magento\Sales\Model\Order\Payment;
-use Magento\Framework\Validator\Exception;
 
 class SepaDirectDebit extends AbstractMethod
 {
@@ -320,18 +319,17 @@ class SepaDirectDebit extends AbstractMethod
         $customerIban = $paymentInfo->getAdditionalInformation('customer_iban');
         $customerAccountName = $paymentInfo->getAdditionalInformation('customer_account_name');
 
-        if(empty($customerAccountName) or str_word_count($customerAccountName) < 2)
-        {
-            throw new Exception(__('Please enter a valid bank account holder name'));
+        if (empty($customerAccountName) || str_word_count($customerAccountName) < 2) {
+            throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account holder name'));
         }
 
-        if($billingCountry == 'NL') {
-            if(empty($customerIban) || !$this->ibanValidator->isValid($customerIban)) {
-                throw new Exception(__('Please enter a valid bank account number'));
+        if ($billingCountry == 'NL') {
+            if (empty($customerIban) || !$this->ibanValidator->isValid($customerIban)) {
+                throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account number'));
             }
         } else {
-            if(!preg_match(self::BIC_NUMBER_REGEX, $customerBic)) {
-                throw new Exception(__('Please enter a valid BIC number'));
+            if (!preg_match(self::BIC_NUMBER_REGEX, $customerBic)) {
+                throw new \TIG\Buckaroo\Exception(__('Please enter a valid BIC number'));
             }
         }
 
