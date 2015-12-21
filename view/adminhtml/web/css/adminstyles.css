@@ -53,10 +53,6 @@
     -webkit-font-smoothing: antialiased;
 }
 
-.collapse-title h3:active:before{
-    transform :scale(0.2); /* doesn't work yet */
-}
-
 .collapse-content {
     box-sizing: border-box;
     padding:0 15px 15px 15px;
@@ -221,11 +217,11 @@
 /* ==================================== SupportTab - Documentation ==================================== */
 
 /**
+* Space Reservation
 *
-* Space
+*
 *
 **/
-
 
 /* ============================ Refund Page -  input-field styling ============================ */
 
