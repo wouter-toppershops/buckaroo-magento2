@@ -84,7 +84,12 @@ class InvoiceRegisterTest extends BaseTest
     public function testInvoiceRegisterWithPaymentFee()
     {
         $this->observer->shouldReceive('getBaseBuckarooFee')->once()->andReturn(true);
-        $this->observer->shouldReceive('getBuckarooFee', 'getBaseBuckarooFee')->once();
+        $this->observer->shouldReceive(
+            'getBuckarooFee',
+            'getBaseBuckarooFee',
+            'getBuckarooFeeTaxAmount',
+            'getBuckarooFeeBaseTaxAmount'
+        )->once();
 
         $order = m::mock();
         /**
@@ -92,6 +97,11 @@ class InvoiceRegisterTest extends BaseTest
          */
         $order->shouldReceive('setBuckarooFeeInvoiced')->once();
         $order->shouldReceive('setBaseBuckarooFeeInvoiced')->once();
+        $order->shouldReceive('setBuckarooFeeTaxAmountInvoiced')->once();
+        $order->shouldReceive('setBuckarooFeeBaseTaxAmountInvoiced')->once();
+
+        $order->shouldReceive('getBuckarooFeeTaxAmountInvoiced')->once();
+        $order->shouldReceive('getBuckarooFeeBaseTaxAmountInvoiced')->once();
 
         /**
          * Only needed for the test.

@@ -99,12 +99,24 @@ class SetBuckarooFeeTest extends BaseTest
     {
         $buckarooFee = rand(1, 1000);
         $buckarooBaseFee = rand(1, 1000);
+        $getBuckarooFeeInclTax = rand(1, 1000);
+        $getBuckarooFeeTaxAmount = rand(1, 1000);
+        $getBaseBuckarooFeeInclTax = rand(1, 1000);
+        $getBuckarooFeeBaseTaxAmount = rand(1, 1000);
 
         $this->order->shouldReceive('setBuckarooFee')->with($buckarooFee)->once();
         $this->order->shouldReceive('setBaseBuckarooFee')->with($buckarooBaseFee)->once();
+        $this->order->shouldReceive('setBuckarooFeeInclTax')->with($getBuckarooFeeInclTax)->once();
+        $this->order->shouldReceive('setBuckarooFeeTaxAmount')->with($getBuckarooFeeTaxAmount)->once();
+        $this->order->shouldReceive('setBaseBuckarooFeeInclTax')->with($getBaseBuckarooFeeInclTax)->once();
+        $this->order->shouldReceive('setBuckarooFeeBaseTaxAmount')->with($getBuckarooFeeBaseTaxAmount)->once();
 
         $this->quote->shouldReceive('getBuckarooFee')->times()->andReturn($buckarooFee);
         $this->quote->shouldReceive('getBaseBuckarooFee')->twice()->andReturn($buckarooBaseFee);
+        $this->quote->shouldReceive('getBuckarooFeeInclTax')->times()->andReturn($getBuckarooFeeInclTax);
+        $this->quote->shouldReceive('getBuckarooFeeTaxAmount')->times()->andReturn($getBuckarooFeeTaxAmount);
+        $this->quote->shouldReceive('getBaseBuckarooFeeInclTax')->times()->andReturn($getBaseBuckarooFeeInclTax);
+        $this->quote->shouldReceive('getBuckarooFeeBaseTaxAmount')->times()->andReturn($getBuckarooFeeBaseTaxAmount);
 
         $this->object->execute($this->observer);
     }
