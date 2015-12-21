@@ -2,7 +2,7 @@
 .payment-method-content,
 .payment-method-billing-address,
 .checkout-agreements-block,
-.actions-toolbar{ float: left; width: 100%;  }
+.actions-toolbar{ float: left; width: 100%; background:white; }
 
 /* ===================== Default styling ===================== */
 .checkout-payment-method .payment-method-content {
