@@ -82,7 +82,7 @@ class AccountTest extends  BaseTest
             $this->scopeConfig
                 ->shouldReceive('getValue')
                 ->once()
-                ->with($value, ScopeInterface::SCOPE_STORE)
+                ->with($value, ScopeInterface::SCOPE_STORE, NULL)
                 ->andReturn($constant);
         }
 
