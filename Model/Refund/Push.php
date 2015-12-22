@@ -66,9 +66,6 @@ class Push
     /** @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader */
     public $creditmemoLoader;
 
-    /** @var \Magento\Framework\Registry  */
-    protected $coreRegistry;
-
     /**
      * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
@@ -79,14 +76,12 @@ class Push
         CreditmemoFactory $creditmemoFactory,
         ObjectManagerInterface $objectManager,
         CreditmemoSender $creditEmailSender,
-        CreditmemoLoader $creditmemoLoader,
-        \Magento\Framework\Registry $registry
+        CreditmemoLoader $creditmemoLoader
     ) {
         $this->creditmemoFactory  = $creditmemoFactory;
         $this->objectManager      = $objectManager;
         $this->creditEmailSender  = $creditEmailSender;
         $this->creditmemoLoader   = $creditmemoLoader;
-        $this->coreRegistry      = $registry;
     }
 
     /**
@@ -98,6 +93,7 @@ class Push
      * @param $order
      *
      * @return bool
+     * @throws \LogicException|\TIG\Buckaroo\Exception
      */
     public function receiveRefundPush($postData, $signatureValidation, $order)
     {
@@ -105,7 +101,9 @@ class Push
         $this->order    = $order;
 
         if (!$signatureValidation && !$this->order->canCreditmemo()) {
-            return false;
+            throw new \LogicException(
+                __('Buckaroo refund push validation failed')
+            );
         }
 
         return $this->createCreditmemo();
@@ -118,7 +116,6 @@ class Push
     {
         $creditData = $this->getCreditmemoData();
         $creditmemo = $this->initCreditmemo($creditData);
-
         try {
             if ($creditmemo) {
                 if (!$creditmemo->isValidGrandTotal()) {
@@ -133,14 +130,14 @@ class Push
                 }
                 return true;
             } else {
-                return false;
+                throw new \LogicException(
+                    __('Failed to create the creditmemo')
+                );
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            /**
-             * @todo log exception
-             */
-            return false;
+            // log 'Buckaroo failed to create the credit memo\'s { '. $e->getLogMessage().' }'
         }
+        return false;
     }
 
     /**
@@ -160,11 +157,10 @@ class Push
     }
 
     /**
-     * Init credit nota
+     * @param $creditData
      *
-     * @param Array $creditData
-     *
-     * @return \Magento\Sales\Model\Order\Creditmemo $creditmemo
+     * @return \Magento\Sales\Model\Order\Creditmemo
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function initCreditmemo($creditData)
     {
@@ -178,11 +174,9 @@ class Push
 
             return $creditmemo;
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            /**
-             * @todo log exception
-             */
-            return false;
+            //log 'Buckaroo can not initialize the credit memo\'s by order { '. $e->getLogMessage().' }'
         }
+        return false;
     }
 
     /**
@@ -206,14 +200,15 @@ class Push
             $data['shipping_amount']     = '0';
             $data['adjustment_negative'] = '0';
             $data['adjustment_positive'] = $this->getAdjustmentRefundData();
+            $data['items']               = '0';
+            $data['qtys']                = '0';
         } else {
             $data['shipping_amount']     = $this->caluclateShippingCostToRefund();
             $data['adjustment_negative'] = $this->getTotalCreditAdjustments();
             $data['adjustment_positive'] = $this->calculateRemainder();
+            $data['items']               = $this->getCreditmemoDataItems();
+            $data['qtys']                = $this->setCreditQtys($data['items']);
         }
-
-        $data['items'] = $this->getCreditmemoDataItems();
-        $data['qtys']  = $this->setCreditQtys($data['items']);
 
         return $data;
     }
@@ -243,7 +238,8 @@ class Push
     public function getAdjustmentRefundData()
     {
         $totalAmount = $this->totalAmountToRefund();
-        if (0 == $this->order->getBaseTotalRefunded()) {
+
+        if ($this->order->getBaseTotalRefunded() == null) {
             $totalAmount = $totalAmount
                 - ($this->order->getBaseBuckarooFeeAmount() + $this->order->getBaseBuckarooFeeTaxAmountInvoiced());
         }
@@ -263,6 +259,7 @@ class Push
         } else {
             $amount = round($this->postData['brq_amount_credit'] * $this->order->getBaseToOrderRate(), 2);
         }
+
         return $amount;
     }
 
@@ -321,7 +318,7 @@ class Push
         foreach ($this->order->getAllItems() as $orderItem) {
             /** @var \Magento\Sales\Model\Order\Item $orderItem */
             if (!in_array($orderItem->getId(), array_flip($items))) {
-                if ($this->creditAmount !== $this->order->getBaseGrandTotal()) {
+                if ($this->creditAmount != $this->order->getBaseGrandTotal()) {
                     $qty = $orderItem->getQtyInvoiced() - $orderItem->getQtyRefunded();
                 }
                 $items[$orderItem->getId()] = ['qty' => $qty];
@@ -341,8 +338,10 @@ class Push
     {
         $qtys = [];
 
-        foreach ($items as $orderItemId => $itemData) {
-            $qtys[$orderItemId] = $itemData['qty'];
+        if (!empty($items)) {
+            foreach ($items as $orderItemId => $itemData) {
+                $qtys[$orderItemId] = $itemData['qty'];
+            }
         }
 
         return $qtys;
