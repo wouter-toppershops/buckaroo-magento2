@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,50 +36,34 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Total\Creditmemo\Tax;
 
-namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
-
-class Order extends AbstractTransactionBuilder
+class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal
 {
     /**
-     * @return array
+     * Collect totals for credit memo
+     *
+     * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
+     * @return $this
      */
-    public function getBody()
+    public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
-        $order = $this->getOrder();
+        $order = $creditmemo->getOrder();
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
-        $accountConfig = $this->configProviderFactory->get('account');
-
-        $ip = $order->getRemoteIp();
-        if (!$ip) {
-            $ip = $_SERVER['SERVER_ADDR'];
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($order->getBuckarooFeeBaseTaxAmountInvoiced() &&
+            $order->getBuckarooFeeBaseTaxAmountInvoiced() != $order->getBuckarooFeeBaseTaxAmountRefunded()
+        ) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeBaseTaxAmountRefunded($order->getBuckarooFeeBaseTaxAmountInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $order->setBuckarooFeeTaxAmountRefunded($order->getBuckarooFeeTaxAmountInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $creditmemo->setBuckarooFeeBaseTaxAmount($order->getBuckarooFeeBaseTaxAmountInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $creditmemo->setBuckarooFeeTaxAmount($order->getBuckarooFeeTaxAmountInvoiced());
         }
 
-        $body = [
-            'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
-            'AmountDebit' => $order->getBaseGrandTotal(),
-            'AmountCredit' => 0,
-            'Invoice' => $order->getIncrementId(),
-            'Order' => $order->getIncrementId(),
-            'Description' => $accountConfig->getTransactionLabel(),
-            'ClientIP' => [
-                '_' => $ip,
-                'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
-            ],
-            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'OriginalTransactionKey' => $this->originalTransactionKey,
-            'StartRecurrent' => $this->startRecurrent,
-            'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => [
-                'Service' => $this->getServices()
-            ],
-        ];
-
-        return $body;
+        return $this;
     }
 }

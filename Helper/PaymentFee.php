@@ -87,6 +87,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
          */
         if ($displayBothPrices || $displayIncludeTaxPrice) {
             if ($displayBothPrices) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $this->addTotalToTotals(
                     $totals,
                     'buckaroo_fee_excl',
@@ -95,6 +96,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                     'Buckaroo Fee (Excl. Tax)'
                 );
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->addTotalToTotals(
                 $totals,
                 'buckaroo_fee_incl',
@@ -103,6 +105,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                 'Buckaroo Fee (Incl. Tax)'
             );
         } else {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->addTotalToTotals(
                 $totals,
                 'buckaroo_fee',

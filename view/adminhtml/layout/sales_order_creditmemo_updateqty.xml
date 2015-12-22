@@ -1,4 +1,5 @@
-<?php
+<?xml version="1.0"?>
+<!--
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -36,45 +37,11 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-
-namespace TIG\Buckaroo\Model\Plugin;
-
-class BuckarooFeeRefund
-{
-    /**
-     * Reward points refund after creditmemo creation
-     *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Creditmemo $subject
-     * @param \Closure $proceed
-     * @param \Magento\Framework\Model\AbstractModel $object
-     * @return bool
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function aroundSave(
-        \Magento\Sales\Model\ResourceModel\Order\Creditmemo $subject,
-        \Closure $proceed,
-        \Magento\Framework\Model\AbstractModel $object
-    ) {
-        /* @var $creditmemo \Magento\Sales\Model\Order\Creditmemo */
-        $creditmemo = $object;
-
-        /* @var $order \Magento\Sales\Model\Order */
-        $order = $creditmemo->getOrder();
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($creditmemo->getBaseBuckarooFee()) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeRefunded(
-                $order->getBuckarooFeeRefunded() + $creditmemo->getBuckarooFee()
-            );
-            /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBaseBuckarooFeeRefunded(
-                $order->getBaseBuckarooFeeRefunded() + $creditmemo->getBaseBuckarooFee()
-            );
-        }
-
-        $result = $proceed($object);
-
-        return $result;
-    }
-}
+ -->
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="creditmemo_totals">
+            <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Totals" name="buckaroo_fee"/>
+        </referenceBlock>
+    </body>
+</page>

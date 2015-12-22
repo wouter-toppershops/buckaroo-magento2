@@ -67,9 +67,11 @@ class Totals extends \Magento\Framework\View\Element\Template
     public function initTotals()
     {
         $parent = $this->getParentBlock();
+        /** @noinspection PhpUndefinedMethodInspection */
         $source = $parent->getSource();
         $totals = $this->helper->getTotals($source);
         foreach ($totals as $total) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->getParentBlock()->addTotalBefore(new \Magento\Framework\DataObject($total), 'tax');
         }
         return $this;

@@ -42,7 +42,7 @@ namespace TIG\Buckaroo\Model\Total\Creditmemo;
 class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal
 {
     /**
-     * Collect reward totals for credit memo
+     * Collect totals for credit memo
      *
      * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
      * @return $this
@@ -50,29 +50,32 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $order = $creditmemo->getOrder();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $buckarooFeeLeft = $order->getBuckarooFeeInvoiced() - $order->getBuckarooFeeRefunded();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $baseBuckarooFeeLeft = $order->getBaseBuckarooFeeInvoiced() - $order->getBaseBuckarooFeeRefunded();
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
-            if ($baseBuckarooFeeLeft >= $creditmemo->getBaseGrandTotal()) {
-                $buckarooFeeLeft = $creditmemo->getGrandTotal();
-                $baseBuckarooFeeLeft = $creditmemo->getBaseGrandTotal();
-                $creditmemo->setGrandTotal(0);
-                $creditmemo->setBaseGrandTotal(0);
-                /** @noinspection PhpUndefinedMethodInspection */
-                $creditmemo->setAllowZeroGrandTotal(true);
-            } else {
-                $creditmemo->setGrandTotal($creditmemo->getGrandTotal() - $buckarooFeeLeft);
-                $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() - $baseBuckarooFeeLeft);
-            }
 
+        /** @noinspection PhpUndefinedMethodInspection */
+        if ($order->getBaseBuckarooFeeInvoiced() &&
+            $order->getBaseBuckarooFeeInvoiced() != $order->getBaseBuckarooFeeRefunded()
+        ) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $creditmemo->setBuckarooFee($buckarooFeeLeft);
+            $order->setBaseBuckarooFeeRefunded($order->getBaseBuckarooFeeInvoiced());
             /** @noinspection PhpUndefinedMethodInspection */
-            $creditmemo->setBaseBuckarooFee($baseBuckarooFeeLeft);
+            $order->setBuckarooFeeRefunded($order->getBuckarooFeeInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $creditmemo->setBaseBuckarooFee($order->getBaseBuckarooFeeInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $creditmemo->setBuckarooFee($order->getBuckarooFeeInvoiced());
         }
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $creditmemo->setBaseGrandTotal(
+            $creditmemo->getBaseGrandTotal() +
+            $creditmemo->getBaseBuckarooFee()
+        );
+        /** @noinspection PhpUndefinedMethodInspection */
+        $creditmemo->setGrandTotal(
+            $creditmemo->getGrandTotal() +
+            $creditmemo->getBuckarooFee()
+        );
+
         return $this;
     }
 }
