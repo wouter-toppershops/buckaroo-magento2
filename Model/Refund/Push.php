@@ -66,9 +66,6 @@ class Push
     /** @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader */
     public $creditmemoLoader;
 
-    /** @var \Magento\Framework\Registry  */
-    protected $coreRegistry;
-
     /**
      * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
@@ -79,14 +76,12 @@ class Push
         CreditmemoFactory $creditmemoFactory,
         ObjectManagerInterface $objectManager,
         CreditmemoSender $creditEmailSender,
-        CreditmemoLoader $creditmemoLoader,
-        \Magento\Framework\Registry $registry
+        CreditmemoLoader $creditmemoLoader
     ) {
         $this->creditmemoFactory  = $creditmemoFactory;
         $this->objectManager      = $objectManager;
         $this->creditEmailSender  = $creditEmailSender;
         $this->creditmemoLoader   = $creditmemoLoader;
-        $this->coreRegistry      = $registry;
     }
 
     /**
