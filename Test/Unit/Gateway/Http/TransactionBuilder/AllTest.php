@@ -91,7 +91,7 @@ class AllTest extends BaseTest
         $this->order->shouldReceive('getOrderCurrencyCode')->once()->andReturn($expected['Currency']);
         $this->order->shouldReceive('getBaseGrandTotal')->once()->andReturn(max($expected['AmountDebit'], $expected['AmountCredit']));
         $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
-        $this->order->shouldReceive('getRemoteIp')->twice()->andReturn($expected['ClientIP']['_']);
+        $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->object->setOrder($this->order);
 
         return $this;
