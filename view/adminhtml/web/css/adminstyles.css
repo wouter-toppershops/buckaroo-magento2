@@ -3,12 +3,13 @@
 .buckaroo-section .admin__page-nav-link:before {
     float:left;
     width: calc(100% - 30px) ;
-    height: 15px;
+    height: 18px;
     content: ' ';
 
     background-image: url(../images/buckaroo_small.png) !important;
-    background-position :0 3px;
+    background-position :0 2px;
     background-repeat:no-repeat;
+    background-size: auto 13px;
  }
 
 .buckaroo-section .admin__page-nav-link {
@@ -26,6 +27,28 @@
     background-size: 30px !important;
     background-repeat:no-repeat;
     content: ' ';
+}
+
+/* ======================= Identity ======================= */
+
+.buckaroo-config-page .admin__scope-old:before {
+    background-image: url(../images/logo_tig.png) !important;
+    background-repeat: no-repeat;
+    content: ' ';
+    width: 50px;
+    float:right;
+    height: 50px;
+    background-size: auto 50px;
+}
+
+.buckaroo-config-page #container:before  {
+    background-image: url(../images/buckaroo_config_logo.png) !important;
+    background-repeat: no-repeat;
+    content: ' ';
+    width: 259px;
+    float:left;
+    height: 50px;
+    background-size: auto 50px;
 }
 
 /* ==================== Buckaroo Active/Inactive Payments Feedback ==================== */
@@ -223,6 +246,8 @@
 .buckaroo_logo, .tig_logo {
     padding:10px 10px 10px 0;
 }
+.buckaroo_logo img { width: 180px; }
+.tig_logo img { width: 50px; }
 
 .support-buck-tig ul {
     float:left;

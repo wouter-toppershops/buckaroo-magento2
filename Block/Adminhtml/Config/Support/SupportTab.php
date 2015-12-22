@@ -46,6 +46,11 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
 {
     protected $_template = 'supportTab.phtml';
 
+    /**
+     * @param AbstractElement $element
+     *
+     * @return string
+     */
     public function render(AbstractElement $element)
     {
         $this->setElement($element);
