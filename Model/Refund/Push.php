@@ -93,6 +93,7 @@ class Push
      * @param $order
      *
      * @return bool
+     * @throws \LogicException|\TIG\Buckaroo\Exception
      */
     public function receiveRefundPush($postData, $signatureValidation, $order)
     {
@@ -100,7 +101,9 @@ class Push
         $this->order    = $order;
 
         if (!$signatureValidation && !$this->order->canCreditmemo()) {
-            return false;
+            throw new \LogicException(
+                __('Buckaroo refund push validation failed')
+            );
         }
 
         return $this->createCreditmemo();
@@ -127,14 +130,14 @@ class Push
                 }
                 return true;
             } else {
-                return false;
+                throw new \LogicException(
+                    __('Failed to create the creditmemo')
+                );
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            /**
-             * @todo log exception
-             */
-            return false;
+            // log 'Buckaroo failed to create the credit memo\'s { '. $e->getLogMessage().' }'
         }
+        return false;
     }
 
     /**
@@ -154,11 +157,10 @@ class Push
     }
 
     /**
-     * Init credit nota
+     * @param $creditData
      *
-     * @param Array $creditData
-     *
-     * @return \Magento\Sales\Model\Order\Creditmemo $creditmemo
+     * @return \Magento\Sales\Model\Order\Creditmemo
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function initCreditmemo($creditData)
     {
@@ -172,11 +174,9 @@ class Push
 
             return $creditmemo;
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            /**
-             * @todo log exception
-             */
-            return false;
+            //log 'Buckaroo can not initialize the credit memo\'s by order { '. $e->getLogMessage().' }'
         }
+        return false;
     }
 
     /**
