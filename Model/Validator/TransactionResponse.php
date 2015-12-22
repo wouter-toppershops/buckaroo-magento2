@@ -140,7 +140,7 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
         //get the public key
         $pubKey = openssl_get_publickey(
             openssl_x509_read(
-                $this->publicKeyConfigProvider->getConfig()['public_key']
+                $this->publicKeyConfigProvider->getPublicKey()
             )
         );
 

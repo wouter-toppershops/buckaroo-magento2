@@ -55,13 +55,13 @@ class Predefined extends AbstractConfigProvider
     const XPATH_PREDEFINED_LOCATION_TEST_WEB   = 'tig_buckaroo/predefined/location_test_web';
 
     /**
-     * @return array|void
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         $config = [
-            'location_live_web' => $this->getLocationLiveWeb(),
-            'location_test_web' => $this->getLocationTestWeb(),
+            'location_live_web' => $this->getLocationLiveWeb($store),
+            'location_test_web' => $this->getLocationTestWeb($store),
         ];
         return $config;
     }

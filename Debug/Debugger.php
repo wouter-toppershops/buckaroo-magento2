@@ -41,20 +41,55 @@ namespace TIG\Buckaroo\Debug;
 
 class Debugger
 {
+
+    /**
+     * @var null|Logger
+     */
     protected $logger = null;
+
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface|null
+     */
     protected $objectManager = null;
+
+    /**
+     * @var null|\TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
     protected $configProviderFactory = null;
 
+    /**
+     * @var string
+     */
     protected $channelName = 'TIG_Buckaroo';
+
+    /**
+     * @var string
+     */
     protected $defaultFilename = 'TIG_Buckaroo.log';
 
-    protected $mailTo = [
-        'robin.de.graaf@tig.nl',
-        'voh@hostvoh.net',
-    ];
-    protected $mailSubject = 'TIG_Buckaroo log mail';
-    protected $mailFrom = 'info@buckaroo.nl';
+    /**
+     * @var array
+     */
+    protected $message = [];
 
+    /**
+     * @var array
+     */
+    protected $mailTo = [];
+
+    /**
+     * @var string
+     */
+    protected $mailSubject = 'TIG_Buckaroo log mail';
+
+    /**
+     * @var string
+     */
+    protected $mailFrom = 'nobody@buckaroo.nl';
+
+    /**
+     * @var string
+     */
     protected $mode = 'mail';
 
     /**
@@ -74,10 +109,13 @@ class Debugger
         // Get some settings
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $config */
         $config = $this->configProviderFactory->get('account');
+
+        $this->setMode($config->getDebugMode());
+
         if ($config->getDebugEmail()) {
             $mailTo = $config->getDebugEmail();
             if (strpos($mailTo, ',') !== false) {
-                $mailTo = expode(',', $mailTo);
+                $mailTo = explode(',', $mailTo);
             } else {
                 $mailTo = [$mailTo];
             }
@@ -161,38 +199,69 @@ class Debugger
      *
      * @return $this
      */
-    public function log($message, $level = 100, $filename = null, $force = false)
+    public function log($message = null, $level = 100, $filename = null, $force = false)
     {
+        /**
+         * If message not given, see if $this->message is filled
+         */
+        if (!$message) {
+            $message = $this->getMessageAsString();
+        }
+        /**
+         * If message is still null, there's nothing to log at all
+         */
+        if (!$message) {
+            return false;
+        }
+
         /**
          * If filename isn't set, use the default filename that's currently set
          */
         if (!$filename) {
             $filename = $this->getDefaultFilename();
         }
+
         /**
          * If message is an array, print_r it to a string
          */
-        if (is_array($message)) {
+        if (is_array($message) || is_object($message)) {
+            if (is_object($message) && method_exists($message, 'debug')) {
+                $message = $message->debug();
+            }
             $message = print_r($message, true);
-        }
-
-        /**
-         * Monolog requires handlers, so we need to check which ones we need to push
-         */
-        if (strpos($this->mode, 'log') !== false) {
-            /** Stream handler handles local file logging capabilities */
-            $this->logger->pushHandler($this->createStreamHandler($filename));
-        }
-        if (strpos($this->mode, 'mail') !== false) {
-            /** Mail handler handles sending logs to configured e-mail addresses */
-            $this->logger->pushHandler($this->createMailHandler());
         }
 
         /**
          * Set the name we're supposed to set, push the streamHandler & add the record
          */
         $this->logger->setName($this->getChannelName());
-        $this->logger->addRecord($level, $message, []);
+
+        /**
+         * Monolog requires handlers, so we need to check which ones we need to push
+         */
+        if (strpos($this->getMode(), 'log') !== false) {
+            /** Stream handler handles local file logging capabilities */
+            $this->logger->pushHandler($this->createStreamHandler($filename));
+            $this->logger->addRecord($level, $message, []);
+        }
+        /**
+         * @todo Monolog's NativeMailHandler seems broken, so we use mail() in the meantime
+         */
+        if (strpos($this->mode, 'mail') !== false) {
+            /** Mail handler handles sending logs to configured e-mail addresses */
+            $headers =  'From: ' . $this->mailFrom . "\r\n" .
+                        'Reply-To: ' . $this->mailFrom . "\r\n" .
+                        'X-Mailer: PHP/' . phpversion();
+            foreach ($this->mailTo as $mailTo) {
+                mail($mailTo, $this->mailSubject, $message, $headers);
+            }
+
+        }
+
+        /**
+         * And reset the message, otherwise our __destruct will try it again
+         */
+        $this->resetMessage();
 
         return $this;
     }
@@ -229,6 +298,61 @@ class Debugger
             ]
         );
         return $mailHandler;
+    }
+
+    /**
+     * Reset the message array
+     *
+     * @return $this
+     */
+    public function resetMessage()
+    {
+        $this->message = [];
+        return $this;
+    }
+
+    /**
+     * Add $message to the message array, and cast to string if an array or object
+     *
+     * @param $message
+     *
+     * @return $this
+     */
+    public function addToMessage($message)
+    {
+        if (is_array($message) || is_object($message)) {
+            $message = print_r($message, true);
+        }
+        $this->message[] = $message;
+        return $this;
+    }
+
+    /**
+     * Return the message array
+     *
+     * @return array
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * Return the message array as imploded string
+     *
+     * @return string|null
+     */
+    public function getMessageAsString()
+    {
+        if (count($this->getMessage()) == 0) {
+            return null;
+        }
+        return implode(PHP_EOL, $this->getMessage());
+    }
+
+    public function __destruct()
+    {
+        $this->log();
     }
 
 }

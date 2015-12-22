@@ -74,14 +74,12 @@ KEY;
     }
 
     /**
-     * Return associated array of configuration
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         $config = [
-            'public_key' => $this->getPublicKey(),
+            'public_key' => $this->getPublicKey($store),
         ];
         return $config;
     }
@@ -89,9 +87,11 @@ KEY;
     /**
      * Return public key
      *
+     * @param null $store
+     *
      * @return null|string
      */
-    public function getPublicKey()
+    public function getPublicKey($store = null)
     {
         return $this->publicKey;
     }

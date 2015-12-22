@@ -54,6 +54,7 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getFailureRedirect()
  * @method mixed getCancelOnFailed()
  * @method mixed getDigitalSignature()
+ * @method mixed getDebugMode()
  * @method mixed getDebugEmail()
  * @method mixed getLimitByIp()
  * @method mixed getFeePercentageMode()
@@ -76,31 +77,33 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_FAILURE_REDIRECT        = 'tig_buckaroo/account/failure_redirect';
     const XPATH_ACCOUNT_CANCEL_ON_FAILED        = 'tig_buckaroo/account/cancel_on_failed';
     const XPATH_ACCOUNT_DIGITAL_SIGNATURE       = 'tig_buckaroo/account/digital_signature';
+    const XPATH_ACCOUNT_DEBUG_MODE              = 'tig_buckaroo/account/debug_mode';
     const XPATH_ACCOUNT_DEBUG_EMAIL             = 'tig_buckaroo/account/debug_email';
     const XPATH_ACCOUNT_LIMIT_BY_IP             = 'tig_buckaroo/account/limit_by_ip';
     const XPATH_ACCOUNT_FEE_PERCENTAGE_MODE     = 'tig_buckaroo/account/fee_percentage_mode';
 
     /**
-     * @return array|void
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         $config = [
-            'active'                => $this->getActive(),
-            'secret_key'            => $this->getSecretKey(),
-            'merchant_key'          => $this->getMerchantKey(),
-            'transaction_label'     => $this->getTransactionLabel(),
-            'certificate_file'      => $this->getCertificateFile(),
-            'invoice_email'         => $this->getInvoiceEmail(),
-            'auto_invoice'          => $this->getAutoInvoice(),
-            'auto_invoice_status'   => $this->getAutoInvoiceStatus(),
-            'success_redirect'      => $this->getSuccessRedirect(),
-            'failure_redirect'      => $this->getFailureRedirect(),
-            'cancel_on_failed'      => $this->getCancelOnFailed(),
-            'digital_signature'     => $this->getDigitalSignature(),
-            'debug_email'           => $this->getDebugEmail(),
-            'limit_by_ip'           => $this->getLimitByIp(),
-            'fee_percentage_mode'   => $this->getFeePercentageMode(),
+            'active'                => $this->getActive($store),
+            'secret_key'            => $this->getSecretKey($store),
+            'merchant_key'          => $this->getMerchantKey($store),
+            'transaction_label'     => $this->getTransactionLabel($store),
+            'certificate_file'      => $this->getCertificateFile($store),
+            'invoice_email'         => $this->getInvoiceEmail($store),
+            'auto_invoice'          => $this->getAutoInvoice($store),
+            'auto_invoice_status'   => $this->getAutoInvoiceStatus($store),
+            'success_redirect'      => $this->getSuccessRedirect($store),
+            'failure_redirect'      => $this->getFailureRedirect($store),
+            'cancel_on_failed'      => $this->getCancelOnFailed($store),
+            'digital_signature'     => $this->getDigitalSignature($store),
+            'debug_mode'            => $this->getDebugMode($store),
+            'debug_email'           => $this->getDebugEmail($store),
+            'limit_by_ip'           => $this->getLimitByIp($store),
+            'fee_percentage_mode'   => $this->getFeePercentageMode($store),
         ];
         return $config;
     }

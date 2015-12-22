@@ -33,37 +33,42 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2014 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Config\Source;
 
-namespace TIG\Buckaroo\Model\ConfigProvider;
-
-use \TIG\Buckaroo\Model\ConfigProvider;
-
-/**
- * @method mixed getEnabled()
- * @method mixed getAllowPush()
- */
-class Refund extends AbstractConfigProvider
+class DebugModes implements \Magento\Framework\Option\ArrayInterface
 {
 
     /**
-     * XPATHs to configuration values for tig_buckaroo_predefined
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
-    const XPATH_REFUND_ENABLED      = 'tig_buckaroo/refund/enabled';
-    const XPATH_REFUND_ALLOW_PUSH   = 'tig_buckaroo/refund/allow_push';
+    protected $configProviderFactory;
 
     /**
-     * {@inheritdoc}
+     * Class constructor
+     *
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
-    public function getConfig($store = null)
-    {
-        $config = [
-            'enabled' => $this->getEnabled($store),
-            'allow_push' => $this->getAllowPush($store),
-        ];
-        return $config;
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+    ) {
+        $this->configProviderFactory = $configProviderFactory;
     }
 
+    /**
+     * Options getter
+     *
+     * @return array
+     */
+    public function toOptionArray()
+    {
+        $options = [];
+        $options[] = array('value' => '', 'label' => __('Do not log debug information'));
+        $options[] = array('value' => 'log', 'label' => 'Log to file');
+        $options[] = array('value' => 'mail', 'label' => 'Mail to debug email');
+        $options[] = array('value' => 'maillog', 'label' => 'Log to file and mail to debug email');
+        return $options;
+    }
 }

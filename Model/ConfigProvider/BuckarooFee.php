@@ -66,9 +66,11 @@ class BuckarooFee implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Retrieve associated array of checkout configuration
      *
+     * @param null $store
+     *
      * @return array
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         return [
             'buckarooFee' => [
