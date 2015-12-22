@@ -41,7 +41,7 @@
 
 @media screen and (max-width: 480px) {
     .tig_buckaroo_image_title:after {
-        display:none;
+        /*display:none;*/
     }
 }
 
