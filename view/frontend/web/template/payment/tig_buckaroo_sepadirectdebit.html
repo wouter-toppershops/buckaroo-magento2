@@ -4,7 +4,7 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span class="tig_buckaroo_image_title" data-bind="text: getTitle()"></span></label>
     </div>
 
     <div class="payment-method-content">
@@ -12,7 +12,7 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <div class="payment-method-2col" >
+        <div class="payment-method-second-col billing-address-form" >
             <form data-hasrequired="* Required Fields" data-bind="mageInit: { 'validation': [] }">
                 <fieldset id="" class="fieldset payment">
 
@@ -20,16 +20,17 @@
                         <label for="bankaccountholder" class="label">
                             <span data-bind="i18n: 'Bank account holder'"> </span>
                         </label>
-
-                        <input id="bankaccountholder" class="input-text field" type="text"
-                               data-bind="
-                                value: bankaccountholder,
-                                valueUpdate: 'keyup',
-                                attr: {
-                                    'data-validate': JSON.stringify({ 'required': true, 'min-words': minimumWords() })
-                                }
-                               "
-                               name="payment[tig_buckaroo_sepadirectdebit][customer_account_name]">
+                        <div class="control">
+                            <input id="bankaccountholder" class="input-text field" type="text"
+                                   data-bind="
+                                    value: bankaccountholder,
+                                    valueUpdate: 'keyup',
+                                    attr: {
+                                        'data-validate': JSON.stringify({ 'required': true, 'min-words': minimumWords() })
+                                    }
+                                   "
+                                   name="payment[tig_buckaroo_sepadirectdebit][customer_account_name]">
+                        </div>
                     </div>
 
                     <div class="field required">
@@ -37,16 +38,17 @@
                         <label for="bankaccountnumber" class="label">
                             <span data-bind="i18n: 'Bank account number'"> </span>
                         </label>
-
-                        <input id="bankaccountnumber" class="input-text field" type="text"
-                               data-bind="
-                                value: bankaccountnumber,
-                                valueUpdate: 'keyup',
-                                attr: {
-                                    'data-validate': JSON.stringify({ 'required': true, 'IBAN':true })
-                                }
-                               "
-                               name="payment[tig_buckaroo_sepadirectdebit][customer_iban]">
+                        <div class="control">
+                            <input id="bankaccountnumber" class="input-text field" type="text"
+                                   data-bind="
+                                    value: bankaccountnumber,
+                                    valueUpdate: 'keyup',
+                                    attr: {
+                                        'data-validate': JSON.stringify({ 'required': true, 'IBAN':true })
+                                    }
+                                   "
+                                   name="payment[tig_buckaroo_sepadirectdebit][customer_iban]">
+                        </div>
                         <!-- /ko -->
                     </div>
 
@@ -55,16 +57,17 @@
                         <label for="bicnumber" class="label">
                             <span data-bind="i18n: 'BIC Number'"> </span>
                         </label>
-
-                        <input id="bicnumber" class="input-text field" type="text"
-                               data-bind="
-                                value: bicnumber,
-                                valueUpdate: 'keyup',
-                                attr: {
-                                    'data-validate': JSON.stringify({ 'required': true, 'BIC':true })
-                                }
-                               "
-                               name="payment[tig_buckaroo_sepadirectdebit][customer_bic]">
+                        <div class="control">
+                            <input id="bicnumber" class="input-text field" type="text"
+                                   data-bind="
+                                    value: bicnumber,
+                                    valueUpdate: 'keyup',
+                                    attr: {
+                                        'data-validate': JSON.stringify({ 'required': true, 'BIC':true })
+                                    }
+                                   "
+                                   name="payment[tig_buckaroo_sepadirectdebit][customer_bic]">
+                        </div>
                         <!-- /ko -->
                     </div>
 

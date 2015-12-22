@@ -4,7 +4,7 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span class="tig_buckaroo_image_title" data-bind="text: getTitle()"></span></label>
     </div>
 
     <div class="payment-method-content">
@@ -12,7 +12,7 @@
         <!-- ko template: getTemplate() --><!-- /ko -->
         <!--/ko-->
 
-        <div class="payment-method-2col" >
+        <div class="payment-method-second-col billing-address-form">
             <form data-hasrequired="* Required Fields" data-bind="mageInit: { 'validation': [] }">
                 <fieldset id="" class="fieldset payment">
 
@@ -21,15 +21,17 @@
                             <span data-bind="i18n: 'BIC Number'"> </span>
 
                         </label>
-                        <input id="bicnumber" class="input-text field _error" type="text"
-                               data-bind="
-                                value: bicnumber,
-                                valueUpdate: 'keyup',
-                                attr: {
-                                    'data-validate': JSON.stringify({ 'required': true,  'BIC':true  })
-                                }
-                               "
-                               name="payment[tig_buckaroo_giropay][customer_bic]">
+                        <div class="control">
+                            <input id="bicnumber" class="input-text field _error" type="text"
+                                   data-bind="
+                                    value: bicnumber,
+                                    valueUpdate: 'keyup',
+                                    attr: {
+                                        'data-validate': JSON.stringify({ 'required': true,  'BIC':true  })
+                                    }
+                                   "
+                                   name="payment[tig_buckaroo_giropay][customer_bic]">
+                        </div>
                     </div>
 
 
