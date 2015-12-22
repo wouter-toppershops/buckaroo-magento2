@@ -64,7 +64,7 @@ class BuckarooFee implements \Magento\Checkout\Model\ConfigProviderInterface
     }
 
     /**
-     * Retrieve assoc array of checkout configuration
+     * Retrieve associated array of checkout configuration
      *
      * @return array
      */

@@ -170,10 +170,10 @@ class Push implements ValidatorInterface
             $signatureString .= $brq_key. '=' . $value;
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-        $statesConfig = $this->configProviderFactory->get('states');
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
 
-        $digitalSignature = $statesConfig->getDigitalSignature();
+        $digitalSignature = $accountConfig->getDigitalSignature();
 
         $signatureString .= $digitalSignature;
 

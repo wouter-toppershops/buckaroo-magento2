@@ -64,8 +64,6 @@ utpwIl+bFlxvC64V
 KEY;
 
     /**
-     * PublicKey constructor.
-     *
      * @param null $publicKey
      */
     public function __construct($publicKey = null)
@@ -76,12 +74,25 @@ KEY;
     }
 
     /**
-     * Retrieve assoc array of configuration
+     * Return associated array of configuration
      *
      * @return array
      */
     public function getConfig()
     {
-        return ['public_key' => $this->publicKey];
+        $config = [
+            'public_key' => $this->getPublicKey(),
+        ];
+        return $config;
+    }
+
+    /**
+     * Return public key
+     *
+     * @return null|string
+     */
+    public function getPublicKey()
+    {
+        return $this->publicKey;
     }
 }

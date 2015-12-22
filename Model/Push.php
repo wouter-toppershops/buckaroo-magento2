@@ -181,7 +181,7 @@ class Push implements PushInterface
             return false;
             //If the signature is valid but the order cant be updated, try to add a notification to the order comments.
         } elseif ($validSignature && !$canUpdateOrder) {
-            $this->setOrderNotifactionNote($response['message']);
+            $this->setOrderNotificationNote($response['message']);
             return false;
         }
         //Make sure the transactions key is set.
@@ -217,25 +217,25 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-                $newStatus = $statesConfig->getStateFailed();
+                $newStatus = $statesConfig->getOrderStateFailed();
                 $this->processFailedPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $newStatus = $statesConfig->getStateSuccess();
+                $newStatus = $statesConfig->getOrderStateSuccess();
                 $this->processSucceededPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
-                $this->setOrderNotifactionNote($response['message']);
+                $this->setOrderNotificationNote($response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $newStatus = $statesConfig->getStatePendingpayment();
+                $newStatus = $statesConfig->getOrderStatePending();
                 $this->processPendingPaymentPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $newStatus = $statesConfig->getIncorrectPayment();
+                $newStatus = $statesConfig->getOrderStateIncorrect();
                 $this->processIncorrectPaymentPush($newStatus, $response['message']);
                 break;
         }
@@ -300,10 +300,10 @@ class Push implements PushInterface
         // Create description
         $description = ''.$message;
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-        $statesConfig = $this->configProviderFactory->get('states');
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
 
-        $buckarooCancelOnFailed = $statesConfig->getCancelOnFailure();
+        $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
 
         if ($this->order->canCancel() && $buckarooCancelOnFailed) {
             $this->order->cancel()->save();
@@ -383,13 +383,13 @@ class Push implements PushInterface
     }
 
     /**
-     * Try to add an notifaction note to the order comments.
-     * @todo make note available trought translations.
-     * @todo What will be the notifactionnote ? -> Create an class that would create the note dynamic
+     * Try to add an notification note to the order comments.
+     * @todo make note available through translations.
+     * @todo What will be the notification ? -> Create a class that would create the note dynamic
      *
      * @param $message
      */
-    protected function setOrderNotifactionNote($message)
+    protected function setOrderNotificationNote($message)
     {
         $note = 'Buckaroo attempted to update this order, but failed : ' .$message;
         try {
@@ -432,7 +432,7 @@ class Push implements PushInterface
 
         $this->order->save();
 
-        //Only when the order can be invoiced and has not been invoiced before.
+        // Only when the order can be invoiced and has not been invoiced before.
         if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
             $this->addTransactionData();
 

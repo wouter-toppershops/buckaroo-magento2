@@ -44,7 +44,7 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Xpath to the 'certificate_upload' setting.
      */
-    const XPATH_CERTIFICATE_ID = 'payment/tig_buckaroo_account/certificate_file';
+    const XPATH_CERTIFICATE_ID = 'tig_buckaroo/account/certificate_file';
 
     /**
      * @var \TIG\Buckaroo\Model\Certificate
@@ -52,10 +52,10 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     protected $certificate;
 
     /**
-     * PrivateKey constructor.
-     *
      * @param \TIG\Buckaroo\Model\Certificate                    $certificate
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     *
+     * @todo rewrite to use the configProvider pattern
      */
     public function __construct(
         \TIG\Buckaroo\Model\Certificate $certificate,
@@ -78,12 +78,25 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     }
 
     /**
-     * Retrieve assoc array of configuration
+     * Return associated array of configuration
      *
      * @return array
      */
     public function getConfig()
     {
-        return ['private_key' => $this->certificate->getCertificate()];
+        $config = [
+            'private_key' => $this->getPrivateKey(),
+        ];
+        return $config;
+    }
+
+    /**
+     * Return private key from certificate
+     *
+     * @return string
+     */
+    public function getPrivateKey()
+    {
+        return $this->certificate->getCertificate();
     }
 }

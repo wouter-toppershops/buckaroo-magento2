@@ -41,15 +41,18 @@ namespace TIG\Buckaroo\Model\ConfigProvider;
 
 use \TIG\Buckaroo\Model\ConfigProvider;
 
+/**
+ * @method mixed getLocationLiveWeb()
+ * @method mixed getLocationTestWeb()
+ */
 class Predefined extends AbstractConfigProvider
 {
 
     /**
      * XPATHs to configuration values for tig_buckaroo_predefined
      */
-    const XPATH_PREDEFINED_LOCATIONS        = 'tig_buckaroo_predefined/locations';
-    const XPATH_PREDEFINED_LOCATIONS_LIVE   = 'tig_buckaroo_predefined/locations/live';
-    const XPATH_PREDEFINED_LOCATIONS_TEST   = 'tig_buckaroo_predefined/locations/test';
+    const XPATH_PREDEFINED_LOCATION_LIVE_WEB   = 'tig_buckaroo/predefined/location_live_web';
+    const XPATH_PREDEFINED_LOCATION_TEST_WEB   = 'tig_buckaroo/predefined/location_test_web';
 
     /**
      * @return array|void
@@ -57,39 +60,10 @@ class Predefined extends AbstractConfigProvider
     public function getConfig()
     {
         $config = [
-            'locations' => $this->getLocations(),
+            'location_live_web' => $this->getLocationLiveWeb(),
+            'location_test_web' => $this->getLocationTestWeb(),
         ];
         return $config;
-    }
-
-    /**
-     * Returns the config value for predefined/locations
-     *
-     * @return mixed
-     */
-    public function getLocations()
-    {
-        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS);
-    }
-
-    /**
-     * Returns the config value for predefined/locations/live
-     *
-     * @return mixed
-     */
-    public function getLocationsLive()
-    {
-        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_LIVE);
-    }
-
-    /**
-     * Returns the config value for predefined/locations/test
-     *
-     * @return mixed
-     */
-    public function getLocationsTest()
-    {
-        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_TEST);
     }
 
 }
