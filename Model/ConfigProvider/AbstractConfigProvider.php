@@ -72,6 +72,15 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
          * By default, assume there's no constant
          */
         $constant = null;
+
+        /**
+         * If there's a param, it has to be either a Store object or a store id. Either way, we just pass it on as is
+         */
+        $store = null;
+        if (isset($params[0])) {
+            $store = $params[0];
+        }
+
         /**
          * If $method starts with get, we've got a contender
          */
@@ -102,17 +111,20 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
             $constant = strtoupper('static::' . $this->getXpathPrefix() . $className . $camelScored);
         }
         if ($constant && defined($constant) && !empty(constant($constant))) {
-            return $this->getConfigFromXpath(constant($constant));
+            return $this->getConfigFromXpath(constant($constant), $store);
         }
         return null;
     }
 
     /**
-     * {@inheritdoc}
+     * Get all config in associated array
+     *
+     * @param null $store
+     * @return array
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
-        return false;
+        return [];
     }
 
     /**
@@ -139,15 +151,19 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     }
 
     /**
-     * Return the config value for the given Xpath
+     * Return the config value for the given Xpath (optionally with $store)
+     *
+     * @param      $xpath
+     * @param null $store
      *
      * @return mixed
      */
-    protected function getConfigFromXpath($xpath)
+    protected function getConfigFromXpath($xpath, $store = null)
     {
         return $this->scopeConfig->getValue(
             $xpath,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+            $store
         );
     }
 

@@ -78,14 +78,12 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     }
 
     /**
-     * Return associated array of configuration
-     *
-     * @return array
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         $config = [
-            'private_key' => $this->getPrivateKey(),
+            'private_key' => $this->getPrivateKey($store),
         ];
         return $config;
     }
@@ -93,9 +91,11 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Return private key from certificate
      *
+     * @param null $store
+     *
      * @return string
      */
-    public function getPrivateKey()
+    public function getPrivateKey($store = null)
     {
         return $this->certificate->getCertificate();
     }

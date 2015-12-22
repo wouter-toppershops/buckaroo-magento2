@@ -55,13 +55,13 @@ class Refund extends AbstractConfigProvider
     const XPATH_REFUND_ALLOW_PUSH   = 'tig_buckaroo/refund/allow_push';
 
     /**
-     * @return array|void
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         $config = [
-            'enabled' => $this->getEnabled(),
-            'allow_push' => $this->getAllowPush(),
+            'enabled' => $this->getEnabled($store),
+            'allow_push' => $this->getAllowPush($store),
         ];
         return $config;
     }

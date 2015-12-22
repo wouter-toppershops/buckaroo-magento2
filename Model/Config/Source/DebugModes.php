@@ -25,56 +25,50 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Config\Source;
 
-namespace TIG\Buckaroo\Block\Adminhtml\Sales\Order\Creditmemo;
-
-class Fee extends \Magento\Backend\Block\Template
+class DebugModes implements \Magento\Framework\Option\ArrayInterface
 {
-    /**
-     * Core registry
-     *
-     * @var \Magento\Framework\Registry
-     */
-    protected $coreRegistry = null;
 
     /**
-     * @param \Magento\Backend\Block\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param array $data
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
+    protected $configProviderFactory;
+
+    /**
+     * Class constructor
+     *
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
     public function __construct(
-        \Magento\Backend\Block\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        array $data = []
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->coreRegistry = $registry;
-        parent::__construct($context, $data);
+        $this->configProviderFactory = $configProviderFactory;
     }
 
     /**
-     * Getter
+     * Options getter
      *
-     * @return \Magento\Sales\Model\Order\Creditmemo
+     * @return array
      */
-    public function getCreditmemo()
+    public function toOptionArray()
     {
-        return $this->coreRegistry->registry('current_creditmemo');
-    }
-
-    public function getBuckarooFeeToRefund()
-    {
-        return $this->getCreditmemo()->getOrder()->getBuckarooFeeInvoiced()
-            - $this->getCreditmemo()->getOrder()->getBuckarooFeeRefunded();
+        $options = [];
+        $options[] = array('value' => '', 'label' => __('Do not log debug information'));
+        $options[] = array('value' => 'log', 'label' => 'Log to file');
+        $options[] = array('value' => 'mail', 'label' => 'Mail to debug email');
+        $options[] = array('value' => 'maillog', 'label' => 'Log to file and mail to debug email');
+        return $options;
     }
 }

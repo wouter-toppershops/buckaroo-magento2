@@ -33,7 +33,7 @@ define(
                  * @returns {Boolean}
                  */
                 displayBothprices: function () {
-                    return !!buckarooFeeConfig.displayBuckarooFeeBothPrices;
+                    return !!buckarooFeeConfig.cart.displayBuckarooFeeBothPrices;
                 },
 
                 /**
@@ -41,7 +41,7 @@ define(
                  * @returns {Boolean}
                  */
                 displayInclTaxPrice: function () {
-                    return !!buckarooFeeConfig.displayBuckarooFeeInclTax;
+                    return !!buckarooFeeConfig.cart.displayBuckarooFeeInclTax;
                 }
             };
         };

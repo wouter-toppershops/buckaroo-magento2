@@ -61,16 +61,16 @@ class States extends AbstractConfigProvider
     const XPATH_STATES_ORDER_STATE_INCORRECT    = 'tig_buckaroo/states/order_state_incorrect';
 
     /**
-     * @return array|void
+     * {@inheritdoc}
      */
-    public function getConfig()
+    public function getConfig($store = null)
     {
         $config = [
-            'order_state_new'       => $this->getOrderStateNew(),
-            'order_state_pending'   => $this->getOrderStatePending(),
-            'order_state_success'   => $this->getOrderStateSuccess(),
-            'order_state_failed'    => $this->getOrderStateFailed(),
-            'order_state_incorrect' => $this->getOrderStateSuccess(),
+            'order_state_new'       => $this->getOrderStateNew($store),
+            'order_state_pending'   => $this->getOrderStatePending($store),
+            'order_state_success'   => $this->getOrderStateSuccess($store),
+            'order_state_failed'    => $this->getOrderStateFailed($store),
+            'order_state_incorrect' => $this->getOrderStateSuccess($store),
         ];
         return $config;
     }

@@ -52,6 +52,12 @@ class Order extends AbstractTransactionBuilder
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
 
+        $ip = $order->getRemoteIp();
+        $ip = $order->getRemoteIp();
+        if (!$ip) {
+            $ip = $_SERVER['SERVER_ADDR'];
+        }
+
         $body = [
             'test' => '1',
             'Currency' => $order->getOrderCurrencyCode(),
@@ -61,8 +67,8 @@ class Order extends AbstractTransactionBuilder
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
             'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
+                '_' => $ip,
+                'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
             ],
             'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
             'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),

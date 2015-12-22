@@ -36,68 +36,61 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Test\Unit\Observer;
+namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider;
 
-use Magento\Framework\Event\Observer;
+use Magento\Store\Model\ScopeInterface;
 use Mockery as m;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use TIG\Buckaroo\Test\BaseTest;
-use TIG\Buckaroo\Observer\SetBuckarooFeeToRefund;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
 
-class SetBuckarooFeeToRefundTest extends BaseTest
+class AccountTest extends  BaseTest
 {
     /**
-     * @var SetBuckarooFeeToRefund
+     * @var Account
      */
     protected $object;
 
     /**
-     * @var m\MockInterface|Observer
+     * @var ScopeConfigInterface|m\MockInterface
      */
-    protected $observer;
+    protected $scopeConfig;
 
     /**
-     * @var m\MockInterface|Observer
-     */
-    protected $creditmemo;
-
-    /**
-     * Setup the basic mock object.
+     * Setup the mock objects.
      */
     public function setUp()
     {
         parent::setUp();
 
-        $this->object = $this->objectManagerHelper->getObject(SetBuckarooFeeToRefund::class);
-        $this->observer = m::mock(Observer::class);
-
-        $this->creditmemo = m::mock();
-        $this->observer->shouldReceive('getEvent')->twice()->andReturnSelf();
-        $this->observer->shouldReceive('getCreditmemo')->once()->andReturn($this->creditmemo);
-    }
-
-    /**
-     * Test the happy path. No Buckaroo Payment Fee
-     */
-    public function testInvoiceRegisterHappyPath()
-    {
-        $this->observer->shouldReceive('getInput')->once()->andReturnNull();
-
-        $this->object->execute($this->observer);
-    }
-
-    /**
-     * Test the flow when there are reward points.
-     */
-    public function testInvoiceRegisterWithRewardPoints()
-    {
-        $this->observer->shouldReceive('getInput')->once()->andReturn([
-            'refund_reward_points' => 30,
-            'refund_reward_points_enable' => true,
+        $this->scopeConfig = m::mock(ScopeConfigInterface::class);
+        $this->object = $this->objectManagerHelper->getObject(Account::class, [
+            'scopeConfig' => $this->scopeConfig,
         ]);
+    }
 
-        $this->creditmemo->shouldReceive('getBuckarooFee')->andReturn(10);
-        $this->creditmemo->shouldReceive('setBuckarooFee')->once()->with(10);
+    /**
+     * Test the getConfig function.
+     */
+    public function testGetConfig()
+    {
+        $account = new \ReflectionClass(Account::class);
+        $classConstants = $account->getConstants();
 
-        $this->object->execute($this->observer);
+        foreach($classConstants as $constant => $value)
+        {
+            $this->scopeConfig
+                ->shouldReceive('getValue')
+                ->once()
+                ->with($value, ScopeInterface::SCOPE_STORE, NULL)
+                ->andReturn($constant);
+        }
+
+        $results = $this->object->getConfig();
+
+        foreach($results as $name => $value)
+        {
+            $this->assertEquals('XPATH_ACCOUNT_' . strtoupper($name), $value);
+        }
     }
 }

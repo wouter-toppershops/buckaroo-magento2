@@ -38,8 +38,10 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="adminhtml_sales_order_creditmemo_register_before">
-        <observer name="tig_buckaroo_fee" instance="TIG\Buckaroo\Observer\SetBuckarooFeeToRefund" />
-    </event>
-</config>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <body>
+        <referenceBlock name="creditmemo_totals">
+            <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Totals" name="buckaroo_fee"/>
+        </referenceBlock>
+    </body>
+</page>
