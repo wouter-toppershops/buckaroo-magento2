@@ -170,11 +170,7 @@ class Push implements PushInterface
         $canUpdateOrder = $this->canUpdateOrderStatus();
         //Check if the push is a refund request.
         if (isset($this->postData['brq_amount_credit']) && $this->order->hasInvoices()) {
-            $refund = $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
-            if ($refund) {
-                return true;
-            }
-            return false;
+            return $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
         }
         //Last validation before push can be completed
         if (!$validSignature) {
@@ -298,7 +294,7 @@ class Push implements PushInterface
     public function processFailedPush($newStatus, $message)
     {
         // Create description
-        $description = ''.$message;
+        $description = 'Payment push status : '.$message;
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
         $statesConfig = $this->configProviderFactory->get('states');
@@ -327,7 +323,7 @@ class Push implements PushInterface
         }
 
         // Create description
-        $description = ''.$message;
+        $description = 'Payment push status : '.$message;
 
         // Create invoice
         $this->saveInvoice();
@@ -375,7 +371,7 @@ class Push implements PushInterface
      */
     public function processPendingPaymentPush($newStatus, $message)
     {
-        $description = ''.$message;
+        $description = 'Payment push status : '.$message;
 
         $this->updateOrderStatus(Order::STATE_NEW, $newStatus, $description);
 
