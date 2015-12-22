@@ -33,63 +33,44 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2014 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use \TIG\Buckaroo\Model\ConfigProvider;
+use \Magento\Checkout\Model\ConfigProviderInterface;
 
-class Predefined extends AbstractConfigProvider
+abstract class AbstractConfigProvider implements ConfigProviderInterface
 {
 
     /**
-     * XPATHs to configuration values for tig_buckaroo_predefined
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
-    const XPATH_PREDEFINED_LOCATIONS        = 'tig_buckaroo_predefined/locations';
-    const XPATH_PREDEFINED_LOCATIONS_LIVE   = 'tig_buckaroo_predefined/locations/live';
-    const XPATH_PREDEFINED_LOCATIONS_TEST   = 'tig_buckaroo_predefined/locations/test';
+    public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->scopeConfig = $scopeConfig;
+    }
 
     /**
-     * @return array|void
+     * {@inheritdoc}
      */
     public function getConfig()
     {
-        $config = [
-            'locations' => $this->getLocations(),
-        ];
-        return $config;
+        return false;
     }
 
     /**
-     * Returns the config value for predefined/locations
+     * Returns the config value for the given Xpath
      *
      * @return mixed
      */
-    public function getLocations()
+    protected function getConfigFromXpath($xpath)
     {
-        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS);
-    }
-
-    /**
-     * Returns the config value for predefined/locations/live
-     *
-     * @return mixed
-     */
-    public function getLocationsLive()
-    {
-        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_LIVE);
-    }
-
-    /**
-     * Returns the config value for predefined/locations/test
-     *
-     * @return mixed
-     */
-    public function getLocationsTest()
-    {
-        return $this->getConfigFromXpath(self::XPATH_PREDEFINED_LOCATIONS_TEST);
+        return $this->scopeConfig->getValue(
+            $xpath,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
     }
 
 }
