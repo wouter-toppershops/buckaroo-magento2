@@ -53,6 +53,7 @@ class Order extends AbstractTransactionBuilder
         $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
+        $ip = $order->getRemoteIp();
         if (!$ip) {
             $ip = $_SERVER['SERVER_ADDR'];
         }
