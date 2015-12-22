@@ -66,7 +66,7 @@ class BankFields extends \Magento\Backend\Block\Template
      */
     public function getExtraFields()
     {
-        $extraFields = array();
+        $extraFields = [];
         $paymentMethod = $this->getPaymentMethod();
 
         /** If no payment method is found, return the empty array. */

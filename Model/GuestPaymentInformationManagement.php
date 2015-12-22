@@ -103,7 +103,7 @@ class GuestPaymentInformationManagement
         $this->logger->debug(print_r($this->registry->registry('buckaroo_response'), true));
         $this->logger->debug('-------------------------------------------------');
 
-        $response = array();
+        $response = [];
         if ($this->registry && $this->registry->registry('buckaroo_response')) {
             $response = $this->registry->registry('buckaroo_response')[0];
         }

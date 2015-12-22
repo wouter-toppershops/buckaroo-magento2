@@ -78,11 +78,11 @@ class StatusesPending implements \Magento\Framework\Option\ArrayInterface
 
         $statuses = $this->_orderConfig->getStateStatuses($state);
 
-        $options = array();
-        $options[] = array('value' => '', 'label' => __('-- Please Select --'));
+        $options = [];
+        $options[] = ['value' => '', 'label' => __('-- Please Select --')];
 
         foreach ($statuses as $value => $label) {
-            $options[] = array('value' => $value, 'label' => $label);
+            $options[] = ['value' => $value, 'label' => $label];
         }
 
         return $options;

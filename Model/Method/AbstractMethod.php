@@ -807,7 +807,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $extraFields = $this->refundFieldsFactory->get($paymentMethodCode);
 
-        $services = array();
+        $services = [];
 
         /**
          * If extra fields are found, attach these as 'RequestParameter' to the services.

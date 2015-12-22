@@ -65,24 +65,24 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
     {
         $certificateData = $this->getCertificateData();
 
-        $options = array();
+        $options = [];
 
         if (count($certificateData) <= 0) {
-            $options[] = array(
+            $options[] = [
                 'value' => '',
                 'label' => __('You have not yet uploaded any certificate files')
-            );
+            ];
 
             return $options;
         }
 
-        $options[] = array('value' => '', 'label' => __('No certificate selected'));
+        $options[] = ['value' => '', 'label' => __('No certificate selected')];
 
         foreach ($certificateData as $index => $data) {
-            $options[] = array(
+            $options[] = [
                 'value' => $data['entity_id'],
                 'label' => $data['name'] . ' (' . $data['created_at'] . ')'
-            );
+            ];
         }
 
         return $options;

@@ -112,7 +112,7 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
 
         //retrieve the signature value
         $sigatureRegex  = "#<SignatureValue>(.*)</SignatureValue>#ims";
-        $signatureArray = array();
+        $signatureArray = [];
         preg_match_all($sigatureRegex, $responseString, $signatureArray);
 
         // decode the signature
@@ -168,10 +168,10 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
 
         //retrieve the signature value
         $digestRegex = "#<DigestValue>(.*?)</DigestValue>#ims";
-        $digestArray = array();
+        $digestArray = [];
         preg_match_all($digestRegex, $responseString, $digestArray);
 
-        $digestValues = array();
+        $digestValues = [];
         foreach ($digestArray[1] as $digest) {
             $digestValues[] = $digest;
         }
