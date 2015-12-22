@@ -44,19 +44,22 @@ use \TIG\Buckaroo\Model\Config\Source\Display\Type as DisplayType;
 class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
 {
     /**
-     * Buckaroo fee tax class
+     * @var \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee
      */
-    const XML_PATH_TAX_CLASS = 'tax/classes/buckaroo_fee_tax_class';
+    protected $configProvider;
 
     /**
-     * Shopping cart display settings
+     * @param \Magento\Framework\App\Helper\Context          $context
+     * @param \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee $configProvider
      */
-    const XML_PATH_PRICE_DISPLAY_CART = 'tax/cart_display/buckaroo_fee';
+    public function __construct(
+        \Magento\Framework\App\Helper\Context $context,
+        \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee $configProvider
+    ) {
+        parent::__construct($context);
 
-    /**
-     * Sales display settings
-     */
-    const XML_PATH_PRICE_DISPLAY_SALES = 'tax/sales_display/buckaroo_fee';
+        $this->configProvider = $configProvider;
+    }
 
     /**
      * Return totals of data object
@@ -87,6 +90,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
          */
         if ($displayBothPrices || $displayIncludeTaxPrice) {
             if ($displayBothPrices) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $this->addTotalToTotals(
                     $totals,
                     'buckaroo_fee_excl',
@@ -95,6 +99,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                     'Buckaroo Fee (Excl. Tax)'
                 );
             }
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->addTotalToTotals(
                 $totals,
                 'buckaroo_fee_incl',
@@ -103,6 +108,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                 'Buckaroo Fee (Incl. Tax)'
             );
         } else {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->addTotalToTotals(
                 $totals,
                 'buckaroo_fee',
@@ -123,11 +129,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function displayCartIncludeTaxPrice($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getPriceDisplayCart($store);
+
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
         $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
     }
@@ -140,11 +143,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function displayCartExcludeTaxPrice($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getPriceDisplayCart($store);
+
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
     }
 
@@ -156,11 +156,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function displayCartBothPrices($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_CART,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getPriceDisplayCart($store);
+
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
     }
 
@@ -172,11 +169,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function displaySalesIncludeTaxPrice($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getPriceDisplaySales($store);
+
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
         $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
     }
@@ -189,11 +183,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function displaySalesExcludeTaxPrice($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getPriceDisplaySales($store);
+
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
     }
 
@@ -205,11 +196,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function displaySalesBothPrices($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_PRICE_DISPLAY_SALES,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getPriceDisplaySales($store);
+
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
     }
 
@@ -220,11 +208,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     public function getBuckarooFeeTaxClass($store = null)
     {
-        $configValue = $this->scopeConfig->getValue(
-            self::XML_PATH_TAX_CLASS,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            $store
-        );
+        $configValue = $this->configProvider->getTaxClass($store);
+
         return $configValue;
     }
 

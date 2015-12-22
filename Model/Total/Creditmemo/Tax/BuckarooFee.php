@@ -36,45 +36,34 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Total\Creditmemo\Tax;
 
-namespace TIG\Buckaroo\Model\Plugin;
-
-class BuckarooFeeRefund
+class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTotal
 {
     /**
-     * Reward points refund after creditmemo creation
+     * Collect totals for credit memo
      *
-     * @param \Magento\Sales\Model\ResourceModel\Order\Creditmemo $subject
-     * @param \Closure $proceed
-     * @param \Magento\Framework\Model\AbstractModel $object
-     * @return bool
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
+     * @return $this
      */
-    public function aroundSave(
-        \Magento\Sales\Model\ResourceModel\Order\Creditmemo $subject,
-        \Closure $proceed,
-        \Magento\Framework\Model\AbstractModel $object
-    ) {
-        /* @var $creditmemo \Magento\Sales\Model\Order\Creditmemo */
-        $creditmemo = $object;
-
-        /* @var $order \Magento\Sales\Model\Order */
+    public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
+    {
         $order = $creditmemo->getOrder();
 
         /** @noinspection PhpUndefinedMethodInspection */
-        if ($creditmemo->getBaseBuckarooFee()) {
+        if ($order->getBuckarooFeeBaseTaxAmountInvoiced() &&
+            $order->getBuckarooFeeBaseTaxAmountInvoiced() != $order->getBuckarooFeeBaseTaxAmountRefunded()
+        ) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBuckarooFeeRefunded(
-                $order->getBuckarooFeeRefunded() + $creditmemo->getBuckarooFee()
-            );
+            $order->setBuckarooFeeBaseTaxAmountRefunded($order->getBuckarooFeeBaseTaxAmountInvoiced());
             /** @noinspection PhpUndefinedMethodInspection */
-            $order->setBaseBuckarooFeeRefunded(
-                $order->getBaseBuckarooFeeRefunded() + $creditmemo->getBaseBuckarooFee()
-            );
+            $order->setBuckarooFeeTaxAmountRefunded($order->getBuckarooFeeTaxAmountInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $creditmemo->setBuckarooFeeBaseTaxAmount($order->getBuckarooFeeBaseTaxAmountInvoiced());
+            /** @noinspection PhpUndefinedMethodInspection */
+            $creditmemo->setBuckarooFeeTaxAmount($order->getBuckarooFeeTaxAmountInvoiced());
         }
 
-        $result = $proceed($object);
-
-        return $result;
+        return $this;
     }
 }

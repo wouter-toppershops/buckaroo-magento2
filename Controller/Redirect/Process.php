@@ -65,7 +65,18 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $cart;
 
     /**
-     * @param \Magento\Framework\App\Action\Context $context
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
+    protected $configProviderFactory;
+
+    /**
+     * @param \Magento\Framework\App\Action\Context      $context
+     * @param \TIG\Buckaroo\Helper\Data                  $helper
+     * @param \Magento\Checkout\Model\Cart               $cart
+     * @param \Magento\Sales\Model\Order                 $order
+     * @param \Magento\Quote\Model\Quote                 $quote
+     * @param \TIG\Buckaroo\Debug\Debugger               $debugger
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -73,14 +84,16 @@ class Process extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Sales\Model\Order $order,
         \Magento\Quote\Model\Quote $quote,
-        \TIG\Buckaroo\Debug\Debugger $debugger
+        \TIG\Buckaroo\Debug\Debugger $debugger,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         parent::__construct($context);
-        $this->helper   = $helper;
-        $this->cart     = $cart;
-        $this->order    = $order;
-        $this->quote    = $quote;
-        $this->debugger = $debugger;
+        $this->helper                   = $helper;
+        $this->cart                     = $cart;
+        $this->order                    = $order;
+        $this->quote                    = $quote;
+        $this->debugger                 = $debugger;
+        $this->configProviderFactory    = $configProviderFactory;
     }
 
     /**
