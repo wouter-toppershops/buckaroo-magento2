@@ -1,142 +1,192 @@
+/* ===================== Default styling ============================= */
+
 .payment-method,
 .payment-method-content,
 .payment-method-billing-address,
 .checkout-agreements-block,
-.actions-toolbar{ float: left; width: 100%; background:white; }
+.actions-toolbar{ clear:both; }
 
-/* ===================== Default styling ===================== */
-.checkout-payment-method .payment-method-content {
-    padding:0;
+
+.payment-method-second-col {
+    float:left; width: 100%; margin-bottom: 20px;
 }
 
-.payment-method-2col {
-    float:right;
-    width: 40%;
-    margin-left: 10%;
-}
-
-.tig_buckaroo_ideal .payment-method-billing-address,
-.tig_buckaroo_sepadirectdebit .payment-method-billing-address,
-.tig_buckaroo_creditcard .payment-method-billing-address,
-.tig_buckaroo_giropay .payment-method-billing-address{
-    float:left;
-    width: 50%;
-}
-
-@media screen and (max-width: 767px){
-    .tig_buckaroo_ideal .payment-method-billing-address,
-    .tig_buckaroo_sepadirectdebit .payment-method-billing-address,
-    .tig_buckaroo_creditcard .payment-method-billing-address,
-    .tig_buckaroo_giropay .payment-method-billing-address{
-        float:left;
-        width: 100%;
-    }
-}
-
-.payment-method-billing-address .actions-toolbar .primary {
-    margin :20px 0;
-}
-
-.actions-toolbar {
-    margin :20px 0;
-}
-
-@media screen and (max-width:767px){
-    .checkout-payment-method,
+@media screen and (min-width: 1200px ){
     .payment-method-content {
-        padding:0 20px;
-        box-sizing:border-box;
+         width: 100%; box-sizing:border-box;
     }
 
-    .payment-method-billing-address {
-        float:left;
-        width: 100%;
+    .tig_buckaroo_ideal .payment-method-second-col,
+    .tig_buckaroo_creditcard .payment-method-second-col,
+    .tig_buckaroo_giropay .payment-method-second-col,
+    .tig_buckaroo_mrcash .payment-method-second-col,
+    .tig_buckaroo_paypal .payment-method-second-col,
+    .tig_buckaroo_sofortbanking .payment-method-second-col,
+    .tig_buckaroo_transfer .payment-method-second-col,
+    .tig_buckaroo_sepadirectdebit .payment-method-second-col {
+        float:right; width: 35%; padding-left: 5%;
     }
 
-    .checkout-payment-method .payment-method-title {
-        padding: 15px 0;
+    .tig_buckaroo_ideal .payment-method-billing-address,
+    .tig_buckaroo_creditcard .payment-method-billing-address,
+    .tig_buckaroo_giropay .payment-method-billing-address,
+    .tig_buckaroo_mrcash .payment-method-billing-address,
+    .tig_buckaroo_paypal .payment-method-billing-address,
+    .tig_buckaroo_sofortbanking .payment-method-billing-address,
+    .tig_buckaroo_transfer .payment-method-billing-address,
+    .tig_buckaroo_sepadirectdebit .payment-method-billing-address {
+        float:left; width: 60%; clear:none;
     }
 }
 
-/* ===================== PAYPAL ===================== */
-.tig_buckaroo_paypal .button-paypal{
-    display:block;
-    width: auto;
+@media screen and (max-width: 480px) {
+    .tig_buckaroo_image_title:after {
+        display:none;
+    }
+}
+
+/* ===================== PAYPAL =============================== */
+
+.tig_buckaroo_paypal .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_paypal_title.png);
+    background-repeat: no-repeat;
+
+    float: right;
+    text-align: right;
+    margin-right: 10px;
+    margin-top: 0;
+    background-size: auto 20px;
+    width: 80px;
+    height: 20px;
+    content: ' ';
+}
+
+/* ===================== IDEAL ================================ */
+
+.tig_buckaroo_ideal .payment-method-second-col .bank-types{
+    float:left; width: 100%;
+}
+
+.tig_buckaroo_ideal .payment-method-second-col .bank-types-img{
+    vertical-align:middle;
+    margin-right:10px;
+}
+.tig_buckaroo_ideal .payment-method-second-col .bank-types-input{
+    margin-top:10px;
+}
+
+.tig_buckaroo_ideal .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_ideal_title.png);
+    background-repeat: no-repeat;
+
+    float: right;
+    text-align: right;
+    margin-right: 10px;
+    margin-top: 0;
+    background-size: auto 20px;
+    width: 25px;
+    height: 20px;
+    content: ' ';
+}
+
+/* ===================== CREDITCARD =========================== */
+
+.tig_buckaroo_creditcard .payment-method-second-col .card-types{
+    float:left; width: 100%;
+}
+.tig_buckaroo_creditcard .payment-method-second-col .card-types-img{
+    vertical-align:middle;
+    margin-right:10px;
+}
+.tig_buckaroo_creditcard .payment-method-second-col .card-types-input{
+    margin-top:10px;
+}
+
+.tig_buckaroo_creditcard .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_creditcard_title.png);
+    background-repeat: no-repeat;
+    margin-top: 0;
+
     float:right;
-
-    text-align:center;
-    background:#1979c3;
-    border: 1px solid #1979c3;
-    border-radius: 3px;
-    color: #ffffff;
-    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    font-weight: 600;
-    line-height: 2.2rem;
-    padding: 14px 17px;
-    font-size: 1.8rem;
+    text-align: right;
+    margin-right: 10px;
+    background-size: auto 20px;
+    width: 81px; height: 20px;
+    content: ' ';
 }
 
-.tig_buckaroo_paypal .button-paypal:hover {
-    background:#006bb4;
+/* ===================== TRANSFER ============================= */
+
+.tig_buckaroo_sepadirectdebit .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_sepa_title.png);
+    background-repeat: no-repeat;
+    margin-top: 0;
+
+    float:right;
+    text-align: right;
+    margin-right: 10px;
+    background-size: auto 20px;
+    width: 56px; height: 20px;
+    content: ' ';
 }
 
-@media screen and (max-width:767px) {
-    .tig_buckaroo_paypal .button-paypal {
-        width :100%;
-    }
+
+/* ===================== SEPA DIRECT DEBIT ==================== */
+
+.tig_buckaroo_transfer .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_transfer_title.png);
+    background-repeat: no-repeat;
+    margin-top: 0;
+
+    float:right;
+    text-align: right;
+    margin-right: 10px;
+    background-size: auto 20px;
+    width: 56px; height: 20px;
+    content: ' ';
 }
 
-/* ===================== IDEAL ===================== */
-.tig_buckaroo_ideal .payment-method-2col .bank-types{
-    float:left; width: 100%;
-}
-.tig_buckaroo_ideal .payment-method-2col .bank-types-img{
-    vertical-align:middle;
-    margin-right:10px;
-}
-.tig_buckaroo_ideal .payment-method-2col .bank-types-input{
-    margin-top:10px;
+/* ===================== MR CASH ============================== */
+
+.tig_buckaroo_mrcash .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_mrcash_title.png);
+    background-repeat: no-repeat;
+    margin-top: 0;
+
+    float:right;
+    text-align: right;
+    margin-right: 10px;
+    background-size: auto 20px;
+    width: 33px; height: 20px;
+    content: ' ';
 }
 
-@media screen and (max-width:767px){
-    .tig_buckaroo_ideal .payment-method-2col {
-        float:left;
-        width: 100%;
-        margin:0 0 20px 0;
-    }
-}
-/* ===================== SEPA DIRECT DEBIT ===================== */
+/* ===================== SOFORT BANKING ======================= */
 
-@media screen and (max-width:767px) {
-    .tig_buckaroo_sepadirectdebit .payment-method-2col {
-        float :left; width :100%; margin-left: 0; margin-bottom: 20px; max-width:500px;
-    }
-}
+.tig_buckaroo_sofortbanking .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_sofort_title.png);
+    background-repeat: no-repeat;
+    margin-top: 0;
 
-/* ===================== CREDITCARD ===================== */
-.tig_buckaroo_creditcard .payment-method-2col .card-types{
-    float:left; width: 100%;
-}
-.tig_buckaroo_creditcard .payment-method-2col .card-types-img{
-    vertical-align:middle;
-    margin-right:10px;
-}
-.tig_buckaroo_creditcard .payment-method-2col .card-types-input{
-    margin-top:10px;
+    float:right;
+    text-align: right;
+    margin-right: 10px;
+    background-size: auto 20px;
+    width: 65px; height: 20px;
+    content: ' ';
 }
 
-@media screen and (max-width:767px){
-    .tig_buckaroo_creditcard .payment-method-2col {
-        float:left;
-        width: 100%;
-        margin:0 0 20px 0;
-    }
-}
+/* ===================== GIROPAY ============================== */
 
-/* ===================== GIROPAY ===================== */
+.tig_buckaroo_giropay .tig_buckaroo_image_title:after {
+    background-image: url(../images/tig_buckaroo_giropay_title.png);
+    background-repeat: no-repeat;
+    margin-top: 0;
 
-@media screen and (max-width:767px) {
-    .tig_buckaroo_giropay .payment-method-2col {
-        float :left; width :100%; margin-left: 0; margin-bottom: 20px; max-width:500px;
-    }
+    float:right;
+    text-align: right;
+    margin-right: 10px;
+    background-size: auto 20px;
+    width: 46px; height: 20px;
+    content: ' ';
 }
