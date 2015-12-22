@@ -39,9 +39,9 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use \Magento\Checkout\Model\ConfigProviderInterface;
+use \TIG\Buckaroo\Model\ConfigProvider;
 
-class Account implements ConfigProviderInterface
+class Account extends AbstractConfigProvider
 {
 
     /**
@@ -52,15 +52,6 @@ class Account implements ConfigProviderInterface
     const XPATH_ACCOUNT_MERCHANT_KEY        = 'payment/tig_buckaroo_account/merchant_key';
     const XPATH_ACCOUNT_TRANSACTION_LABEL   = 'payment/tig_buckaroo_account/transaction_label';
     const XPATH_ACCOUNT_ADVANCED            = 'payment/tig_buckaroo_account/advanced';
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->scopeConfig = $scopeConfig;
-    }
 
     /**
      * @return array|void
@@ -125,19 +116,6 @@ class Account implements ConfigProviderInterface
     public function getAdvanced()
     {
         return $this->getConfigFromXpath(self::XPATH_ACCOUNT_ADVANCED);
-    }
-
-    /**
-     * Returns the config value for the given Xpath
-     *
-     * @return mixed
-     */
-    protected function getConfigFromXpath($xpath)
-    {
-        return $this->scopeConfig->getValue(
-            $xpath,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
     }
 
 }

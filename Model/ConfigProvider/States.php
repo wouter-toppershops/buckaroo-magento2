@@ -39,30 +39,21 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use \Magento\Checkout\Model\ConfigProviderInterface;
+use \TIG\Buckaroo\Model\ConfigProvider;
 
-class States implements ConfigProviderInterface
+class States extends AbstractConfigProvider
 {
 
     /**
      * XPATHs to configuration values for tig_buckaroo_predefined
      */
-    const XPATH_STATES_ADVANCED                         = 'tig_states/tig_buckaroo_advanced';
-    const XPATH_STATES_ADVANCED_STATE_SUCCESS           = 'tig_states/tig_buckaroo_advanced/order_state_success';
-    const XPATH_STATES_ADVANCED_STATE_FAILED            = 'tig_states/tig_buckaroo_advanced/order_state_failed';
-    const XPATH_STATES_ADVANCED_STATE_PENDINGPAYMENT    = 'tig_states/tig_buckaroo_advanced/order_state_pendingpayment';
-    const XPATH_STATES_ADVANCED_INCORRECT_PAYMENT       = 'tig_states/tig_buckaroo_advanced/order_incorrect_payment';
-    const XPATH_STATES_ADVANCED_DIGITAL_SIGNATURE       = 'tig_states/tig_buckaroo_advanced/digital_signature';
-    const XPATH_STATES_ADVANCED_CANCEL_ON_FAILURE       = 'tig_states/tig_buckaroo_advanced/cancel_on_failure';
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->scopeConfig = $scopeConfig;
-    }
+    const XPATH_STATES                         = 'tig_buckaroo/tig_states';
+    const XPATH_STATES_STATE_SUCCESS           = 'tig_buckaroo/tig_states/order_state_success';
+    const XPATH_STATES_STATE_FAILED            = 'tig_buckaroo/tig_states/order_state_failed';
+    const XPATH_STATES_STATE_PENDINGPAYMENT    = 'tig_buckaroo/tig_states/order_state_pendingpayment';
+    const XPATH_STATES_INCORRECT_PAYMENT       = 'tig_buckaroo/tig_states/order_incorrect_payment';
+    const XPATH_STATES_DIGITAL_SIGNATURE       = 'tig_buckaroo/tig_states/digital_signature';
+    const XPATH_STATES_CANCEL_ON_FAILURE       = 'tig_buckaroo/tig_states/cancel_on_failure';
 
     /**
      * @return array|void
@@ -82,7 +73,7 @@ class States implements ConfigProviderInterface
      */
     public function getAll()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED);
+        return $this->getConfigFromXpath(self::XPATH_STATES);
     }
 
     /**
@@ -92,7 +83,7 @@ class States implements ConfigProviderInterface
      */
     public function getStateSuccess()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED_STATE_SUCCESS);
+        return $this->getConfigFromXpath(self::XPATH_STATES_STATE_SUCCESS);
     }
 
     /**
@@ -102,7 +93,7 @@ class States implements ConfigProviderInterface
      */
     public function getStateFailed()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED_STATE_FAILED);
+        return $this->getConfigFromXpath(self::XPATH_STATES_STATE_FAILED);
     }
 
     /**
@@ -112,7 +103,7 @@ class States implements ConfigProviderInterface
      */
     public function getStatePendingpayment()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED_STATE_PENDINGPAYMENT);
+        return $this->getConfigFromXpath(self::XPATH_STATES_STATE_PENDINGPAYMENT);
     }
 
     /**
@@ -122,7 +113,7 @@ class States implements ConfigProviderInterface
      */
     public function getIncorrectPayment()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED_INCORRECT_PAYMENT);
+        return $this->getConfigFromXpath(self::XPATH_STATES_INCORRECT_PAYMENT);
     }
 
     /**
@@ -132,7 +123,7 @@ class States implements ConfigProviderInterface
      */
     public function getDigitalSignature()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED_DIGITAL_SIGNATURE);
+        return $this->getConfigFromXpath(self::XPATH_STATES_DIGITAL_SIGNATURE);
     }
 
     /**
@@ -142,20 +133,7 @@ class States implements ConfigProviderInterface
      */
     public function getCancelOnFailure()
     {
-        return $this->getConfigFromXpath(self::XPATH_STATES_ADVANCED_CANCEL_ON_FAILURE);
-    }
-
-    /**
-     * Returns the config value for the given Xpath
-     *
-     * @return mixed
-     */
-    protected function getConfigFromXpath($xpath)
-    {
-        return $this->scopeConfig->getValue(
-            $xpath,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        return $this->getConfigFromXpath(self::XPATH_STATES_CANCEL_ON_FAILURE);
     }
 
 }
