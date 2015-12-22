@@ -54,7 +54,8 @@ class StatusesPending implements \Magento\Framework\Option\ArrayInterface
     /**
      * Class constructor
      *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Sales\Model\Order\Config          $orderConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
     public function __construct(
         \Magento\Sales\Model\Order\Config $orderConfig,
@@ -73,7 +74,7 @@ class StatusesPending implements \Magento\Framework\Option\ArrayInterface
     {
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
         $statesConfig = $this->configProviderFactory->get('states');
-        $state = $statesConfig->getStatePendingpayment();
+        $state = $statesConfig->getOrderStatePending();
 
         $statuses = $this->_orderConfig->getStateStatuses($state);
 

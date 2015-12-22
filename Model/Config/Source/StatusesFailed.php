@@ -74,7 +74,7 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
     {
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
         $statesConfig = $this->configProviderFactory->get('states');
-        $state = $statesConfig->getStateFailed();
+        $state = $statesConfig->getOrderStateFailed();
 
         $statuses = $this->_orderConfig->getStateStatuses($state);
 

@@ -1,3 +1,33 @@
+/* ==================== Buckaroo / TIG -  Navigation Logo - Left Menu ==================== */
+
+.buckaroo-section .admin__page-nav-link:before {
+    float:left;
+    width: calc(100% - 30px) ;
+    height: 15px;
+    content: ' ';
+
+    background-image: url(../images/buckaroo_small.png) !important;
+    background-position :0 3px;
+    background-repeat:no-repeat;
+ }
+
+.buckaroo-section .admin__page-nav-link {
+    text-indent: -999px;
+    padding: 2rem 1rem 2rem 1rem;
+}
+
+.buckaroo-section .admin__page-nav-link:after {
+    float:right;
+    width: 30px;
+    height: 30px;
+    margin-top:-7px;
+
+    background-image: url(../images/logo_tig.png) !important;
+    background-size: 30px !important;
+    background-repeat:no-repeat;
+    content: ' ';
+}
+
 /* ==================== Buckaroo Active/Inactive Payments Feedback ==================== */
 
 .section-config {

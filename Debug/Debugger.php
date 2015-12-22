@@ -41,6 +41,10 @@ namespace TIG\Buckaroo\Debug;
 
 class Debugger
 {
+    protected $logger = null;
+    protected $objectManager = null;
+    protected $configProviderFactory = null;
+
     protected $channelName = 'TIG_Buckaroo';
     protected $defaultFilename = 'TIG_Buckaroo.log';
 
@@ -54,15 +58,31 @@ class Debugger
     protected $mode = 'mail';
 
     /**
-     * @param Logger                                    $logger
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
+     * @param Logger                                        $logger
+     * @param \Magento\Framework\ObjectManagerInterface     $objectManager
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory    $configProviderFactory
      */
     public function __construct(
         \TIG\Buckaroo\Debug\Logger $logger,
-        \Magento\Framework\ObjectManagerInterface $objectManager
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         $this->logger = $logger;
         $this->objectManager = $objectManager;
+        $this->configProviderFactory = $configProviderFactory;
+
+        // Get some settings
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $config */
+        $config = $this->configProviderFactory->get('account');
+        if ($config->getDebugEmail()) {
+            $mailTo = $config->getDebugEmail();
+            if (strpos($mailTo, ',') !== false) {
+                $mailTo = expode(',', $mailTo);
+            } else {
+                $mailTo = [$mailTo];
+            }
+            $this->mailTo = $mailTo;
+        }
     }
 
     /**
@@ -109,6 +129,26 @@ class Debugger
     {
         $this->channelName = $channelName;
         return $this;
+    }
+
+    /**
+     * Return mode
+     *
+     * @return string
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
+     * Set mode
+     *
+     * @param $mode
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
     }
 
     /**

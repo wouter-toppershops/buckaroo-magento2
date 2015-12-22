@@ -113,7 +113,7 @@ class SepaDirectDebitTest extends BaseTest
             $this->object->validate();
             $this->fail();
         } catch(\Exception $e) {
-            $this->assertInstanceOf(\Magento\Framework\Validator\Exception::class, $e);
+            $this->assertInstanceOf(\Exception::class, $e);
         }
     }
 
@@ -136,7 +136,7 @@ class SepaDirectDebitTest extends BaseTest
             $this->object->validate();
             $this->fail();
         } catch(\Exception $e) {
-            $this->assertInstanceOf(\Magento\Framework\Validator\Exception::class, $e);
+            $this->assertInstanceOf(\Exception::class, $e);
         }
     }
 
@@ -164,7 +164,7 @@ class SepaDirectDebitTest extends BaseTest
             $this->object->validate();
             $this->fail();
         } catch(\Exception $e) {
-            $this->assertInstanceOf(\Magento\Framework\Validator\Exception::class, $e);
+            $this->assertInstanceOf(\Exception::class, $e);
         }
     }
 

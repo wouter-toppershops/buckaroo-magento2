@@ -42,23 +42,17 @@ namespace TIG\Buckaroo\Model\ConfigProvider;
 use \TIG\Buckaroo\Model\ConfigProvider;
 
 /**
- * @method mixed getOrderStateNew()
- * @method mixed getOrderStateSuccess()
- * @method mixed getOrderStateFailed()
- * @method mixed getOrderStatePending()
- * @method mixed getOrderStateIncorrect()
+ * @method mixed getEnabled()
+ * @method mixed getAllowPush()
  */
-class States extends AbstractConfigProvider
+class Refund extends AbstractConfigProvider
 {
 
     /**
      * XPATHs to configuration values for tig_buckaroo_predefined
      */
-    const XPATH_STATES_ORDER_STATE_NEW          = 'tig_buckaroo/states/order_state_new';
-    const XPATH_STATES_ORDER_STATE_SUCCESS      = 'tig_buckaroo/states/order_state_success';
-    const XPATH_STATES_ORDER_STATE_FAILED       = 'tig_buckaroo/states/order_state_failed';
-    const XPATH_STATES_ORDER_STATE_PENDING      = 'tig_buckaroo/states/order_state_pending';
-    const XPATH_STATES_ORDER_STATE_INCORRECT    = 'tig_buckaroo/states/order_state_incorrect';
+    const XPATH_REFUND_ENABLED      = 'tig_buckaroo/refund/enabled';
+    const XPATH_REFUND_ALLOW_PUSH   = 'tig_buckaroo/refund/allow_push';
 
     /**
      * @return array|void
@@ -66,11 +60,8 @@ class States extends AbstractConfigProvider
     public function getConfig()
     {
         $config = [
-            'order_state_new'       => $this->getOrderStateNew(),
-            'order_state_pending'   => $this->getOrderStatePending(),
-            'order_state_success'   => $this->getOrderStateSuccess(),
-            'order_state_failed'    => $this->getOrderStateFailed(),
-            'order_state_incorrect' => $this->getOrderStateSuccess(),
+            'enabled' => $this->getEnabled(),
+            'allow_push' => $this->getAllowPush(),
         ];
         return $config;
     }

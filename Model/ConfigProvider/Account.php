@@ -39,28 +39,46 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use \Magento\Checkout\Model\ConfigProviderInterface;
+use \TIG\Buckaroo\Model\ConfigProvider;
 
-class Account implements ConfigProviderInterface
+/**
+ * @method mixed getActive()
+ * @method mixed getSecretKey()
+ * @method mixed getMerchantKey()
+ * @method mixed getTransactionLabel()
+ * @method mixed getCertificateFile()
+ * @method mixed getInvoiceEmail()
+ * @method mixed getAutoInvoice()
+ * @method mixed getAutoInvoiceStatus()
+ * @method mixed getSuccessRedirect()
+ * @method mixed getFailureRedirect()
+ * @method mixed getCancelOnFailed()
+ * @method mixed getDigitalSignature()
+ * @method mixed getDebugEmail()
+ * @method mixed getLimitByIp()
+ * @method mixed getFeePercentageMode()
+ */
+class Account extends AbstractConfigProvider
 {
 
     /**
      * XPATHs to configuration values for tig_buckaroo_account
      */
-    const XPATH_ACCOUNT_ACTIVE              = 'payment/tig_buckaroo_account/active';
-    const XPATH_ACCOUNT_SECRET_KEY          = 'payment/tig_buckaroo_account/secret_key';
-    const XPATH_ACCOUNT_MERCHANT_KEY        = 'payment/tig_buckaroo_account/merchant_key';
-    const XPATH_ACCOUNT_TRANSACTION_LABEL   = 'payment/tig_buckaroo_account/transaction_label';
-    const XPATH_ACCOUNT_ADVANCED            = 'payment/tig_buckaroo_account/advanced';
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->scopeConfig = $scopeConfig;
-    }
+    const XPATH_ACCOUNT_ACTIVE                  = 'tig_buckaroo/account/active';
+    const XPATH_ACCOUNT_SECRET_KEY              = 'tig_buckaroo/account/secret_key';
+    const XPATH_ACCOUNT_MERCHANT_KEY            = 'tig_buckaroo/account/merchant_key';
+    const XPATH_ACCOUNT_TRANSACTION_LABEL       = 'tig_buckaroo/account/transaction_label';
+    const XPATH_ACCOUNT_CERTIFICATE_FILE        = 'tig_buckaroo/account/certificate_file';
+    const XPATH_ACCOUNT_INVOICE_EMAIL           = 'tig_buckaroo/account/invoice_email';
+    const XPATH_ACCOUNT_AUTO_INVOICE            = 'tig_buckaroo/account/auto_invoice';
+    const XPATH_ACCOUNT_AUTO_INVOICE_STATUS     = 'tig_buckaroo/account/auto_invoice_status';
+    const XPATH_ACCOUNT_SUCCESS_REDIRECT        = 'tig_buckaroo/account/success_redirect';
+    const XPATH_ACCOUNT_FAILURE_REDIRECT        = 'tig_buckaroo/account/failure_redirect';
+    const XPATH_ACCOUNT_CANCEL_ON_FAILED        = 'tig_buckaroo/account/cancel_on_failed';
+    const XPATH_ACCOUNT_DIGITAL_SIGNATURE       = 'tig_buckaroo/account/digital_signature';
+    const XPATH_ACCOUNT_DEBUG_EMAIL             = 'tig_buckaroo/account/debug_email';
+    const XPATH_ACCOUNT_LIMIT_BY_IP             = 'tig_buckaroo/account/limit_by_ip';
+    const XPATH_ACCOUNT_FEE_PERCENTAGE_MODE     = 'tig_buckaroo/account/fee_percentage_mode';
 
     /**
      * @return array|void
@@ -68,76 +86,23 @@ class Account implements ConfigProviderInterface
     public function getConfig()
     {
         $config = [
-            'active'            => $this->getActive(),
-            'secret_key'        => $this->getSecretKey(),
-            'merchant_key'      => $this->getMerchantKey(),
-            'transaction_label' => $this->getTransactionLabel(),
-            'advanced'          => $this->getAdvanced(),
+            'active'                => $this->getActive(),
+            'secret_key'            => $this->getSecretKey(),
+            'merchant_key'          => $this->getMerchantKey(),
+            'transaction_label'     => $this->getTransactionLabel(),
+            'certificate_file'      => $this->getCertificateFile(),
+            'invoice_email'         => $this->getInvoiceEmail(),
+            'auto_invoice'          => $this->getAutoInvoice(),
+            'auto_invoice_status'   => $this->getAutoInvoiceStatus(),
+            'success_redirect'      => $this->getSuccessRedirect(),
+            'failure_redirect'      => $this->getFailureRedirect(),
+            'cancel_on_failed'      => $this->getCancelOnFailed(),
+            'digital_signature'     => $this->getDigitalSignature(),
+            'debug_email'           => $this->getDebugEmail(),
+            'limit_by_ip'           => $this->getLimitByIp(),
+            'fee_percentage_mode'   => $this->getFeePercentageMode(),
         ];
         return $config;
-    }
-
-    /**
-     * Returns the config value for account/active
-     *
-     * @return mixed
-     */
-    public function getActive()
-    {
-        return $this->getConfigFromXpath(self::XPATH_ACCOUNT_ACTIVE);
-    }
-
-    /**
-     * Returns the config value for account/secret_key
-     *
-     * @return mixed
-     */
-    public function getSecretKey()
-    {
-        return $this->getConfigFromXpath(self::XPATH_ACCOUNT_SECRET_KEY);
-    }
-
-    /**
-     * Returns the config value for account/merchant_key
-     *
-     * @return mixed
-     */
-    public function getMerchantKey()
-    {
-        return $this->getConfigFromXpath(self::XPATH_ACCOUNT_MERCHANT_KEY);
-    }
-
-    /**
-     * Returns the config value for account/transaction_label
-     *
-     * @return mixed
-     */
-    public function getTransactionLabel()
-    {
-        return $this->getConfigFromXpath(self::XPATH_ACCOUNT_TRANSACTION_LABEL);
-    }
-
-    /**
-     * Returns the config value for account/advanced
-     *
-     * @return mixed
-     */
-    public function getAdvanced()
-    {
-        return $this->getConfigFromXpath(self::XPATH_ACCOUNT_ADVANCED);
-    }
-
-    /**
-     * Returns the config value for the given Xpath
-     *
-     * @return mixed
-     */
-    protected function getConfigFromXpath($xpath)
-    {
-        return $this->scopeConfig->getValue(
-            $xpath,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
     }
 
 }

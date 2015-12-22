@@ -166,43 +166,38 @@
             </tig_buckaroo_sofortbanking>
         </payment>
 
-        <tig_payment>
-            <tig_buckaroo_account>
+        <tig_buckaroo>
+            <account>
                 <active>1</active>
                 <transaction_label>Magento Buckaroo</transaction_label>
-                <order_status_new>pending</order_status_new>
-                <order_status_success>processing</order_status_success>
-                <order_status_failed>canceled</order_status_failed>
                 <invoice_email>1</invoice_email>
                 <auto_invoice>1</auto_invoice>
                 <auto_invoice_status>pending</auto_invoice_status>
                 <success_redirect>checkout/onepage/success</success_redirect>
                 <failure_redirect>checkout/onepage</failure_redirect>
                 <cancel_on_failed>1</cancel_on_failed>
-            </tig_buckaroo_account>
-
-            <tig_buckaroo_refund>
-                <allow_push>1</allow_push>
-            </tig_buckaroo_refund>
-        </tig_payment>
-
-        <tig_states>
-            <tig_buckaroo_advanced>
-                <model>TIG\Buckaroo\Model\Method\Mrcash</model> <!-- placeholder -->
-                <order_state_success>processing</order_state_success>
-                <order_state_failed>canceled</order_state_failed>
-                <order_state_pendingpayment>new</order_state_pendingpayment>
-                <order_incorrect_payment>holded</order_incorrect_payment>
                 <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
                 <cancel_on_failure>0</cancel_on_failure>
-            </tig_buckaroo_advanced>
-        </tig_states>
+            </account>
 
-        <tig_buckaroo_predefined>
-            <locations>
-                <live>http://checkout.buckaroo.nl/soap/Soap.svc</live>
-                <test>http://testcheckout.buckaroo.nl/soap/Soap.svc</test>
-            </locations>
-        </tig_buckaroo_predefined>
+            <refund>
+                <enabled>0</enabled>
+                <allow_push>1</allow_push>
+            </refund>
+
+            <states>
+                <order_state_new>new</order_state_new>
+                <order_state_pending>new</order_state_pending>
+                <order_state_success>processing</order_state_success>
+                <order_state_failed>canceled</order_state_failed>
+                <order_state_incorrect>holded</order_state_incorrect>
+            </states>
+
+            <predefined>
+                <location_live_web>http://checkout.buckaroo.nl/soap/Soap.svc</location_live_web>
+                <location_test_web>http://testcheckout.buckaroo.nl/soap/Soap.svc</location_test_web>
+            </predefined>
+        </tig_buckaroo>
+
     </default>
 </config>

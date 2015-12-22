@@ -67,18 +67,24 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     {
         $client = new Client\SoapClientWSSEC($wsdl, $options);
 
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig */
         $predefinedConfig = $this->configProviderFactory->get('predefined');
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig */
         $privateKeyConfig = $this->configProviderFactory->get('private_key');
 
+        /**
+         * active 0 is disabled, 1 is test, 2 is live
+         */
         if ($accountConfig->getActive() == 1) {
-            $location = $predefinedConfig->getLocationsTest();
+            $location = $predefinedConfig->getLocationTestWeb();
         } elseif ($accountConfig->getActive() == 2) {
-            $location = $predefinedConfig->getLocationsLive();
+            $location = $predefinedConfig->getLocationLiveWeb();
         }
 
         $client->__setLocation($location);
-        $client->loadPem($privateKeyConfig->getConfig()['private_key']);
+        $client->loadPem($privateKeyConfig->getPrivateKey());
 
         return $client;
     }
