@@ -116,6 +116,7 @@ class Push
     {
         $creditData = $this->getCreditmemoData();
         $creditmemo = $this->initCreditmemo($creditData);
+
         try {
             if ($creditmemo) {
                 if (!$creditmemo->isValidGrandTotal()) {
@@ -193,8 +194,7 @@ class Push
         ];
 
         $totalAmountToRefund = $this->totalAmountToRefund();
-
-        $this->creditAmount = $totalAmountToRefund + $this->order->getBaseTotalRefunded();
+        $this->creditAmount  = $totalAmountToRefund + $this->order->getBaseTotalRefunded();
 
         if ($this->creditAmount != $this->order->getBaseGrandTotal()) {
             $data['shipping_amount']     = '0';
@@ -318,9 +318,10 @@ class Push
         foreach ($this->order->getAllItems() as $orderItem) {
             /** @var \Magento\Sales\Model\Order\Item $orderItem */
             if (!in_array($orderItem->getId(), array_flip($items))) {
-                if ($this->creditAmount != $this->order->getBaseGrandTotal()) {
+                if ((float)$this->creditAmount == (float)$this->order->getBaseGrandTotal()) {
                     $qty = $orderItem->getQtyInvoiced() - $orderItem->getQtyRefunded();
                 }
+
                 $items[$orderItem->getId()] = ['qty' => $qty];
             }
         }
