@@ -39,8 +39,30 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-class BuckarooFee implements \Magento\Checkout\Model\ConfigProviderInterface
+use \TIG\Buckaroo\Model\Config\Source\Display\Type as DisplayType;
+
+/**
+ * @method int getPriceDisplayCart()
+ * @method int getPriceDisplaySales()
+ * @method string getTaxClass()
+ */
+class BuckarooFee extends AbstractConfigProvider
 {
+    /**
+     * Buckaroo fee tax class
+     */
+    const XPATH_BUCKAROOFEE_TAX_CLASS = 'tax/classes/buckaroo_fee_tax_class';
+
+    /**
+     * Shopping cart display settings
+     */
+    const XPATH_BUCKAROOFEE_PRICE_DISPLAY_CART = 'tax/cart_display/buckaroo_fee';
+
+    /**
+     * Sales display settings
+     */
+    const XPATH_BUCKAROOFEE_PRICE_DISPLAY_SALES = 'tax/sales_display/buckaroo_fee';
+
     /**
      * @var \Magento\Checkout\Model\Session
      */
@@ -56,9 +78,12 @@ class BuckarooFee implements \Magento\Checkout\Model\ConfigProviderInterface
      * @param \Magento\Framework\Locale\FormatInterface $localeFormat
      */
     public function __construct(
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Checkout\Model\Session $checkoutSession,
         \Magento\Framework\Locale\FormatInterface $localeFormat
     ) {
+        parent::__construct($scopeConfig);
+
         $this->checkoutSession = $checkoutSession;
         $this->localeFormat    = $localeFormat;
     }
@@ -72,8 +97,16 @@ class BuckarooFee implements \Magento\Checkout\Model\ConfigProviderInterface
     {
         return [
             'buckarooFee' => [
-                'displayBuckarooFeeBothPrices' => true,
-                'displayBuckarooFeeInclTax'    => false,
+                'cart' => [
+                    'displayBuckarooFeeBothPrices' => $this->getPriceDisplayCart() == DisplayType::DISPLAY_TYPE_BOTH,
+                    'displayBuckarooFeeInclTax'    => $this->getPriceDisplayCart() == DisplayType::DISPLAY_TYPE_BOTH
+                        || $this->getPriceDisplayCart() == DisplayType::DISPLAY_TYPE_INCLUDING_TAX,
+                ],
+                'sales' => [
+                    'displayBuckarooFeeBothPrices' => $this->getPriceDisplaySales() == DisplayType::DISPLAY_TYPE_BOTH,
+                    'displayBuckarooFeeInclTax'    => $this->getPriceDisplaySales() == DisplayType::DISPLAY_TYPE_BOTH
+                        || $this->getPriceDisplaySales() == DisplayType::DISPLAY_TYPE_INCLUDING_TAX,
+                ],
             ],
             'priceFormat' => $this->localeFormat->getPriceFormat(
                 null,
