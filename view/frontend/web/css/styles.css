@@ -26,7 +26,10 @@
     .tig_buckaroo_sofortbanking .payment-method-second-col,
     .tig_buckaroo_transfer .payment-method-second-col,
     .tig_buckaroo_sepadirectdebit .payment-method-second-col {
-        float:right; width: 35%; padding-left: 5%; margin-top:20px;
+        float:right;
+        width: 35%;
+        padding-left: 5%;
+        /*margin-top:20px;*/ /* in case of blank theme */
     }
 
     .tig_buckaroo_ideal .payment-method-billing-address,
