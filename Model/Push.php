@@ -40,16 +40,11 @@
 
 namespace TIG\Buckaroo\Model;
 
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Sales\Model\Order;
-use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use TIG\Buckaroo\Api\PushInterface;
 use TIG\Buckaroo\Exception;
-use \TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
-use \TIG\Buckaroo\Model\Validator\Amount as ValidatorAmount;
 use \TIG\Buckaroo\Model\Method\AbstractMethod;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Class Push
@@ -111,14 +106,16 @@ class Push implements PushInterface
     /**
      * Push constructor.
      *
-     * @param \Magento\Framework\ObjectManagerInterface                                $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request                $request
-     * @param \TIG\Buckaroo\Model\Validator\Push                    $validator
-     * @param \TIG\Buckaroo\Model\Validator\Amount                  $amountValidator
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderSender
-     * @param \TIG\Buckaroo\Helper\Data                             $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
+     * @param \Magento\Framework\ObjectManagerInterface           $objectManager
+     * @param \Magento\Framework\Webapi\Rest\Request              $request
+     * @param \TIG\Buckaroo\Model\Validator\Push                  $validator
+     * @param \TIG\Buckaroo\Model\Validator\Amount                $amountValidator
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \TIG\Buckaroo\Helper\Data                           $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
+     * @param \TIG\Buckaroo\Helper\Data                           $helper
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory          $configProviderFactory
+     * @param Refund\Push                                         $refundPush
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,

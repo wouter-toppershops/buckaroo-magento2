@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Copyright © 2015 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:include schemaLocation="urn:magento:framework:Module/etc/module.xsd"/>
+
+    <xs:element name="config">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="module" type="tigModuleDeclaration" minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+        </xs:complexType>
+        <xs:unique name="uniqueModuleName">
+            <xs:annotation>
+                <xs:documentation>
+                    Module name must be unique.
+                </xs:documentation>
+            </xs:annotation>
+            <xs:selector xpath="module"/>
+            <xs:field xpath="@name"/>
+        </xs:unique>
+    </xs:element>
+
+    <xs:complexType name="tigModuleDeclaration">
+        <xs:complexContent>
+            <xs:extension base="moduleDeclaration">
+                <xs:attribute name="build_number" type="buildNumber" use="required" />
+                <xs:attribute name="stability" type="xs:string" use="required" />
+            </xs:extension>
+        </xs:complexContent>
+    </xs:complexType>
+
+    <xs:simpleType name="buildNumber">
+        <xs:annotation>
+            <xs:documentation>
+                Build number attribute can contain only [0-9].
+            </xs:documentation>
+        </xs:annotation>
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[0-9]+" />
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

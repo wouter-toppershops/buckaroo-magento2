@@ -26,8 +26,8 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Module/etc/module.xsd">
-    <module name="TIG_Buckaroo" setup_version="0.1.6">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:TIG_Buckaroo:etc/tig_module.xsd">
+    <module name="TIG_Buckaroo" setup_version="0.1.6" build_number="366" stability="dev">
         <sequence>
             <module name="Magento_Payment"/>
         </sequence>
