@@ -143,26 +143,32 @@
     list-style-type: none;
 }
 
-/* ==================================== SupportTab - Quick guide ==================================== */
 
-#supporttab ol {
-    margin-left: 40px;
-}
-
-#supporttab ol li {
-    list-style-type: upper-roman;
-    line-height: 2em;
-}
-
-#supporttab ol li ol {
-    margin-bottom: 10px;
-}
-
-#supporttab ol li ol li {
-    list-style-type: lower-alpha;
-}
 
 /* ==================================== SupportTab - Legend ==================================== */
+#block {
+    margin-bottom: 30px;
+    float: left;
+    width: 100%;
+    clear: both;
+}
+
+.block-legend h3 {
+    cursor: auto !important;
+}
+
+.block-legend {
+    padding: 10px;
+    float:left;
+    width:100%;
+}
+
+@media screen and (min-width: 1200px){
+    .block-legend {
+        float:left;
+        width: 50%;
+    }
+}
 
 .disabled span.text,
 .live span.text,
@@ -216,29 +222,64 @@
 
 /* ==================================== SupportTab - 3rd Party | Version compatibility ==================================== */
 
-#supporttab .version-compatibility {
-    clear: both;
+.block-version h3 {
+    cursor: auto !important;
+}
+
+.block-version {
+    padding:10px;
+    background: #F8F8F8;
     float:left;
-    width:100%;
+    width: 100%;
+}
+
+
+@media screen and (min-width: 1200px){
+    .block-version {
+        float:left;
+        width: 50%;
+    }
+}
+#supporttab .version-compatibility {
+    float:left;
+    width: 100%;
+    clear:both;
 }
 #supporttab .version-compatibility li {
-    clear:both;
+    clear: both;
+    margin-bottom: 15px;
     float:left;
-    width:100%;
+    width: 100%;
 }
-
 #supporttab .version-compatibility  span.text {
+     font-weight: 600;
+     float:left;
+     width: calc(50% - 20px);
+ }
+#supporttab .version-compatibility  span.version {
     float:left;
-    width: 300px;
-    font-weight: 600;
+    width: calc(50% - 30px);
+    text-align:right;
+    margin-left: 10px;
 }
 
-#supporttab .version-compatibility  span.version {
-    text-align: right;
-    width: 150px;
-    display: block;
-    float: left;
-    height: auto;
+/* ==================================== SupportTab - Quick guide ==================================== */
+
+#supporttab ol {
+    margin-left: 40px;
+}
+
+#supporttab ol li {
+    list-style-type: upper-roman;
+    line-height: 2em;
+}
+
+#supporttab ol li ol {
+    margin-bottom: 10px;
+}
+
+#supporttab ol li ol li {
+    list-style-type: lower-alpha;
 }
 
 /* ==================================== SupportTab - Support ==================================== */

@@ -1,14 +1,16 @@
-/* ===================== Default styling ============================= */
-
+/* ===================== Default Styling ============================= */
 .payment-method,
 .payment-method-content,
 .payment-method-billing-address,
 .checkout-agreements-block,
 .actions-toolbar{ clear:both; }
 
-
 .payment-method-second-col {
     float:left; width: 100%; margin-bottom: 20px;
+}
+
+.action.action-update {
+    margin-top: 20px;
 }
 
 @media screen and (min-width: 1200px ){
@@ -24,7 +26,10 @@
     .tig_buckaroo_sofortbanking .payment-method-second-col,
     .tig_buckaroo_transfer .payment-method-second-col,
     .tig_buckaroo_sepadirectdebit .payment-method-second-col {
-        float:right; width: 35%; padding-left: 5%;
+        float:right;
+        width: 35%;
+        padding-left: 5%;
+        /*margin-top:20px;*/ /* in case of blank theme */
     }
 
     .tig_buckaroo_ideal .payment-method-billing-address,
@@ -39,34 +44,23 @@
     }
 }
 
-@media screen and (max-width: 480px) {
-    .tig_buckaroo_image_title:after {
-        /*display:none;*/
-    }
-}
-
-/* ===================== PAYPAL =============================== */
-
+/* ===================== PayPal =============================== */
 .tig_buckaroo_paypal .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_paypal_title.png);
     background-repeat: no-repeat;
-
     float: right;
-    text-align: right;
     margin-right: 10px;
-    margin-top: 0;
-    background-size: auto 20px;
-    width: 80px;
-    height: 20px;
+    margin-top: -4px;
+    background-size: auto 30px;
+    width: 30px;
+    height: 30px;
     content: ' ';
 }
 
-/* ===================== IDEAL ================================ */
-
+/* ===================== iDeal ================================ */
 .tig_buckaroo_ideal .payment-method-second-col .bank-types{
     float:left; width: 100%;
 }
-
 .tig_buckaroo_ideal .payment-method-second-col .bank-types-img{
     vertical-align:middle;
     margin-right:10px;
@@ -78,19 +72,16 @@
 .tig_buckaroo_ideal .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_ideal_title.png);
     background-repeat: no-repeat;
-
     float: right;
-    text-align: right;
     margin-right: 10px;
-    margin-top: 0;
-    background-size: auto 20px;
-    width: 25px;
-    height: 20px;
+    margin-top: -1px;
+    background-size: auto 25px;
+    width: 30px;
+    height: 25px;
     content: ' ';
 }
 
-/* ===================== CREDITCARD =========================== */
-
+/* ===================== Credit Card =========================== */
 .tig_buckaroo_creditcard .payment-method-second-col .card-types{
     float:left; width: 100%;
 }
@@ -105,88 +96,187 @@
 .tig_buckaroo_creditcard .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_creditcard_title.png);
     background-repeat: no-repeat;
-    margin-top: 0;
-
-    float:right;
-    text-align: right;
+    margin-top: -2px;
+    float: right;
     margin-right: 10px;
-    background-size: auto 20px;
-    width: 81px; height: 20px;
+    background-size: auto 25px;
+    width: 41px;
+    height: 25px;
     content: ' ';
 }
 
-/* ===================== TRANSFER ============================= */
-
+/* ===================== Sepa Direct Debit  ============================= */
 .tig_buckaroo_sepadirectdebit .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_sepa_title.png);
     background-repeat: no-repeat;
     margin-top: 0;
-
     float:right;
-    text-align: right;
     margin-right: 10px;
     background-size: auto 20px;
     width: 56px; height: 20px;
     content: ' ';
 }
 
-
-/* ===================== SEPA DIRECT DEBIT ==================== */
-
+/* ===================== Bank Transfer ==================== */
 .tig_buckaroo_transfer .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_transfer_title.png);
     background-repeat: no-repeat;
     margin-top: 0;
-
     float:right;
-    text-align: right;
     margin-right: 10px;
     background-size: auto 20px;
     width: 56px; height: 20px;
     content: ' ';
 }
 
-/* ===================== MR CASH ============================== */
-
+/* ===================== Mr Cash ============================== */
 .tig_buckaroo_mrcash .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_mrcash_title.png);
     background-repeat: no-repeat;
-    margin-top: 0;
-
-    float:right;
-    text-align: right;
+    margin-top: -5px;
+    float: right;
     margin-right: 10px;
-    background-size: auto 20px;
-    width: 33px; height: 20px;
+    background-size: auto 30px;
+    width: 49px;
+    height: 30px;
     content: ' ';
 }
 
-/* ===================== SOFORT BANKING ======================= */
-
+/* ===================== Sofort Banking ======================= */
 .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_sofort_title.png);
     background-repeat: no-repeat;
     margin-top: 0;
-
     float:right;
-    text-align: right;
     margin-right: 10px;
     background-size: auto 20px;
     width: 65px; height: 20px;
     content: ' ';
 }
 
-/* ===================== GIROPAY ============================== */
-
+/* ===================== Giropay ============================== */
 .tig_buckaroo_giropay .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_giropay_title.png);
     background-repeat: no-repeat;
     margin-top: 0;
-
     float:right;
-    text-align: right;
     margin-right: 10px;
     background-size: auto 20px;
     width: 46px; height: 20px;
     content: ' ';
+}
+
+
+/* =============================================================== */
+/* ========== Responsive replacement -> payment logo's =========== */
+/* =============================================================== */
+
+@media screen and (max-width: 480px) {
+    .tig_buckaroo_image_title.label:after {
+        display:none;
+    }
+
+    /* PayPal */
+    .tig_buckaroo_paypal .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_paypal_title.png);
+        background-repeat: no-repeat;
+        float: left;
+        margin-right: 10px;
+        margin-top: -4px;
+        background-size: auto 30px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* iDeal */
+    .tig_buckaroo_ideal .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_ideal_title.png);
+        background-repeat: no-repeat;
+        float: left;
+        margin-right: 10px;
+        margin-top: -1px;
+        background-size: auto 25px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* Credit Card */
+    .tig_buckaroo_creditcard .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_creditcard_title.png);
+        background-repeat: no-repeat;
+        margin-top: 0px;
+        float: left;
+        margin-right: 10px;
+        background-size: auto 20px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* Sepa Direct Debit */
+    .tig_buckaroo_sepadirectdebit .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_sepa_title.png);
+        background-repeat: no-repeat;
+        margin-top: 4px;
+        float:left;
+        margin-right: 10px;
+        background-size: auto 14px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* Bank Transfer */
+    .tig_buckaroo_transfer .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_transfer_title.png);
+        background-repeat: no-repeat;
+        margin-top: 4px;
+        float:left;
+        margin-right: 10px;
+        background-size: auto 14px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* Mr Cash */
+    .tig_buckaroo_mrcash .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_mrcash_title.png);
+        background-repeat: no-repeat;
+        margin-top: -1px;
+        float: left;
+        margin-right: 10px;
+        background-size: auto 23px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* Sofort Banking */
+    .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_sofort_title.png);
+        background-repeat: no-repeat;
+        margin-top: 5px;
+        float:left;
+        margin-right: 10px;
+        background-size: auto 12px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
+
+    /* Giropay */
+    .tig_buckaroo_giropay .tig_buckaroo_image_title:before {
+        background-image: url(../images/tig_buckaroo_giropay_title.png);
+        background-repeat: no-repeat;
+        margin-top: 2px;
+        float:left;
+        margin-right: 10px;
+        background-size: auto 17px;
+        width: 40px;
+        height: 30px;
+        content: ' ';
+    }
 }

@@ -127,4 +127,23 @@ class Creditcard extends AbstractConfigProvider
 
         return $paymentFee ? (float) $paymentFee : false;
     }
+
+    /**
+     * @param string $cardType
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function getCardName($cardType)
+    {
+        $config = $this->getConfig();
+        foreach ($config['payment']['buckaroo']['creditcards'] as $card) {
+            if ($card['code'] == $cardType) {
+                return $card['name'];
+            }
+        }
+
+        throw new \InvalidArgumentException("No card found for card type: {$cardType}");
+    }
 }

@@ -128,6 +128,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected $request;
 
+    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
+    protected $_infoBlockType = 'TIG\Buckaroo\Block\Info';
+    // @codingStandardsIgnoreEnd
+
     /**
      * AbstractMethod constructor.
      *

@@ -3,6 +3,55 @@
 ?>
 <div id="supporttab" class="tig-buckaroo-supporttab" data-mage-init='{"buckarooConfig": true}'>
 
+
+    <div id="block">
+        <div class="block-legend">
+            <h3 ><?php echo $block->escapeHtml(__('Legend'));?></h3>
+            <div>
+                <ul id="legend">
+                    <li class="disabled">
+                        <span class="img"></span>
+                        <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?>: </span>
+                        <span class="status"><?php echo $block->escapeHtml(__('Disabled'));?></span>
+                    </li>
+                    <li class="test">
+                        <span class="img"></span>
+                        <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?>: </span>
+                        <span class="status"><?php echo $block->escapeHtml(__('Test Modus'));?></span>
+                    </li>
+                    <li class="live">
+                        <span class="img"></span>
+                        <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?>: </span>
+                        <span class="status"><?php echo $block->escapeHtml(__('Live Modus'));?></span>
+                    </li>
+                    <!--                <li class="advanced"><span></span>--><?php //echo $block->escapeHtml(__('Advanced Configuration'));?><!--</li>-->
+                </ul>
+            </div>
+        </div>
+
+        <div class="block-version">
+            <h3 ><?php echo $block->escapeHtml(__('Magento &amp; 3rd party version compatibility'));?></h3>
+            <div>
+                <ul class="version-compatibility">
+                    <li>
+                        <span class="text"><?php echo $block->escapeHtml(__('Magento Community Edition version'));?>:</span>
+                        <span class="version"> 2.0 </span>
+                    </li>
+                    <li>
+                        <span class="text"><?php echo $block->escapeHtml(__('Magento Enterprise Edition version'));?>:</span>
+                        <span class="version"> 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0 2.0</span>
+                    </li>
+                </ul>
+                <ul class="version-compatibility">
+                    <li>
+                        <span class="text"><?php echo $block->escapeHtml(__('Lorem Ipsum'));?>:</span>
+                        <span class="version"> 2.0 </span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <?php // section 1 ?>
     <div id="section">
         <div class="collapse-title" data-role="title">
@@ -54,58 +103,6 @@
     <?php // section 2 ?>
     <div id="section">
         <div class="collapse-title" data-role="title">
-            <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Legend'));?></h3>
-        </div>
-        <div class="collapse-content" data-role="content" style="display:none;">
-            <ul id="legend">
-                <li class="disabled">
-                    <span class="img"></span>
-                    <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?> : </span>
-                    <span class="status"><?php echo $block->escapeHtml(__('Disabled'));?></span>
-                </li>
-                <li class="test">
-                    <span class="img"></span>
-                    <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?> : </span>
-                    <span class="status"><?php echo $block->escapeHtml(__('Test Modus'));?></span>
-                </li>
-                <li class="live">
-                    <span class="img"></span>
-                    <span class="text"><?php echo $block->escapeHtml(__('Payment method'));?> : </span>
-                    <span class="status"><?php echo $block->escapeHtml(__('Live Modus'));?></span>
-                </li>
-                <!--                <li class="advanced"><span></span>--><?php //echo $block->escapeHtml(__('Advanced Configuration'));?><!--</li>-->
-            </ul>
-        </div>
-    </div>
-
-    <?php // section 3 ?>
-    <div id="section">
-        <div class="collapse-title" data-role="title">
-            <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Magento &amp; 3rd party version compatibility'));?></h3>
-        </div>
-        <div class="collapse-content" data-role="content" style="display:none;">
-            <ul class="version-compatibility">
-                <li>
-                    <span class="text"><?php echo $block->escapeHtml(__('Magento Community Edition version'));?> :</span>
-                    <span class="version"> 2.0 </span>
-                </li>
-                <li>
-                    <span class="text"><?php echo $block->escapeHtml(__('Magento Enterprise Edition version'));?> :</span>
-                    <span class="version"> 2.0 </span>
-                </li>
-            </ul>
-            <ul class="version-compatibility">
-                <li>
-                    <span class="text"><?php echo $block->escapeHtml(__('Lorem Ipsum'));?> :</span>
-                    <span class="version"> 2.0 </span>
-                </li>
-            </ul>
-        </div>
-    </div>
-
-    <?php // section 4 ?>
-    <div id="section">
-        <div class="collapse-title" data-role="title">
             <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Support'));?></h3>
         </div>
         <div class="collapse-content support-buck-tig" data-role="content" style="display:none;">
@@ -146,7 +143,7 @@
         </div>
     </div>
 
-    <?php // section 5 ?>
+    <?php // section 3 ?>
     <div id="section">
         <div class="collapse-title" data-role="title">
             <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Documentation'));?></h3>
