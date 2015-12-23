@@ -468,8 +468,6 @@ class Push implements PushInterface
 
             return true;
         }
-
-        throw new Exception(__('Order can not be invoiced'));
     }
 
     /**

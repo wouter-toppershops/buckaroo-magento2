@@ -267,7 +267,7 @@ class Push
 
         if ($this->order->getBaseTotalRefunded() == null) {
             $totalAmount = $totalAmount
-                - ($this->order->getBaseBuckarooFeeAmount() + $this->order->getBaseBuckarooFeeTaxAmountInvoiced());
+                - ($this->order->getBaseBuckarooFee() + $this->order->getBuckarooFeeBaseTaxAmountInvoiced());
         }
 
         return $totalAmount;
