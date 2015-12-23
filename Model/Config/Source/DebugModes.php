@@ -47,8 +47,6 @@ class DebugModes implements \Magento\Framework\Option\ArrayInterface
     protected $configProviderFactory;
 
     /**
-     * Class constructor
-     *
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
     public function __construct(
@@ -65,10 +63,10 @@ class DebugModes implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $options = [];
-        $options[] = array('value' => '', 'label' => __('Do not log debug information'));
-        $options[] = array('value' => 'log', 'label' => 'Log to file');
-        $options[] = array('value' => 'mail', 'label' => 'Mail to debug email');
-        $options[] = array('value' => 'maillog', 'label' => 'Log to file and mail to debug email');
+        $options[] = ['value' => '',        'label' => __('Do not log debug information')];
+        $options[] = ['value' => 'log',     'label' => __('Log to file')];
+        $options[] = ['value' => 'mail',    'label' => __('Mail to debug email')];
+        $options[] = ['value' => 'maillog', 'label' => __('Log to file and mail to debug email')];
         return $options;
     }
 }

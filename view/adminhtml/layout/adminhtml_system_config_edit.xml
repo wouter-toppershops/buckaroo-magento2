@@ -42,9 +42,9 @@
     <head>
         <css src="TIG_Buckaroo::css/adminstyles.css" />
     </head>
-    <!--<body>-->
-        <!--<referenceContainer name="content">-->
-            <!--<block class="TIG\Buckaroo\Block\Adminhtml\Support\Support" name="buckaroo.support" template="TIG_Buckaroo::support.phtml" before="system.config.edit" />-->
-        <!--</referenceContainer>-->
-    <!--</body>-->
+    <body>
+        <referenceContainer name="content">
+            <block class="TIG\Buckaroo\Block\Adminhtml\Config\Support\BodyClass" name="buckaroo.support" template="TIG_Buckaroo::support.phtml" before="system.config.edit" />
+        </referenceContainer>
+    </body>
 </page>

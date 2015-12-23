@@ -112,16 +112,16 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
 
         //retrieve the signature value
         $sigatureRegex  = "#<SignatureValue>(.*)</SignatureValue>#ims";
-        $signatureArray = array();
+        $signatureArray = [];
         preg_match_all($sigatureRegex, $responseString, $signatureArray);
 
-        //decode the signature
+        // decode the signature
         $signature  = $signatureArray[1][0];
         $sigDecoded = base64_decode($signature);
 
         $xPath = new \DOMXPath($responseDomDoc);
 
-        //register namespaces to use in xpath query's
+        // register namespaces to use in xpath query's
         $xPath->registerNamespace(
             'wsse',
             'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
@@ -129,22 +129,22 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
         $xPath->registerNamespace('sig', 'http://www.w3.org/2000/09/xmldsig#');
         $xPath->registerNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
 
-        //Get the SignedInfo nodeset
+        // Get the SignedInfo nodeset
         $SignedInfoQuery        = '//wsse:Security/sig:Signature/sig:SignedInfo';
         $SignedInfoQueryNodeSet = $xPath->query($SignedInfoQuery);
         $SignedInfoNodeSet      = $SignedInfoQueryNodeSet->item(0);
 
-        //Canonicalize nodeset
+        // Canonicalize nodeset
         $signedInfo = $SignedInfoNodeSet->C14N(true, false);
 
-        //get the public key
+        // get the public key
         $pubKey = openssl_get_publickey(
             openssl_x509_read(
                 $this->publicKeyConfigProvider->getPublicKey()
             )
         );
 
-        //verify the signature
+        // verify the signature
         $sigVerify = openssl_verify($signedInfo, $sigDecoded, $pubKey);
 
         if ($sigVerify === 1) {
@@ -168,10 +168,10 @@ class TransactionResponse implements \TIG\Buckaroo\Model\ValidatorInterface
 
         //retrieve the signature value
         $digestRegex = "#<DigestValue>(.*?)</DigestValue>#ims";
-        $digestArray = array();
+        $digestArray = [];
         preg_match_all($digestRegex, $responseString, $digestArray);
 
-        $digestValues = array();
+        $digestValues = [];
         foreach ($digestArray[1] as $digest) {
             $digestValues[] = $digest;
         }

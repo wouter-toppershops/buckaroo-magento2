@@ -46,8 +46,14 @@ class Certificate extends \Magento\Framework\App\Config\Value
     protected $objectManager;
 
     /**
-     * Test
-     * @param \Magento\Framework\ObjectManagerInterface $objectmanager
+     * @param \Magento\Framework\ObjectManagerInterface               $objectmanager
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $config
+     * @param \Magento\Framework\App\Cache\TypeListInterface          $cacheTypeList
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param array                                                   $data
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectmanager,

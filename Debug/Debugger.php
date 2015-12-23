@@ -90,10 +90,10 @@ class Debugger
     /**
      * @var string
      */
-    protected $mode = 'mail';
+    protected $mode = 'log';
 
     /**
-     * @param Logger                                        $logger
+     * @param \TIG\Buckaroo\Debug\Logger                    $logger
      * @param \Magento\Framework\ObjectManagerInterface     $objectManager
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory    $configProviderFactory
      */
@@ -106,21 +106,40 @@ class Debugger
         $this->objectManager = $objectManager;
         $this->configProviderFactory = $configProviderFactory;
 
-        // Get some settings
+        /**
+         * Get some settings
+         */
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $config */
         $config = $this->configProviderFactory->get('account');
 
+        /**
+         * Get the mode currently set in config and set it
+         */
         $this->setMode($config->getDebugMode());
 
+        /**
+         * If debug emails are set, add them to $this->mailTo
+         */
         if ($config->getDebugEmail()) {
             $mailTo = $config->getDebugEmail();
+            /**
+             * If it's a comma-separated list, split
+             */
             if (strpos($mailTo, ',') !== false) {
                 $mailTo = explode(',', $mailTo);
             } else {
                 $mailTo = [$mailTo];
             }
-            $this->mailTo = $mailTo;
+            $this->setMailTo($mailTo);
         }
+    }
+
+    /**
+     * When the system exits before ->log() is explicitly called, attempt to log anyway
+     */
+    public function __destruct()
+    {
+        $this->log();
     }
 
     /**
@@ -249,11 +268,11 @@ class Debugger
          */
         if (strpos($this->mode, 'mail') !== false) {
             /** Mail handler handles sending logs to configured e-mail addresses */
-            $headers =  'From: ' . $this->mailFrom . "\r\n" .
-                        'Reply-To: ' . $this->mailFrom . "\r\n" .
+            $headers =  'From: ' . $this->getMailFrom() . "\r\n" .
+                        'Reply-To: ' . $this->getMailFrom() . "\r\n" .
                         'X-Mailer: PHP/' . phpversion();
-            foreach ($this->mailTo as $mailTo) {
-                mail($mailTo, $this->mailSubject, $message, $headers);
+            foreach ($this->getMailTo() as $mailTo) {
+                mail($mailTo, $this->getMailSubject(), $message, $headers);
             }
 
         }
@@ -350,9 +369,91 @@ class Debugger
         return implode(PHP_EOL, $this->getMessage());
     }
 
-    public function __destruct()
+    /**
+     * Return mailTo array
+     *
+     * @return array
+     */
+    public function getMailTo()
     {
-        $this->log();
+        return $this->mailTo;
+    }
+
+    /**
+     * Set mailTo array
+     *
+     * @param array $mailTo
+     *
+     * @return $this
+     */
+    public function setMailTo($mailTo)
+    {
+        if (!is_array($mailTo)) {
+            $mailTo = [$mailTo];
+        }
+        $this->mailTo = $mailTo;
+        return $this;
+    }
+
+    /**
+     * Add to mailTo array
+     *
+     * @param string $address
+     *
+     * @return $this
+     */
+    public function addMailTo($address)
+    {
+        if (!is_array($address)) {
+            $this->mailTo[] = $address;
+        }
+        return $this;
+    }
+
+    /**
+     * Return mail subject
+     *
+     * @return string
+     */
+    public function getMailSubject()
+    {
+        return $this->mailSubject;
+    }
+
+    /**
+     * Set mail subject
+     *
+     * @param string $mailSubject
+     *
+     * @return $this
+     */
+    public function setMailSubject($mailSubject)
+    {
+        $this->mailSubject = $mailSubject;
+        return $this;
+    }
+
+    /**
+     * Return mail from address
+     *
+     * @return string
+     */
+    public function getMailFrom()
+    {
+        return $this->mailFrom;
+    }
+
+    /**
+     * Set mail from address
+     *
+     * @param string $mailFrom
+     *
+     * @return $this
+     */
+    public function setMailFrom($mailFrom)
+    {
+        $this->mailFrom = $mailFrom;
+        return $this;
     }
 
 }

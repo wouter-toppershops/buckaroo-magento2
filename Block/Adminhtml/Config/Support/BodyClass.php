@@ -36,68 +36,31 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Test\Unit\Observer;
+namespace TIG\Buckaroo\Block\Adminhtml\Config\Support;
 
-use Magento\Framework\Event\Observer;
-use Mockery as m;
-use TIG\Buckaroo\Test\BaseTest;
-use TIG\Buckaroo\Observer\SetBuckarooFeeToRefund;
+use Magento\Backend\Block\Template;
+use Magento\Backend\Block\Template\Context;
+use Magento\Framework\View\Element\BlockInterface;
 
-class SetBuckarooFeeToRefundTest extends BaseTest
+class BodyClass extends Template implements BlockInterface
 {
     /**
-     * @var SetBuckarooFeeToRefund
+     * @var \Magento\Framework\App\RequestInterface
      */
-    protected $object;
+    protected $request;
 
     /**
-     * @var m\MockInterface|Observer
+     * @param Context $context
+     * @param array $data
      */
-    protected $observer;
-
-    /**
-     * @var m\MockInterface|Observer
-     */
-    protected $creditmemo;
-
-    /**
-     * Setup the basic mock object.
-     */
-    public function setUp()
+    public function __construct(Context $context, array $data = [])
     {
-        parent::setUp();
+        parent::__construct($context, $data);
 
-        $this->object = $this->objectManagerHelper->getObject(SetBuckarooFeeToRefund::class);
-        $this->observer = m::mock(Observer::class);
+        $this->request = $context->getRequest();
 
-        $this->creditmemo = m::mock();
-        $this->observer->shouldReceive('getEvent')->twice()->andReturnSelf();
-        $this->observer->shouldReceive('getCreditmemo')->once()->andReturn($this->creditmemo);
-    }
-
-    /**
-     * Test the happy path. No Buckaroo Payment Fee
-     */
-    public function testInvoiceRegisterHappyPath()
-    {
-        $this->observer->shouldReceive('getInput')->once()->andReturnNull();
-
-        $this->object->execute($this->observer);
-    }
-
-    /**
-     * Test the flow when there are reward points.
-     */
-    public function testInvoiceRegisterWithRewardPoints()
-    {
-        $this->observer->shouldReceive('getInput')->once()->andReturn([
-            'refund_reward_points' => 30,
-            'refund_reward_points_enable' => true,
-        ]);
-
-        $this->creditmemo->shouldReceive('getBuckarooFee')->andReturn(10);
-        $this->creditmemo->shouldReceive('setBuckarooFee')->once()->with(10);
-
-        $this->object->execute($this->observer);
+        if ($this->request->getParam('section') == 'tig_buckaroo') {
+            $this->pageConfig->addBodyClass('buckaroo-config-page');
+        }
     }
 }

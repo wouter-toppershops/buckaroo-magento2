@@ -4,7 +4,7 @@
                name="payment[method]"
                class="radio"
                data-bind="attr: {'id': getCode()}, value: getCode(), checked: isChecked, click: selectPaymentMethod, visible: isRadioButtonVisible()"/>
-        <label data-bind="attr: {'for': getCode()}" class="label"><span data-bind="text: getTitle()"></span></label>
+        <label data-bind="attr: {'for': getCode()}" class="label"><span class="tig_buckaroo_image_title" data-bind="text: getTitle()"></span></label>
     </div>
 
     <div class="payment-method-content">
@@ -13,7 +13,8 @@
         <!--/ko-->
 
 
-        <div class="payment-method-2col" >
+        <div class="payment-method-second-col billing-address-form" >
+            <span data-bind="i18n : 'Select a bank:'"></span>
             <!-- ko foreach: banktypes -->
             <label class="bank-types">
                 <!--@TODO: write a script which generates the images in pub/static  -->

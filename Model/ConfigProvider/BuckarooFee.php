@@ -74,8 +74,9 @@ class BuckarooFee extends AbstractConfigProvider
     protected $localeFormat;
 
     /**
-     * @param \Magento\Checkout\Model\Session           $checkoutSession
-     * @param \Magento\Framework\Locale\FormatInterface $localeFormat
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \Magento\Checkout\Model\Session                    $checkoutSession
+     * @param \Magento\Framework\Locale\FormatInterface          $localeFormat
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,

@@ -111,7 +111,7 @@ class Push implements PushInterface
     /**
      * Push constructor.
      *
-     * @param ObjectManagerInterface                                $objectManager
+     * @param \Magento\Framework\ObjectManagerInterface                                $objectManager
      * @param \Magento\Framework\Webapi\Rest\Request                $request
      * @param \TIG\Buckaroo\Model\Validator\Push                    $validator
      * @param \TIG\Buckaroo\Model\Validator\Amount                  $amountValidator
@@ -121,13 +121,13 @@ class Push implements PushInterface
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
      */
     public function __construct(
-        ObjectManagerInterface $objectManager,
-        Request $request,
-        ValidatorPush $validator,
-        ValidatorAmount $amountValidator,
-        OrderSender $orderSender,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Webapi\Rest\Request $request,
+        \TIG\Buckaroo\Model\Validator\Push $validator,
+        \TIG\Buckaroo\Model\Validator\Amount $amountValidator,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \TIG\Buckaroo\Helper\Data $helper,
-        ScopeConfigInterface $scopeConfig,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Helper\Data $helper,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Model\Refund\Push $refundPush
