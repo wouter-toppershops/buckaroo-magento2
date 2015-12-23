@@ -48,15 +48,22 @@ class TotalsConverter
         /** @var \Magento\Quote\Api\Data\TotalSegmentExtensionInterface $totalSegmentExtension */
         $totalSegmentExtension = $this->totalSegmentExtensionFactory->create();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension->setBuckarooFee($total->getBuckarooFee());
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension->setBaseBuckarooFee($total->getBaseBuckarooFee());
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension->setBuckarooFeeTaxAmount($total->getBuckarooFeeTaxAmount());
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension->setBuckarooFeeBaseTaxAmount($total->getBuckarooFeeBaseTaxAmount());
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension->setBuckarooFeeInclTax($total->getBuckarooFeeInclTax());
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension->setBaseBuckarooFeeInclTax($total->getBaseBuckarooFeeInclTax());
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegments[$this->code]->setExtensionAttributes($totalSegmentExtension);
 
         return $totalSegments;

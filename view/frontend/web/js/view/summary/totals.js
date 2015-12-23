@@ -26,7 +26,7 @@ define(
              * @override
              */
             initialize : function (options) {
-                this.model = new BuckarooFee(this.level);
+                this.model = new BuckarooFee();
 
                 return this._super(options);
             },
@@ -46,13 +46,9 @@ define(
                 ) {
                     buckarooFeeSegment = totals.getSegment('buckaroo_fee')['extension_attributes'];
 
-                    switch (this.level) {
-                        case 'order':
-                            price = buckarooFeeSegment.hasOwnProperty('buckaroo_fee') ?
-                                buckarooFeeSegment['buckaroo_fee'] :
-                                0;
-                            break;
-                    }
+                    price = buckarooFeeSegment.hasOwnProperty('buckaroo_fee') ?
+                        buckarooFeeSegment['buckaroo_fee'] :
+                        0;
                 }
 
                 return this.getFormattedPrice(price);
@@ -73,13 +69,9 @@ define(
                 ) {
                     buckarooFeeSegment = totals.getSegment('buckaroo_fee')['extension_attributes'];
 
-                    switch (this.level) {
-                        case 'order':
-                            price = buckarooFeeSegment.hasOwnProperty('buckaroo_fee_incl_tax') ?
-                                buckarooFeeSegment['buckaroo_fee_incl_tax'] :
-                                0;
-                            break;
-                    }
+                    price = buckarooFeeSegment.hasOwnProperty('buckaroo_fee_incl_tax') ?
+                        buckarooFeeSegment['buckaroo_fee_incl_tax'] :
+                        0;
                 }
 
                 return this.getFormattedPrice(price);
@@ -101,7 +93,7 @@ define(
                     totals.getSegment('buckaroo_fee') &&
                     totals.getSegment('buckaroo_fee').hasOwnProperty('extension_attributes')
                 ) {
-                    isAvailable = !!totals.getSegment('buckaroo_fee')['extension_attributes'];
+                    isAvailable = !!totals.getSegment('buckaroo_fee')['extension_attributes'].buckaroo_fee;
                 }
 
                 return isAvailable;

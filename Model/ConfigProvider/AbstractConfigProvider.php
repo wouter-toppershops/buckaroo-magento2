@@ -65,6 +65,8 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
      * @param mixed $params
      *
      * @return mixed|null
+     *
+     * @throws \InvalidArgumentException
      */
     public function __call($method, $params)
     {
@@ -79,6 +81,16 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
         $store = null;
         if (isset($params[0])) {
             $store = $params[0];
+        }
+
+        /**
+         * Check if the store parameter is valid.
+         */
+        if ($store && !is_int($store) && !$store instanceof \Magento\Store\Model\Store) {
+            throw new \InvalidArgumentException(
+                "First argument passed to the getter should be an integer or an instance of" .
+                " '\\Magento\\Store\\Model\\Store"
+            );
         }
 
         /**
@@ -119,7 +131,7 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     /**
      * Get all config in associated array
      *
-     * @param null $store
+     * @param null|int|\Magento\Store\Model\Store $store
      * @return array
      */
     public function getConfig($store = null)
