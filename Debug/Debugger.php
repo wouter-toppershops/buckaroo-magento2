@@ -434,7 +434,7 @@ class Debugger
     }
 
     /**
-     * Return mail from
+     * Return mail from address
      *
      * @return string
      */
@@ -444,7 +444,7 @@ class Debugger
     }
 
     /**
-     * Set mail from
+     * Set mail from address
      *
      * @param string $mailFrom
      *
