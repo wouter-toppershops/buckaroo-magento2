@@ -243,4 +243,10 @@
     <type name="Magento\Quote\Model\Cart\TotalsConverter">
         <plugin name="tig_buckaroo_fee_total_converter" type="TIG\Buckaroo\Model\Plugin\TotalsConverter" />
     </type>
+
+    <type name="TIG\Buckaroo\Block\Info\Creditcard">
+        <arguments>
+            <argument name="configProvider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</argument>
+        </arguments>
+    </type>
 </config>

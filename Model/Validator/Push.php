@@ -57,6 +57,9 @@ class Push implements ValidatorInterface
 
     public $helper;
 
+    /** @var \TIG\Buckaroo\Debug\Debugger $debugger */
+    public $debugger;
+
     public $bpeResponseMessages = [
         190 => 'Success',
         490 => 'Payment failure',
@@ -75,15 +78,18 @@ class Push implements ValidatorInterface
      * @param \TIG\Buckaroo\Helper\Data                             $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
+     * @param \TIG\Buckaroo\Debug\Debugger                          $debugger
      */
     public function __construct(
         DataHelper $helper,
         ScopeConfigInterface $scopeConfig,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Debug\Debugger $debugger
     ) {
         $this->helper                   = $helper;
         $this->scopeConfig              = $scopeConfig;
         $this->configProviderFactory    = $configProviderFactory;
+        $this->debugger                 = $debugger;
     }
 
     /**
@@ -178,9 +184,9 @@ class Push implements ValidatorInterface
         $signatureString .= $digitalSignature;
 
         $signature = SHA1($signatureString);
-        /**
-         * @todo Add the signature to the debug mail.
-         */
+
+        $this->debugger->addToMessage($signature);
+
         return $signature;
     }
 
