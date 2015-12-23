@@ -105,6 +105,11 @@ class Creditcard extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+
+    /**
+     * @var string
+     */
+    protected $_infoBlockType = 'TIG\Buckaroo\Block\Info\Creditcard';
     // @codingStandardsIgnoreEnd
 
     /**
@@ -242,23 +247,6 @@ class Creditcard extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
-        $transactionBuilder = $this->transactionBuilderFactory->get('order');
-
-        $services = [
-            'Name'    => $payment->getAdditionalInformation('card_type'),
-            'Action'  => 'CancelAuthorize',
-            'Version' => 1,
-        ];
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest')
-                           ->setOriginalTransactionKey(
-                               $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-                           )
-                           ->setChannel('CallCenter');
-
-        return $transactionBuilder;
+        return true;
     }
 }
