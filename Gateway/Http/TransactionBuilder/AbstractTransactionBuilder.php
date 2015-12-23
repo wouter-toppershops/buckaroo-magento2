@@ -53,14 +53,6 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     const MODULE_CODE = 'TIG_Buckaroo';
 
     /**
-     * Config Xpaths
-     */
-    const XPATH_PAYMENT_DESCRIPTION = 'buckaroo/advanced/payment_description';
-    const XPATH_MERCHANT_KEY = 'payment/tig_buckaroo_account/merchant_key';
-
-    /**#@-*/
-
-    /**
      * @var \Magento\Sales\Model\Order
      */
     protected $order;

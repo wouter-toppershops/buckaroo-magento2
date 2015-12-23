@@ -79,6 +79,11 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
     ) {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBuckarooFee(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBaseBuckarooFee(0);
+
         if (!$shippingAssignment->getItems()) {
             return $this;
         }

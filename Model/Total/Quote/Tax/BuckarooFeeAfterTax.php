@@ -64,9 +64,19 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
     ) {
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBuckarooFeeInclTax(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBaseBuckarooFeeInclTax(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBuckarooFeeTaxAmount(0);
+        /** @noinspection PhpUndefinedMethodInspection */
+        $total->setBuckarooFeeBaseTaxAmount(0);
+
         if (!$shippingAssignment->getItems()) {
             return $this;
         }
+
         /** @noinspection PhpUndefinedMethodInspection */
         $extraTaxableDetails = $total->getExtraTaxableDetails();
 
