@@ -7,7 +7,7 @@
 
         {
             "type": "vcs",
-            "url": "git@tig.plan.io:tig-tigbuckaroomagento2.tigmagento2buckaroo.git"
+            "url": "git@bitbucket.org:tig-team/tig-extension-tig-buckaroo-magento2.git"
         }
 ```
 * composer require tig/buckaroo dev-develop
