@@ -1,3 +1,4 @@
+![logo_buckaroo.png](https://bitbucket.org/repo/oXxajd/images/1156190506-logo_buckaroo.png)
 ## Composer installatie ##
 * Voeg toe aan je composer.json bij "repositories": 
 
