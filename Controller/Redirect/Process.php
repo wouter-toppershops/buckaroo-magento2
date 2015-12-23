@@ -106,6 +106,14 @@ class Process extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $this->response = $this->getRequest()->getParams();
+
+        /**
+         * Check if there is a valid response. If not, redirect to home.
+         */
+        if (count($this->response) == 0 || !isset($this->response['brq_statuscode'])) {
+            $this->_redirect('/');
+        }
+
         $statusCode = (int)$this->response['brq_statuscode'];
 
         $this->order->loadByIncrementId($this->response['brq_ordernumber']);

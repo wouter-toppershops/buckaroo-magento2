@@ -249,4 +249,18 @@
             <argument name="configProvider" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</argument>
         </arguments>
     </type>
+
+    <type name="TIG\Buckaroo\Model\ConfigProvider\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="tig_buckaroo_configprovider_account" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Account</item>
+                <item name="tig_buckaroo_configprovider_buckaroofee" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
+                <item name="tig_buckaroo_configprovider_predefined" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Predefined</item>
+                <item name="tig_buckaroo_configprovider_privatekey" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Privatekey</item>
+                <item name="tig_buckaroo_configprovider_publickey" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Publickey</item>
+                <item name="tig_buckaroo_configprovider_refund" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Refund</item>
+                <item name="tig_buckaroo_configprovider_states" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\States</item>
+            </argument>
+        </arguments>
+    </type>
 </config>
