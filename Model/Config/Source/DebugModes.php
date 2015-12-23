@@ -47,8 +47,6 @@ class DebugModes implements \Magento\Framework\Option\ArrayInterface
     protected $configProviderFactory;
 
     /**
-     * Class constructor
-     *
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
     public function __construct(

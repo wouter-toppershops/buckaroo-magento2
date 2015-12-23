@@ -46,9 +46,7 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
     protected $_modelCertificateFactory;
 
     /**
-     * Class constructor
-     *
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
      */
     public function __construct(
         \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory

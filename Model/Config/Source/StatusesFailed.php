@@ -52,8 +52,6 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
     protected $configProviderFactory;
 
     /**
-     * Class constructor
-     *
      * @param \Magento\Sales\Model\Order\Config                  $orderConfig
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
      */

@@ -93,7 +93,7 @@ class Debugger
     protected $mode = 'log';
 
     /**
-     * @param Logger                                        $logger
+     * @param \TIG\Buckaroo\Debug\Logger                    $logger
      * @param \Magento\Framework\ObjectManagerInterface     $objectManager
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory    $configProviderFactory
      */
