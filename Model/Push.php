@@ -108,6 +108,9 @@ class Push implements PushInterface
      */
     public $scopeConfig;
 
+    /** @var \TIG\Buckaroo\Debug\Debugger $debugger */
+    public $debugger;
+
     /**
      * Push constructor.
      *
@@ -130,7 +133,8 @@ class Push implements PushInterface
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Helper\Data $helper,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Model\Refund\Push $refundPush
+        \TIG\Buckaroo\Model\Refund\Push $refundPush,
+        \TIG\Buckaroo\Debug\Debugger $debugger
     ) {
         $this->objectManager            = $objectManager;
         $this->request                  = $request;
@@ -141,14 +145,14 @@ class Push implements PushInterface
         $this->scopeConfig              = $scopeConfig;
         $this->configProviderFactory    = $configProviderFactory;
         $this->refundPush               = $refundPush;
+        $this->debugger                 = $debugger;
 
     }
 
     /**
      * {@inheritdoc}
      *
-     * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object.
-     * @todo Debug mailing trough the push flow.
+     * @todo Once Magento supports variable parameters, modify this method to no longer require a Request object
      */
     public function receivePush()
     {
@@ -156,6 +160,8 @@ class Push implements PushInterface
         $this->originalPostData = $this->request->getParams();
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
+        //Start debug mailing/logging with the postdata.
+        $this->debugger->addToMessage($this->originalPostData);
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
         //Check if the push can be procesed and if the order can be updated IMPORTANT => use the original post data.
@@ -164,6 +170,7 @@ class Push implements PushInterface
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);
         if (!$this->order->getId()) {
+            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
@@ -171,20 +178,24 @@ class Push implements PushInterface
         //Check if the push is a refund request.
         if (isset($this->postData['brq_amount_credit'])) {
             if ($response['status'] !== 'TIG_BUCKAROO_STATUSCODE_SUCCESS'
-                && $this->order->hasInvoices()
+                && !$this->order->hasInvoices()
             ) {
-                return false;
+                throw new Exception(
+                    __('Refund failed ! Status = '.$response['status']. ' and the order does not contain an invoice')
+                );
             }
             return $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
         }
 
         //Last validation before push can be completed
         if (!$validSignature) {
-            return false;
+            $this->debugger->addToMessage('Invalid push signature');
+            throw new Exception(__('Signature from push is incorrect'));
             //If the signature is valid but the order cant be updated, try to add a notification to the order comments.
         } elseif ($validSignature && !$canUpdateOrder) {
             $this->setOrderNotificationNote($response['message']);
-            return false;
+            $this->debugger->addToMessage('Order can not receive updates');
+            throw new Exception(__('Signature from push is correct but the order can not update'));
         }
         //Make sure the transactions key is set.
         $payment     = $this->order->getPayment();
@@ -196,6 +207,8 @@ class Push implements PushInterface
         }
         $this->processPush($response);
         $this->order->save();
+
+        $this->debugger->log();
 
         return true;
     }
@@ -209,6 +222,7 @@ class Push implements PushInterface
      */
     public function processPush($response)
     {
+        $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
         $statesConfig = $this->configProviderFactory->get('states');
@@ -248,7 +262,8 @@ class Push implements PushInterface
      * by using its own transactionkey.
      *
      * @param $transactionId
-     * @return bool
+     * @return Order
+     * @throws Exception
      */
     protected function getOrderByTransactionKey($transactionId)
     {
@@ -261,7 +276,7 @@ class Push implements PushInterface
                 return $order;
             }
         }
-        return false;
+        throw new Exception(__('There was no order found by transaction Id'));
     }
 
     /**
@@ -308,6 +323,7 @@ class Push implements PushInterface
         $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
 
         if ($this->order->canCancel() && $buckarooCancelOnFailed) {
+            $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.');
             $this->order->cancel()->save();
         }
 
@@ -343,6 +359,7 @@ class Push implements PushInterface
      * @param $newStatus
      * @param $message
      * @return bool
+     * @throws Exception
      */
     public function processIncorrectPaymentPush($newStatus, $message)
     {
@@ -360,7 +377,10 @@ class Push implements PushInterface
         ]);
 
         if (!$description) {
-            return false;
+            $this->debugger->addToMessage(
+                'Invalid status send by buckaroo, but the payment amount was correct.'
+            );
+            throw new Exception(__('Invalid status send by buckaroo, but the payment amount was correct.'));
         }
 
         $this->order->hold()->save()->addStatusHistoryComment($description, $newStatus);
@@ -386,8 +406,6 @@ class Push implements PushInterface
 
     /**
      * Try to add an notification note to the order comments.
-     * @todo make note available through translations.
-     * @todo What will be the notification ? -> Create a class that would create the note dynamic
      *
      * @param $message
      */
@@ -398,7 +416,7 @@ class Push implements PushInterface
             $this->order->addStatusHistoryComment($note);
             $this->order->save();
         } catch (Exception $e) {
-            // parse exception into debug mail
+            $this->debugger->addToMessage($e->getLogMessage());
         }
     }
 
@@ -423,11 +441,13 @@ class Push implements PushInterface
      * Only when the order can be invoiced and has not been invoiced before.
      *
      * @return bool
+     * @throws Exception
      */
     protected function saveInvoice()
     {
         if (!$this->order->canInvoice() && $this->order->hasInvoices()) {
-            return false;
+            $this->debugger->addToMessage(__('Order can not be invoiced'));
+            throw new Exception(__('Order can not be invoiced'));
         }
 
         $this->addTransactionData();
@@ -452,7 +472,7 @@ class Push implements PushInterface
             return true;
         }
 
-        return false;
+        throw new Exception(__('Order can not be invoiced'));
     }
 
     /**
