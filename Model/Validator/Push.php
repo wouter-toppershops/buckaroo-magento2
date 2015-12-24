@@ -40,9 +40,7 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
-use \TIG\Buckaroo\Helper\Data as DataHelper;
 use \TIG\Buckaroo\Model\ValidatorInterface;
-use \Magento\Framework\App\Config\ScopeConfigInterface;
 
 /**
  * Class Push
@@ -51,10 +49,13 @@ use \Magento\Framework\App\Config\ScopeConfigInterface;
  */
 class Push implements ValidatorInterface
 {
+    /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
     public $scopeConfig;
 
+    /** @var \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory */
     public $configProviderFactory;
 
+    /** @var \TIG\Buckaroo\Helper\Data $helper */
     public $helper;
 
     /** @var \TIG\Buckaroo\Debug\Debugger $debugger */
@@ -81,8 +82,8 @@ class Push implements ValidatorInterface
      * @param \TIG\Buckaroo\Debug\Debugger                          $debugger
      */
     public function __construct(
-        DataHelper $helper,
-        ScopeConfigInterface $scopeConfig,
+        \TIG\Buckaroo\Helper\Data $helper,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Debug\Debugger $debugger
     ) {
