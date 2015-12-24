@@ -92,6 +92,9 @@ class ProcessTest extends BaseTest
      */
     protected $redirect;
 
+    /**
+     * Setup the base mocks
+     */
     public function setUp()
     {
         parent::setUp();
@@ -117,6 +120,12 @@ class ProcessTest extends BaseTest
         ]);
     }
 
+    /**
+     * @param $to
+     *
+     * @return $this
+     * @throws \Exception
+     */
     public function assertRedirect($to)
     {
         $shouldReceive = $this->redirect->shouldReceive('redirect')->once();
@@ -132,12 +141,17 @@ class ProcessTest extends BaseTest
 
             default:
                 throw new \Exception('Invalid $to variable defiend');
-                break;
         }
 
         return $this;
     }
 
+    /**
+     * Test the path with no parameters set.
+     *
+     * @throws Exception
+     * @throws \Exception
+     */
     public function testExecute()
     {
         $this->assertRedirect('checkout');
@@ -157,9 +171,14 @@ class ProcessTest extends BaseTest
 
         $this->messageManager->shouldReceive('addErrorMessage')->once()->with(\Mockery::type('Magento\Framework\Phrase'));
 
+        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
+
         $this->controller->execute();
     }
 
+    /**
+     * Test the path when we are unable to create a quote.
+     */
     public function testExecuteUnableToCreateQuote()
     {
         $this->request->shouldReceive('getParams')->andReturn([
@@ -173,6 +192,8 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->twice()->andReturnNull();
 
+        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
+
         try {
             $this->controller->execute();
             $this->fail();
@@ -182,6 +203,9 @@ class ProcessTest extends BaseTest
         }
     }
 
+    /**
+     * Test what happens when we are unable to cancel the order.
+     */
     public function testExecuteUnableToCancelOrder()
     {
         $this->request->shouldReceive('getParams')->andReturn([
@@ -196,6 +220,8 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('getId')->twice()->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(false);
 
+        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
+
         try {
             $this->controller->execute();
             $this->fail();
@@ -205,6 +231,12 @@ class ProcessTest extends BaseTest
         }
     }
 
+    /**
+     * Test a success status update.
+     *
+     * @throws Exception
+     * @throws \Exception
+     */
     public function testExecuteSuccessStatus()
     {
         $this->assertRedirect('success');

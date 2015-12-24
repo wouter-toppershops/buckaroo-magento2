@@ -63,10 +63,9 @@ class SepaDirectDebitTest extends BaseTest
         $infoInstanceMock = m::mock($class);
         $infoInstanceMock
             ->shouldReceive($class == 'Magento\Payment\Model\Info' ? 'getQuote' : 'getOrder')
-            ->twice()
             ->andReturnSelf();
-        $infoInstanceMock->shouldReceive('getBillingAddress')->twice()->andReturnSelf();
-        $infoInstanceMock->shouldReceive('getCountryId')->twice()->andReturn($country);
+        $infoInstanceMock->shouldReceive('getBillingAddress')->andReturnSelf();
+        $infoInstanceMock->shouldReceive('getCountryId')->andReturn($country);
 
         return $infoInstanceMock;
     }
@@ -84,6 +83,7 @@ class SepaDirectDebitTest extends BaseTest
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
 
         $ibanValidator = m::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
@@ -105,6 +105,7 @@ class SepaDirectDebitTest extends BaseTest
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
 
         $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit');
         $this->object->setData('info_instance', $infoInstanceMock);
@@ -128,6 +129,7 @@ class SepaDirectDebitTest extends BaseTest
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
 
         $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit');
         $this->object->setData('info_instance', $infoInstanceMock);
@@ -151,6 +153,7 @@ class SepaDirectDebitTest extends BaseTest
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
 
         $ibanValidator = m::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(false);
@@ -181,6 +184,7 @@ class SepaDirectDebitTest extends BaseTest
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
 
         $ibanValidator = m::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
