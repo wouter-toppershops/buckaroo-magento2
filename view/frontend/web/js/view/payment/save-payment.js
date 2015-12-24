@@ -19,6 +19,10 @@ define(
 
             initialize: function () {
                 this._super();
+
+                /**
+                 * Observe the onclick event on all payment methods.
+                 */
                 $('body').on(
                     'click',
                     '.payment-methods input[type="radio"][name="payment[method]"]',
@@ -26,7 +30,13 @@ define(
                 );
             },
 
+            /**
+             * Save the selected payment method.
+             */
             savePaymentMethod: function() {
+                /**
+                 * Build the URL for saving the selected payment method.
+                 */
                 var params = (resourceUrlManager.getCheckoutMethod() == 'guest') ? {quoteId: quote.getQuoteId()} : {};
                 var urls = {
                     'guest': '/guest-carts/:quoteId/totals',
@@ -34,8 +44,15 @@ define(
                 };
                 var url = resourceUrlManager.getUrl(urls, params);
 
+                /**
+                 * Send the selected payment method, along with a cart identifier, the billing address and a 'skip
+                 * validation' flag to the save payment method API.
+                 */
                 storage.post(
                     url,
+                    /**
+                     * The APi expects a JSON object with the selected payment method and the selected billing address.
+                     */
                     JSON.stringify(
                         {
                             paymentMethod: {
