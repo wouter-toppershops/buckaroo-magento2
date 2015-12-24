@@ -5,25 +5,30 @@
 /*global define*/
 define(
     [
-        'uiElement',
-        'underscore'
+
     ],
-    function(uiElement, _) {
+    function() {
         "use strict";
 
         var buckarooFeeConfig = window.buckarooConfig ?
             window.buckarooConfig.buckarooFee :
             window.checkoutConfig.buckarooFee;
 
-        var provider = uiElement();
-
         return function(itemId) {
             return {
                 itemId: itemId,
-                observables: {},
+
+                /**
+                 * @param key
+                 * @returns {*}
+                 */
                 getConfigValue: function(key) {
                     return buckarooFeeConfig[key];
                 },
+
+                /**
+                 * @returns {globalOptions.priceFormat|*|mage.configurable.options.priceFormat|.options.priceFormat|priceFormat}
+                 */
                 getPriceFormat: function() {
                     return window.buckarooConfig.priceFormat;
                 },
@@ -32,7 +37,7 @@ define(
                  * Get buckaroo fee price display mode.
                  * @returns {Boolean}
                  */
-                displayBothprices: function () {
+                displayBothPrices: function () {
                     return !!buckarooFeeConfig.cart.displayBuckarooFeeBothPrices;
                 },
 

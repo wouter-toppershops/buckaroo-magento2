@@ -69,24 +69,16 @@ class BuckarooFee extends AbstractConfigProvider
     protected $checkoutSession;
 
     /**
-     * @var \Magento\Framework\Locale\FormatInterface
-     */
-    protected $localeFormat;
-
-    /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \Magento\Checkout\Model\Session                    $checkoutSession
-     * @param \Magento\Framework\Locale\FormatInterface          $localeFormat
      */
     public function __construct(
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \Magento\Framework\Locale\FormatInterface $localeFormat
+        \Magento\Checkout\Model\Session $checkoutSession
     ) {
         parent::__construct($scopeConfig);
 
         $this->checkoutSession = $checkoutSession;
-        $this->localeFormat    = $localeFormat;
     }
 
     /**
@@ -111,10 +103,6 @@ class BuckarooFee extends AbstractConfigProvider
                         || $this->getPriceDisplaySales() == DisplayType::DISPLAY_TYPE_INCLUDING_TAX,
                 ],
             ],
-            'priceFormat' => $this->localeFormat->getPriceFormat(
-                null,
-                $this->checkoutSession->getQuote()->getQuoteCurrencyCode()
-            ),
         ];
     }
 }

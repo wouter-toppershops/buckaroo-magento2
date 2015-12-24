@@ -104,15 +104,7 @@ define(
              * @returns {Boolean}
              */
             displayBothPrices : function () {
-                var displayBothPrices = false;
-
-                switch (this.level) {
-                    case 'order':
-                        displayBothPrices = this.model.displayBothprices();
-                        break;
-                }
-
-                return displayBothPrices;
+                return !!this.model.displayBothPrices();
             },
 
             /**
@@ -120,13 +112,7 @@ define(
              * @returns {Boolean}
              */
             displayPriceInclTax : function () {
-                var displayPriceInclTax = false;
-
-                switch (this.level) {
-                    case 'order':
-                        displayPriceInclTax = this.model.displayInclTaxPrice();
-                        break;
-                }
+                var displayPriceInclTax = this.model.displayInclTaxPrice();
 
                 return displayPriceInclTax && !this.displayBothPrices();
             },

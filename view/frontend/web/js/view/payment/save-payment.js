@@ -22,44 +22,50 @@ define(
                 $('body').on(
                     'click',
                     '.payment-methods input[type="radio"][name="payment[method]"]',
-                    function() {
-                        var params = (resourceUrlManager.getCheckoutMethod() == 'guest') ? {quoteId: quote.getQuoteId()} : {};
-                        var urls = {
-                            'guest': '/guest-carts/:quoteId/totals',
-                            'customer': '/carts/mine/set-payment-information'
-                        };
-                        var url = resourceUrlManager.getUrl(urls, params);
+                    this.savePaymentMethod
+                );
+            },
 
-                        totals.isLoading(true);
-                        storage.post(
-                            url,
-                            JSON.stringify(
-                                {
-                                    paymentMethod: {
-                                        method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
-                                        additional_data: {
-                                            buckaroo_skip_validation: true
-                                        }
-                                    },
-                                    billingAddress: quote.billingAddress()
+            savePaymentMethod: function() {
+                var params = (resourceUrlManager.getCheckoutMethod() == 'guest') ? {quoteId: quote.getQuoteId()} : {};
+                var urls = {
+                    'guest': '/guest-carts/:quoteId/totals',
+                    'customer': '/carts/mine/set-payment-information'
+                };
+                var url = resourceUrlManager.getUrl(urls, params);
+
+                storage.post(
+                    url,
+                    JSON.stringify(
+                        {
+                            paymentMethod: {
+                                method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
+                                additional_data: {
+                                    buckaroo_skip_validation: true
                                 }
-                            )
-                        ).done(
-                            function () {
-                                getTotals({'test': function() {}});
-                            }
-                        ).error(
-                            function () {
-                                totals.isLoading(false);
-                            }
-                        ).always(
-                            function () {
-                                totals.isLoading(false);
-                            }
-                        );
+                            },
+                            billingAddress: quote.billingAddress()
+                        }
+                    )
+                ).done(
+                    function () {
+                        /**
+                         * Update the totals in the summary block.
+                         *
+                         * While the method is called 'getTotals', it will actually fetch the latest totals from
+                         * Magento's API and then update the entire summary block.
+                         *
+                         * Please note that the empty array is required for this function. it may contain callbacks,
+                         * however these MUST return true for the function to work as expected. otherwise it will
+                         * silently crash.
+                         */
+                        getTotals([]);
+                    }
+                ).error(
+                    function () {
+                        totals.isLoading(false);
                     }
                 );
-                return this;
             }
         });
     }
