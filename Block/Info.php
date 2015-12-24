@@ -41,5 +41,10 @@ namespace TIG\Buckaroo\Block;
 
 class Info extends \Magento\Payment\Block\Info
 {
-
+    // @codingStandardsIgnoreStart
+    /**
+     * @var string
+     */
+    protected $_template = 'TIG_Buckaroo::info/payment_method.phtml';
+    // @codingStandardsIgnoreEnd
 }
