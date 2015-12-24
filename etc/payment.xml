@@ -41,7 +41,7 @@
 <payment xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/payment.xsd">
     <groups>
-        <group id="buckaroo">
+        <group id="tig_buckaroo">
             <label>Buckaroo Payment Methods</label>
         </group>
     </groups>

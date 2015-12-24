@@ -63,7 +63,7 @@
                 <sort_order>10</sort_order>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
-                <group>tig_buckaroo_ideal</group>
+                <group>buckaroo</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_ideal>
 
@@ -78,7 +78,7 @@
                 <reminder_leve1>4</reminder_leve1>
                 <order_email>1</order_email>
                 <payment_fee_lavel>Fee</payment_fee_lavel>
-                <group>tig_buckaroo_sepadirectdebit</group>
+                <group>buckaroo</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_sepadirectdebit>
 
@@ -91,7 +91,7 @@
                 <sort_order>90</sort_order>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
-                <group>tig_buckaroo_paypal</group>
+                <group>buckaroo</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_paypal>
 
@@ -106,7 +106,7 @@
                 <maestro_payment_fee_label>Fee</maestro_payment_fee_label>
                 <mastercard_payment_fee_label>Fee</mastercard_payment_fee_label>
                 <visa_payment_fee_label>Fee</visa_payment_fee_label>
-                <group>tig_buckaroo_creditcard</group>
+                <group>buckaroo</group>
                 <payment_action>authorize</payment_action>
             </tig_buckaroo_creditcard>
 
@@ -123,7 +123,7 @@
                 <reminder_level>4</reminder_level>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
-                <group>tig_buckaroo_transfer</group>
+                <group>buckaroo</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_transfer>
 
@@ -135,7 +135,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>160</sort_order>
                 <payment_fee_label>Fee</payment_fee_label>
-                <group>tig_buckaroo_giropay</group>
+                <group>buckaroo</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_giropay>
 
@@ -147,7 +147,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>140</sort_order>
                 <payment_fee_label>Fee</payment_fee_label>
-                <group>tig_buckaroo_mrcash</group>
+                <group>buckaroo</group>
                 <payment_action>order</payment_action>
                 <refund_extra_fields>customeriban,customeraccountname,customerbic</refund_extra_fields>
                 <refund_extra_fields_labels>customer iban,customer account name,customer bic</refund_extra_fields_labels>
@@ -161,7 +161,7 @@
                 <allowspecific>0</allowspecific>
                 <sort_order>150</sort_order>
                 <payment_fee_label>Fee</payment_fee_label>
-                <group>tig_buckaroo_sofortbanking</group>
+                <group>tig_buckaroo</group>
                 <payment_action>order</payment_action>
             </tig_buckaroo_sofortbanking>
         </payment>
