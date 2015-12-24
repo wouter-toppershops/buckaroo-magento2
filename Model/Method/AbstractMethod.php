@@ -212,6 +212,23 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->priceHelper                  = $priceHelper;
     }
 
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+        if (is_array($data) && isset($data['buckaroo_skip_validation'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'buckaroo_skip_validation',
+                $data['buckaroo_skip_validation']
+            );
+        } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->getInfoInstance()->setAdditionalInformation(
+                'buckaroo_skip_validation',
+                $data->getBuckarooSkipValidation()
+            );
+        }
+        return $this;
+    }
+
     /**
      * Check whether payment method can be used
      *

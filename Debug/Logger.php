@@ -41,7 +41,6 @@ namespace TIG\Buckaroo\Debug;
 
 class Logger extends \Monolog\Logger
 {
-
     /**
      * Change the name
      *
@@ -54,5 +53,4 @@ class Logger extends \Monolog\Logger
         $this->name = $name;
         return $this;
     }
-
 }

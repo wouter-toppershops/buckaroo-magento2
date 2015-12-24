@@ -169,6 +169,8 @@ class SepaDirectDebit extends AbstractMethod
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
+        parent::assignData($data);
+
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data['customer_iban']);

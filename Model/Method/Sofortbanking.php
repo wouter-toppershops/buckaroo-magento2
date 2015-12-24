@@ -110,20 +110,6 @@ class Sofortbanking extends AbstractMethod
     /**
      * {@inheritdoc}
      */
-    public function assignData(\Magento\Framework\DataObject $data)
-    {
-        if (is_array($data)) {
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
-        } elseif ($data instanceof \Magento\Framework\DataObject) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
-        }
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
