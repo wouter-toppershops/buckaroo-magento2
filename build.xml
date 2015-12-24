@@ -79,13 +79,13 @@ composer config repositories.tig composer https://packages.tig.nl
         </exec>
     </target>
 
-    <target name="composer.add-repo" depends="composer.install" unless="composer.exist">
+    <target name="composer.add-repo" depends="composer.install" unless="composer.exist" failonerror="true">
         <echo>Add the Buckaroo repository to Composer</echo>
         <exec executable="/usr/local/bin/composer" dir="Build/Magento 2/">
             <arg value="config" />
             <arg value="repositories.buckaroo" />
             <arg value="vcs" />
-            <arg value="git@tig.plan.io:tig-tigbuckaroomagento2.tigmagento2buckaroo.git" />
+            <arg value="git@bitbucket.org:tig-team/tig-extension-tig-buckaroo-magento2.git" />
         </exec>
     </target>
 
