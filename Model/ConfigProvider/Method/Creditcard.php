@@ -146,4 +146,23 @@ class Creditcard extends AbstractConfigProvider
 
         throw new \InvalidArgumentException("No card found for card type: {$cardType}");
     }
+
+    /**
+     * @param string $cardType
+     *
+     * @return string
+     *
+     * @throws \InvalidArgumentException
+     */
+    public function getCardCode($cardType)
+    {
+        $config = $this->getConfig();
+        foreach ($config['payment']['buckaroo']['creditcards'] as $card) {
+            if ($card['name'] == $cardType) {
+                return $card['code'];
+            }
+        }
+
+        throw new \InvalidArgumentException("No card found for card type: {$cardType}");
+    }
 }

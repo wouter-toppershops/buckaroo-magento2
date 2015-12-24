@@ -92,6 +92,16 @@ class Creditcard extends \TIG\Buckaroo\Block\Info
     /**
      * @return string
      */
+    public function getCardCode()
+    {
+        $cardType = $this->getCardType();
+
+        return $this->configProvider->getCardCode($cardType);
+    }
+
+    /**
+     * @return string
+     */
     public function toPdf()
     {
         $this->setTemplate('Magento_OfflinePayments::info/pdf/checkmo.phtml');
