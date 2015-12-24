@@ -123,9 +123,8 @@ class IdealTest extends BaseTest
      */
     public function testGetPaymentFeeReturnNumber()
     {
-        $this->scopeConfig->shouldReceive('getValue')->twice()->andReturn('10');
+        $this->scopeConfig->shouldReceive('getValue')->once()->andReturn('10');
 
         $this->assertEquals(10, $this->object->getPaymentFee());
-        $this->assertTrue(is_float($this->object->getPaymentFee()));
     }
 }
