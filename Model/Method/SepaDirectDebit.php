@@ -311,10 +311,10 @@ class SepaDirectDebit extends AbstractMethod
         parent::validate();
 
         $paymentInfo = $this->getInfoInstance();
-        if ($paymentInfo instanceof Payment) {
-            $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
-        } else {
-            $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
+
+        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
+        if ($skipValidation) {
+            return $this;
         }
 
         $customerBic = $paymentInfo->getAdditionalInformation('customer_bic');
@@ -323,6 +323,11 @@ class SepaDirectDebit extends AbstractMethod
 
         if (empty($customerAccountName) || str_word_count($customerAccountName) < 2) {
             throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account holder name'));
+        }
+        if ($paymentInfo instanceof Payment) {
+            $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
+        } else {
+            $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
         }
 
         if ($billingCountry == 'NL') {

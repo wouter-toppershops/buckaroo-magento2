@@ -155,6 +155,30 @@
                     <item name="type" xsi:type="string">creditcard</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</item>
                 </item>
+                <item name="giropay" xsi:type="array">
+                    <item name="type" xsi:type="string">giropay</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Giropay</item>
+                </item>
+                <item name="mrcash" xsi:type="array">
+                    <item name="type" xsi:type="string">mrcash</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Mrcash</item>
+                </item>
+                <item name="paypal" xsi:type="array">
+                    <item name="type" xsi:type="string">paypal</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Paypal</item>
+                </item>
+                <item name="sepadirectdebit" xsi:type="array">
+                    <item name="type" xsi:type="string">sepadirectdebit</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\SepaDirectDebit</item>
+                </item>
+                <item name="sofortbanking" xsi:type="array">
+                    <item name="type" xsi:type="string">sofortbanking</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Sofortbanking</item>
+                </item>
+                <item name="transfer" xsi:type="array">
+                    <item name="type" xsi:type="string">transfer</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Transfer</item>
+                </item>
             </argument>
         </arguments>
     </type>

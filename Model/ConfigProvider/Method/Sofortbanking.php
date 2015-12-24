@@ -39,104 +39,16 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-class Ideal extends AbstractConfigProvider
+class Sofortbanking extends AbstractConfigProvider
 {
-    const XPATH_IDEAL_PAYMENT_FEE = 'payment/tig_buckaroo_ideal/payment_fee';
-
-    /**
-     * @var array
-     */
-    protected $issuers = [
-        [
-            'name' => 'ABN AMRO',
-            'code' => 'ABNANL2A',
-        ],
-        [
-            'name' => 'ASN Bank',
-            'code' => 'ASNBNL21',
-        ],
-        [
-            'name' => 'ING',
-            'code' => 'INGBNL2A',
-        ],
-        [
-            'name' => 'Rabobank',
-            'code' => 'RABONL2U',
-        ],
-        [
-            'name' => 'SNS Bank',
-            'code' => 'SNSBNL2A',
-        ],
-        [
-            'name' => 'RegioBank',
-            'code' => 'RBRBNL21',
-        ],
-        [
-            'name' => 'Triodos Bank',
-            'code' => 'TRIONL2U',
-        ],
-        [
-            'name' => 'Van Lanschot',
-            'code' => 'FVLBNL22',
-        ],
-        [
-            'name' => 'Knab Bank',
-            'code' => 'KNABNL2H',
-        ],
-    ];
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
-     * Get the list of banks. This is used in the iDeal payment model.
-     *
-     * @return array
-     */
-    public function getIssuers()
-    {
-        return $this->issuers;
-    }
-
-    /**
-     * Format the issuers list so the img index is filled with the correct url.
-     *
-     * @return array
-     */
-    protected function formatIssuers()
-    {
-        $issuers = array_map(
-            function ($issuer) {
-                $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
-
-                return $issuer;
-            },
-            $this->issuers
-        );
-
-        return $issuers;
-    }
+    const XPATH_SOFORTBANKING_PAYMENT_FEE = 'payment/tig_buckaroo_sofortbanking/payment_fee';
 
     /**
      * @return array|void
      */
     public function getConfig()
     {
-        $issuers = $this->formatIssuers();
-
-        // @TODO: get banks dynamic
-        $config = [
-            'payment' => [
-                'buckaroo' => [
-                    'banks' => $issuers,
-                    'response' => [],
-                ],
-            ],
-        ];
-
-        return $config;
+        return [];
     }
 
     /**
@@ -145,7 +57,7 @@ class Ideal extends AbstractConfigProvider
     public function getPaymentFee()
     {
         $paymentFee = $this->scopeConfig->getValue(
-            self::XPATH_IDEAL_PAYMENT_FEE,
+            self::XPATH_SOFORTBANKING_PAYMENT_FEE,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
 

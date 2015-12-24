@@ -217,10 +217,15 @@ class Giropay extends AbstractMethod
         parent::validate();
 
         $paymentInfo = $this->getInfoInstance();
+
+        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
+        if ($skipValidation) {
+            return $this;
+        }
+
         $customerBicNumber = $paymentInfo->getAdditionalInformation('customer_bic');
 
-        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber))
-        {
+        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber)) {
             throw new Exception(__('Please enter a valid BIC number'));
         }
 

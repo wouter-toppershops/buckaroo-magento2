@@ -98,13 +98,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             throw new \LogicException('Buckaroo payment fee is only available for Buckaroo payment methods.');
         }
 
-        $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
-        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
-            return $this;
-        }
-
-        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
-        $basePaymentFee = $configProvider->getPaymentFee();
+        $basePaymentFee = $this->getBaseFee($methodInstance, $quote);
 
         if ($basePaymentFee < 0.01) {
             return $this;
@@ -139,6 +133,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $totals = [
             'code' => $this->getCode(),
             'title' => $this->getLabel(),
@@ -151,6 +146,43 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         ];
 
         return $totals;
+    }
+
+    /**
+     * @param \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance
+     * @param \Magento\Quote\Model\Quote                $quote
+     *
+     * @return bool|false|float
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getBaseFee(
+        \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance,
+        \Magento\Quote\Model\Quote $quote
+    ) {
+        $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
+        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
+            return false;
+        }
+
+        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
+        $basePaymentFee = trim($configProvider->getPaymentFee());
+
+        if (is_numeric($basePaymentFee)) {
+            return $basePaymentFee;
+        } elseif (strpos($basePaymentFee, '%') === false) {
+            return false;
+        }
+
+        $percentage = floatval($basePaymentFee);
+        if ($quote->getShippingAddress()) {
+            $address = $quote->getShippingAddress();
+        } else {
+            $address = $quote->getBillingAddress();
+        }
+
+        $basePaymentFee = ($percentage / 100) * $address->getBaseSubtotalTotalInclTax();
+
+        return $basePaymentFee;
     }
 
 
