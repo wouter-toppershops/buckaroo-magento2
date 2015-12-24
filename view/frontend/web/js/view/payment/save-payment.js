@@ -37,12 +37,35 @@ define(
                 /**
                  * Build the URL for saving the selected payment method.
                  */
-                var params = (resourceUrlManager.getCheckoutMethod() == 'guest') ? {quoteId: quote.getQuoteId()} : {};
+                var params = {}
+                var payload = {}
+
+                /**
+                 * If we're checking out as guest, we're going to need a cartId and a guest email
+                 */
+                if (resourceUrlManager.getCheckoutMethod() == 'guest') {
+                    params = {
+                        cartId: quote.getQuoteId()
+                    }
+                    payload.email = quote.guestEmail;
+                }
+
                 var urls = {
-                    'guest': '/guest-carts/:quoteId/totals',
+                    'guest': '/guest-carts/:cartId/set-payment-information',
                     'customer': '/carts/mine/set-payment-information'
                 };
                 var url = resourceUrlManager.getUrl(urls, params);
+
+                /**
+                 * The API expects a JSON object with the selected payment method and the selected billing address
+                 */
+                payload.paymentMethod = {
+                    method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
+                        additional_data: {
+                        buckaroo_skip_validation: true
+                    }
+                };
+                payload.billingAddress = quote.billingAddress();
 
                 /**
                  * Send the selected payment method, along with a cart identifier, the billing address and a 'skip
@@ -53,17 +76,7 @@ define(
                     /**
                      * The APi expects a JSON object with the selected payment method and the selected billing address.
                      */
-                    JSON.stringify(
-                        {
-                            paymentMethod: {
-                                method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
-                                additional_data: {
-                                    buckaroo_skip_validation: true
-                                }
-                            },
-                            billingAddress: quote.billingAddress()
-                        }
-                    )
+                    JSON.stringify(payload)
                 ).done(
                     function () {
                         /**
