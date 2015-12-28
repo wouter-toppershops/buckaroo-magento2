@@ -110,6 +110,7 @@ class Push
                'signature'      => $signatureValidation,
                'canOrderCredit' => $this->order->canCreditmemo()
             ]);
+            $this->debugger->log();
             throw new Exception(
                 __('Buckaroo refund push validation failed')
             );
@@ -134,7 +135,7 @@ class Push
         try {
             if ($creditmemo) {
                 if (!$creditmemo->isValidGrandTotal()) {
-                    $this->debugger->addToMessage('The credit memo\'s total must be positive.');
+                    $this->debugger->addToMessage('The credit memo\'s total must be positive.')->log();
                     throw new \Magento\Framework\Exception\LocalizedException(
                         __('The credit memo\'s total must be positive.')
                     );
@@ -147,13 +148,14 @@ class Push
                 return true;
             } else {
                 $this->debugger->addToMessage('Failed to create the creditmemo, method saveCreditmemo return value :');
-                $this->debugger->addToMessage($creditmemo);
+                $this->debugger->addToMessage($creditmemo)->log();
                 throw new Exception(
                     __('Failed to create the creditmemo')
                 );
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            $this->debugger->addToMessage('Buckaroo failed to create the credit memo\'s { '. $e->getLogMessage().' }');
+            $this->debugger->addToMessage('Buckaroo failed to create the credit memo\'s { '. $e->getLogMessage().' }')
+                ->log();
         }
         return false;
     }
@@ -194,7 +196,7 @@ class Push
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
             $this->debugger->addToMessage(
                 'Buckaroo can not initialize the credit memo\'s by order { '. $e->getLogMessage().' }'
-            );
+            )->log();
         }
         return false;
     }
@@ -234,7 +236,7 @@ class Push
         }
 
         $this->debugger->addToMessage('Data used for credit nota : ');
-        $this->debugger->addToMessage($data);
+        $this->debugger->addToMessage($data)->log();
 
         return $data;
     }
@@ -347,7 +349,7 @@ class Push
         }
 
         $this->debugger->addToMessage('Total items to be refunded : ');
-        $this->debugger->addToMessage($items);
+        $this->debugger->addToMessage($items)->log();
 
         return $items;
     }
