@@ -169,6 +169,8 @@ class SepaDirectDebit extends AbstractMethod
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
+        parent::assignData($data);
+
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data['customer_iban']);
@@ -309,10 +311,10 @@ class SepaDirectDebit extends AbstractMethod
         parent::validate();
 
         $paymentInfo = $this->getInfoInstance();
-        if ($paymentInfo instanceof Payment) {
-            $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
-        } else {
-            $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
+
+        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
+        if ($skipValidation) {
+            return $this;
         }
 
         $customerBic = $paymentInfo->getAdditionalInformation('customer_bic');
@@ -321,6 +323,11 @@ class SepaDirectDebit extends AbstractMethod
 
         if (empty($customerAccountName) || str_word_count($customerAccountName) < 2) {
             throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account holder name'));
+        }
+        if ($paymentInfo instanceof Payment) {
+            $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
+        } else {
+            $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
         }
 
         if ($billingCountry == 'NL') {

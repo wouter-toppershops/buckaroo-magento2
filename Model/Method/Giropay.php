@@ -115,6 +115,8 @@ class Giropay extends AbstractMethod
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
+        parent::assignData($data);
+
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
@@ -215,10 +217,15 @@ class Giropay extends AbstractMethod
         parent::validate();
 
         $paymentInfo = $this->getInfoInstance();
+
+        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
+        if ($skipValidation) {
+            return $this;
+        }
+
         $customerBicNumber = $paymentInfo->getAdditionalInformation('customer_bic');
 
-        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber))
-        {
+        if (!preg_match(static::BIC_NUMBER_REGEX, $customerBicNumber)) {
             throw new Exception(__('Please enter a valid BIC number'));
         }
 

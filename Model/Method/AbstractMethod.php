@@ -213,6 +213,29 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * @param \Magento\Framework\DataObject $data
+     *
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function assignData(\Magento\Framework\DataObject $data)
+    {
+        if (is_array($data) && isset($data['buckaroo_skip_validation'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'buckaroo_skip_validation',
+                $data['buckaroo_skip_validation']
+            );
+        } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->getInfoInstance()->setAdditionalInformation(
+                'buckaroo_skip_validation',
+                $data->getBuckarooSkipValidation()
+            );
+        }
+        return $this;
+    }
+
+    /**
      * Check whether payment method can be used
      *
      * @param \Magento\Quote\Api\Data\CartInterface|null $quote
@@ -245,7 +268,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @return mixed|string
+     * @return string
      * @throws \TIG\Buckaroo\Exception
      */
     public function getTitle()
@@ -256,12 +279,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $title;
         }
 
-        $paymentFee = $this->configProviderMethodFactory->get($this->buckarooPaymentMethodCode)->getPaymentFee();
-        if (!$paymentFee || $paymentFee < 0.01) {
+        $paymentFee = trim($this->configProviderMethodFactory->get($this->buckarooPaymentMethodCode)->getPaymentFee());
+        if (!$paymentFee || (float) $paymentFee < 0.01) {
             return $title;
         }
 
-        $title .= ' + ' . $this->priceHelper->currency(number_format($paymentFee, 2), true, false);
+        if (strpos($paymentFee, '%') === false) {
+            $title .= ' + ' . $this->priceHelper->currency(number_format($paymentFee, 2), true, false);
+        } else {
+            $title .= ' + ' . $paymentFee;
+        }
+
         return $title;
     }
 

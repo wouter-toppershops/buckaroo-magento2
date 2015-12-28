@@ -122,6 +122,8 @@ class Creditcard extends AbstractMethod
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
+        parent::assignData($data);
+
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('card_type', $data['card_type']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {

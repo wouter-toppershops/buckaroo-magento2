@@ -178,7 +178,7 @@ class Push implements PushInterface
                 && !$this->order->hasInvoices()
             ) {
                 throw new Exception(
-                    __('Refund failed ! Status = '.$response['status']. ' and the order does not contain an invoice')
+                    __('Refund failed ! Status : '.$response['status']. ' and the order does not contain an invoice')
                 );
             }
             return $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
@@ -192,16 +192,10 @@ class Push implements PushInterface
         } elseif ($validSignature && !$canUpdateOrder) {
             $this->setOrderNotificationNote($response['message']);
             $this->debugger->addToMessage('Order can not receive updates');
-            throw new Exception(__('Signature from push is correct but the order can not update'));
+            throw new Exception(__('Signature from push is correct but the order can not receive updates'));
         }
-        //Make sure the transactions key is set.
-        $payment     = $this->order->getPayment();
-        $originalKey = AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
 
-        if (!$payment->getAdditionalInformation($originalKey) && !empty($this->postData['brq_transactions'])
-        ) {
-            $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
-        }
+        $this->setTransactionKey();
         $this->processPush($response);
         $this->order->save();
 
@@ -255,6 +249,20 @@ class Push implements PushInterface
     }
 
     /**
+     * Makes sure the order transactionkey has been set.
+     */
+    protected function setTransactionKey()
+    {
+        $payment     = $this->order->getPayment();
+        $originalKey = AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
+
+        if (!$payment->getAdditionalInformation($originalKey) && !empty($this->postData['brq_transactions'])
+        ) {
+            $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
+        }
+    }
+
+    /**
      * Sometimes the push does not contain the order id, when thats the case try to get the order by his payment,
      * by using its own transactionkey.
      *
@@ -283,14 +291,20 @@ class Push implements PushInterface
      */
     protected function canUpdateOrderStatus()
     {
-        //Types of statusses
+        /**
+         * Types of statusses
+         */
         $completedStateAndStatus = [Order::STATE_COMPLETE, Order::STATE_COMPLETE];
         $cancelledStateAndStatus = [Order::STATE_CANCELED, Order::STATE_CANCELED];
         $holdedStateAndStatus    = [Order::STATE_HOLDED, Order::STATE_HOLDED];
         $closedStateAndStatus    = [Order::STATE_CLOSED, Order::STATE_CLOSED];
-        //Get current state and status of order
+        /**
+         * Get current state and status of order
+         */
         $currentStateAndStatus = [$this->order->getState(), $this->order->getStatus()];
-        //If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
+        /**
+         * If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
+         */
         if ($completedStateAndStatus != $currentStateAndStatus &&
            $cancelledStateAndStatus  != $currentStateAndStatus &&
            $holdedStateAndStatus     != $currentStateAndStatus &&
@@ -311,8 +325,7 @@ class Push implements PushInterface
      */
     public function processFailedPush($newStatus, $message)
     {
-        // Create description
-        $description = 'Payment push status : '.$message;
+        $description = 'Payment status : '.$message;
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
@@ -341,11 +354,12 @@ class Push implements PushInterface
             $this->orderSender->send($this->order);
         }
 
-        // Create description
-        $description = 'Payment push status : '.$message;
-
-        // Create invoice
         $this->saveInvoice();
+
+        $amount = $this->order->getBaseGrandTotal();
+
+        $description  = 'Payment status : <strong>'.$message ."</strong><br/>";
+        $description .= 'Total amount of '. $this->order->getBaseCurrency()->formatTxt($amount). ' has been paid';
 
         $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
@@ -451,7 +465,9 @@ class Push implements PushInterface
 
         $this->order->save();
 
-        // Only when the order can be invoiced and has not been invoiced before.
+        /**
+         * Only when the order can be invoiced and has not been invoiced before.
+         */
         if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
             $this->addTransactionData();
 
@@ -468,6 +484,7 @@ class Push implements PushInterface
 
             return true;
         }
+        return false;
     }
 
     /**

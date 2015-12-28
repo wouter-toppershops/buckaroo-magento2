@@ -125,7 +125,7 @@ class Creditcard extends AbstractConfigProvider
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
 
-        return $paymentFee ? (float) $paymentFee : false;
+        return $paymentFee ? $paymentFee : false;
     }
 
     /**

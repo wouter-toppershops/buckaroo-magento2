@@ -41,7 +41,7 @@ namespace TIG\Buckaroo\Model\Total\Quote\Tax;
 
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
 
-class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
+class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
 {
     const QUOTE_TYPE = 'buckaroo_fee';
     const CODE_QUOTE_GW = 'buckaroo_fee';
@@ -105,13 +105,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             throw new \LogicException('Buckaroo payment fee is only available for Buckaroo payment methods.');
         }
 
-        $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
-        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
-            return $this;
-        }
-
-        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
-        $basePaymentFee = $configProvider->getPaymentFee();
+        $basePaymentFee = $this->getBaseFee($methodInstance, $quote);
 
         if ($basePaymentFee < 0.01) {
             return $this;

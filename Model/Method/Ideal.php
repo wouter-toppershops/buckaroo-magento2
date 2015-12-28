@@ -167,6 +167,8 @@ class Ideal extends AbstractMethod
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
+        parent::assignData($data);
+
         if (is_array($data)) {
             $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
         } elseif ($data instanceof \Magento\Framework\DataObject) {
@@ -270,6 +272,12 @@ class Ideal extends AbstractMethod
         $config = $this->objectManager->get(IdealConfig::class);
 
         $paymentInfo = $this->getInfoInstance();
+
+        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
+        if ($skipValidation) {
+            return $this;
+        }
+
         $chosenIssuer = $paymentInfo->getAdditionalInformation('issuer');
 
         $valid = false;
