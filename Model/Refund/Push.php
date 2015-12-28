@@ -336,14 +336,16 @@ class Push
 
         foreach ($this->order->getAllItems() as $orderItem) {
             /** @var \Magento\Sales\Model\Order\Item $orderItem */
-            if (!in_array($orderItem->getId(), array_flip($items))) {
+            if (!array_key_exists($orderItem->getId(), $items)) {
                 if ((float)$this->creditAmount == (float)$this->order->getBaseGrandTotal()) {
                     $qty = $orderItem->getQtyInvoiced() - $orderItem->getQtyRefunded();
                 }
 
-                $items[$orderItem->getId()] = ['qty' => $qty];
+                $items[$orderItem->getId()] = ['qty' => (int)$qty];
+
             }
         }
+
         $this->debugger->addToMessage('Total items to be refunded : ');
         $this->debugger->addToMessage($items);
 
