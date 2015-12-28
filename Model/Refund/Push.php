@@ -296,18 +296,11 @@ class Push
      */
     public function calculateRemainder()
     {
-        $baseTotalToBeRefunded =
-            (
-                $this->order->getBaseShippingAmount() - $this->order->getBaseShippingRefunded()
-            ) + (
-                $this->order->getBaseSubtotal() - $this->order->getBaseSubtotalRefunded()
-            ) + (
-                $this->order->getBaseAdjustmentNegative() - $this->order->getBaseAdjustmentPositive()
-            ) + (
-                $this->order->getBaseTaxAmount() - $this->order->getBaseTaxRefunded()
-            ) + (
-                $this->order->getBaseDiscountAmount() - $this->order->getBaseDiscountRefunded()
-            );
+        $baseTotalToBeRefunded = $this->caluclateShippingCostToRefund() +
+            ($this->order->getBaseSubtotal() - $this->order->getBaseSubtotalRefunded()) +
+            ($this->order->getBaseAdjustmentNegative() - $this->order->getBaseAdjustmentPositive()) +
+            ($this->order->getBaseTaxAmount() - $this->order->getBaseTaxRefunded()) +
+            ($this->order->getBaseDiscountAmount() - $this->order->getBaseDiscountRefunded());
 
         $remainderToRefund = $this->order->getBaseGrandTotal()
             - $baseTotalToBeRefunded
