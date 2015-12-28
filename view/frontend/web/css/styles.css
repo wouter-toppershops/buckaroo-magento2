@@ -96,11 +96,11 @@
 .tig_buckaroo_creditcard .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_creditcard_title.png);
     background-repeat: no-repeat;
-    margin-top: -2px;
+    margin-top: -1px;
     float: right;
     margin-right: 10px;
-    background-size: auto 25px;
-    width: 41px;
+    background-size: auto 22px;
+    width: 35px;
     height: 25px;
     content: ' ';
 }
@@ -109,11 +109,12 @@
 .tig_buckaroo_sepadirectdebit .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_sepa_title.png);
     background-repeat: no-repeat;
-    margin-top: 0;
-    float:right;
+    margin-top: 5px;
+    float: right;
     margin-right: 10px;
-    background-size: auto 20px;
-    width: 56px; height: 20px;
+    background-size: auto 15px;
+    width: 40px;
+    height: 20px;
     content: ' ';
 }
 
@@ -121,11 +122,12 @@
 .tig_buckaroo_transfer .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_transfer_title.png);
     background-repeat: no-repeat;
-    margin-top: 0;
-    float:right;
+    margin-top: 5px;
+    float: right;
     margin-right: 10px;
-    background-size: auto 20px;
-    width: 56px; height: 20px;
+    background-size: auto 15px;
+    width: 40px;
+    height: 20px;
     content: ' ';
 }
 
@@ -133,11 +135,11 @@
 .tig_buckaroo_mrcash .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_mrcash_title.png);
     background-repeat: no-repeat;
-    margin-top: -5px;
+    margin-top: -2px;
     float: right;
     margin-right: 10px;
-    background-size: auto 30px;
-    width: 49px;
+    background-size: auto 24px;
+    width: 40px;
     height: 30px;
     content: ' ';
 }
@@ -146,11 +148,12 @@
 .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_sofort_title.png);
     background-repeat: no-repeat;
-    margin-top: 0;
-    float:right;
+    margin-top: 5px;
+    float: right;
     margin-right: 10px;
-    background-size: auto 20px;
-    width: 65px; height: 20px;
+    background-size: auto 12px;
+    width: 40px;
+    height: 20px;
     content: ' ';
 }
 
@@ -158,11 +161,12 @@
 .tig_buckaroo_giropay .tig_buckaroo_image_title:after {
     background-image: url(../images/tig_buckaroo_giropay_title.png);
     background-repeat: no-repeat;
-    margin-top: 0;
-    float:right;
+    margin-top: 3px;
+    float: right;
     margin-right: 10px;
-    background-size: auto 20px;
-    width: 46px; height: 20px;
+    background-size: auto 17px;
+    width: 41px;
+    height: 20px;
     content: ' ';
 }
 

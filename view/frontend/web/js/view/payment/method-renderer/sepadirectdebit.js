@@ -64,7 +64,7 @@ define(
             for(var $i = $v.length - 1; $i >= 0; $i--){
                 $sum += $ei * parseInt($v.charAt($i),10); //multiply the digit by it's exponent
                 $ei = ($ei * 10) % 97; //compute next base 10 exponent  in modulus 97
-            };
+            }
             return $sum % 97 == 1;
         }
 
