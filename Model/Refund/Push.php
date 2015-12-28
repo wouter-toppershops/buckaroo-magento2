@@ -63,6 +63,9 @@ class Push
     /** @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader */
     public $creditmemoLoader;
 
+    /** @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory */
+    public $configProviderFactory;
+
     /** @var \TIG\Buckaroo\Debug\Debugger $debugger */
     public $debugger;
 
@@ -71,19 +74,22 @@ class Push
      * @param \Magento\Framework\ObjectManagerInterface $objectManager
      * @param \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender
      * @param \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactor
      */
     public function __construct(
         \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender,
         \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactor,
         \TIG\Buckaroo\Debug\Debugger $debugger
     ) {
-        $this->creditmemoFactory  = $creditmemoFactory;
-        $this->objectManager      = $objectManager;
-        $this->creditEmailSender  = $creditEmailSender;
-        $this->creditmemoLoader   = $creditmemoLoader;
-        $this->debugger           = $debugger;
+        $this->creditmemoFactory     = $creditmemoFactory;
+        $this->objectManager         = $objectManager;
+        $this->creditEmailSender     = $creditEmailSender;
+        $this->creditmemoLoader      = $creditmemoLoader;
+        $this->debugger              = $debugger;
+        $this->configProviderFactory = $configProviderFactor;
     }
 
     /**
@@ -102,7 +108,16 @@ class Push
         $this->postData = $postData;
         $this->order    = $order;
 
-        $this->debugger->addToMessage('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza');
+        $this->debugger->addToMessage('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza. ');
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
+        $refundConfig = $this->configProviderFactory->get('refund');
+        if (!$refundConfig->getEnabled()) {
+            $this->debugger->addToMessage('But failed, the configuration is set so refunding is not enabled')->log();
+            throw new Exception(
+                __('Buckaroo refund is disabled')
+            );
+        }
 
         if (!$signatureValidation && !$this->order->canCreditmemo()) {
             $this->debugger->addToMessage('Validation incorrect :');
