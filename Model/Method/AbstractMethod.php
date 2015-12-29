@@ -269,7 +269,38 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             }
         }
 
+        if (!$this->isAvailableBasedOnAmount($quote)) {
+            return false;
+        }
+
         return parent::isAvailable($quote);
+    }
+
+    /**
+     * Check if the grand total exceeds the maximum allowed total.
+     *
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     *
+     * @return bool
+     */
+    public function isAvailableBasedOnAmount(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $storeId = $quote->getStoreId();
+        $maximum = $this->getConfigData('max_amount', $storeId);
+        $minimum = $this->getConfigData('min_amount', $storeId);
+
+        /** @var \Magento\Quote\Model\Quote $quote */
+        $total = $quote->getGrandTotal();
+
+        if ($maximum !== null && $total > $maximum) {
+            return false;
+        }
+
+        if ($minimum !== null && $total < $minimum) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
