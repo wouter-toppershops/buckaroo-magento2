@@ -136,30 +136,42 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     // @codingStandardsIgnoreEnd
 
     /**
+     * @var \Magento\Developer\Helper\Data
+     */
+    protected $objectManager;
+
+    /**
+     * @var \Magento\Developer\Helper\Data
+     */
+    protected $developmentHelper;
+
+    /**
      * AbstractMethod constructor.
      *
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory            $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory                 $customAttributeFactory
-     * @param \Magento\Payment\Helper\Data                                 $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $scopeConfig
-     * @param \Magento\Payment\Model\Method\Logger                         $logger
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                  $gateway
-     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null    $transactionBuilderFactory
-     * @param \TIG\Buckaroo\Model\ValidatorFactory                         $validatorFactory
-     * @param \Magento\Framework\Message\ManagerInterface                  $messageManager
-     * @param \TIG\Buckaroo\Helper\Data                                    $helper
-     * @param \Magento\Framework\App\RequestInterface                      $request
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                   $configProviderFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory            $configProviderMethodFactory
-     * @param \Magento\Framework\Pricing\Helper\Data                       $priceHelper
-     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                      $refundFieldsFactory
-     * @param array                                                        $data
+     * @param \Magento\Framework\ObjectManagerInterface                                      $objectManager
+     * @param \Magento\Framework\Model\Context                                               $context
+     * @param \Magento\Framework\Registry                                                    $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory                              $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory                                   $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                                                   $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface                             $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                                           $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null                   $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null                             $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                                    $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null                      $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                                           $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface                                    $messageManager
+     * @param \TIG\Buckaroo\Helper\Data                                                      $helper
+     * @param \Magento\Framework\App\RequestInterface                                        $request
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                                        $refundFieldsFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                                     $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory                              $configProviderMethodFactory
+     * @param \Magento\Framework\Pricing\Helper\Data                                         $priceHelper
+     * @param array                                                                          $data
      */
     public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager = null,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
@@ -194,6 +206,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $data
         );
 
+        $this->objectManager                = $objectManager;
         $this->gateway                      = $gateway;
         $this->transactionBuilderFactory    = $transactionBuilderFactory;
         $this->validatorFactory             = $validatorFactory;
@@ -201,12 +214,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->helper                       = $helper;
         $this->request                      = $request;
         $this->refundFieldsFactory          = $refundFieldsFactory;
-        $this->gateway                      = $gateway;
-        $this->transactionBuilderFactory    = $transactionBuilderFactory;
-        $this->validatorFactory             = $validatorFactory;
-        $this->messageManager               = $messageManager;
-        $this->helper                       = $helper;
-        $this->request                      = $request;
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
@@ -248,6 +255,20 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if ($accountConfig->getActive() == 0) {
             return false;
         }
+
+        /**
+         * Check if this payment method is limited by IP.
+         */
+        if ($accountConfig->getLimitByIp() == 1) {
+            $storeId = $quote ? $quote->getStoreId() : null;
+            $developmentHelper = $this->objectManager->create(\Magento\Developer\Helper\Data::class);
+            $isAllowed = $developmentHelper->isDevAllowed($storeId);
+
+            if (!$isAllowed) {
+                return false;
+            }
+        }
+
         return parent::isAvailable($quote);
     }
 
