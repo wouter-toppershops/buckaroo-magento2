@@ -112,8 +112,10 @@ class Push
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
         $refundConfig = $this->configProviderFactory->get('refund');
-        if (!$refundConfig->getEnabled()) {
-            $this->debugger->addToMessage('But failed, the configuration is set so refunding is not enabled')->log();
+        if (!$refundConfig->getAllowPush()) {
+            $this->debugger->addToMessage(
+                'But failed, the configuration is set not to accept refunds out of Payment Plaza'
+            )->log();
             throw new Exception(
                 __('Buckaroo refund is disabled')
             );
