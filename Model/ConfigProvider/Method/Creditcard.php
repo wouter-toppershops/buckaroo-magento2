@@ -46,9 +46,9 @@ class Creditcard extends AbstractConfigProvider
      */
     const CREDITCARD_SERVICE_CODE_MASTERCARD    = 'mastercard';
     const CREDITCARD_SERVICE_CODE_VISA          = 'visa';
-    const CREDITCARD_SERVICE_CODE_AMEX          = 'Amex';
+    const CREDITCARD_SERVICE_CODE_AMEX          = 'amex';
     const CREDITCARD_SERVICE_CODE_MAESTRO       = 'maestro';
-    const CREDITCARD_SERVICE_CODE_VPAY          = 'Vpay';
+    const CREDITCARD_SERVICE_CODE_VPAY          = 'vpay';
     const CREDITCARD_SERVICE_CODE_VISAELECTRON  = 'visaelectron';
     const CREDITCARD_SERVICE_CODE_CARTEBLEUE    = 'cartebleuevisa';
     const CREDITCARD_SERVICE_CODE_CARTEBANCAIRE = 'cartebancaire';
@@ -56,57 +56,70 @@ class Creditcard extends AbstractConfigProvider
 
     const XPATH_CREDITCARD_PAYMENT_FEE = 'payment/tig_buckaroo_creditcard/payment_fee';
 
+    protected $issuers = [
+        [
+            'name' => 'American Express',
+            'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
+        ],
+        [
+            'name' => 'Carte Bancaire',
+            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
+        ],
+        [
+            'name' => 'Carte Bleue',
+            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
+        ],
+        [
+            'name' => 'Maestro',
+            'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,
+        ],
+        [
+            'name' => 'MasterCard',
+            'code' => self::CREDITCARD_SERVICE_CODE_MASTERCARD,
+        ],
+        [
+            'name' => 'VISA',
+            'code' => self::CREDITCARD_SERVICE_CODE_VISA,
+        ],
+        [
+            'name' => 'VISA Electron',
+            'code' => self::CREDITCARD_SERVICE_CODE_VISAELECTRON,
+        ],
+        [
+            'name' => 'VPay',
+            'code' => self::CREDITCARD_SERVICE_CODE_VPAY,
+        ],
+    ];
+
+    /**
+     * Add the active flag to the creditcard list. This is used in the checkout process.
+     *
+     * @return array
+     */
+    public function formatIssuers()
+    {
+        $issuers = parent::formatIssuers();
+        $allowed = explode(',', $this->scopeConfig->getValue('payment/tig_buckaroo_creditcard/allowed_creditcards'));
+
+        foreach($issuers as $key => $issuer) {
+            $issuers[$key]['active'] = in_array($issuer['code'], $allowed);
+        }
+
+        return $issuers;
+    }
+
     /**
      * @return array|void
      */
     public function getConfig()
     {
+        $issuers = $this->formatIssuers();
+
         //@TODO: get cards dynamic
         $config = [
             'payment' => [
                 'buckaroo' => [
-                    'creditcards' => [
-                        [
-                            'name' => 'American Express',
-                            'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
-                            'img' => $this->getImageUrl('ico-ae'),
-                        ],
-                        [
-                            'name' => 'Carte Bancaire',
-                            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
-                            'img' => $this->getImageUrl('ico-cb'),
-                        ],
-                        [
-                            'name' => 'Carte Bleue',
-                            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
-                            'img' => $this->getImageUrl('ico-cbl'),
-                        ],
-                        [
-                            'name' => 'Maestro',
-                            'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,
-                            'img' => $this->getImageUrl('ico-mae'),
-                        ],
-                        [
-                            'name' => 'MasterCard',
-                            'code' => self::CREDITCARD_SERVICE_CODE_MASTERCARD,
-                            'img' => $this->getImageUrl('ico-mc'),
-                        ],
-                        [
-                            'name' => 'VISA',
-                            'code' => self::CREDITCARD_SERVICE_CODE_VISA,
-                            'img' => $this->getImageUrl('ico-vi'),
-                        ],
-                        [
-                            'name' => 'VISA Electron',
-                            'code' => self::CREDITCARD_SERVICE_CODE_VISAELECTRON,
-                            'img' => $this->getImageUrl('ico-ve'),
-                        ],
-                        [
-                            'name' => 'VPay',
-                            'code' => self::CREDITCARD_SERVICE_CODE_VPAY,
-                            'img' => $this->getImageUrl('ico-vp'),
-                        ],
-                    ],
+                    'creditcards' => $issuers,
                     'response' => [],
                 ],
             ],

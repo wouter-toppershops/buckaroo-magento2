@@ -36,86 +36,42 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider\Method;
+namespace TIG\Buckaroo\Model\Config\Source;
 
-use Magento\Framework\View\Asset\Repository;
-use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
-
-abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+class Creditcard implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * The asset repository to generate the correct url to our assets.
-     *
-     * @var Repository
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard
      */
-    protected $assetRepo;
+    protected $configProvider;
 
     /**
-     * The list of issuers. This is filled by the child classes.
+     * Use the constructor to get the requested config provider.
      *
-     * @var array
-     */
-    protected $issuers = [];
-
-    /**
-     * @param \Magento\Framework\View\Asset\Repository           $assetRepo
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider
      */
     public function __construct(
-        \Magento\Framework\View\Asset\Repository $assetRepo,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->assetRepo = $assetRepo;
-        $this->scopeConfig = $scopeConfig;
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider
+    )
+    {
+        $this->configProvider = $configProvider;
     }
 
     /**
-     * Retrieve the list of issuers.
+     * Format the array in such a way Magento can read it.
      *
      * @return array
      */
-    public function getIssuers()
+    public function toOptionArray()
     {
-        return $this->issuers;
+        $output = [];
+        foreach ($this->configProvider->getIssuers() as $issuer) {
+            $output[] = [
+                'value' => $issuer['code'],
+                'label' => $issuer['name'],
+            ];
+        }
+
+        return $output;
     }
-
-    /**
-     * Format the issuers list so the img index is filled with the correct url.
-     *
-     * @return array
-     */
-    protected function formatIssuers()
-    {
-        $issuers = array_map(
-            function ($issuer) {
-                $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
-
-                return $issuer;
-            },
-            $this->getIssuers()
-        );
-
-        return $issuers;
-    }
-
-    /**
-     * Generate the url to the desired asset.
-     *
-     * @param $imgName
-     *
-     * @return string
-     */
-    protected function getImageUrl($imgName)
-    {
-        return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getPaymentFee()
-    {
-        return false;
-    }
-
 }

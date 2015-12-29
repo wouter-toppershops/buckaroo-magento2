@@ -44,6 +44,11 @@ class Ideal extends AbstractConfigProvider
     const XPATH_IDEAL_PAYMENT_FEE = 'payment/tig_buckaroo_ideal/payment_fee';
 
     /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * @var array
      */
     protected $issuers = [
@@ -84,40 +89,6 @@ class Ideal extends AbstractConfigProvider
             'code' => 'KNABNL2H',
         ],
     ];
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
-     * Get the list of banks. This is used in the iDeal payment model.
-     *
-     * @return array
-     */
-    public function getIssuers()
-    {
-        return $this->issuers;
-    }
-
-    /**
-     * Format the issuers list so the img index is filled with the correct url.
-     *
-     * @return array
-     */
-    protected function formatIssuers()
-    {
-        $issuers = array_map(
-            function ($issuer) {
-                $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
-
-                return $issuer;
-            },
-            $this->issuers
-        );
-
-        return $issuers;
-    }
 
     /**
      * @return array|void
