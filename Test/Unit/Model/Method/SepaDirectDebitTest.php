@@ -88,9 +88,13 @@ class SepaDirectDebitTest extends BaseTest
         $ibanValidator = m::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
 
+        $objectManager = m::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn($ibanValidator);
+
         $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit', [
-            'ibanValidator' => $ibanValidator,
+            'objectManager' => $objectManager,
         ]);
+
         $this->object->setData('info_instance', $infoInstanceMock);
 
         $this->assertEquals($this->object, $this->object->validate());
@@ -158,9 +162,13 @@ class SepaDirectDebitTest extends BaseTest
         $ibanValidator = m::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(false);
 
+        $objectManager = m::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn($ibanValidator);
+
         $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit', [
-            'ibanValidator' => $ibanValidator,
+            'objectManager' => $objectManager,
         ]);
+
         $this->object->setData('info_instance', $infoInstanceMock);
 
         try {
@@ -189,9 +197,13 @@ class SepaDirectDebitTest extends BaseTest
         $ibanValidator = m::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
 
+        $objectManager = m::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn($ibanValidator);
+
         $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit', [
-            'ibanValidator' => $ibanValidator,
+            'objectManager' => $objectManager,
         ]);
+
         $this->object->setData('info_instance', $infoInstanceMock);
 
         $this->assertEquals($this->object, $this->object->validate());

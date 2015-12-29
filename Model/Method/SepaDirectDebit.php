@@ -39,7 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Zend\Validator\Iban;
 use Magento\Sales\Model\Order\Payment;
 
 class SepaDirectDebit extends AbstractMethod
@@ -109,60 +108,6 @@ class SepaDirectDebit extends AbstractMethod
      */
     protected $_canRefundInvoicePartial = true;
     // @codingStandardsIgnoreEnd
-
-    /**
-     * {@inheritdoc}
-     */
-    public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        Iban $ibanValidator,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
-        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
-        \Magento\Payment\Helper\Data $paymentData,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
-        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
-        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
-        \Magento\Framework\Message\ManagerInterface $messageManager = null,
-        \TIG\Buckaroo\Helper\Data $helper = null,
-        \Magento\Framework\App\RequestInterface $request = null,
-        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
-        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
-        array $data = []
-    ) {
-        parent::__construct(
-            $context,
-            $registry,
-            $extensionFactory,
-            $customAttributeFactory,
-            $paymentData,
-            $scopeConfig,
-            $logger,
-            $resource,
-            $resourceCollection,
-            $gateway,
-            $transactionBuilderFactory,
-            $validatorFactory,
-            $messageManager,
-            $helper,
-            $request,
-            $refundFieldsFactory,
-            $configProviderFactory,
-            $configProviderMethodFactory,
-            $priceHelper,
-            $data
-        );
-
-        $this->objectManager = $objectManager;
-        $this->ibanValidator = $ibanValidator;
-    }
 
     /**
      * {@inheritdoc}
@@ -331,7 +276,8 @@ class SepaDirectDebit extends AbstractMethod
         }
 
         if ($billingCountry == 'NL') {
-            if (empty($customerIban) || !$this->ibanValidator->isValid($customerIban)) {
+            $ibanValidator = $this->objectManager->create(\Zend\Validator\Iban::class);
+            if (empty($customerIban) || !$ibanValidator->isValid($customerIban)) {
                 throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account number'));
             }
         } else {
