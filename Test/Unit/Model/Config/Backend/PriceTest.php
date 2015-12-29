@@ -36,86 +36,73 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider\Method;
+namespace TIG\Buckaroo\Test\Unit\Model\Config\Backend;
 
-use Magento\Framework\View\Asset\Repository;
-use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
-
-abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+class PriceTest extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
-     * The asset repository to generate the correct url to our assets.
-     *
-     * @var Repository
+     * @var \TIG\Buckaroo\Model\Config\Backend\Price
      */
-    protected $assetRepo;
+    protected $object;
 
     /**
-     * The list of issuers. This is filled by the child classes.
-     *
-     * @var array
+     * @var \Mockery\MockInterface
      */
-    protected $issuers = [];
+    protected $resource;
 
     /**
-     * @param \Magento\Framework\View\Asset\Repository           $assetRepo
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * Setup the base mocks.
      */
-    public function __construct(
-        \Magento\Framework\View\Asset\Repository $assetRepo,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-    ) {
-        $this->assetRepo = $assetRepo;
-        $this->scopeConfig = $scopeConfig;
-    }
-
-    /**
-     * Retrieve the list of issuers.
-     *
-     * @return array
-     */
-    public function getIssuers()
+    public function setUp()
     {
-        return $this->issuers;
+        parent::setUp();
+
+        $this->resource = \Mockery::mock(\Magento\Framework\Model\ResourceModel\AbstractResource::class);
+        $this->resource->shouldReceive('save');
+
+        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Backend\Price::class, [
+            'resource' => $this->resource,
+        ]);
     }
 
     /**
-     * Format the issuers list so the img index is filled with the correct url.
+     * Test what happens when a empty value is provided.
      *
-     * @return array
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function formatIssuers()
+    public function testEmptyValue()
     {
-        $issuers = array_map(
-            function ($issuer) {
-                $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
-
-                return $issuer;
-            },
-            $this->getIssuers()
-        );
-
-        return $issuers;
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
     }
 
     /**
-     * Generate the url to the desired asset.
+     * Test what happens when there is a valid value is provided.
      *
-     * @param $imgName
-     *
-     * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
-    protected function getImageUrl($imgName)
+    public function testValidValue()
     {
-        return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
+        $this->object->setData('value', '10');
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
+
+        $this->object->setData('value', '10.1');
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
+
+        $this->object->setData('value', '-2');
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
     }
 
     /**
-     * {@inheritdoc}
+     * Test what happens when an invalid value is provided.
      */
-    public function getPaymentFee()
+    public function testInvalidValue()
     {
-        return false;
+        try {
+            $this->object->setData('value', 'wrong');
+            $this->object->save();
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
+        }
     }
-
 }

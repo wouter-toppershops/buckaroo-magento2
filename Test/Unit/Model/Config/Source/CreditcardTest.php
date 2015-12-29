@@ -36,23 +36,46 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\Config\Backend;
+namespace TIG\Buckaroo\Test\Unit\Model\Config\Source;
 
-class Price extends \Magento\Framework\App\Config\Value
+class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
 {
-    /**
-     * Validate that the number is a valid price.
-     *
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function save()
+    public function testToOptionArray()
     {
-        $value = $this->getValue();
-        if (!empty($value) && !is_numeric($value)) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Please enter a valid number: "%1".', $value));
-        }
+        $configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::class)->makePartial();
+        $configProvider->shouldReceive('getIssuers')->andReturn([
+            [
+                'name' => 'Test 1',
+                'code' => 'code1',
+            ],
+            [
+                'name' => 'Test 2',
+                'code' => 'code2',
+            ],
+            [
+                'name' => 'Test 3',
+                'code' => 'code3',
+            ],
+        ]);
 
-        return parent::save();
+        $object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Source\Creditcard::class, [
+            'configProvider' => $configProvider,
+        ]);
+
+        $expected = [
+            [
+                'value' => 'code1',
+                'label' => 'Test 1',
+            ],
+            [
+                'value' => 'code2',
+                'label' => 'Test 2',
+            ],
+            [
+                'value' => 'code3',
+                'label' => 'Test 3',
+            ],
+        ];
+        $this->assertEquals($expected, $object->toOptionArray());
     }
 }
