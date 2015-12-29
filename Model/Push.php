@@ -333,7 +333,7 @@ class Push implements PushInterface
         $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
 
         if ($this->order->canCancel() && $buckarooCancelOnFailed) {
-            $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.');
+            $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
             $this->order->cancel()->save();
         }
 
