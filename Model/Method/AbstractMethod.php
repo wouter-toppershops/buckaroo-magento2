@@ -256,17 +256,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return false;
         }
 
-        /**
-         * Check if this payment method is limited by IP.
-         */
-        if ($accountConfig->getLimitByIp() == 1) {
-            $storeId = $quote ? $quote->getStoreId() : null;
-            $developmentHelper = $this->objectManager->create(\Magento\Developer\Helper\Data::class);
-            $isAllowed = $developmentHelper->isDevAllowed($storeId);
-
-            if (!$isAllowed) {
-                return false;
-            }
+        if (!$this->isAvailableBasedOnIp($quote, $accountConfig)) {
+            return false;
         }
 
         if (!$this->isAvailableBasedOnAmount($quote)) {
@@ -277,13 +268,37 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * Check if this payment method is limited by IP.
+     *
+     * @param \Magento\Quote\Api\Data\CartInterface      $quote
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+     *
+     * @return bool
+     */
+    protected function isAvailableBasedOnIp(\Magento\Quote\Api\Data\CartInterface $quote = null, \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig)
+    {
+        $methodValue = $this->getConfigData('limit_by_ip');
+        if ($accountConfig->getLimitByIp() == 1 || $methodValue == 1) {
+            $storeId = $quote ? $quote->getStoreId() : null;
+            $developmentHelper = $this->objectManager->create(\Magento\Developer\Helper\Data::class);
+            $isAllowed = $developmentHelper->isDevAllowed($storeId);
+
+            if (!$isAllowed) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Check if the grand total exceeds the maximum allowed total.
      *
      * @param \Magento\Quote\Api\Data\CartInterface $quote
      *
      * @return bool
      */
-    public function isAvailableBasedOnAmount(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    protected function isAvailableBasedOnAmount(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         $storeId = $quote->getStoreId();
         $maximum = $this->getConfigData('max_amount', $storeId);
