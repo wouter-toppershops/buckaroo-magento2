@@ -38,6 +38,20 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+/**
+ * Class AbstractMethod. Temporary for testing only.
+ *
+ * @package TIG\Buckaroo\Test\Unit\Model\Method
+ */
+class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod {
+    protected $_code = 'tig_buckaroo_test';
+    public function getOrderTransactionBuilder($payment) {}
+    public function getAuthorizeTransactionBuilder($payment) {}
+    public function getCaptureTransactionBuilder($payment) {}
+    public function getRefundTransactionBuilder($payment) {}
+    public function getVoidTransactionBuilder($payment) {}
+}
+
 class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
@@ -72,9 +86,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         /**
-         * We are using Ideal, but it could be any class extending from the AbstractMethod class.
+         * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod class.
          */
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Ideal::class, [
+        $this->object = $this->objectManagerHelper->getObject(AbstractMethod::class, [
             'objectManager' => $this->objectManager,
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,
@@ -98,7 +112,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
-     * Test what happens if the allow by ip options is on, but our ip is not in the list.
+     * Test what happens if the allow by ip option is on, but our ip is not in the list.
      */
     public function testIsAvailableInvalidIp()
     {
@@ -120,19 +134,18 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
-     * Test what happens if the allow by ip options is on, but our ip is not in the list.
+     * Test what happens if the allow by ip option is on, and our ip is in the list.
      */
     public function testIsAvailableValidIp()
     {
-        $this->scopeConfig->shouldReceive('getValue')->with(
-            'payment/tig_buckaroo_ideal/active',
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-            1
-        )->andReturn(1);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(1);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(null);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(null);
 
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->twice()->andReturn(1);
+        $quote->shouldReceive('getStoreId')->andReturn(1);
+        $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
 
         $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
         $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
@@ -145,5 +158,57 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $result = $this->object->isAvailable($quote);
 
         $this->assertTrue($result);
+    }
+
+    /**
+     * Test what happens if we exceed the maximum amount. The method should be hidden.
+     */
+    public function testIsAvailableExceedsMaximum()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
+        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
+
+        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+        $quote->shouldReceive('getStoreId')->andReturn(1);
+        $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
+
+        $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
+        $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
+
+        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
+        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+
+        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+
+        $result = $this->object->isAvailable($quote);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test what happens if we exceed the minimum amount. The method should be hidden.
+     */
+    public function testIsAvailableExceedsMinimum()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
+        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
+
+        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+        $quote->shouldReceive('getStoreId')->andReturn(1);
+        $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
+
+        $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
+        $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
+
+        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
+        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+
+        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+
+        $result = $this->object->isAvailable($quote);
+
+        $this->assertFalse($result);
     }
 }
