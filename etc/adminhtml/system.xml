@@ -797,11 +797,11 @@
                         <config_path>payment/tig_buckaroo_transfer/send_email</config_path>
                     </field>
 
-                    <!-- TODO: Numbers only validation -->
                     <field id="due_date" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Due date (in days)</label>
                         <comment><![CDATA[Specify the number of days the customer has to complete their payment before the first reminder e-mail will be sent by Buckaroo.]]></comment>
                         <config_path>payment/tig_buckaroo_transfer/due_date</config_path>
+                        <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                     </field>
 
                     <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -815,11 +815,11 @@
                             <config_path>payment/tig_buckaroo_transfer/use_creditmanagement</config_path>
                         </field>
 
-                        <!-- TODO: Numbers only validation -->
                         <field id="due_date_invoice" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Invoice delay (in days)</label>
                             <comment><![CDATA[Specify the amount of days before Buckaroo invoices the order and sends out the payment mail.]]></comment>
                             <config_path>payment/tig_buckaroo_transfer/due_date_invoice</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                             <depends>
                                 <field id="use_creditmanagement">1</field>
                             </depends>
@@ -977,21 +977,21 @@
                             <config_path>payment/tig_buckaroo_sepadirectdebit/use_creditmanagement</config_path>
                         </field>
 
-                        <!-- TODO: Numbers only validation -->
                         <field id="due_date_invoice" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Invoice delay (in days)</label>
                             <comment><![CDATA[Specify the amount of days before Buckaroo invoices the order and sends out the payment mail.]]></comment>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/due_date_invoice</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                             <depends>
                                 <field id="use_creditmanagement">1</field>
                             </depends>
                         </field>
 
-                        <!-- TODO: Numbers only validation -->
                         <field id="due_date" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Due date (in days)</label>
                             <comment><![CDATA[Specify the number of days the customer has to complete their payment before the first reminder e-mail will be sent by Buckaroo.]]></comment>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/due_date</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                             <depends>
                                 <field id="use_creditmanagement">1</field>
                             </depends>
