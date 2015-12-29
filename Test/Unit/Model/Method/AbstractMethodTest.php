@@ -75,6 +75,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $scopeConfig;
 
     /**
+     * @var \Mockery\MockInterface
+     */
+    protected $account;
+
+    /**
      * Setup the standard mocks
      */
     public function setUp()
@@ -82,8 +87,10 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->account = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
+        $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
 
         /**
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod class.
@@ -93,8 +100,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,
         ]);
-
-        $this->configProvider->shouldReceive('get')->with('account')->andReturnSelf();
     }
 
     /**
@@ -105,7 +110,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
 
-        $this->configProvider->shouldReceive('getActive')->once()->andReturn(0);
+        $this->account->shouldReceive('getActive')->once()->andReturn(0);
         $result = $this->object->isAvailable($quote);
 
         $this->assertFalse($result);
@@ -120,8 +125,10 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->once()->andReturn(1);
 
-        $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
-        $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
+        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
+
+        $this->scopeConfig->shouldReceive('getValue');
 
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(false);
@@ -147,8 +154,10 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
 
-        $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
-        $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
+        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
+
+        $this->scopeConfig->shouldReceive('getValue')->andReturn(1);
 
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
@@ -167,14 +176,15 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
         $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
+        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, NULL)->andReturn(false);
 
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
 
-        $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
-        $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
+        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
 
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
@@ -193,14 +203,15 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
         $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
+        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, NULL)->andReturn(false);
 
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
 
-        $this->configProvider->shouldReceive('getActive')->once()->andReturn(1);
-        $this->configProvider->shouldReceive('getLimitByIp')->once()->andReturn(1);
+        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
 
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);

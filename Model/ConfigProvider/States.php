@@ -48,7 +48,7 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getOrderStatePending()
  * @method mixed getOrderStateIncorrect()
  */
-class States extends AbstractConfigProvider
+class S§tates extends AbstractConfigProvider
 {
 
     /**
