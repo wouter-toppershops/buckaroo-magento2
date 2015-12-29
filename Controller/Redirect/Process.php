@@ -205,6 +205,11 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function cancelOrder()
     {
+        //Mostly the push api already canceled the order, so first check in wich state the order is.
+        if ($this->order->getState() == \Magento\Sales\Model\Order::STATE_CANCELED) {
+            return true;
+        }
+
         if ($this->order->canCancel()) {
             $this->order->cancel();
             return true;
