@@ -341,9 +341,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_ideal/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -455,9 +456,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_creditcard/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -741,9 +743,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_paypal/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -910,9 +913,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_transfer/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1082,9 +1086,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1201,9 +1206,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_mrcash/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1320,9 +1326,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_sofortbanking/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1439,9 +1446,10 @@
                         <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Allowed currencies</label>
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
-                            <source_model>Magento\Config\Model\Config\Source\Locale\Currency</source_model>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_giropay/allowed_currencies</config_path>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
                         <field id="allowspecific" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
