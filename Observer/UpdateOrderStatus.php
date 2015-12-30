@@ -41,6 +41,18 @@ namespace TIG\Buckaroo\Observer;
 
 class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
 {
+    /** @var \TIG\Buckaroo\Model\ConfigProvider\Account */
+    protected $account;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account $account
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\Account $account
+    ) {
+        $this->account = $account;
+    }
+
     /**
      * @param \Magento\Framework\Event\Observer $observer
      *
@@ -57,6 +69,8 @@ class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
         }
 
         $order = $payment->getOrder();
-        $order->setStatus('tig_buckaroo_pending_payment');
+        $newStatus = $this->account->getOrderStatusNew();
+
+        $order->setStatus($newStatus);
     }
 }

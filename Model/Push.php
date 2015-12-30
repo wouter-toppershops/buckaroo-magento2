@@ -119,6 +119,7 @@ class Push implements PushInterface
      * @param \TIG\Buckaroo\Helper\Data                           $helper
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory          $configProviderFactory
      * @param Refund\Push                                         $refundPush
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account          $account
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -143,7 +144,6 @@ class Push implements PushInterface
         $this->configProviderFactory    = $configProviderFactory;
         $this->refundPush               = $refundPush;
         $this->debugger                 = $debugger;
-
     }
 
     /**
@@ -216,7 +216,9 @@ class Push implements PushInterface
         $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-        $statesConfig = $this->configProviderFactory->get('states');
+        $statesConfig  = $this->configProviderFactory->get('states');
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
 
         switch ($response['status']) {
             case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
@@ -224,11 +226,11 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-                $newStatus = $statesConfig->getOrderStateFailed();
+                $newStatus = $accountConfig->getOrderStatusNew();
                 $this->processFailedPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $newStatus = $statesConfig->getOrderStateSuccess();
+                $newStatus = $accountConfig->getOrderStatusSuccess();
                 $this->processSucceededPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
@@ -238,11 +240,11 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $newStatus = $statesConfig->getOrderStatePending();
+                $newStatus = $accountConfig->getOrderStatusPending();
                 $this->processPendingPaymentPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $newStatus = $statesConfig->getOrderStateIncorrect();
+                $newStatus = $accountConfig->getOrderStatusFailed();
                 $this->processIncorrectPaymentPush($newStatus, $response['message']);
                 break;
         }
