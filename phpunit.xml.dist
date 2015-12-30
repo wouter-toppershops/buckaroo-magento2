@@ -20,6 +20,10 @@
     <filter>
         <whitelist addUncoveredFilesFromWhiteList="true">
             <directory suffix=".php">Build/Magento 2/vendor/tig/buckaroo/</directory>
+            <exclude>
+                <directory suffix=".php">Test</directory>
+                <file>registration.php</file>
+            </exclude>
         </whitelist>
     </filter>
     <logging>

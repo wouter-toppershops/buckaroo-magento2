@@ -164,6 +164,7 @@ class ProcessTest extends BaseTest
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(true);
 
+        $this->order->makePartial();
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->once()->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(true);
@@ -216,6 +217,7 @@ class ProcessTest extends BaseTest
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(true);
 
+        $this->order->makePartial();
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->twice()->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(false);

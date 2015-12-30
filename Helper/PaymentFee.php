@@ -122,6 +122,34 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     }
 
     /**
+     * Check if the fee calculation has to be done with taxes
+     *
+     * @param \Magento\Store\Model\Store|int|null $store
+     *
+     * @return bool
+     */
+    public function buckarooPaymentFeeInclTax($store = null)
+    {
+        $configValue = $this->configProvider->getCalculationInclTax($store);
+
+        return $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
+    }
+
+    /**
+     * Check if the fee calculation has to be done without  taxes
+     *
+     * @param \Magento\Store\Model\Store|int|null $store
+     *
+     * @return bool
+     */
+    public function buckarooPaymentFeeExclTax($store = null)
+    {
+        $configValue = $this->configProvider->getCalculationInclTax($store);
+
+        return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
+    }
+
+    /**
      * Check ability to display prices including tax for buckaroo fee in shopping cart
      *
      * @param \Magento\Store\Model\Store|int|null $store

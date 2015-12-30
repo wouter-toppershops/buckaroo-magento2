@@ -37,7 +37,7 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Test\Unit\Model\Method;
+namespace TIG\Buckaroo\Test\Unit\Model;
 
 use Magento\Sales\Model\Order;
 use \Mockery as m;
