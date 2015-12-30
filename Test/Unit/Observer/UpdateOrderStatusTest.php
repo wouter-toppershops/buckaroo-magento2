@@ -54,6 +54,9 @@ class UpdateOrderStatusTest extends BaseTest
      */
     protected $object;
 
+    /**
+     * Setup the basic mocks.
+     */
     public function setUp()
     {
         parent::setUp();
@@ -65,6 +68,9 @@ class UpdateOrderStatusTest extends BaseTest
         $this->object = new UpdateOrderStatus($account);
     }
 
+    /**
+     * Test what happens when this function is called but the payment method is not Buckaroo.
+     */
     public function testExecuteNotBuckaroo()
     {
         $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();
@@ -73,6 +79,9 @@ class UpdateOrderStatusTest extends BaseTest
         $this->object->execute($this->observer);
     }
 
+    /**
+     * Test what happens when the payment method is Buckaroo.
+     */
     public function testExecuteIsBuckaroo()
     {
         $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();

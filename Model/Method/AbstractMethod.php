@@ -264,6 +264,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return false;
         }
 
+        if (!$this->isAvailableBasedOnCurrency($quote)) {
+            return false;
+        }
+
         return parent::isAvailable($quote);
     }
 
@@ -316,6 +320,21 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         return true;
+    }
+
+    /**
+     * @param \Magento\Quote\Api\Data\CartInterface $quote
+     *
+     * @return bool
+     */
+    protected function isAvailableBasedOnCurrency(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $allowedCurrenciesRaw = $this->getConfigData('allowed_currencies');
+        $allowedCurrencies = explode(',', $allowedCurrenciesRaw);
+
+        $currentCurrency = $quote->getCurrency()->getStoreCurrencyCode();
+
+        return $allowedCurrenciesRaw === null || in_array($currentCurrency, $allowedCurrencies);
     }
 
     /**

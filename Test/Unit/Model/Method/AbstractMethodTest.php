@@ -103,6 +103,29 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
+     * @param int    $active
+     * @param int    $maxAmount
+     * @param int    $minAmount
+     * @param null   $limitByIp
+     * @param string $allowedCurrencies
+     *
+     * @return $this
+     */
+    public function getValues($active = 1, $maxAmount = 80, $minAmount = 80, $limitByIp = null, $allowedCurrencies = 'ABC,DEF')
+    {
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn($active);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn($maxAmount);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn($minAmount);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null)->andReturn($limitByIp);
+        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/allowed_currencies', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null)->andReturn($allowedCurrencies);
+
+        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
+
+        return $this;
+    }
+
+    /**
      * Test what happens if the payment method is disabled.
      */
     public function testIsAvailableDisabled()
@@ -121,12 +144,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableInvalidIp()
     {
+        $this->getValues();
+
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->once()->andReturn(1);
-
-        $this->account->shouldReceive('getActive')->once()->andReturn(1);
-        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
 
         $this->scopeConfig->shouldReceive('getValue');
 
@@ -145,17 +167,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableValidIp()
     {
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(1);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(null);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(null);
+        $this->getValues(1, null, null);
 
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
-
-        $this->account->shouldReceive('getActive')->once()->andReturn(1);
-        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
+        $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
+        $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('ABC');
 
         $this->scopeConfig->shouldReceive('getValue')->andReturn(1);
 
@@ -174,17 +193,12 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableExceedsMaximum()
     {
-        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
-        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
-        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, NULL)->andReturn(false);
+        $this->getValues();
 
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
-
-        $this->account->shouldReceive('getActive')->once()->andReturn(1);
-        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
 
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
@@ -201,17 +215,12 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableExceedsMinimum()
     {
-        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
-        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn(80);
-        $this->scopeConfig->shouldReceive('getValue')->once()->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, NULL)->andReturn(false);
+        $this->getValues();
 
         /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
-
-        $this->account->shouldReceive('getActive')->once()->andReturn(1);
-        $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
 
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
@@ -221,5 +230,53 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $result = $this->object->isAvailable($quote);
 
         $this->assertFalse($result);
+    }
+
+    /**
+     * Test what happens if we exceed the minimum amount. The method should be hidden.
+     */
+    public function testIsAvailableNotAllowedCurrency()
+    {
+        $this->getValues(1, null, null);
+
+        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+        $quote->shouldReceive('getStoreId')->andReturn(1);
+        $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
+        $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
+        $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('EUR');
+
+        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
+        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+
+        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+
+        $result = $this->object->isAvailable($quote);
+
+        $this->assertFalse($result);
+    }
+
+    /**
+     * Test what happens if we exceed the minimum amount. The method should be hidden.
+     */
+    public function testIsAvailableAllowedCurrency()
+    {
+        $this->getValues(1, null, null);
+
+        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+        $quote->shouldReceive('getStoreId')->andReturn(1);
+        $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
+        $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
+        $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('ABC');
+
+        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
+        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+
+        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+
+        $result = $this->object->isAvailable($quote);
+
+        $this->assertTrue($result);
     }
 }
