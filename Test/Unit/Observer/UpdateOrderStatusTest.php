@@ -49,11 +49,20 @@ class UpdateOrderStatusTest extends BaseTest
      */
     protected $observer;
 
+    /**
+     * @var UpdateOrderStatus
+     */
+    protected $object;
+
     public function setUp()
     {
         parent::setUp();
 
+        $account = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class)->makePartial();
+        $account->shouldReceive('getOrderStatusNew')->andReturn('tig_buckaroo_pending_payment');
+
         $this->observer = m::mock('Magento\Framework\Event\Observer');
+        $this->object = new UpdateOrderStatus($account);
     }
 
     public function testExecuteNotBuckaroo()
@@ -61,7 +70,7 @@ class UpdateOrderStatusTest extends BaseTest
         $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();
         $this->observer->shouldReceive('getMethod')->once()->andReturn('other_payment_method');
 
-        (new UpdateOrderStatus())->execute($this->observer);
+        $this->object->execute($this->observer);
     }
 
     public function testExecuteIsBuckaroo()
@@ -71,6 +80,6 @@ class UpdateOrderStatusTest extends BaseTest
         $this->observer->shouldReceive('getOrder')->once()->andReturnSelf();
         $this->observer->shouldReceive('setStatus')->once()->with('tig_buckaroo_pending_payment');
 
-        (new UpdateOrderStatus())->execute($this->observer);
+        $this->object->execute($this->observer);
     }
 }
