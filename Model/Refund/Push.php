@@ -135,7 +135,7 @@ class Push
 
         $creditmemo = $this->createCreditmemo();
 
-        $this->debugger->addToMessage('Order successfull refunded = '. $creditmemo);
+        $this->debugger->addToMessage('Order successful refunded = '. $creditmemo);
         $this->debugger->log();
 
         return $creditmemo;

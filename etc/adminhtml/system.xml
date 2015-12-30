@@ -184,7 +184,7 @@
                         <config_path>tig_buckaroo/account/auto_invoice</config_path>
                     </field>
 
-                    <field id="auto_invoice_status" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="auto_invoice_status" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment success status without invoice</label>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
                         <config_path>tig_buckaroo/account/auto_invoice_status</config_path>
@@ -275,7 +275,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_ideal/order_email</config_path>
                         </field>
@@ -675,7 +675,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_paypal/order_email</config_path>
                         </field>
@@ -844,7 +844,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_transfer/order_email</config_path>
                         </field>
@@ -1016,7 +1016,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/order_email</config_path>
                         </field>
