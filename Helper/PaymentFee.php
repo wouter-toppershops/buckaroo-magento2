@@ -70,7 +70,6 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function getTotals($dataObject)
     {
         $totals = [];
-
         $displayBothPrices = false;
         $displayIncludeTaxPrice = false;
 
@@ -117,6 +116,27 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                 'Buckaroo Fee'
             );
         }
+
+        return $totals;
+    }
+
+    /**
+     * @param \Magento\Framework\DataObject $dataObject
+     *
+     * @return array
+     */
+    public function getBuckarooPaymentFeeTotal($dataObject)
+    {
+        $totals = [];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->addTotalToTotals(
+            $totals,
+            'buckaroo_fee',
+            $dataObject->getBuckarooFee() + $dataObject->getBuckarooFeeTaxAmount(),
+            $dataObject->getBasebuckarooFee() + $dataObject->getBuckarooFeeBaseTaxAmount(),
+            'Buckaroo Fee'
+        );
 
         return $totals;
     }
