@@ -280,11 +280,11 @@
                             <config_path>payment/tig_buckaroo_ideal/order_email</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_ideal/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -499,11 +499,11 @@
                             <config_path>payment/tig_buckaroo_creditcard/limit_by_ip</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="amex_payment_fee" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_creditcard/amex_payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="amex_payment_fee_label" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -518,11 +518,11 @@
                             <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="maestro_payment_fee" translate="label comment" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_creditcard/maestro_payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="maestro_payment_fee_label" translate="label comment" type="text" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -552,11 +552,11 @@
                             <config_path>payment/tig_buckaroo_creditcard/mastercard_unsecure_hold</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="mastercard_payment_fee" translate="label comment" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_creditcard/mastercard_payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="mastercard_payment_fee_label" translate="label comment" type="text" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -586,11 +586,11 @@
                             <config_path>payment/tig_buckaroo_creditcard/visa_unsecure_hold</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="visa_payment_fee" translate="label comment" type="text" sortOrder="250" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_creditcard/visa_payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="visa_payment_fee_label" translate="label comment" type="text" sortOrder="260" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -682,11 +682,11 @@
                             <config_path>payment/tig_buckaroo_paypal/order_email</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_paypal/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -852,11 +852,11 @@
                             <config_path>payment/tig_buckaroo_transfer/order_email</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_transfer/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1025,11 +1025,11 @@
                             <config_path>payment/tig_buckaroo_sepadirectdebit/order_email</config_path>
                         </field>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1145,11 +1145,11 @@
                     <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Advanced Configuration</label>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_mrcash/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1265,11 +1265,11 @@
                     <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Advanced Configuration</label>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_sofortbanking/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -1385,11 +1385,11 @@
                     <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Advanced Configuration</label>
 
-                        <!-- TODO: Only prices and percentages validation -->
                         <field id="payment_fee" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Payment fee</label>
                             <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                             <config_path>payment/tig_buckaroo_giropay/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
                         </field>
 
                         <field id="payment_fee_label" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
