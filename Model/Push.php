@@ -119,6 +119,7 @@ class Push implements PushInterface
      * @param \TIG\Buckaroo\Helper\Data                           $helper
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory          $configProviderFactory
      * @param Refund\Push                                         $refundPush
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account          $account
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -143,7 +144,6 @@ class Push implements PushInterface
         $this->configProviderFactory    = $configProviderFactory;
         $this->refundPush               = $refundPush;
         $this->debugger                 = $debugger;
-
     }
 
     /**
@@ -153,7 +153,7 @@ class Push implements PushInterface
      */
     public function receivePush()
     {
-        //Set orginal postdata before setting it to case lower.
+        //Set original postdata before setting it to case lower.
         $this->originalPostData = $this->request->getParams();
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
@@ -161,9 +161,9 @@ class Push implements PushInterface
         $this->debugger->addToMessage($this->originalPostData);
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
-        //Check if the push can be procesed and if the order can be updated IMPORTANT => use the original post data.
+        //Check if the push can be processed and if the order can be updated IMPORTANT => use the original post data.
         $validSignature = $this->validator->validateSignature($this->originalPostData);
-        //Check if the order can recieve further status updates
+        //Check if the order can receive further status updates
         $this->order = $this->objectManager->create(Order::class)
             ->loadByIncrementId($this->postData['brq_invoicenumber']);
         if (!$this->order->getId()) {
@@ -178,7 +178,7 @@ class Push implements PushInterface
                 && !$this->order->hasInvoices()
             ) {
                 throw new Exception(
-                    __('Refund failed ! Status : '.$response['status']. ' and the order does not contain an invoice')
+                    __('Refund failed ! Status : %1 and the order does not contain an invoice', $response['status'])
                 );
             }
             return $this->refundPush->receiveRefundPush($this->postData, $validSignature, $this->order);
@@ -216,7 +216,9 @@ class Push implements PushInterface
         $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-        $statesConfig = $this->configProviderFactory->get('states');
+        $statesConfig  = $this->configProviderFactory->get('states');
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
 
         switch ($response['status']) {
             case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
@@ -224,11 +226,11 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-                $newStatus = $statesConfig->getOrderStateFailed();
+                $newStatus = $accountConfig->getOrderStatusNew();
                 $this->processFailedPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                $newStatus = $statesConfig->getOrderStateSuccess();
+                $newStatus = $accountConfig->getOrderStatusSuccess();
                 $this->processSucceededPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
@@ -238,11 +240,11 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $newStatus = $statesConfig->getOrderStatePending();
+                $newStatus = $accountConfig->getOrderStatusPending();
                 $this->processPendingPaymentPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $newStatus = $statesConfig->getOrderStateIncorrect();
+                $newStatus = $accountConfig->getOrderStatusFailed();
                 $this->processIncorrectPaymentPush($newStatus, $response['message']);
                 break;
         }

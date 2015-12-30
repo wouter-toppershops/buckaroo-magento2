@@ -146,28 +146,28 @@
                         <label>New status</label>
                         <comment><![CDATA[This status will be given to new orders.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
-                        <config_path>tig_buckaroo/account/order_state_new</config_path>
+                        <config_path>tig_buckaroo/account/order_status_new</config_path>
                     </field>
 
                     <field id="order_status_pending" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Pending payment status</label>
                         <comment><![CDATA[This status will be given to orders pending payment.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
-                        <config_path>tig_buckaroo/account/order_state_pending</config_path>
+                        <config_path>tig_buckaroo/account/order_status_pending</config_path>
                     </field>
 
                     <field id="order_status_success" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment success status</label>
                         <comment><![CDATA[This status will be given to orders paid.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
-                        <config_path>tig_buckaroo/account/order_state_success</config_path>
+                        <config_path>tig_buckaroo/account/order_status_success</config_path>
                     </field>
 
                     <field id="order_status_failed" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment failed status</label>
                         <comment><![CDATA[This status will be given to unsuccessful orders.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
-                        <config_path>tig_buckaroo/account/order_state_failed</config_path>
+                        <config_path>tig_buckaroo/account/order_status_failed</config_path>
                     </field>
 
                     <field id="invoice_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -184,7 +184,7 @@
                         <config_path>tig_buckaroo/account/auto_invoice</config_path>
                     </field>
 
-                    <field id="auto_invoice_status" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                    <field id="auto_invoice_status" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment success status without invoice</label>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
                         <config_path>tig_buckaroo/account/auto_invoice_status</config_path>
@@ -275,7 +275,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_ideal/order_email</config_path>
                         </field>
@@ -677,7 +677,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_paypal/order_email</config_path>
                         </field>
@@ -847,7 +847,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_transfer/order_email</config_path>
                         </field>
@@ -1020,7 +1020,7 @@
 
                         <field id="order_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Send order confirmation email</label>
-                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is succesfull. Specific for this payment method.]]></comment>
+                            <comment><![CDATA[Enable to send an order confirmation email to the customer when the payment is successful. Specific for this payment method.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/order_email</config_path>
                         </field>
