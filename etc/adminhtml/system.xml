@@ -51,7 +51,7 @@
                 <field id="buckaroo_fee" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="1" showInStore="1">
                     <label>Buckaroo Payment Fee Prices</label>
                     <comment>This sets whether buckaroo payment fee amounts entered from Magento Admin include tax</comment>
-                    <source_model>TIG\Buckaroo\Model\Config\Source\Display\Type</source_model>
+                    <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation</source_model>
                 </field>
             </group>
             <group id="cart_display">
@@ -146,28 +146,28 @@
                         <label>New status</label>
                         <comment><![CDATA[This status will be given to new orders.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
-                        <config_path>tig_buckaroo/account/order_state_new</config_path>
+                        <config_path>tig_buckaroo/account/order_status_new</config_path>
                     </field>
 
                     <field id="order_status_pending" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Pending payment status</label>
                         <comment><![CDATA[This status will be given to orders pending payment.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
-                        <config_path>tig_buckaroo/account/order_state_pending</config_path>
+                        <config_path>tig_buckaroo/account/order_status_pending</config_path>
                     </field>
 
                     <field id="order_status_success" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment success status</label>
                         <comment><![CDATA[This status will be given to orders paid.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
-                        <config_path>tig_buckaroo/account/order_state_success</config_path>
+                        <config_path>tig_buckaroo/account/order_status_success</config_path>
                     </field>
 
                     <field id="order_status_failed" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Payment failed status</label>
                         <comment><![CDATA[This status will be given to unsuccessful orders.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
-                        <config_path>tig_buckaroo/account/order_state_failed</config_path>
+                        <config_path>tig_buckaroo/account/order_status_failed</config_path>
                     </field>
 
                     <field id="invoice_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">

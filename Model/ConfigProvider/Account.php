@@ -58,6 +58,10 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getDebugEmail()
  * @method mixed getLimitByIp()
  * @method mixed getFeePercentageMode()
+ * @method getOrderStatusNew()
+ * @method getOrderStatusPending()
+ * @method getOrderStatusSuccess()
+ * @method getOrderStatusFailed()
  */
 class Account extends AbstractConfigProvider
 {
@@ -81,6 +85,10 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_DEBUG_EMAIL             = 'tig_buckaroo/account/debug_email';
     const XPATH_ACCOUNT_LIMIT_BY_IP             = 'tig_buckaroo/account/limit_by_ip';
     const XPATH_ACCOUNT_FEE_PERCENTAGE_MODE     = 'tig_buckaroo/account/fee_percentage_mode';
+    const XPATH_ACCOUNT_ORDER_STATUS_NEW        = 'tig_buckaroo/account/order_status_new';
+    const XPATH_ACCOUNT_ORDER_STATUS_PENDING    = 'tig_buckaroo/account/order_status_pending';
+    const XPATH_ACCOUNT_ORDER_STATUS_SUCCESS    = 'tig_buckaroo/account/order_status_success';
+    const XPATH_ACCOUNT_ORDER_STATUS_FAILED     = 'tig_buckaroo/account/order_status_failed';
 
     /**
      * {@inheritdoc}
@@ -104,6 +112,10 @@ class Account extends AbstractConfigProvider
             'debug_email'           => $this->getDebugEmail($store),
             'limit_by_ip'           => $this->getLimitByIp($store),
             'fee_percentage_mode'   => $this->getFeePercentageMode($store),
+            'order_status_new'      => $this->getOrderStatusNew($store),
+            'order_status_pending'  => $this->getOrderStatusPending($store),
+            'order_status_success'  => $this->getOrderStatusSuccess($store),
+            'order_status_failed'   => $this->getOrderStatusFailed($store),
         ];
         return $config;
     }

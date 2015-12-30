@@ -128,7 +128,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function buckarooPaymentFeeInclTax($store = null)
+    public function buckarooPaymentCalculationInclTax($store = null)
     {
         $configValue = $this->configProvider->getCalculationInclTax($store);
 
@@ -142,7 +142,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function buckarooPaymentFeeExclTax($store = null)
+    public function buckarooPaymentFeeCaclulationExclTax($store = null)
     {
         $configValue = $this->configProvider->getCalculationInclTax($store);
 
