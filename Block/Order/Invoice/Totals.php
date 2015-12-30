@@ -37,22 +37,14 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Block\Order;
+namespace TIG\Buckaroo\Block\Order\Invoice;
 
-use \Magento\Sales\Model\Order;
-
-class Totals extends \Magento\Sales\Block\Order\Totals
+class Totals extends \TIG\Buckaroo\Block\Order\Totals
 {
     /**
-     * @var \TIG\Buckaroo\Helper\PaymentFee
-     */
-    protected $helper = null;
-
-    /**
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Framework\Registry                      $registry
-     * @param \TIG\Buckaroo\Helper\PaymentFee                  $helper
-     * @param array                                            $data
+     * @param \Magento\Framework\Registry $registry
+     * @param array $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
@@ -60,47 +52,19 @@ class Totals extends \Magento\Sales\Block\Order\Totals
         \TIG\Buckaroo\Helper\PaymentFee $helper,
         array $data = []
     ) {
-        $this->helper = $helper;
-        parent::__construct($context, $registry);
-        $this->initTotals();
+        parent::__construct($context, $registry, $helper);
+        $this->_isScopePrivate = true;
     }
 
     /**
-     * Initialize buckaroo fee totals for order/invoice/creditmemo
+     * Initialize order totals array
      *
      * @return $this
      */
-    public function initTotals()
+    protected function _initTotals()
     {
-        $this->_initTotals();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $source = $this->getSource();
-        $totals = $this->helper->getBuckarooPaymentFeeTotal($source);
-        $this->addTotalBefore(new \Magento\Framework\DataObject($totals[0]), 'grand_total');
-        return $this->_totals;
+        parent::_initTotals();
+        $this->removeTotal('base_grandtotal');
+        return $this;
     }
-
-    /**
-     * get totals array for visualization
-     *
-     * @param array|null $area
-     * @return array
-     */
-    public function getTotals($area = null)
-    {
-        $totals = [];
-        if ($area === null) {
-            $totals = $this->initTotals();
-        } else {
-            $area = (string)$area;
-            foreach ($this->_totals as $total) {
-                $totalArea = (string)$total->getArea();
-                if ($totalArea == $area) {
-                    $totals[] = $total;
-                }
-            }
-        }
-        return $totals;
-    }
-
 }
