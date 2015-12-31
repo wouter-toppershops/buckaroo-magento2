@@ -65,7 +65,7 @@ define(
             initObservable: function () {
                 this._super().observe(['selectedBank', 'banktypes']);
 
-                this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.banks);
+                this.banktypes = ko.observableArray(window.checkoutConfig.payment.buckaroo.ideal.banks);
 
                 /**
                  * observe radio buttons

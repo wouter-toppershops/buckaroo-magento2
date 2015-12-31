@@ -41,14 +41,28 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 class Transfer extends AbstractConfigProvider
 {
+    const XPATH_TRANSFER_ACTIVE = 'payment/tig_buckaroo_transfer/active';
     const XPATH_TRANSFER_PAYMENT_FEE = 'payment/tig_buckaroo_transfer/payment_fee';
+    const XPATH_TRANSFER_SEND_EMAIL = 'payment/tig_buckaroo_transfer/send_email';
 
     /**
-     * @return array|void
+     * @return array
      */
     public function getConfig()
     {
-        return [];
+        if (!$this->scopeConfig->getValue(self::XPATH_TRANSFER_ACTIVE)) {
+            return [];
+        }
+
+        return [
+            'payment' => [
+                'buckaroo' => [
+                    'transfer' => [
+                        'sendEmail' => (bool)$this->scopeConfig->getValue(self::XPATH_TRANSFER_SEND_EMAIL)
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
