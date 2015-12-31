@@ -58,6 +58,11 @@ abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigP
     protected $issuers = [];
 
     /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * @param \Magento\Framework\View\Asset\Repository           $assetRepo
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */

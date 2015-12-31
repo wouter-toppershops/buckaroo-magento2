@@ -42,11 +42,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 class Ideal extends AbstractConfigProvider
 {
     const XPATH_IDEAL_PAYMENT_FEE = 'payment/tig_buckaroo_ideal/payment_fee';
-
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
+    const XPATH_IDEAL_ACTIVE = 'payment/tig_buckaroo_ideal/active';
 
     /**
      * @var array
@@ -95,19 +91,23 @@ class Ideal extends AbstractConfigProvider
      */
     public function getConfig()
     {
+        if (!$this->scopeConfig->getValue(static::XPATH_IDEAL_ACTIVE)) {
+            return [];
+        }
+
         $issuers = $this->formatIssuers();
 
         // @TODO: get banks dynamic
-        $config = [
+        return [
             'payment' => [
                 'buckaroo' => [
-                    'banks' => $issuers,
+                    'ideal' => [
+                        'banks' => $issuers,
+                    ],
                     'response' => [],
                 ],
             ],
         ];
-
-        return $config;
     }
 
     /**

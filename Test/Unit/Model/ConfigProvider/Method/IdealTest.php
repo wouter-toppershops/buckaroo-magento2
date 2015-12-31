@@ -77,21 +77,34 @@ class IdealTest extends BaseTest
     }
 
     /**
+     * Test what happens when the payment method is disabled.
+     */
+    public function testInactive()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->andReturn(false);
+
+        $this->assertEquals([], $this->object->getConfig());
+    }
+
+    /**
      * Check if the getImageUrl function is called for every record.
      */
     public function testGetImageUrl()
     {
+        $this->scopeConfig->shouldReceive('getValue')->andReturn(true);
+
         $shouldReceive = $this->assetRepository
             ->shouldReceive('getUrl')
             ->with(\Mockery::type('string'));
 
         $options = $this->object->getConfig();
 
-        $shouldReceive->times(count($options['payment']['buckaroo']['banks']));
+        $shouldReceive->times(count($options['payment']['buckaroo']['ideal']['banks']));
 
         $this->assertTrue(array_key_exists('payment', $options));
         $this->assertTrue(array_key_exists('buckaroo', $options['payment']));
-        $this->assertTrue(array_key_exists('banks', $options['payment']['buckaroo']));
+        $this->assertTrue(array_key_exists('ideal', $options['payment']['buckaroo']));
+        $this->assertTrue(array_key_exists('banks', $options['payment']['buckaroo']['ideal']));
     }
 
     /**
