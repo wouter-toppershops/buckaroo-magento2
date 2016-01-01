@@ -44,6 +44,7 @@ use \TIG\Buckaroo\Model\Config\Source\Display\Type as DisplayType;
 /**
  * @method int getPriceDisplayCart()
  * @method int getPriceDisplaySales()
+ * @method int getCalculationInclTax()
  * @method string getTaxClass()
  */
 class BuckarooFee extends AbstractConfigProvider
@@ -52,6 +53,11 @@ class BuckarooFee extends AbstractConfigProvider
      * Buckaroo fee tax class
      */
     const XPATH_BUCKAROOFEE_TAX_CLASS = 'tax/classes/buckaroo_fee_tax_class';
+
+    /**
+     * Calculation fee tax settings
+     */
+    const XPATH_BUCKAROO_PAYMENTFEE_TAX = 'tax/calculation/buckaroo_fee';
 
     /**
      * Shopping cart display settings
@@ -92,6 +98,10 @@ class BuckarooFee extends AbstractConfigProvider
     {
         return [
             'buckarooFee' => [
+                'calculation' => [
+                    'buckarooPaymentFeeInclTax'    =>
+                        $this->getCalculationInclTax() == DisplayType::DISPLAY_TYPE_INCLUDING_TAX,
+                ],
                 'cart' => [
                     'displayBuckarooFeeBothPrices' => $this->getPriceDisplayCart() == DisplayType::DISPLAY_TYPE_BOTH,
                     'displayBuckarooFeeInclTax'    => $this->getPriceDisplayCart() == DisplayType::DISPLAY_TYPE_BOTH

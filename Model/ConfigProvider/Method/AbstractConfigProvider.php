@@ -51,6 +51,18 @@ abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigP
     protected $assetRepo;
 
     /**
+     * The list of issuers. This is filled by the child classes.
+     *
+     * @var array
+     */
+    protected $issuers = [];
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * @param \Magento\Framework\View\Asset\Repository           $assetRepo
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
@@ -60,6 +72,35 @@ abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigP
     ) {
         $this->assetRepo = $assetRepo;
         $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * Retrieve the list of issuers.
+     *
+     * @return array
+     */
+    public function getIssuers()
+    {
+        return $this->issuers;
+    }
+
+    /**
+     * Format the issuers list so the img index is filled with the correct url.
+     *
+     * @return array
+     */
+    protected function formatIssuers()
+    {
+        $issuers = array_map(
+            function ($issuer) {
+                $issuer['img'] = $this->getImageUrl('ico-' . $issuer['code']);
+
+                return $issuer;
+            },
+            $this->getIssuers()
+        );
+
+        return $issuers;
     }
 
     /**

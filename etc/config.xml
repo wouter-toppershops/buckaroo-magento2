@@ -44,7 +44,9 @@
             <classes>
                 <buckaroo_fee_tax_class/>
             </classes>
-
+            <calculation>
+                <buckaroo_fee>1</buckaroo_fee>
+            </calculation>
             <cart_display>
                 <buckaroo_fee>1</buckaroo_fee>
             </cart_display>

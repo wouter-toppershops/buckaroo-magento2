@@ -1,0 +1,108 @@
+<?php
+/**
+ *                  ___________       __            __
+ *                  \__    ___/____ _/  |_ _____   |  |
+ *                    |    |  /  _ \\   __\\__  \  |  |
+ *                    |    | |  |_| ||  |   / __ \_|  |__
+ *                    |____|  \____/ |__|  (____  /|____/
+ *                                              \/
+ *          ___          __                                   __
+ *         |   |  ____ _/  |_   ____ _______   ____    ____ _/  |_
+ *         |   | /    \\   __\_/ __ \\_  __ \ /    \ _/ __ \\   __\
+ *         |   ||   |  \|  |  \  ___/ |  | \/|   |  \\  ___/ |  |
+ *         |___||___|  /|__|   \_____>|__|   |___|  / \_____>|__|
+ *                  \/                           \/
+ *                  ________
+ *                 /  _____/_______   ____   __ __ ______
+ *                /   \  ___\_  __ \ /  _ \ |  |  \\____ \
+ *                \    \_\  \|  | \/|  |_| ||  |  /|  |_| |
+ *                 \______  /|__|    \____/ |____/ |   __/
+ *                        \/                       |__|
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Creative Commons License.
+ * It is available through the world-wide-web at this URL:
+ * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * If you are unable to obtain it through the world-wide-web, please send an email
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this module to newer
+ * versions in the future. If you wish to customize this module for your
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ *
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ */
+namespace TIG\Buckaroo\Test\Unit\Model\Config\Backend;
+
+class PriceTest extends \TIG\Buckaroo\Test\BaseTest
+{
+    /**
+     * @var \TIG\Buckaroo\Model\Config\Backend\Price
+     */
+    protected $object;
+
+    /**
+     * @var \Mockery\MockInterface
+     */
+    protected $resource;
+
+    /**
+     * Setup the base mocks.
+     */
+    public function setUp()
+    {
+        parent::setUp();
+
+        $this->resource = \Mockery::mock(\Magento\Framework\Model\ResourceModel\AbstractResource::class);
+        $this->resource->shouldReceive('save');
+
+        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Backend\Price::class, [
+            'resource' => $this->resource,
+        ]);
+    }
+
+    /**
+     * Test what happens when a empty value is provided.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function testEmptyValue()
+    {
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
+    }
+
+    /**
+     * Test what happens when there is a valid value is provided.
+     *
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function testValidValue()
+    {
+        $this->object->setData('value', '10');
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
+
+        $this->object->setData('value', '10.1');
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
+
+        $this->object->setData('value', '-2');
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Price::class, $this->object->save());
+    }
+
+    /**
+     * Test what happens when an invalid value is provided.
+     */
+    public function testInvalidValue()
+    {
+        try {
+            $this->object->setData('value', 'wrong');
+            $this->object->save();
+            $this->fail();
+        } catch (\Exception $e) {
+            $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
+        }
+    }
+}
