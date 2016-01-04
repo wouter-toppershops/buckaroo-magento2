@@ -83,7 +83,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
             'creditmemoFactory' => $this->creditmemoFactory,
         ]);
 
-        // @todo: Check why this attribute is public.
         $this->object->order = $this->order;
     }
 
@@ -103,8 +102,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->order->shouldReceive('getCreditmemosCollection')->andReturn($this->creditmemoFactory);
         $this->order->shouldReceive('getItemsCollection')->andReturn($this->creditmemoFactory);
 
-        $this->debugger->shouldReceive('addToMessage')->once()->with('Trying to refund order ' . $id . ' out of paymentplaza');
-        $this->debugger->shouldReceive('addToMessage')->once()->with('With this refund of 0 the grand total will be refunded.');
+        $this->debugger->shouldReceive('addToMessage', 'log')->andReturnSelf();
 
         $this->objectManager->shouldReceive('create')->once()->with('Magento\Sales\Api\CreditmemoManagementInterface')->andReturnSelf();
         $this->objectManager->shouldReceive('refund')->once();
@@ -137,10 +135,17 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         }
     }
 
+    /**
+     * Test the path with an invalid grand total
+     */
     public function testCreateCreditMemoInvalidGrandTotal()
     {
+        $creditmemoItem = \Mockery::mock(\Magento\Sales\Model\Order\Creditmemo\Item::class);
+        $creditmemoItem->shouldReceive('setBackToStock', 'isDeleted');
+        $creditmemoItem->shouldReceive('getId', 'getQtyInvoiced', 'getQtyRefunded')->andReturn(1);
+
         $this->creditmemoFactory->shouldReceive('getItems')->andReturn([]);
-        $this->creditmemoFactory->shouldReceive('getAllItems')->andReturn([]);
+        $this->creditmemoFactory->shouldReceive('getAllItems')->andReturn([$creditmemoItem]);
         $this->creditmemoFactory->shouldReceive('isValidGrandTotal')->andReturn(false);
         $this->creditmemoFactory->shouldReceive('createByOrder')->once()->andReturnSelf();
 
@@ -150,5 +155,108 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->debugger->shouldReceive('addToMessage')->once()->with('Buckaroo failed to create the credit memo\'s { The credit memo\'s total must be positive. }');
 
         $this->object->createCreditmemo();
+    }
+
+    /**
+     * Test the path with an invalid grand total
+     */
+    public function testCreateCreditMemoUnableToCreate()
+    {
+        $this->creditmemoFactory->shouldReceive('getItems')->andReturn([]);
+        $this->creditmemoFactory->shouldReceive('getAllItems')->andReturn([]);
+        $this->creditmemoFactory->shouldReceive('isValidGrandTotal')->andReturn(false);
+        $exception = new \TIG\Buckaroo\Exception(__('Error for test'));
+        $this->creditmemoFactory->shouldReceive('createByOrder')->once()->andThrow($exception);
+
+        $this->order->shouldReceive('getCreditmemosCollection')->andReturn($this->creditmemoFactory);
+        $this->order->shouldReceive('getItemsCollection')->andReturn($this->creditmemoFactory);
+
+        $this->assertFalse($this->object->createCreditmemo());
+    }
+
+    /**
+     * Unit test for the getCreditmemoData method.
+     */
+    public function testGetCreditmemoData()
+    {
+        $this->order->shouldReceive('getBaseGrandTotal')->andReturn(999);
+        $this->order->shouldReceive('getBaseTotalRefunded')->andReturn('0');
+        $this->order->shouldReceive('getBaseToOrderRate')->andReturn('1');
+
+        $this->object->postData = [
+            'brq_currency' => 'EUR',
+            'brq_amount_credit' => '100'
+        ];
+        $result = $this->object->getCreditmemoData();
+
+        $this->assertEquals(0, $result['shipping_amount']);
+        $this->assertEquals(0, $result['adjustment_negative']);
+        $this->assertEquals(0, $result['items']);
+        $this->assertEquals(0, $result['qtys']);
+        $this->assertEquals('100', $result['adjustment_positive']);
+    }
+
+    /**
+     * Unit test for the getTotalCreditAdjustments method.
+     */
+    public function testGetTotalCreditAdjustments()
+    {
+        $creditmemo = \Mockery::mock(\Magento\Sales\Model\Order\Creditmemo::class);
+        $creditmemo->shouldReceive('getBaseAdjustmentPositive')->andReturn(10);
+        $creditmemo->shouldReceive('getBaseAdjustmentNegative')->andReturn(5);
+
+        $this->order->shouldReceive('getCreditmemosCollection')->andReturn([$creditmemo]);
+
+        $this->assertEquals(5, $this->object->getTotalCreditAdjustments());
+    }
+
+    /**
+     * Unit test for the getAdjustmentRefundData method.
+     */
+    public function testGetAdjustmentRefundData()
+    {
+        $this->object->postData = [
+            'brq_currency' => 'EUR',
+            'brq_amount_credit' => '100',
+        ];
+
+        $this->order->shouldReceive('getBaseToOrderRate')->once()->andReturn(1);
+        $this->order->shouldReceive('getBaseTotalRefunded')->once()->andReturn(null);
+        $this->order->shouldReceive('getBaseBuckarooFee', 'getBuckarooFeeBaseTaxAmountInvoiced')->andReturn(10);
+
+        $this->assertEquals(80, $this->object->getAdjustmentRefundData());
+    }
+
+    /**
+     * Unit test for the getCreditmemoDataItems method.
+     */
+    public function testGetCreditmemoDataItems()
+    {
+        $orderItem = \Mockery::mock(\Magento\Sales\Model\Order\Item::class);
+        $orderItem->shouldReceive('getId')->andReturn(1);
+        $orderItem->shouldReceive('getQtyInvoiced')->andReturn(10);
+        $orderItem->shouldReceive('getQtyRefunded')->andReturn(3);
+
+        $this->order->shouldReceive('getAllItems')->andReturn([$orderItem]);
+
+        $result = $this->object->getCreditmemoDataItems();
+
+        $this->assertEquals(7, $result[1]['qty']);
+    }
+
+    /**
+     * Unit test for the setCreditQtys method.
+     */
+    public function testSetCreditQtys()
+    {
+        $items = [
+            15 => ['qty' => 30],
+            16 => ['qty' => 32],
+        ];
+
+        $result = $this->object->setCreditQtys($items);
+
+        $this->assertEquals(30, $result[15]);
+        $this->assertEquals(32, $result[16]);
     }
 }
