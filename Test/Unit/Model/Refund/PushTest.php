@@ -66,6 +66,11 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     protected $objectManager;
 
     /**
+     * @var \Mockery\MockInterface
+     */
+    protected $configProviderFactory;
+
+    /**
      * Setup the base mock objects.
      */
     public function setUp()
@@ -74,13 +79,16 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->order = \Mockery::mock(\Magento\Sales\Model\Order::class)->makePartial();
         $this->debugger = \Mockery::mock(\TIG\Buckaroo\Debug\Debugger::class)->makePartial();
-        $this->debugger->shouldReceive('log')->andReturnSelf();
+        $this->debugger->shouldReceive('addToMessage', 'log')->andReturnSelf();
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->creditmemoFactory = \Mockery::mock(\Magento\Sales\Model\Order\CreditmemoFactory::class);
+        $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Refund\Push::class, [
             'debugger' => $this->debugger,
             'objectManager' => $this->objectManager,
             'creditmemoFactory' => $this->creditmemoFactory,
+            'configProviderFactor' => $this->configProviderFactory
         ]);
 
         $this->object->order = $this->order;
@@ -97,6 +105,9 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->creditmemoFactory->shouldReceive('getAllItems')->andReturn([]);
         $this->creditmemoFactory->shouldReceive('isValidGrandTotal')->andReturn(true);
         $this->creditmemoFactory->shouldReceive('setTransactionId')->once()->with($id);
+
+        $this->configProviderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getAllowPush')->andReturn(true);
 
         $this->order->shouldReceive('getId')->once()->andReturn($id);
         $this->order->shouldReceive('getCreditmemosCollection')->andReturn($this->creditmemoFactory);
@@ -125,6 +136,9 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->order->shouldReceive('canCreditmemo')->twice()->andReturn(false);
 
+        $this->configProviderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getAllowPush')->andReturn(true);
+
         try {
             $this->object->receiveRefundPush([], false, $this->order);
             $this->fail();
@@ -151,8 +165,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->order->shouldReceive('getCreditmemosCollection')->andReturn($this->creditmemoFactory);
         $this->order->shouldReceive('getItemsCollection')->andReturn($this->creditmemoFactory);
-
-        $this->debugger->shouldReceive('addToMessage')->once()->with('Buckaroo failed to create the credit memo\'s { The credit memo\'s total must be positive. }');
 
         $this->object->createCreditmemo();
     }
