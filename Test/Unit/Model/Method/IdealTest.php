@@ -39,138 +39,108 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
-use \Mockery as m;
-use TIG\Buckaroo\Test\BaseTest;
-
-class IdealTest extends BaseTest
+class IdealTest extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
      * @var \TIG\Buckaroo\Model\Method\Ideal
      */
     protected $object;
 
-    public function testCapture()
+    /**
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory
+     */
+    protected $transactionBuilderMock;
+
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface|\Mockery\MockInterface
+     */
+    protected $objectManager;
+
+    /**
+     * Setup the base mocks.
+     */
+    public function setUp()
     {
-        $transactionBuilderMock = m::mock('TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory');
+        parent::setUp();
 
-        $this->object = $this->objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Method\Ideal',
-            [
-                'transactionBuilderFactory' => $transactionBuilderMock,
-            ]
-        );
+        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->transactionBuilderMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
 
-        $paymentInfoMock = m::mock(
-            '\Magento\Payment\Model\InfoInterface',
-            '\Magento\Sales\Api\Data\OrderPaymentInterface'
-        );
-
-        $this->markTestIncomplete('Unable to get by the parent::capture($payment, $amount); method.');
-
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->capture($paymentInfoMock, 1));
+        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Ideal::class, [
+            'objectManager' => $this->objectManager,
+            'transactionBuilderFactory' => $this->transactionBuilderMock,
+        ]);
     }
 
-    public function testCaptureInvalidArgument()
+    /**
+     * Test the validation method happy path.
+     */
+    public function testValidate()
     {
-        $this->object = $this->objectManagerHelper->getObject('TIG\Buckaroo\Model\Method\SepaDirectDebit');
+        $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->andReturnSelf();
+        $paymentInfo->shouldReceive('getCountryId')->andReturn(4);
+
+        $paymentInfo->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->andReturn(false);
+        $paymentInfo->shouldReceive('getAdditionalInformation')->with('issuer')->andReturn('NLRABO');
+
+        $idealConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class);
+        $idealConfig->shouldReceive('getIssuers')->andReturn([['code' => 'NLRABO']]);
+
+        $this->objectManager->shouldReceive('get')->once()->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)->andReturn($idealConfig);
+
+        $this->object->setData('info_instance', $paymentInfo);
+        $result = $this->object->validate();
+
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Method\Ideal::class, $result);
+    }
+
+    /**
+     * Test the validation method happy path.
+     */
+    public function testValidateInvalidIssuer()
+    {
+        $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->andReturnSelf();
+        $paymentInfo->shouldReceive('getCountryId')->andReturn(4);
+
+        $paymentInfo->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->andReturn(false);
+        $paymentInfo->shouldReceive('getAdditionalInformation')->with('issuer')->andReturn('wrong');
+
+        $idealConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class);
+        $idealConfig->shouldReceive('getIssuers')->andReturn([['code' => 'NLRABO']]);
+
+        $this->objectManager->shouldReceive('get')->once()->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)->andReturn($idealConfig);
+
+        $this->object->setData('info_instance', $paymentInfo);
 
         try {
-            $this->object->capture(m::mock('\Magento\Payment\Model\InfoInterface'), 40);
+            $this->object->validate();
             $this->fail();
-        } catch (\InvalidArgumentException $e) {
-            $this->assertEquals(
-                'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
-                ' and "\Magento\Payment\Model\InfoInterface".', $e->getMessage());
+        } catch(\Exception $e) {
+            $this->assertEquals('Please select a issuer from the list', $e->getMessage());
+            $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
         }
     }
 
-    public function testAuthorize()
+    /**
+     * Test the validation method happy path.
+     */
+    public function testValidateSkipValidation()
     {
-        $this->markTestIncomplete('Development still in progress');
+        $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->once()->andReturnSelf();
+        $paymentInfo->shouldReceive('getCountryId')->once()->andReturn(4);
 
-        $this->objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
+        $paymentInfo->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(true);
+        $idealConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class);
 
-        $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
+        $this->objectManager->shouldReceive('get')->once()->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)->andReturn($idealConfig);
 
-        $transactionBuilderMock = m::mock('\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory');
-        $transactionBuilderMock->shouldReceive('get')->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setOrder')->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setServices')->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setMethod')->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('build')->andReturn($transactionMock);
+        $this->object->setData('info_instance', $paymentInfo);
 
-        $validatorFactoryMock = m::mock('TIG\Buckaroo\Model\ValidatorFactory');
-        $validatorFactoryMock->shouldReceive('get')->once()->andReturnSelf();
-        $validatorFactoryMock->shouldReceive('validate')->once()->andReturnSelf();
+        $result = $this->object->validate();
 
-        $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
-        $gatewayMock->shouldReceive('authorize')->once()->with($transactionMock)->andReturn([]);
-
-        $this->object = $this->objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Method\Ideal',
-            [
-                'transactionBuilderFactory' => $transactionBuilderMock,
-                'validatorFactory' => $validatorFactoryMock,
-                'gateway' => $gatewayMock,
-            ]
-        );
-
-        $paymentInfoMock = m::mock(
-            '\Magento\Payment\Model\InfoInterface',
-            '\Magento\Sales\Api\Data\OrderPaymentInterface'
-        );
-        $paymentInfoMock->shouldReceive('getOrder')->andReturnSelf();
-        $paymentInfoMock->shouldReceive('getAdditionalInformation')->andReturnSelf();
-
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->authorize($paymentInfoMock, 1));
-    }
-
-    public function testRefund()
-    {
-        $this->markTestIncomplete('Development still in progress');
-
-        $this->objectManagerHelper = new \Magento\Framework\TestFramework\Unit\Helper\ObjectManager($this);
-
-        $transactionMock = m::mock('TIG\Buckaroo\Gateway\Http\Transaction');
-
-        $services = [
-            'Name'    => 'ideal',
-            'Action'  => 'Refund',
-            'Version' => 1,
-        ];
-
-        $paymentInfoMock = m::mock(
-            '\Magento\Payment\Model\InfoInterface',
-            '\Magento\Sales\Api\Data\OrderPaymentInterface'
-        );
-        $paymentInfoMock->shouldReceive('getOrder')->once()->andReturnSelf();
-        $paymentInfoMock->shouldReceive('getAdditionalInformation')->once()->with('buckaroo_transaction_key')->andReturnSelf();
-
-        $transactionBuilderMock = m::mock('\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory');
-        $transactionBuilderMock->shouldReceive('get')->once()->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setOrder')->once()->with($paymentInfoMock)->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setServices')->once()->with($services)->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setMethod')->once()->with('TransactionRequest')->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('setOriginalTransactionKey')->once()->with($paymentInfoMock)->andReturnSelf();
-        $transactionBuilderMock->shouldReceive('build')->once()->andReturn($transactionMock);
-
-        $gatewayMock = m::mock('TIG\Buckaroo\Gateway\Http\Bpe3');
-        $gatewayMock->shouldReceive('refund')->once()->with($transactionMock)->andReturnSelf();
-
-        $validatorFactoryMock = m::mock('TIG\Buckaroo\Model\ValidatorFactory');
-        $validatorFactoryMock->shouldReceive('get')->with('transaction_response')->once()->andReturnSelf();
-        $validatorFactoryMock->shouldReceive('get')->with('transaction_response_status')->once()->andReturnSelf();
-        $validatorFactoryMock->shouldReceive('validate')->with($gatewayMock)->twice()->andReturn(true);
-
-        $this->object = $this->objectManagerHelper->getObject(
-            'TIG\Buckaroo\Model\Method\Ideal',
-            [
-                'transactionBuilderFactory' => $transactionBuilderMock,
-                'validatorFactory' => $validatorFactoryMock,
-                'gateway' => $gatewayMock,
-            ]
-        );
-
-        $this->assertInstanceOf('\TIG\Buckaroo\Model\Method\Ideal', $this->object->refund($paymentInfoMock, 1));
+        $this->assertInstanceOf(\TIG\Buckaroo\Model\Method\Ideal::class, $result);
     }
 }
