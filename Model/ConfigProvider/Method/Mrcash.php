@@ -46,10 +46,10 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  */
 class Mrcash extends AbstractConfigProvider
 {
-    const XPATH_MRCASH_PAYMENT_FEE = 'payment/tig_buckaroo_mrcash/payment_fee';
-    const XPATH_IDEAL_ACTIVE_STATUS = 'payment/tig_buckaroo_mrcash/active_status';
-    const XPATH_IDEAL_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_mrcash/order_status_success';
-    const XPATH_IDEAL_ORDER_STATUS_FAILED = 'payment/tig_buckaroo_mrcash/order_status_failed';
+    const XPATH_MRCASH_PAYMENT_FEE          = 'payment/tig_buckaroo_mrcash/payment_fee';
+    const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_mrcash/active_status';
+    const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_mrcash/order_status_success';
+    const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_mrcash/order_status_failed';
 
     /**
      * @return array|void

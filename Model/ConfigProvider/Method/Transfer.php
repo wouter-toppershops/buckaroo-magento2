@@ -46,12 +46,12 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  */
 class Transfer extends AbstractConfigProvider
 {
-    const XPATH_TRANSFER_ACTIVE = 'payment/tig_buckaroo_transfer/active';
-    const XPATH_TRANSFER_PAYMENT_FEE = 'payment/tig_buckaroo_transfer/payment_fee';
-    const XPATH_TRANSFER_SEND_EMAIL = 'payment/tig_buckaroo_transfer/send_email';
-    const XPATH_IDEAL_ACTIVE_STATUS = 'payment/tig_buckaroo_transfer/active_status';
-    const XPATH_IDEAL_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_transfer/order_status_success';
-    const XPATH_IDEAL_ORDER_STATUS_FAILED = 'payment/tig_buckaroo_transfer/order_status_failed';
+    const XPATH_TRANSFER_ACTIVE             = 'payment/tig_buckaroo_transfer/active';
+    const XPATH_TRANSFER_PAYMENT_FEE        = 'payment/tig_buckaroo_transfer/payment_fee';
+    const XPATH_TRANSFER_SEND_EMAIL         = 'payment/tig_buckaroo_transfer/send_email';
+    const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_transfer/active_status';
+    const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_transfer/order_status_success';
+    const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_transfer/order_status_failed';
 
     /**
      * @return array

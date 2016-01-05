@@ -43,7 +43,7 @@ class AllowedCurrencies extends AbstractConfigProvider
     /**
      * @var array
      */
-    protected $allowedCurrencies = array(
+    protected $allowedCurrencies = [
         'CAD',
         'GBP',
         'EUR',
@@ -66,7 +66,7 @@ class AllowedCurrencies extends AbstractConfigProvider
         'PLN',
         'CHF',
         'CZK',
-    );
+    ];
 
     /**
      * @return array

@@ -70,7 +70,7 @@ class States extends AbstractConfigProvider
             'order_state_pending'   => $this->getOrderStatePending($store),
             'order_state_success'   => $this->getOrderStateSuccess($store),
             'order_state_failed'    => $this->getOrderStateFailed($store),
-            'order_state_incorrect' => $this->getOrderStateSuccess($store),
+            'order_state_incorrect' => $this->getOrderStateIncorrect($store),
         ];
         return $config;
     }
