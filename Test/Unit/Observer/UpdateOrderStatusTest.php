@@ -85,7 +85,7 @@ class UpdateOrderStatusTest extends BaseTest
     public function testExecuteIsBuckaroo()
     {
         $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();
-        $this->observer->shouldReceive('getMethod')->twice()->andReturn('tig_buckaroo');
+        $this->observer->shouldReceive('getMethod')->once()->andReturn('tig_buckaroo');
         $this->observer->shouldReceive('getOrder')->once()->andReturnSelf();
         $this->observer->shouldReceive('setStatus')->once()->with('tig_buckaroo_pending_payment');
 
