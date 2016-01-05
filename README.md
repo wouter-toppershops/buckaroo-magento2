@@ -17,5 +17,5 @@
 * Als je geen mf hebt: 
 ```
 #!bash
-bin/magento cache:flush && rm -rf var/cache/ && rm -rf var/page_cache/ && rm -rf var/generation/ && rm-rf var/di/
+bin/magento cache:flush && rm -rf var/cache/ && rm -rf var/page_cache/ && rm -rf var/generation/ && rm -rf var/di/
 ```
