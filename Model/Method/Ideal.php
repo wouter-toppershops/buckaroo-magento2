@@ -209,7 +209,6 @@ class Ideal extends AbstractMethod
      * Validate that we received a valid issuer ID.
      *
      * @return $this
-     * @throws Exception
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function validate()
@@ -237,7 +236,7 @@ class Ideal extends AbstractMethod
         }
 
         if (!$valid) {
-            throw new Exception(__('Please select a issuer from the list'));
+            throw new \Magento\Framework\Exception\LocalizedException(__('Please select a issuer from the list'));
         }
 
         return $this;
