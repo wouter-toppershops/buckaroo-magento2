@@ -41,7 +41,8 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 use Magento\Framework\View\Asset\Repository;
 use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
 
-abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider
+    implements CheckoutConfigProvider, ConfigProviderInterface
 {
     /**
      * The asset repository to generate the correct url to our assets.
