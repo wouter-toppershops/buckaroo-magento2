@@ -57,7 +57,7 @@ class Ideal extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
+    protected $_code                    = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
 
     /**
      * @var bool
