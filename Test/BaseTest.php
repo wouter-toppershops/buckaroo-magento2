@@ -55,6 +55,38 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $this->objectManagerHelper = new ObjectManager($this);
     }
 
+    /**
+     * Test the assignData method. In its root it is the same for every payment method.
+     *
+     * @param $fixture
+     *
+     * @return $this
+     */
+    public function assignDataTest($fixture)
+    {
+        if (!array_key_exists('buckaroo_skip_validation', $fixture)) {
+            $fixture['buckaroo_skip_validation'] = false;
+        }
+
+        $data = \Mockery::mock(\Magento\Framework\DataObject::class);
+        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+
+        foreach($fixture as $key => $value)
+        {
+            $camelCase = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
+                return strtoupper($matches[1]);
+            }, $key);
+
+            $data->shouldReceive('get' . $camelCase)->andReturn($value);
+            $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
+        }
+
+        $this->object->setData('info_instance', $infoInterface);
+        $this->assertEquals($this->object, $this->object->assignData($data));
+
+        return $this;
+    }
+
     public function tearDown()
     {
         m::close();

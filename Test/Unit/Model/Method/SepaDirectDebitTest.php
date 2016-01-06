@@ -98,27 +98,12 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     public function testAssignData()
     {
         $fixture = [
-            'buckaroo_skip_validation' => false,
             'customer_bic' => 'bicc',
             'customer_iban' => 'ibann',
             'customer_account_name' => 'myname',
         ];
 
-        $data = \Mockery::mock(\Magento\Framework\DataObject::class);
-        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
-
-        foreach($fixture as $key => $value)
-        {
-            $camelCase = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
-                return strtoupper($matches[1]);
-            }, $key);
-
-            $data->shouldReceive('get' . $camelCase)->andReturn($value);
-            $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
-        }
-
-        $this->object->setData('info_instance', $infoInterface);
-        $this->object->assignData($data);
+        $this->assignDataTest($fixture);
     }
 
     /**
