@@ -43,7 +43,12 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies
      */
-    protected $configProvider;
+    protected $allowedCurrenciesConfig;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    protected $configProviderMethodFactory;
 
     /**
      * @var \Magento\Framework\Locale\TranslatedLists
@@ -61,19 +66,21 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
     protected $currencyBundle;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $configProvider
+     * @param \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory    $configProviderMethodFactory
      * @param \Magento\Framework\Locale\Bundle\CurrencyBundle      $currencyBundle
      * @param \Magento\Framework\Locale\ResolverInterface          $localeResolver
      * @param \Magento\Framework\Locale\TranslatedLists            $listModels
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $configProvider,
+        \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
         \Magento\Framework\Locale\Bundle\CurrencyBundle $currencyBundle,
         \Magento\Framework\Locale\ResolverInterface $localeResolver,
         \Magento\Framework\Locale\TranslatedLists $listModels
-    )
-    {
-        $this->configProvider = $configProvider;
+    ) {
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->allowedCurrenciesConfig = $allowedCurrenciesConfig;
         $this->currencyBundle = $currencyBundle;
         $this->localeResolver = $localeResolver;
         $this->listModels = $listModels;
@@ -84,13 +91,19 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
      *
      * @return array Format: array(array('value' => '<value>', 'label' => '<label>'), ...)
      */
-    public function toOptionArray()
+    public function toOptionArray($method = null)
     {
+        $currencies = $this->allowedCurrenciesConfig->getAllowedCurrencies();
+        if ($method) {
+            $methodConfig = $this->configProviderMethodFactory->get($method);
+            $currencies = $methodConfig->getAllowedCurrencies();
+        }
+
         $locale = $this->localeResolver->getLocale();
         $translatedCurrencies = $this->currencyBundle->get($locale)['Currencies'] ?: [];
 
         $output = [];
-        foreach($this->configProvider->getAllowedCurrencies() as $currency) {
+        foreach ($currencies as $currency) {
             $output[] = [
                 'value' => $currency,
                 'label' => $translatedCurrencies[$currency][1],
@@ -101,4 +114,19 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
 
         return $output;
     }
+
+    /**
+     * $method is what is defined in system.xml (i.e. ::ideal) and is directly passed to toOptionArray for method
+     * configuration exemptions.
+     *
+     * @param      $method
+     * @param null $params
+     *
+     * @return array
+     */
+    public function __call($method, $params = null)
+    {
+        return $this->toOptionArray($method);
+    }
+
 }

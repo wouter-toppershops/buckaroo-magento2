@@ -211,6 +211,14 @@
                     <item name="type" xsi:type="string">buckaroo_fee</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
                 </item>
+                <item name="allowed_currencies" xsi:type="array">
+                    <item name="type" xsi:type="string">allowed_currencies</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies</item>
+                </item>
+                <item name="refund" xsi:type="array">
+                    <item name="type" xsi:type="string">refund</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Refund</item>
+                </item>
             </argument>
         </arguments>
     </type>

@@ -96,6 +96,13 @@ class Ideal extends AbstractConfigProvider
     ];
 
     /**
+     * @var array
+     */
+    protected $allowedCurrencies = [
+        'EUR'
+    ];
+
+    /**
      * @return array|void
      */
     public function getConfig()

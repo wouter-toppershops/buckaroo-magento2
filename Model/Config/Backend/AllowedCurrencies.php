@@ -46,7 +46,12 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies
      */
-    protected $configProvider;
+    protected $allowedCurrenciesConfig;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    protected $configProviderMethodFactory;
 
     /**
      * @var \Magento\Framework\Locale\ResolverInterface
@@ -59,32 +64,35 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
     protected $currencyBundle;
 
     /**
-     * @param \Magento\Framework\Model\Context                             $context
-     * @param \Magento\Framework\Registry                                  $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface           $config
-     * @param \Magento\Framework\App\Cache\TypeListInterface               $cacheTypeList
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
-     * @param \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies         $configProvider
-     * @param \Magento\Framework\Locale\Bundle\CurrencyBundle              $currencyBundle
-     * @param \Magento\Framework\Locale\ResolverInterface                  $localeResolver
-     * @param array                                                        $data
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $config
+     * @param \Magento\Framework\App\Cache\TypeListInterface          $cacheTypeList
+     * @param \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies    $allowedCurrenciesConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
+     * @param \Magento\Framework\Locale\Bundle\CurrencyBundle         $currencyBundle
+     * @param \Magento\Framework\Locale\ResolverInterface             $localeResolver
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param array                                                   $data
      */
     public function __construct(
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $configProvider,
+        \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
         \Magento\Framework\Locale\Bundle\CurrencyBundle $currencyBundle,
         \Magento\Framework\Locale\ResolverInterface $localeResolver,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
 
-        $this->configProvider = $configProvider;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->allowedCurrenciesConfig = $allowedCurrenciesConfig;
         $this->currencyBundle = $currencyBundle;
         $this->localeResolver = $localeResolver;
     }
@@ -97,11 +105,15 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
      */
     public function save()
     {
+        $method = $this->getCurrentMethodName();
+
+        $methodConfig = $this->configProviderMethodFactory->get($method);
+        $currencies = $methodConfig->getAllowedCurrencies();
+
         $value = (array)$this->getValue();
-        $allowedCurrencies = $this->configProvider->getAllowedCurrencies();
 
         foreach ($value as $currency) {
-            if (!in_array($currency, $allowedCurrencies)) {
+            if (!in_array($currency, $currencies)) {
                 throw new \Magento\Framework\Exception\LocalizedException(
                     __('Please enter a valid currency: "%1".', $this->getCurrencyTranslation($currency))
                 );
@@ -130,4 +142,19 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
 
         return $output;
     }
+
+    /**
+     * Extract the method name from the current config path
+     *
+     * @return mixed
+     */
+    protected function getCurrentMethodName()
+    {
+        $path = $this->getPath();
+        $pathParts = explode('/', $path);
+        $method = $pathParts[1];
+        $methodParts = explode('_', $method);
+        return end($methodParts);
+    }
+
 }
