@@ -84,7 +84,9 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
 
         if (!$this->allowedCurrencies) {
             $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
-            $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();
+            if ($allowedCurrenciesConfig) {
+                $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();
+            }
         }
     }
 
