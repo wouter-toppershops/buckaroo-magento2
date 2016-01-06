@@ -106,9 +106,12 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
     public function save()
     {
         $method = $this->getCurrentMethodName();
+        $currencies = $this->allowedCurrenciesConfig->getAllowedCurrencies();
+        if ($method) {
+            $methodConfig = $this->configProviderMethodFactory->get($method);
+            $currencies = $methodConfig->getAllowedCurrencies();
+        }
 
-        $methodConfig = $this->configProviderMethodFactory->get($method);
-        $currencies = $methodConfig->getAllowedCurrencies();
 
         $value = (array)$this->getValue();
 
@@ -151,6 +154,10 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
     protected function getCurrentMethodName()
     {
         $path = $this->getPath();
+        if (!$path) {
+            return null;
+        }
+
         $pathParts = explode('/', $path);
         $method = $pathParts[1];
         $methodParts = explode('_', $method);
