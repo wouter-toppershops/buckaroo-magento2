@@ -47,12 +47,23 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     public $configProviderFactory;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @var \Magento\Checkout\Model\Session
+     */
+    public $checkoutSession;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
+     * @param \Magento\Checkout\Model\Session                   $checkoutSession
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \Magento\Checkout\Model\Session $checkoutSession,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
     ) {
         $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->checkoutSession = $checkoutSession;
     }
 
     /**
@@ -80,7 +91,16 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
         if ($accountConfig->getActive() == 1) {
             $location = $predefinedConfig->getLocationTestWeb();
         } elseif ($accountConfig->getActive() == 2) {
+            $methodName = $this->checkoutSession->getQuote()->getPayment()->getMethod();
+            $methodNameParts = explode('_', $methodName);
+            $methodName = end($methodNameParts);
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+            $methodConfig = $this->configProviderMethodFactory->get($methodName);
+
             $location = $predefinedConfig->getLocationLiveWeb();
+            if ($methodConfig->getActive() == 1) {
+                $location = $predefinedConfig->getLocationTestWeb();
+            }
         }
 
         $client->__setLocation($location);
