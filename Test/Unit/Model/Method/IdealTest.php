@@ -73,6 +73,40 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
+     * Test the assignData method.
+     */
+    public function testAssignData()
+    {
+        $this->assignDataTest([
+            'issuer' => 'NLBABC',
+        ]);
+    }
+
+    /**
+     * Test the getCaptureTransactionBuilder method.
+     */
+    public function testGetCaptureTransactionBuilder()
+    {
+        $this->assertFalse($this->object->getCaptureTransactionBuilder(''));
+    }
+
+    /**
+     * Test the getAuthorizeTransactionBuild method.
+     */
+    public function testGetAuthorizeTransactionBuilder()
+    {
+        $this->assertFalse($this->object->getAuthorizeTransactionBuilder(''));
+    }
+
+    /**
+     * Test the getVoidTransactionBuild method.
+     */
+    public function testGetVoidTransactionBuilder()
+    {
+        $this->assertTrue($this->object->getVoidTransactionBuilder(''));
+    }
+
+    /**
      * Test the validation method happy path.
      */
     public function testValidate()
