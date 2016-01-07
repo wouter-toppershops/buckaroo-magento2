@@ -62,6 +62,11 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
     protected $paymentInterface;
 
     /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface|\Mockery\MockInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * Setup the base mocks.
      */
     public function setUp()
@@ -70,8 +75,10 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
+        $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Creditcard::class, [
+            'scopeConfig' => $this->scopeConfig,
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
         ]);
@@ -80,6 +87,36 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             \Magento\Payment\Model\InfoInterface::class,
             \Magento\Sales\Api\Data\OrderPaymentInterface::class
         );
+    }
+
+    /**
+     * Test the assignData method.
+     */
+    public function testAssignData()
+    {
+        $this->assignDataTest([
+            'card_type' => 'fooname',
+        ]);
+    }
+
+    /**
+     * Test the canCapture method on the happy path.
+     */
+    public function testCanCapture()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->andReturn('nonorder');
+
+        $this->assertTrue($this->object->canCapture());
+    }
+
+    /**
+     * Test the canCapture method on the less happy path.
+     */
+    public function testCanCaptureDisabled()
+    {
+        $this->scopeConfig->shouldReceive('getValue')->andReturn('order');
+
+        $this->assertFalse($this->object->canCapture());
     }
 
     /**
