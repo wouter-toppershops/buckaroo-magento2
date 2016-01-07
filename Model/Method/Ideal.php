@@ -39,7 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Framework\Validator\Exception;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal as IdealConfig;
 
 class Ideal extends AbstractMethod

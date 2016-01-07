@@ -56,7 +56,7 @@ class BankFields extends \Magento\Backend\Block\Template
     ) {
         $this->refundFieldsFactory = $refundFieldsFactory;
         $this->transactionBuilder = $transactionBuilderFactory;
-        return parent::__construct($context);
+        parent::__construct($context);
     }
 
     /**

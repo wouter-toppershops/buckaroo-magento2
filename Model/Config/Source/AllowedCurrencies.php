@@ -89,7 +89,10 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
     /**
      * Return array of options as value-label pairs
      *
+     * @param null $method
+     *
      * @return array Format: array(array('value' => '<value>', 'label' => '<label>'), ...)
+     * @throws \TIG\Buckaroo\Exception
      */
     public function toOptionArray($method = null)
     {

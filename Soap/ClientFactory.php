@@ -88,6 +88,7 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
         /**
          * active 0 is disabled, 1 is test, 2 is live
          */
+        $location = null;
         if ($accountConfig->getActive() == 1) {
             $location = $predefinedConfig->getLocationTestWeb();
         } elseif ($accountConfig->getActive() == 2) {

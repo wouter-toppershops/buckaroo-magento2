@@ -288,6 +288,8 @@ class Debugger
     /**
      * Creates a new streamHandler
      *
+     * @param string $filename
+     *
      * @return mixed
      */
     public function createStreamHandler($filename = 'var/log/TIG_Buckaroo.log')

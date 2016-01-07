@@ -43,8 +43,9 @@ class Totals extends \TIG\Buckaroo\Block\Order\Totals
 {
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Framework\Registry $registry
-     * @param array $data
+     * @param \Magento\Framework\Registry                      $registry
+     * @param \TIG\Buckaroo\Helper\PaymentFee                  $helper
+     * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,

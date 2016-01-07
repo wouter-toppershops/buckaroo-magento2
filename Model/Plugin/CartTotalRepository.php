@@ -5,7 +5,6 @@
  */
 namespace TIG\Buckaroo\Model\Plugin;
 
-use Magento\Quote\Api\Data\TotalsExtensionInterface;
 use Magento\Quote\Api\Data\TotalsExtensionFactory;
 use Magento\Quote\Api\Data\TotalsInterface;
 use Magento\Quote\Model\Cart\CartTotalRepository as TotalRepository;
