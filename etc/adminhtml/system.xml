@@ -226,15 +226,15 @@
                     </field>
 
                     <field id="limit_by_ip" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Display only for selected IP's</label>
-                        <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                        <label>Display only for selected IPs</label>
+                        <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>tig_buckaroo/account/limit_by_ip</config_path>
                     </field>
 
                     <field id="fee_percentage_mode" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fee percentage mode</label>
-                        <comment><![CDATA[This setting only applies to percentage-based Buckaroo fee's.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
+                        <comment><![CDATA[This setting only applies to percentage-based Buckaroo fees.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\FeePercentageMode</source_model>
                         <config_path>tig_buckaroo/account/fee_percentage_mode</config_path>
                     </field>
@@ -364,8 +364,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_ideal/limit_by_ip</config_path>
@@ -479,8 +479,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_creditcard/limit_by_ip</config_path>
@@ -766,8 +766,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_paypal/limit_by_ip</config_path>
@@ -936,8 +936,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_transfer/limit_by_ip</config_path>
@@ -1109,8 +1109,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/limit_by_ip</config_path>
@@ -1229,8 +1229,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_mrcash/limit_by_ip</config_path>
@@ -1349,8 +1349,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_sofortbanking/limit_by_ip</config_path>
@@ -1469,8 +1469,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_giropay/limit_by_ip</config_path>
