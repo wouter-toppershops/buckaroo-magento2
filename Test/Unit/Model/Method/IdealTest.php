@@ -47,9 +47,9 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
     protected $object;
 
     /**
-     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|\Mockery\MockInterface
      */
-    protected $transactionBuilderMock;
+    protected $transactionBuilderFactory;
 
     /**
      * @var \Magento\Framework\ObjectManagerInterface|\Mockery\MockInterface
@@ -64,11 +64,11 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->transactionBuilderMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
+        $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
 
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Ideal::class, [
             'objectManager' => $this->objectManager,
-            'transactionBuilderFactory' => $this->transactionBuilderMock,
+            'transactionBuilderFactory' => $this->transactionBuilderFactory,
         ]);
     }
 
@@ -81,6 +81,44 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
             'issuer' => 'NLBABC',
         ]);
     }
+
+    /**
+     * Test the getOrderTransactionBuilder method.
+     */
+    public function testGetOrderTransactionBuilder()
+    {
+        $fixture = [
+            'issuer' => 'nlbace',
+            'order' => 'orderrr!',
+        ];
+
+        $payment = \Mockery::mock(
+            \Magento\Payment\Model\InfoInterface::class,
+            \Magento\Sales\Api\Data\OrderPaymentInterface::class
+        );
+
+        $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
+        $payment->shouldReceive('getAdditionalInformation')->with('issuer')->andReturn($fixture['issuer']);
+
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
+        $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
+
+        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
+            $this->assertEquals('ideal', $services['Name']);
+            $this->assertEquals($fixture['issuer'], $services['RequestParameter'][0]['_']);
+
+            return $order;
+        });
+
+        $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
+
+        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+
+        $this->object->setData('info_instance', $infoInterface);
+        $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
+    }
+
 
     /**
      * Test the getCaptureTransactionBuilder method.
@@ -96,6 +134,36 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
     public function testGetAuthorizeTransactionBuilder()
     {
         $this->assertFalse($this->object->getAuthorizeTransactionBuilder(''));
+    }
+
+    /**
+     * Test the getRefundTransactionBuilder method.
+     */
+    public function testGetRefundTransactionBuilder()
+    {
+        $payment = \Mockery::mock(
+            \Magento\Payment\Model\InfoInterface::class,
+            \Magento\Sales\Api\Data\OrderPaymentInterface::class
+        );
+
+        $payment->shouldReceive('getOrder')->andReturn('orderr');
+        $payment->shouldReceive('getAdditionalInformation')->with(
+            \TIG\Buckaroo\Model\Method\Ideal::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+        )->andReturn('getAdditionalInformation');
+
+        $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOrder')->with('orderr')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing( function ($services) {
+            $services['Name'] = 'ideal';
+            $services['Action'] = 'Refund';
+
+            return $this->transactionBuilderFactory;
+        });
+        $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
+
+        $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($payment));
     }
 
     /**
