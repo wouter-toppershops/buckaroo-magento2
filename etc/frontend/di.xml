@@ -47,6 +47,23 @@
                 <item name="buckaroo_config_provider2" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Transfer</item>
                 <item name="buckaroo_config_provider3" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</item>
                 <item name="buckaroo_config_provider4" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
+                <item name="buckaroo_config_provider5" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Paypal</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Checkout\Block\Onepage">
+        <arguments>
+            <argument name="layoutProcessors" xsi:type="array">
+                <item name="buckarooFeeName" xsi:type="object">TIG\Buckaroo\Block\Checkout\TotalsProcessor</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Checkout\Block\Cart\Totals">
+        <arguments>
+            <argument name="layoutProcessors" xsi:type="array">
+                <item name="buckarooFeeName" xsi:type="object">TIG\Buckaroo\Block\Cart\CartTotalsProcessor</item>
             </argument>
         </arguments>
     </type>

@@ -8,9 +8,10 @@ define(
         'Magento_Checkout/js/view/summary/abstract-total',
         'Magento_Checkout/js/model/quote',
         'Magento_Checkout/js/model/totals',
-        'TIG_Buckaroo/js/model/buckaroo-fee'
+        'TIG_Buckaroo/js/model/buckaroo-fee',
+        'ko'
     ],
-    function (Component, quote, totals, BuckarooFee) {
+    function (Component, quote, totals, BuckarooFee, ko) {
         'use strict';
 
         return Component.extend({
@@ -27,6 +28,8 @@ define(
              */
             initialize : function (options) {
                 this.model = new BuckarooFee();
+
+                window.checkoutConfig.buckarooFee.title = ko.observable(options.title);
 
                 return this._super(options);
             },
@@ -78,7 +81,7 @@ define(
             },
 
             /**
-             * Checkbuckaroo fee option availability.
+             * Check buckaroo fee option availability.
              * @returns {Boolean}
              */
             isAvailable : function () {
@@ -123,6 +126,10 @@ define(
              */
             displayPriceExclTax : function () {
                 return !this.displayPriceInclTax() && !this.displayBothPrices();
+            },
+
+            getTitle : function() {
+                return window.checkoutConfig.buckarooFee.title;
             }
         });
     }
