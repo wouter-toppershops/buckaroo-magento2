@@ -238,6 +238,12 @@
                         <source_model>TIG\Buckaroo\Model\Config\Source\FeePercentageMode</source_model>
                         <config_path>tig_buckaroo/account/fee_percentage_mode</config_path>
                     </field>
+
+                    <field id="payment_fee_label" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Payment fee frontend label</label>
+                        <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
+                        <config_path>tig_buckaroo/account/payment_fee_label</config_path>
+                    </field>
                 </group>
             </group>
 

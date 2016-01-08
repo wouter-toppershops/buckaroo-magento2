@@ -43,10 +43,12 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  * @method getActiveStatus()
  * @method getOrderStatusSuccess()
  * @method getOrderStatusFailed()
+ * @method getPaymentFeeLabel();
  */
 class Ideal extends AbstractConfigProvider
 {
     const XPATH_IDEAL_PAYMENT_FEE           = 'payment/tig_buckaroo_ideal/payment_fee';
+    const XPATH_IDEAL_PAYMENT_FEE_LABEL     = 'payment/tig_buckaroo_ideal/payment_fee_label';
     const XPATH_IDEAL_ACTIVE                = 'payment/tig_buckaroo_ideal/active';
     const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_ideal/active_status';
     const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_ideal/order_status_success';
@@ -115,6 +117,7 @@ class Ideal extends AbstractConfigProvider
         $activeStatus = $this->getActiveStatus();
         $orderStatusSuccess = $this->getOrderStatusSuccess();
         $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this->getPaymentFeeLabel();
 
         // @TODO: get banks dynamic
         return [
@@ -125,6 +128,7 @@ class Ideal extends AbstractConfigProvider
                 'buckaroo' => [
                     'ideal' => [
                         'banks' => $issuers,
+                        'paymentFeeLabel' => $paymentFeeLabel,
                     ],
                     'response' => [],
                 ],

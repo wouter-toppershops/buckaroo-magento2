@@ -5,7 +5,7 @@
 /*global define*/
 define(
     [
-        'TIG_Buckaroo/js/view/summary/buckaroo_fee'
+        'TIG_Buckaroo/js/view/summary/totals'
     ],
     function (Component) {
         "use strict";

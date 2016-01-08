@@ -180,6 +180,7 @@
                 <cancel_on_failed>1</cancel_on_failed>
                 <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
                 <cancel_on_failure>0</cancel_on_failure>
+                <payment_fee_label>Payment Fee</payment_fee_label>
             </account>
 
             <refund>

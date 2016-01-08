@@ -83,6 +83,7 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_DEBUG_EMAIL             = 'tig_buckaroo/account/debug_email';
     const XPATH_ACCOUNT_LIMIT_BY_IP             = 'tig_buckaroo/account/limit_by_ip';
     const XPATH_ACCOUNT_FEE_PERCENTAGE_MODE     = 'tig_buckaroo/account/fee_percentage_mode';
+    const XPATH_ACCOUNT_PAYMENT_FEE_LABEL       = 'tig_buckaroo/account/payment_fee_label';
     const XPATH_ACCOUNT_ORDER_STATUS_NEW        = 'tig_buckaroo/account/order_status_new';
     const XPATH_ACCOUNT_ORDER_STATUS_PENDING    = 'tig_buckaroo/account/order_status_pending';
     const XPATH_ACCOUNT_ORDER_STATUS_SUCCESS    = 'tig_buckaroo/account/order_status_success';
