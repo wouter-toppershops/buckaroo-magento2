@@ -125,6 +125,7 @@ class Account extends AbstractConfigProvider
             'debug_email'           => $this->getDebugEmail($store),
             'limit_by_ip'           => $this->getLimitByIp($store),
             'fee_percentage_mode'   => $this->getFeePercentageMode($store),
+            'payment_fee_label'     => $this->getPaymentFeeLabel($store),
             'order_status_new'      => $this->getOrderStatusNew($store),
             'order_status_pending'  => $this->getOrderStatusPending($store),
             'order_status_success'  => $this->getOrderStatusSuccess($store),
