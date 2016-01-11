@@ -110,8 +110,8 @@ class Process extends \Magento\Framework\App\Action\Action
         /**
          * Check if there is a valid response. If not, redirect to home.
          */
-        if (count($this->response) == 0 || !isset($this->response['brq_statuscode'])) {
-            $this->_redirect('/');
+        if (count($this->response) == 0 || !array_key_exists('brq_statuscode', $this->response)) {
+            return $this->_redirect('/');
         }
 
         $statusCode = (int)$this->response['brq_statuscode'];
@@ -139,28 +139,26 @@ class Process extends \Magento\Framework\App\Action\Action
                  * 2) cancel the order we had to create to even get here
                  * 3) redirect back to the checkout page to offer the user feedback & the option to try again
                  */
-                if (!$this->recreateQuote()) {
-                    throw new \TIG\Buckaroo\Exception(
-                        new \Magento\Framework\Phrase(
-                            'Could not recreate the quote. Did not cancel the order (%1).',
-                            [$this->order->getId()]
-                        )
-                    );
-                }
-                if (!$this->cancelOrder()) {
-                    throw new \TIG\Buckaroo\Exception(
-                        new \Magento\Framework\Phrase(
-                            'Could not cancel the order (%1).',
-                            [$this->order->getId()]
-                        )
-                    );
-                }
                 $this->messageManager->addErrorMessage(
                     __(
                         'Unfortunately an error occurred while processing your payment. Please try again. If this' .
                         ' error persists, please choose a different payment method.'
                     )
                 );
+                if (!$this->recreateQuote()) {
+                    $this->messageManager->addErrorMessage(
+                        __(
+                            'Could not recreate the quote.'
+                        )
+                    );
+                }
+                if (!$this->cancelOrder()) {
+                    $this->messageManager->addErrorMessage(
+                        __(
+                            'Could not recreate the order.'
+                        )
+                    );
+                }
                 $this->redirectFailure();
                 break;
         }
