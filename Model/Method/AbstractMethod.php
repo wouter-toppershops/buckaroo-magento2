@@ -146,29 +146,27 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
-     * AbstractMethod constructor.
-     *
-     * @param \Magento\Framework\ObjectManagerInterface                      $objectManager
-     * @param \Magento\Framework\Model\Context                               $context
-     * @param \Magento\Framework\Registry                                    $registry
-     * @param \Magento\Framework\Api\ExtensionAttributesFactory              $extensionFactory
-     * @param \Magento\Framework\Api\AttributeValueFactory                   $customAttributeFactory
-     * @param \Magento\Payment\Helper\Data                                   $paymentData
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface             $scopeConfig
-     * @param \Magento\Payment\Model\Method\Logger                           $logger
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null   $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null             $resourceCollection
-     * @param \TIG\Buckaroo\Gateway\GatewayInterface|null                    $gateway
-     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|null      $transactionBuilderFactory
-     * @param \TIG\Buckaroo\Model\ValidatorFactory                           $validatorFactory
-     * @param \Magento\Framework\Message\ManagerInterface                    $messageManager
-     * @param \TIG\Buckaroo\Helper\Data                                      $helper
-     * @param \Magento\Framework\App\RequestInterface                        $request
-     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                        $refundFieldsFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                     $configProviderFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory              $configProviderMethodFactory
-     * @param \Magento\Framework\Pricing\Helper\Data                         $priceHelper
-     * @param array                                                          $data
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory            $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                            $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory    $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface             $messageManager
+     * @param \TIG\Buckaroo\Helper\Data                               $helper
+     * @param \Magento\Framework\App\RequestInterface                 $request
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
+     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param array                                                   $data
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager = null,
@@ -253,6 +251,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
         if ($accountConfig->getActive() == 0) {
+            return false;
+        }
+        $areaCode = $this->objectManager->get('Magento\Framework\App\State')->getAreaCode();
+        if ('adminhtml' === $areaCode && $this->getConfigData('available_in_backend') == 0) {
             return false;
         }
 

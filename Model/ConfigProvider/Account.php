@@ -58,8 +58,8 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getDebugEmail()
  * @method mixed getLimitByIp()
  * @method mixed getFeePercentageMode()
- * @method getOrderStatusPending()
- * @method getOrderStatusNew()
+ * @method mixed getOrderStatusPending()
+ * @method mixed getOrderStatusNew()
  */
 class Account extends AbstractConfigProvider
 {

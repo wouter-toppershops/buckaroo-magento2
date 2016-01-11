@@ -54,6 +54,7 @@ class Ideal extends AbstractConfigProvider
     const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_ideal/order_status_success';
     const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_ideal/order_status_failed';
     const XPATH_IDEAL_ORDER_EMAIL           = 'payment/tig_buckaroo_ideal/order_email';
+    const XPATH_IDEAL_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_ideal/available_in_backend';
 
     /**
      * @var array

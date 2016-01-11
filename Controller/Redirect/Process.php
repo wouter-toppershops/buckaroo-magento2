@@ -70,6 +70,11 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $configProviderFactory;
 
     /**
+     * @var \Magento\Checkout\Model\ConfigProviderInterface
+     */
+    protected $accountConfig;
+
+    /**
      * @param \Magento\Framework\App\Action\Context      $context
      * @param \TIG\Buckaroo\Helper\Data                  $helper
      * @param \Magento\Checkout\Model\Cart               $cart
@@ -94,6 +99,8 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->quote                    = $quote;
         $this->debugger                 = $debugger;
         $this->configProviderFactory    = $configProviderFactory;
+
+        $this->accountConfig = $this->configProviderFactory->get('account');
     }
 
     /**
@@ -126,6 +133,11 @@ class Process extends \Magento\Framework\App\Action\Action
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
+                // Set the 'Pending payment status' here
+                $pendingStatus = $this->accountConfig->getOrderStatusPending();
+                $this->order->setStatus($pendingStatus);
+                $this->order->save();
+
                 // Redirect to success page
                 $this->redirectSuccess();
                 break;
@@ -222,8 +234,7 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectSuccess()
     {
-        $accountConfig = $this->configProviderFactory->get('account');
-        $url = $accountConfig->getSuccessRedirect();
+        $url = $this->accountConfig->getSuccessRedirect();
 
         return $this->_redirect($url);
     }
@@ -235,8 +246,7 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectFailure()
     {
-        $accountConfig = $this->configProviderFactory->get('account');
-        $url = $accountConfig->getFailureRedirect();
+        $url = $this->accountConfig->getFailureRedirect();
 
         return $this->_redirect($url);
     }
