@@ -39,16 +39,43 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+/**
+ * @method getActiveStatus()
+ * @method getOrderStatusSuccess()
+ * @method getOrderStatusFailed()
+ * @method getPaymentFeeLabel()
+ */
 class Paypal extends AbstractConfigProvider
 {
-    const XPATH_PAYPAL_PAYMENT_FEE = 'payment/tig_buckaroo_paypal/payment_fee';
+    const XPATH_PAYPAL_PAYMENT_FEE          = 'payment/tig_buckaroo_paypal/payment_fee';
+    const XPATH_PAYPAL_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_paypal/payment_fee_label';
+    const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_paypal/active_status';
+    const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_transfer/order_status_success';
+    const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_paypal/order_status_failed';
 
     /**
      * @return array|void
      */
     public function getConfig()
     {
-        return [];
+        $activeStatus = $this->getActiveStatus();
+        $orderStatusSuccess = $this->getOrderStatusSuccess();
+        $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this->getPaymentFeeLabel();
+
+        // @TODO: get banks dynamic
+        return [
+            'active_status' => $activeStatus,
+            'order_status_success' => $orderStatusSuccess,
+            'order_status_failed' => $orderStatusFailed,
+            'payment' => [
+                'buckaroo' => [
+                    'paypal' => [
+                        'paymentFeeLabel' => $paymentFeeLabel,
+                    ],
+                ],
+            ],
+        ];
     }
 
     /**

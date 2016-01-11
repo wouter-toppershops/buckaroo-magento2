@@ -39,7 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Framework\Validator\Exception;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal as IdealConfig;
 
 class Ideal extends AbstractMethod
@@ -57,7 +56,7 @@ class Ideal extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
+    protected $_code                    = self::PAYMENT_METHOD_BUCKAROO_IDEAL_CODE;
 
     /**
      * @var bool
@@ -209,7 +208,6 @@ class Ideal extends AbstractMethod
      * Validate that we received a valid issuer ID.
      *
      * @return $this
-     * @throws Exception
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function validate()
@@ -237,7 +235,7 @@ class Ideal extends AbstractMethod
         }
 
         if (!$valid) {
-            throw new Exception(__('Please select a issuer from the list'));
+            throw new \Magento\Framework\Exception\LocalizedException(__('Please select a issuer from the list'));
         }
 
         return $this;

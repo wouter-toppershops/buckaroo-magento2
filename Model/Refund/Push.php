@@ -70,11 +70,12 @@ class Push
     public $debugger;
 
     /**
-     * @param \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
-     * @param \Magento\Framework\ObjectManagerInterface $objectManager
-     * @param \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender
+     * @param \Magento\Sales\Model\Order\CreditmemoFactory               $creditmemoFactory
+     * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
+     * @param \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender   $creditEmailSender
      * @param \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactor
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                 $configProviderFactor
+     * @param \TIG\Buckaroo\Debug\Debugger                               $debugger
      */
     public function __construct(
         \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,

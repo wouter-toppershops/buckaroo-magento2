@@ -63,11 +63,11 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
      * @param \Magento\Framework\Registry                                  $registry
      * @param \Magento\Framework\App\Config\ScopeConfigInterface           $config
      * @param \Magento\Framework\App\Cache\TypeListInterface               $cacheTypeList
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
      * @param \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies         $configProvider
      * @param \Magento\Framework\Locale\Bundle\CurrencyBundle              $currencyBundle
      * @param \Magento\Framework\Locale\ResolverInterface                  $localeResolver
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource|null $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb|null           $resourceCollection
      * @param array                                                        $data
      */
     public function __construct(
@@ -75,11 +75,11 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $configProvider,
         \Magento\Framework\Locale\Bundle\CurrencyBundle $currencyBundle,
         \Magento\Framework\Locale\ResolverInterface $localeResolver,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
@@ -130,4 +130,10 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
 
         return $output;
     }
+
+    protected function getMethodNameFromPath($path)
+    {
+
+    }
+
 }

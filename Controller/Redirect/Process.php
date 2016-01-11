@@ -127,7 +127,7 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
                 // Redirect to success page
-                $this->redirectToSuccessPage();
+                $this->redirectSuccess();
                 break;
             case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
@@ -161,7 +161,7 @@ class Process extends \Magento\Framework\App\Action\Action
                         ' error persists, please choose a different payment method.'
                     )
                 );
-                $this->redirectToCheckout();
+                $this->redirectFailure();
                 break;
         }
         return;
@@ -205,7 +205,7 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function cancelOrder()
     {
-        //Mostly the push api already canceled the order, so first check in wich state the order is.
+        // Mostly the push api already canceled the order, so first check in wich state the order is.
         if ($this->order->getState() == \Magento\Sales\Model\Order::STATE_CANCELED) {
             return true;
         }
@@ -218,23 +218,29 @@ class Process extends \Magento\Framework\App\Action\Action
     }
 
     /**
-     * Redirect to Success page, which means everything seems to be going fine
+     * Redirect to Success url, which means everything seems to be going fine
      *
      * @return \Magento\Framework\App\ResponseInterface
      */
-    protected function redirectToSuccessPage()
+    protected function redirectSuccess()
     {
-        return $this->_redirect('checkout/onepage/success');
+        $accountConfig = $this->configProviderFactory->get('account');
+        $url = $accountConfig->getSuccessRedirect();
+
+        return $this->_redirect($url);
     }
 
     /**
-     * Redirect to Checkout, which means we've got a problem
+     * Redirect to Failure url, which means we've got a problem
      *
      * @return \Magento\Framework\App\ResponseInterface
      */
-    protected function redirectToCheckout()
+    protected function redirectFailure()
     {
-        return $this->_redirect('checkout', ['_fragment' => 'payment']);
+        $accountConfig = $this->configProviderFactory->get('account');
+        $url = $accountConfig->getFailureRedirect();
+
+        return $this->_redirect($url);
     }
 
 }

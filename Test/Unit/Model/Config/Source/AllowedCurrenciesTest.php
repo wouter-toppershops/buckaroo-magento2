@@ -53,7 +53,7 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies|\Mockery\MockInterface
      */
-    protected $configProvider;
+    protected $allowedCurrenciesConfig;
 
     /**
      * @var \Magento\Framework\Locale\Bundle\CurrencyBundle|\Mockery\MockInterface
@@ -79,8 +79,8 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
         $this->resource = \Mockery::mock(\Magento\Framework\Model\ResourceModel\AbstractResource::class);
         $this->resource->shouldReceive('save');
 
-        $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies::class)->makePartial();
-        $this->configProvider->shouldReceive('getAllowedCurrencies')->andReturn(['ABC', 'DEF', 'GHI']);
+        $this->allowedCurrenciesConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies::class)->makePartial();
+        $this->allowedCurrenciesConfig->shouldReceive('getAllowedCurrencies')->andReturn(['ABC', 'DEF', 'GHI']);
 
         $this->currencyBundle = \Mockery::mock(\Magento\Framework\Locale\Bundle\CurrencyBundle::class)->makePartial();
         $this->currencyBundle->shouldReceive('get')->andReturn([
@@ -90,7 +90,7 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::class, [
             'resource' => $this->resource,
             'currencyBundle' => $this->currencyBundle,
-            'configProvider' => $this->configProvider,
+            'allowedCurrenciesConfig' => $this->allowedCurrenciesConfig,
         ]);
     }
 
@@ -107,7 +107,7 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertEquals(3, count($result));
 
         $count = 0;
-        foreach($this->fixture as $key => $data) {
+        foreach ($this->fixture as $key => $data) {
             $this->assertEquals($key, $result[$count]['value']);
             $this->assertEquals($data[1], $result[$count]['label']);
             $count++;

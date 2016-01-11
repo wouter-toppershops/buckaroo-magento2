@@ -58,10 +58,8 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getDebugEmail()
  * @method mixed getLimitByIp()
  * @method mixed getFeePercentageMode()
- * @method getOrderStatusNew()
  * @method getOrderStatusPending()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
+ * @method getOrderStatusNew()
  */
 class Account extends AbstractConfigProvider
 {
@@ -85,10 +83,25 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_DEBUG_EMAIL             = 'tig_buckaroo/account/debug_email';
     const XPATH_ACCOUNT_LIMIT_BY_IP             = 'tig_buckaroo/account/limit_by_ip';
     const XPATH_ACCOUNT_FEE_PERCENTAGE_MODE     = 'tig_buckaroo/account/fee_percentage_mode';
+    const XPATH_ACCOUNT_PAYMENT_FEE_LABEL       = 'tig_buckaroo/account/payment_fee_label';
     const XPATH_ACCOUNT_ORDER_STATUS_NEW        = 'tig_buckaroo/account/order_status_new';
     const XPATH_ACCOUNT_ORDER_STATUS_PENDING    = 'tig_buckaroo/account/order_status_pending';
     const XPATH_ACCOUNT_ORDER_STATUS_SUCCESS    = 'tig_buckaroo/account/order_status_success';
     const XPATH_ACCOUNT_ORDER_STATUS_FAILED     = 'tig_buckaroo/account/order_status_failed';
+
+    protected $objectManager;
+    protected $methodConfigProviderFactory;
+    protected $scopeConfig;
+
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $methodConfigProviderFactory,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->objectManager = $objectManager;
+        $this->methodConfigProviderFactory = $methodConfigProviderFactory;
+        $this->scopeConfig = $scopeConfig;
+    }
 
     /**
      * {@inheritdoc}
@@ -112,12 +125,86 @@ class Account extends AbstractConfigProvider
             'debug_email'           => $this->getDebugEmail($store),
             'limit_by_ip'           => $this->getLimitByIp($store),
             'fee_percentage_mode'   => $this->getFeePercentageMode($store),
+            'payment_fee_label'     => $this->getPaymentFeeLabel($store),
             'order_status_new'      => $this->getOrderStatusNew($store),
             'order_status_pending'  => $this->getOrderStatusPending($store),
             'order_status_success'  => $this->getOrderStatusSuccess($store),
             'order_status_failed'   => $this->getOrderStatusFailed($store),
         ];
         return $config;
+    }
+
+    /**
+     * Returns the method specific order status when available, or returns the global order status when not.
+     *
+     * @param null $paymentMethod
+     *
+     * @return string
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getOrderStatusSuccess($paymentMethod = null)
+    {
+        $orderStatusSuccess = parent::getOrderStatusSuccess();
+
+        /**
+         * If a Payment Method is set, get the payment method status
+         */
+        if (!is_null($paymentMethod)) {
+            $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
+
+            $activeStatus = $methodConfigProvider->getActiveStatus();
+            $methodOrderStatus = $methodConfigProvider->getOrderStatusSuccess();
+
+            if ($activeStatus && !is_null($methodOrderStatus)) {
+                $orderStatusSuccess = $methodConfigProvider->getOrderStatusSuccess();
+            }
+        }
+        return $orderStatusSuccess;
+    }
+
+    /**
+     * Returns the method specific order status when available, or returns the global order status when not.
+     *
+     * @param null $paymentMethod
+     *
+     * @return string
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getOrderStatusFailed($paymentMethod = null)
+    {
+        $orderStatusFailed = parent::getOrderStatusFailed();
+
+        /**
+         * If a Payment Method is set, get the payment method status
+         */
+        if (!is_null($paymentMethod)) {
+            $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
+
+            $activeStatus = $methodConfigProvider->getActiveStatus();
+            $methodOrderStatus = $methodConfigProvider->getOrderStatusFailed();
+
+            if ($activeStatus && !is_null($methodOrderStatus)) {
+                $orderStatusFailed = $methodConfigProvider->getOrderStatusFailed();
+            }
+
+        }
+        return $orderStatusFailed;
+    }
+
+    /**
+     * Gets the config provider for the given payment method.
+     *
+     * @param $paymentMethod
+     *
+     * @return Method\ConfigProviderInterface
+     * @throws \TIG\Buckaroo\Exception
+     */
+    protected function getMethodConfigProvider($paymentMethod)
+    {
+        $array = explode('_', $paymentMethod);
+        $methodCode = $array[2];
+
+        return $this->methodConfigProviderFactory->get($methodCode);
     }
 
 }

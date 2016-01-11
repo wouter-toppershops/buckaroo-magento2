@@ -45,10 +45,9 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
         $class = 'payment_method_';
         $group = $element->getData('group');
         $value = $this->_scopeConfig->getValue($group['children']['active']['config_path']);
-        if ($value == '0')
-        {
+        if ($value == '0') {
             $class .= 'payment_method_inactive';
-        } else if ($value == '1') {
+        } elseif ($value == '1') {
             $class .= 'payment_method_active payment_method_test';
         } else {
             $class .= 'payment_method_active payment_method_live';

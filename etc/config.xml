@@ -180,6 +180,7 @@
                 <cancel_on_failed>1</cancel_on_failed>
                 <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
                 <cancel_on_failure>0</cancel_on_failure>
+                <payment_fee_label>Payment Fee</payment_fee_label>
             </account>
 
             <refund>
@@ -188,8 +189,8 @@
             </refund>
 
             <states>
-                <order_state_new>new</order_state_new>
-                <order_state_pending>new</order_state_pending>
+                <order_state_new>processing</order_state_new>
+                <order_state_pending>processing</order_state_pending>
                 <order_state_success>processing</order_state_success>
                 <order_state_failed>canceled</order_state_failed>
                 <order_state_incorrect>holded</order_state_incorrect>

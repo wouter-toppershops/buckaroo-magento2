@@ -39,10 +39,21 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+/**
+ * @method getActiveStatus()
+ * @method getOrderStatusSuccess()
+ * @method getOrderStatusFailed()
+ * @method getPaymentFeeLabel();
+ */
 class Ideal extends AbstractConfigProvider
 {
-    const XPATH_IDEAL_PAYMENT_FEE = 'payment/tig_buckaroo_ideal/payment_fee';
-    const XPATH_IDEAL_ACTIVE = 'payment/tig_buckaroo_ideal/active';
+    const XPATH_IDEAL_PAYMENT_FEE           = 'payment/tig_buckaroo_ideal/payment_fee';
+    const XPATH_IDEAL_PAYMENT_FEE_LABEL     = 'payment/tig_buckaroo_ideal/payment_fee_label';
+    const XPATH_IDEAL_ACTIVE                = 'payment/tig_buckaroo_ideal/active';
+    const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_ideal/active_status';
+    const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_ideal/order_status_success';
+    const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_ideal/order_status_failed';
+    const XPATH_IDEAL_ORDER_EMAIL           = 'payment/tig_buckaroo_ideal/order_email';
 
     /**
      * @var array
@@ -87,6 +98,13 @@ class Ideal extends AbstractConfigProvider
     ];
 
     /**
+     * @var array
+     */
+    protected $allowedCurrencies = [
+        'EUR'
+    ];
+
+    /**
      * @return array|void
      */
     public function getConfig()
@@ -96,13 +114,21 @@ class Ideal extends AbstractConfigProvider
         }
 
         $issuers = $this->formatIssuers();
+        $activeStatus = $this->getActiveStatus();
+        $orderStatusSuccess = $this->getOrderStatusSuccess();
+        $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this->getPaymentFeeLabel();
 
         // @TODO: get banks dynamic
         return [
+            'active_status' => $activeStatus,
+            'order_status_success' => $orderStatusSuccess,
+            'order_status_failed' => $orderStatusFailed,
             'payment' => [
                 'buckaroo' => [
                     'ideal' => [
                         'banks' => $issuers,
+                        'paymentFeeLabel' => $paymentFeeLabel,
                     ],
                     'response' => [],
                 ],

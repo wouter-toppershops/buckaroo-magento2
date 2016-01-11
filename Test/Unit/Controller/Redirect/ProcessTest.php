@@ -93,6 +93,11 @@ class ProcessTest extends BaseTest
     protected $redirect;
 
     /**
+     * @var m\MockInterface
+     */
+    protected $configProviderFactory;
+
+    /**
      * Setup the base mocks
      */
     public function setUp()
@@ -106,6 +111,8 @@ class ProcessTest extends BaseTest
         $this->messageManager = m::mock(ManagerInterface::class);
         $this->redirect = m::mock(RedirectInterface::class);
 
+        $this->configProviderFactory = m::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class)->makePartial();
+
         $this->context = $this->objectManagerHelper->getObject(Context::class, [
             'request' => $this->request,
             'redirect' => $this->redirect,
@@ -117,6 +124,7 @@ class ProcessTest extends BaseTest
             'helper' => $this->helper,
             'order' => $this->order,
             'cart' => $this->cart,
+            'configProviderFactory' => $this->configProviderFactory,
         ]);
     }
 

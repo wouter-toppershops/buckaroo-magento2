@@ -61,9 +61,9 @@ class Certificate extends \Magento\Framework\App\Config\Value
      * @param \Magento\Framework\Registry                             $registry
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $config
      * @param \Magento\Framework\App\Cache\TypeListInterface          $cacheTypeList
+     * @param \Magento\Framework\Filesystem\File\ReadFactory          $readFactory
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
-     * @param \Magento\Framework\Filesystem\File\ReadFactory          $readFactory
      * @param array                                                   $data
      */
     public function __construct(
@@ -72,9 +72,9 @@ class Certificate extends \Magento\Framework\App\Config\Value
         \Magento\Framework\Registry $registry,
         \Magento\Framework\App\Config\ScopeConfigInterface $config,
         \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
+        \Magento\Framework\Filesystem\File\ReadFactory $readFactory,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
-        \Magento\Framework\Filesystem\File\ReadFactory $readFactory,
         array $data = []
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
@@ -121,7 +121,11 @@ class Certificate extends \Magento\Framework\App\Config\Value
              * Only update the selected certificate when there is a new certificate uploaded, and the user did not
              * change the selected value.
              */
-            $oldValue = $this->scopeConfig->getValue('tig_buckaroo/account/certificate_file', $this->getScope(), $this->getScopeId());
+            $oldValue = $this->scopeConfig->getValue(
+                'tig_buckaroo/account/certificate_file',
+                $this->getScope(),
+                $this->getScopeId()
+            );
             $newValue = $this->getFieldsetDataValue('certificate_file');
 
             if ($oldValue == $newValue) {

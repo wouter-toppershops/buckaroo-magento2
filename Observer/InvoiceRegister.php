@@ -38,7 +38,6 @@
  */
 namespace TIG\Buckaroo\Observer;
 
-
 class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
 {
     /**

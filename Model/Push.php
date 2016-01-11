@@ -107,19 +107,17 @@ class Push implements PushInterface
     public $debugger;
 
     /**
-     * Push constructor.
-     *
-     * @param \Magento\Framework\ObjectManagerInterface           $objectManager
-     * @param \Magento\Framework\Webapi\Rest\Request              $request
-     * @param \TIG\Buckaroo\Model\Validator\Push                  $validator
-     * @param \TIG\Buckaroo\Model\Validator\Amount                $amountValidator
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
-     * @param \TIG\Buckaroo\Helper\Data                           $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface  $scopeConfig
-     * @param \TIG\Buckaroo\Helper\Data                           $helper
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory          $configProviderFactory
-     * @param Refund\Push                                         $refundPush
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Account          $account
+     * @param \Magento\Framework\ObjectManagerInterface          $objectManager
+     * @param Request                                            $request
+     * @param Validator\Push                                     $validator
+     * @param Validator\Amount                                   $amountValidator
+     * @param Order\Email\Sender\OrderSender                     $orderSender
+     * @param \TIG\Buckaroo\Helper\Data                          $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Helper\Data                          $helper
+     * @param ConfigProvider\Factory                             $configProviderFactory
+     * @param Refund\Push                                        $refundPush
+     * @param \TIG\Buckaroo\Debug\Debugger                       $debugger
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -215,8 +213,8 @@ class Push implements PushInterface
     {
         $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-        $statesConfig  = $this->configProviderFactory->get('states');
+//        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
+//        $statesConfig  = $this->configProviderFactory->get('states');
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
 

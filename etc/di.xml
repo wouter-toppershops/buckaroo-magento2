@@ -44,6 +44,7 @@
     <preference for="TIG\Buckaroo\Api\PushInterface" type="TIG\Buckaroo\Model\Push"/>
     <preference for="TIG\Buckaroo\Api\PaymentInformationManagementInterface" type="TIG\Buckaroo\Model\PaymentInformationManagement"/>
     <preference for="TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface" type="TIG\Buckaroo\Model\GuestPaymentInformationManagement"/>
+    <preference for="TIG\Buckaroo\Model\ConfigProvider\Method\FactoryInterface" type="TIG\Buckaroo\Model\ConfigProvider\Method\Factory"/>
 
     <type name="TIG\Buckaroo\Model\Method\AbstractMethod">
         <arguments>
@@ -209,6 +210,14 @@
                 <item name="buckaroo_fee" xsi:type="array">
                     <item name="type" xsi:type="string">buckaroo_fee</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
+                </item>
+                <item name="allowed_currencies" xsi:type="array">
+                    <item name="type" xsi:type="string">allowed_currencies</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies</item>
+                </item>
+                <item name="refund" xsi:type="array">
+                    <item name="type" xsi:type="string">refund</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Refund</item>
                 </item>
             </argument>
         </arguments>

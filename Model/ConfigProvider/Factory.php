@@ -77,6 +77,8 @@ class Factory
             throw new \LogicException('ConfigProvider adapter is not set.');
         }
 
+        $providerType = str_replace('tig_buckaroo_', '', $providerType);
+
         foreach ($this->configProviders as $configProviderMetaData) {
             $configProviderType = $configProviderMetaData['type'];
             if ($configProviderType == $providerType) {

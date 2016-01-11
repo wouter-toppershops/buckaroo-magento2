@@ -41,7 +41,8 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 use Magento\Framework\View\Asset\Repository;
 use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
 
-abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider
+    implements CheckoutConfigProvider, ConfigProviderInterface
 {
     /**
      * The asset repository to generate the correct url to our assets.
@@ -63,15 +64,30 @@ abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigP
     protected $scopeConfig;
 
     /**
-     * @param \Magento\Framework\View\Asset\Repository           $assetRepo
+     * @var array|null
+     */
+    protected $allowedCurrencies = null;
+
+    /**
+     * @param Repository                                         $assetRepo
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
      */
     public function __construct(
         \Magento\Framework\View\Asset\Repository $assetRepo,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         $this->assetRepo = $assetRepo;
         $this->scopeConfig = $scopeConfig;
+        $this->configProviderFactory = $configProviderFactory;
+
+        if (!$this->allowedCurrencies) {
+            $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
+            if ($allowedCurrenciesConfig) {
+                $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();
+            }
+        }
     }
 
     /**
@@ -121,6 +137,14 @@ abstract class AbstractConfigProvider implements CheckoutConfigProvider, ConfigP
     public function getPaymentFee()
     {
         return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getAllowedCurrencies()
+    {
+        return $this->allowedCurrencies;
     }
 
 }

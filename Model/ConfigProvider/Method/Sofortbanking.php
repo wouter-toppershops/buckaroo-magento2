@@ -39,16 +39,33 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+/**
+ * @method getActiveStatus()
+ * @method getOrderStatusSuccess()
+ * @method getOrderStatusFailed()
+ */
 class Sofortbanking extends AbstractConfigProvider
 {
-    const XPATH_SOFORTBANKING_PAYMENT_FEE = 'payment/tig_buckaroo_sofortbanking/payment_fee';
+    const XPATH_SOFORTBANKING_PAYMENT_FEE   = 'payment/tig_buckaroo_sofortbanking/payment_fee';
+    const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_sofortbanking/active_status';
+    const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_sofortbanking/order_status_success';
+    const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_sofortbanking/order_status_failed';
 
     /**
      * @return array|void
      */
     public function getConfig()
     {
-        return [];
+        $activeStatus = $this->getActiveStatus();
+        $orderStatusSuccess = $this->getOrderStatusSuccess();
+        $orderStatusFailed = $this->getOrderStatusFailed();
+
+        // @TODO: get banks dynamic
+        return [
+            'active_status' => $activeStatus,
+            'order_status_success' => $orderStatusSuccess,
+            'order_status_failed' => $orderStatusFailed,
+        ];
     }
 
     /**

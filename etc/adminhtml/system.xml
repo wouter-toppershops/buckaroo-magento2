@@ -226,17 +226,23 @@
                     </field>
 
                     <field id="limit_by_ip" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Display only for selected IP's</label>
-                        <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                        <label>Display only for selected IPs</label>
+                        <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                         <config_path>tig_buckaroo/account/limit_by_ip</config_path>
                     </field>
 
                     <field id="fee_percentage_mode" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Fee percentage mode</label>
-                        <comment><![CDATA[This setting only applies to percentage-based Buckaroo fee's.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
+                        <comment><![CDATA[This setting only applies to percentage-based Buckaroo fees.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
                         <source_model>TIG\Buckaroo\Model\Config\Source\FeePercentageMode</source_model>
                         <config_path>tig_buckaroo/account/fee_percentage_mode</config_path>
+                    </field>
+
+                    <field id="payment_fee_label" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Payment fee frontend label</label>
+                        <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
+                        <config_path>tig_buckaroo/account/payment_fee_label</config_path>
                     </field>
                 </group>
             </group>
@@ -343,7 +349,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_ideal/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::ideal</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -364,8 +370,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_ideal/limit_by_ip</config_path>
@@ -458,7 +464,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_creditcard/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::creditcard</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -479,8 +485,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_creditcard/limit_by_ip</config_path>
@@ -745,7 +751,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_paypal/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::paypal</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -766,8 +772,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_paypal/limit_by_ip</config_path>
@@ -915,7 +921,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_transfer/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::transfer</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -936,8 +942,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_transfer/limit_by_ip</config_path>
@@ -1088,7 +1094,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::sepadirectdebit</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -1109,8 +1115,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_sepadirectdebit/limit_by_ip</config_path>
@@ -1208,7 +1214,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_mrcash/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::mrcash</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -1229,8 +1235,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_mrcash/limit_by_ip</config_path>
@@ -1328,7 +1334,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_sofortbanking/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::sofortbanking</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -1349,8 +1355,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_sofortbanking/limit_by_ip</config_path>
@@ -1448,7 +1454,7 @@
                             <comment><![CDATA[Select payment method specific currencies.]]></comment>
                             <tooltip>Your contract with Buckaroo must allow for the selected currencies to be used with this payment method.</tooltip>
                             <config_path>payment/tig_buckaroo_giropay/allowed_currencies</config_path>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies</source_model>
+                            <source_model>TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::giropay</source_model>
                             <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
                         </field>
 
@@ -1469,8 +1475,8 @@
                         </field>
 
                         <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Display only for selected IP's</label>
-                            <comment><![CDATA[Show method only to Magento set IP's.]]></comment>
+                            <label>Display only for selected IPs</label>
+                            <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                             <tooltip>Magento developer client restrictions.</tooltip>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_giropay/limit_by_ip</config_path>

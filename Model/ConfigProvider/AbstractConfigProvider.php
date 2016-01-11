@@ -42,7 +42,6 @@ use \Magento\Checkout\Model\ConfigProviderInterface;
 
 abstract class AbstractConfigProvider implements ConfigProviderInterface
 {
-
     /**
      * @var string
      */
