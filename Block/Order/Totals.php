@@ -76,7 +76,9 @@ class Totals extends \Magento\Sales\Block\Order\Totals
         /** @noinspection PhpUndefinedMethodInspection */
         $source = $this->getSource();
         $totals = $this->helper->getBuckarooPaymentFeeTotal($source);
-        $this->addTotalBefore(new \Magento\Framework\DataObject($totals[0]), 'grand_total');
+        if (!empty($totals)) {
+            $this->addTotalBefore(new \Magento\Framework\DataObject($totals[0]), 'grand_total');
+        }
         return $this->_totals;
     }
 
