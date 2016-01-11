@@ -135,7 +135,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
             'buckaroo_fee',
             $dataObject->getBuckarooFee() + $dataObject->getBuckarooFeeTaxAmount(),
             $dataObject->getBasebuckarooFee() + $dataObject->getBuckarooFeeBaseTaxAmount(),
-            'Buckaroo Fee 2'
+            $this->configProviderFactory->get('account')->getPaymentFeeLabel()
         );
 
         return $totals;
