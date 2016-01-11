@@ -129,32 +129,6 @@ class ProcessTest extends BaseTest
     }
 
     /**
-     * @param $to
-     *
-     * @return $this
-     * @throws \Exception
-     */
-    public function assertRedirect($to)
-    {
-        $shouldReceive = $this->redirect->shouldReceive('redirect')->once();
-        switch($to)
-        {
-            case 'success':
-                $shouldReceive->with(\Mockery::any(), 'checkout/onepage/success', []);
-                break;
-
-            case 'checkout':
-                $shouldReceive->with(\Mockery::any(), 'checkout', ['_fragment' => 'payment']);
-                break;
-
-            default:
-                throw new \Exception('Invalid $to variable defiend');
-        }
-
-        return $this;
-    }
-
-    /**
      * Test the path with no parameters set.
      *
      * @throws Exception
@@ -162,23 +136,7 @@ class ProcessTest extends BaseTest
      */
     public function testExecute()
     {
-        $this->assertRedirect('checkout');
-
-        $this->request->shouldReceive('getParams')->andReturn([
-            'brq_ordernumber' => null,
-            'brq_statuscode' => null
-        ]);
-
-        $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
-        $this->cart->shouldReceive('save')->once()->andReturn(true);
-
-        $this->order->makePartial();
-        $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
-        $this->order->shouldReceive('getId')->once()->andReturnNull();
-        $this->order->shouldReceive('canCancel')->once()->andReturn(true);
-        $this->order->shouldReceive('cancel')->once();
-
-        $this->messageManager->shouldReceive('addErrorMessage')->once()->with(\Mockery::type('Magento\Framework\Phrase'));
+        $this->request->shouldReceive('getParams')->andReturn([]);
 
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
 
@@ -195,21 +153,23 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => null
         ]);
 
+        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
+
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(false);
 
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
-        $this->order->shouldReceive('getId')->twice()->andReturnNull();
+        $this->order->shouldReceive('getId')->once()->andReturnNull();
+        $this->order->shouldReceive('getState')->once()->andReturn('!canceled');
+        $this->order->shouldReceive('canCancel')->once()->andReturn(true);
+        $this->order->shouldReceive('cancel')->once()->andReturnSelf();
 
-        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
+        $this->messageManager->shouldReceive('addErrorMessage');
 
-        try {
-            $this->controller->execute();
-            $this->fail();
-        } catch (Exception $e)
-        {
-            $this->assertEquals('Could not recreate the quote. Did not cancel the order ().', $e->getMessage());
-        }
+        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'failure_url', []);
+
+        $this->controller->execute();
     }
 
     /**
@@ -222,23 +182,22 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => null
         ]);
 
+        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
+
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(true);
 
         $this->order->makePartial();
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
-        $this->order->shouldReceive('getId')->twice()->andReturnNull();
+        $this->order->shouldReceive('getId')->once()->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(false);
 
-        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
+        $this->messageManager->shouldReceive('addErrorMessage');
 
-        try {
-            $this->controller->execute();
-            $this->fail();
-        } catch (Exception $e)
-        {
-            $this->assertEquals('Could not cancel the order ().', $e->getMessage());
-        }
+        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'failure_url', []);
+
+        $this->controller->execute();
     }
 
     /**
@@ -249,16 +208,19 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteSuccessStatus()
     {
-        $this->assertRedirect('success');
-
         $this->request->shouldReceive('getParams')->andReturn([
             'brq_ordernumber' => null,
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
         ]);
 
+        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
+
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->once()->andReturn(true);
         $this->order->shouldReceive('getQuoteId')->once()->andReturn(1);
+
+        $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 
         $this->controller->execute();
     }

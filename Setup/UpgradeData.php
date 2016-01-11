@@ -77,7 +77,28 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             && version_compare($context->getVersion(), '0.1.0', '>=')
         ) {
             /**
-             * Install order statuses from config
+             * Add New status and state
+             */
+            $setup->getConnection()->insert(
+                $setup->getTable('sales_order_status'),
+                [
+                    'status' => 'tig_buckaroo_new',
+                    'label'  => __('TIG Buckaroo New'),
+                ]
+            );
+
+            $setup->getConnection()->insert(
+                $setup->getTable('sales_order_status_state'),
+                [
+                    'status'            => 'tig_buckaroo_new',
+                    'state'             => 'processing',
+                    'is_default'        => 0,
+                    'visible_on_front'  => 1,
+                ]
+            );
+
+            /**
+             * Add Pending status and state
              */
             $setup->getConnection()->insert(
                 $setup->getTable('sales_order_status'),
@@ -90,9 +111,10 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             $setup->getConnection()->insert(
                 $setup->getTable('sales_order_status_state'),
                 [
-                    'status'     => 'tig_buckaroo_pending_payment',
-                    'state'      => 'processing',
-                    'is_default' =>  0,
+                    'status'            => 'tig_buckaroo_pending_payment',
+                    'state'             => 'processing',
+                    'is_default'        => 0,
+                    'visible_on_front'  => 1,
                 ]
             );
         }
