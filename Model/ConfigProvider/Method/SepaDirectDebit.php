@@ -46,10 +46,11 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  */
 class SepaDirectDebit extends AbstractConfigProvider
 {
-    const XPATH_SEPADIRECTDEBIT_PAYMENT_FEE     = 'payment/tig_buckaroo_sepadirectdebit/payment_fee';
-    const XPATH_IDEAL_ACTIVE_STATUS             = 'payment/tig_buckaroo_sepadirectdebit/active_status';
-    const XPATH_IDEAL_ORDER_STATUS_SUCCESS      = 'payment/tig_buckaroo_sepadirectdebit/order_status_success';
-    const XPATH_IDEAL_ORDER_STATUS_FAILED       = 'payment/tig_buckaroo_sepadirectdebit/order_status_failed';
+    const XPATH_SEPADIRECTDEBIT_PAYMENT_FEE             = 'payment/tig_buckaroo_sepadirectdebit/payment_fee';
+    const XPATH_SEPADIRECTDEBIT_ACTIVE_STATUS           = 'payment/tig_buckaroo_sepadirectdebit/active_status';
+    const XPATH_SEPADIRECTDEBIT_ORDER_STATUS_SUCCESS    = 'payment/tig_buckaroo_sepadirectdebit/order_status_success';
+    const XPATH_SEPADIRECTDEBIT_ORDER_STATUS_FAILED     = 'payment/tig_buckaroo_sepadirectdebit/order_status_failed';
+    const XPATH_SEPADIRECTDEBIT_AVAILABLE_IN_BACKEND    = 'payment/tig_buckaroo_sepadirectdebit/available_in_backend';
 
     /**
      * @return array|void

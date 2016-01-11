@@ -155,7 +155,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(false);
 
+        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
+        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+
         $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -181,7 +185,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
+        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
+        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+
         $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -203,7 +211,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
+        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
+        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+
         $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -225,7 +237,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
+        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
+        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+
         $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -249,7 +265,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
+        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
+        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+
         $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -273,7 +293,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
+        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
+        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+
         $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
