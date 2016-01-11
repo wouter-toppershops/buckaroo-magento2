@@ -170,7 +170,7 @@
 
         <tig_buckaroo>
             <account>
-                <active>1</active>
+                <active>0</active>
                 <transaction_label>Magento Buckaroo</transaction_label>
                 <invoice_email>1</invoice_email>
                 <auto_invoice>1</auto_invoice>
