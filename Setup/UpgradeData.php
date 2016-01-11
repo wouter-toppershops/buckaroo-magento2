@@ -73,9 +73,7 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     {
         $setup->startSetup();
 
-        if (version_compare($context->getVersion(), '0.1.1', '<')
-            && version_compare($context->getVersion(), '0.1.0', '>=')
-        ) {
+        if (version_compare($context->getVersion(), '0.1.1', '<')) {
             /**
              * Add New status and state
              */
