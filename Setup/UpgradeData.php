@@ -73,50 +73,70 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     {
         $setup->startSetup();
 
-        if (version_compare($context->getVersion(), '0.1.1', '<')
-            && version_compare($context->getVersion(), '0.1.0', '>=')
-        ) {
-            /**
-             * Add New status and state
-             */
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status'),
-                [
-                    'status' => 'tig_buckaroo_new',
-                    'label'  => __('TIG Buckaroo New'),
-                ]
-            );
-
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status_state'),
-                [
-                    'status'            => 'tig_buckaroo_new',
-                    'state'             => 'processing',
-                    'is_default'        => 0,
-                    'visible_on_front'  => 1,
-                ]
-            );
+        if (version_compare($context->getVersion(), '0.1.1', '<')) {
+            $select = $setup->getConnection()->select()
+                ->from(
+                    $setup->getTable('sales_order_status'),
+                    [
+                        'status',
+                    ]
+                )->where(
+                    'status = ?',
+                    'tig_buckaroo_new'
+                );
+            if (count($setup->getConnection()->fetchAll($select)) == 0) {
+                /**
+                 * Add New status and state
+                 */
+                $setup->getConnection()->insert(
+                    $setup->getTable('sales_order_status'),
+                    [
+                        'status' => 'tig_buckaroo_new',
+                        'label'  => __('TIG Buckaroo New'),
+                    ]
+                );
+                $setup->getConnection()->insert(
+                    $setup->getTable('sales_order_status_state'),
+                    [
+                        'status'           => 'tig_buckaroo_new',
+                        'state'            => 'processing',
+                        'is_default'       => 0,
+                        'visible_on_front' => 1,
+                    ]
+                );
+            }
 
             /**
              * Add Pending status and state
              */
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status'),
-                [
-                    'status' => 'tig_buckaroo_pending_payment',
-                    'label'  => __('TIG Buckaroo Pending Payment'),
-                ]
-            );
-
-            $setup->getConnection()->insert(
-                $setup->getTable('sales_order_status_state'),
-                [
-                    'status'            => 'tig_buckaroo_pending_payment',
-                    'state'             => 'processing',
-                    'is_default'        => 0,
-                    'visible_on_front'  => 1,
-                ]
-            );
+            $select = $setup->getConnection()->select()
+                ->from(
+                    $setup->getTable('sales_order_status'),
+                    [
+                        'status',
+                    ]
+                )->where(
+                    'status = ?',
+                    'tig_buckaroo_pending_payment'
+                );
+            if (count($setup->getConnection()->fetchAll($select)) == 0) {
+                $setup->getConnection()->insert(
+                    $setup->getTable('sales_order_status'),
+                    [
+                        'status' => 'tig_buckaroo_pending_payment',
+                        'label'  => __('TIG Buckaroo Pending Payment'),
+                    ]
+                );
+                $setup->getConnection()->insert(
+                    $setup->getTable('sales_order_status_state'),
+                    [
+                        'status'           => 'tig_buckaroo_pending_payment',
+                        'state'            => 'processing',
+                        'is_default'       => 0,
+                        'visible_on_front' => 1,
+                    ]
+                );
+            }
         }
 
         $quoteInstaller = $this->quoteSetupFactory->create(['resourceName' => 'quote_setup', 'setup' => $setup]);

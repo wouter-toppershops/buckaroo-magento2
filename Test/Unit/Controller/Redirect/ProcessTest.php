@@ -112,6 +112,7 @@ class ProcessTest extends BaseTest
         $this->redirect = m::mock(RedirectInterface::class);
 
         $this->configProviderFactory = m::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class)->makePartial();
+        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
 
         $this->context = $this->objectManagerHelper->getObject(Context::class, [
             'request' => $this->request,
@@ -153,7 +154,6 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => null
         ]);
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
 
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
@@ -182,7 +182,7 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => null
         ]);
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
+//        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
 
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
@@ -213,12 +213,14 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
         ]);
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getOrderStatusPending');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
 
         $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->once()->andReturn(true);
         $this->order->shouldReceive('getQuoteId')->once()->andReturn(1);
+        $this->order->shouldReceive('setStatus')->andReturnSelf();
+        $this->order->shouldReceive('save')->andReturnSelf();
 
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 
