@@ -103,7 +103,7 @@ class FactoryTest extends BaseTest
         try {
             $this->object->get('');
             $this->fail('An exception should be thrown');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\TIG\Buckaroo\Exception::class, $e);
         }
     }
@@ -123,7 +123,7 @@ class FactoryTest extends BaseTest
         try {
             $this->object->get($model);
             $this->fail('An exception should be thrown');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\LogicException::class, $e);
         }
     }
@@ -138,7 +138,7 @@ class FactoryTest extends BaseTest
         try {
             $this->object->get('');
             $this->fail('An exception should be thrown');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\LogicException::class, $e);
         }
     }
@@ -169,7 +169,7 @@ class FactoryTest extends BaseTest
         try {
             $this->object->has('');
             $this->fail('An exception should be thrown');
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\LogicException::class, $e);
         }
     }

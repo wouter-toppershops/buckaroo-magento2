@@ -41,14 +41,14 @@ namespace TIG\Buckaroo\Model\Total\Quote;
 class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
-     */
-    protected $configProviderMethodFactory;
-
-    /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
     protected $configProviderFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    protected $configProviderMethodFactory;
 
     /**
      * @var \Magento\Framework\Pricing\PriceCurrencyInterface
