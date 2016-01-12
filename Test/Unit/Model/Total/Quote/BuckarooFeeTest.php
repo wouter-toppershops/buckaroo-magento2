@@ -150,14 +150,6 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
                 45.0000,
                 4.0500
             ],
-            [
-                'tig_buckaroo_ideal',
-                '2%',
-                'grandtotal',
-                'getBaseGrandTotal',
-                45.0000,
-                0.9000
-            ],
         ];
     }
 }
