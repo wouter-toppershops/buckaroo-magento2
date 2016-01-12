@@ -197,8 +197,8 @@
             </refund>
 
             <states>
-                <order_state_new>tig_buckaroo_new</order_state_new>
-                <order_state_pending>tig_buckaroo_pending_payment</order_state_pending>
+                <order_state_new>processing</order_state_new>
+                <order_state_pending>processing</order_state_pending>
                 <order_state_success>processing</order_state_success>
                 <order_state_failed>canceled</order_state_failed>
                 <order_state_incorrect>holded</order_state_incorrect>
