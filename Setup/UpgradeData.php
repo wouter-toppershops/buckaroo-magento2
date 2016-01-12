@@ -104,6 +104,11 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                         'visible_on_front' => 1,
                     ]
                 );
+            } else {
+                // Do an update to turn on visible_on_front, since it already exists
+                $bind = ['visible_on_front' => 1];
+                $where = ['status = ?' => 'tig_buckaroo_new'];
+                $setup->getConnection()->update($setup->getTable('sales_order_status_state'), $bind, $where);
             }
 
             /**
@@ -136,6 +141,11 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                         'visible_on_front' => 1,
                     ]
                 );
+            } else {
+                // Do an update to turn on visible_on_front, since it already exists
+                $bind = ['visible_on_front' => 1];
+                $where = ['status = ?' => 'tig_buckaroo_pending_payment'];
+                $setup->getConnection()->update($setup->getTable('sales_order_status_state'), $bind, $where);
             }
         }
 

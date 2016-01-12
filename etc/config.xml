@@ -182,18 +182,22 @@
                 <transaction_label>Magento Buckaroo</transaction_label>
                 <invoice_email>1</invoice_email>
                 <auto_invoice>1</auto_invoice>
-                <auto_invoice_status>pending</auto_invoice_status>
+                <auto_invoice_status>tig_buckaroo_pending_payment</auto_invoice_status>
                 <success_redirect>checkout/onepage/success</success_redirect>
                 <failure_redirect>checkout/onepage</failure_redirect>
                 <cancel_on_failed>1</cancel_on_failed>
                 <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
                 <cancel_on_failure>0</cancel_on_failure>
                 <payment_fee_label>Payment Fee</payment_fee_label>
+                <order_status_new>tig_buckaroo_new</order_status_new>
+                <order_status_pending>tig_buckaroo_pending_payment</order_status_pending>
+                <order_status_success>processing</order_status_success>
+                <order_status_failed>canceled</order_status_failed>
             </account>
 
             <refund>
                 <enabled>0</enabled>
-                <allow_push>1</allow_push>
+                <allow_push>0</allow_push>
             </refund>
 
             <states>
