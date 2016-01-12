@@ -1495,7 +1495,7 @@
                     <comment><![CDATA[Enable or disable refunding.]]></comment>
                     <tooltip>Set to 'No' refunds must be done manualy in Payment Plaza.</tooltip>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                    <config_path>tig_buckaroo/refund/active</config_path>
+                    <config_path>tig_buckaroo/refund/enabled</config_path>
                 </field>
 
                 <field id="allow_push" translate="label comment tooltip" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">

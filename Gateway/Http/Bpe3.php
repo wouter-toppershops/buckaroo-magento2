@@ -122,17 +122,16 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function refund(Transaction $transaction)
     {
-        $return = false;
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
         $refundConfig = $this->configProviderFactory->get('refund');
+
         if ($refundConfig->getEnabled()) {
-            $return = $this->doRequest($transaction);
+            return $this->doRequest($transaction);
         }
 
         $this->debugger->addToMessage('Failed to refund because the configuration is set to disabled')->log();
-
-        return $return;
+        return false;
     }
 
     /**
