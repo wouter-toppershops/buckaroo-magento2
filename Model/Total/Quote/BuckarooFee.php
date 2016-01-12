@@ -201,9 +201,6 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             case 'subtotal_incl_tax':
                 $total = $address->getBaseSubtotalTotalInclTax();
                 break;
-            case 'grandtotal':
-                $total = $address->getBaseGrandTotal();
-                break;
         }
 
         $basePaymentFee = ($percentage / 100) * $total;
