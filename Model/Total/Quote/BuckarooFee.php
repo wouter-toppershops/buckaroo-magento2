@@ -43,6 +43,11 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
      */
+    protected $configProviderMethodFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
     protected $configProviderFactory;
 
     /**
@@ -51,16 +56,19 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     public $priceCurrency;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
     ) {
         $this->setCode('buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
         $this->priceCurrency = $priceCurrency;
     }
 
@@ -160,19 +168,22 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         \Magento\Quote\Model\Quote $quote
     ) {
         $buckarooPaymentMethodCode = $methodInstance->buckarooPaymentMethodCode;
-        if (!$this->configProviderFactory->has($buckarooPaymentMethodCode)) {
+        if (!$this->configProviderMethodFactory->has($buckarooPaymentMethodCode)) {
             return false;
         }
 
-        $configProvider = $this->configProviderFactory->get($buckarooPaymentMethodCode);
+        $configProvider = $this->configProviderMethodFactory->get($buckarooPaymentMethodCode);
         $basePaymentFee = trim($configProvider->getPaymentFee());
 
         if (is_numeric($basePaymentFee)) {
+            /** Payment fee is a number */
             return $basePaymentFee;
         } elseif (strpos($basePaymentFee, '%') === false) {
+            /** Payment fee is invalid */
             return false;
         }
 
+        /** Payment fee is a percentage */
         $percentage = floatval($basePaymentFee);
         if ($quote->getShippingAddress()) {
             $address = $quote->getShippingAddress();
@@ -180,7 +191,22 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             $address = $quote->getBillingAddress();
         }
 
-        $basePaymentFee = ($percentage / 100) * $address->getBaseSubtotalTotalInclTax();
+        $total = 0;
+        /** @noinspection PhpUndefinedMethodInspection */
+        $feePercentageMode = $this->configProviderFactory->get('account')->getFeePercentageMode();
+        switch ($feePercentageMode) {
+            case 'subtotal':
+                $total = $address->getBaseSubtotal();
+                break;
+            case 'subtotal_incl_tax':
+                $total = $address->getBaseSubtotalTotalInclTax();
+                break;
+            case 'grandtotal':
+                $total = $address->getBaseGrandTotal();
+                break;
+        }
+
+        $basePaymentFee = ($percentage / 100) * $total;
 
         return $basePaymentFee;
     }

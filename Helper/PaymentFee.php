@@ -95,7 +95,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                     'buckaroo_fee_excl',
                     $dataObject->getBuckarooFee(),
                     $dataObject->getBasebuckarooFee(),
-                    'Buckaroo Fee (Excl. Tax)'
+                    __('Buckaroo Fee (Excl. Tax)')
                 );
             }
             /** @noinspection PhpUndefinedMethodInspection */
@@ -104,7 +104,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                 'buckaroo_fee_incl',
                 $dataObject->getBuckarooFee() + $dataObject->getBuckarooFeeTaxAmount(),
                 $dataObject->getBasebuckarooFee() + $dataObject->getBuckarooFeeBaseTaxAmount(),
-                'Buckaroo Fee (Incl. Tax)'
+                __('Buckaroo Fee (Incl. Tax)')
             );
         } else {
             /** @noinspection PhpUndefinedMethodInspection */
@@ -113,7 +113,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                 'buckaroo_fee',
                 $dataObject->getBuckarooFee(),
                 $dataObject->getBasebuckarooFee(),
-                'Buckaroo Fee3'
+                __('Buckaroo Fee')
             );
         }
 
