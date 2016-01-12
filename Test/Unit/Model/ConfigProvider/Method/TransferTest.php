@@ -101,6 +101,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $sendEmail = '1';
         $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/active')->andReturn(true);
         $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/send_email')->andReturn($sendEmail);
+        $this->scopeConfig->shouldReceive('getValue')->andReturn(false);
 
         $result = $this->object->getConfig();
 

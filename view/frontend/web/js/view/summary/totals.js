@@ -96,7 +96,7 @@ define(
                     totals.getSegment('buckaroo_fee') &&
                     totals.getSegment('buckaroo_fee').hasOwnProperty('extension_attributes')
                 ) {
-                    isAvailable = !!totals.getSegment('buckaroo_fee')['extension_attributes'].buckaroo_fee;
+                    isAvailable = (0 < totals.getSegment('buckaroo_fee')['extension_attributes'].buckaroo_fee);
                 }
 
                 return isAvailable;
@@ -107,7 +107,7 @@ define(
              * @returns {Boolean}
              */
             displayBothPrices : function () {
-                return !!this.model.displayBothPrices();
+                return (true == this.model.displayBothPrices());
             },
 
             /**
@@ -129,7 +129,7 @@ define(
             },
 
             getTitle : function() {
-                return window.checkoutConfig.buckarooFee.title;
+                return window.checkoutConfig.buckarooFee.title();
             }
         });
     }

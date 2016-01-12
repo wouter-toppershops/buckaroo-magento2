@@ -46,10 +46,11 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  */
 class Sofortbanking extends AbstractConfigProvider
 {
-    const XPATH_SOFORTBANKING_PAYMENT_FEE   = 'payment/tig_buckaroo_sofortbanking/payment_fee';
-    const XPATH_IDEAL_ACTIVE_STATUS         = 'payment/tig_buckaroo_sofortbanking/active_status';
-    const XPATH_IDEAL_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_sofortbanking/order_status_success';
-    const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_sofortbanking/order_status_failed';
+    const XPATH_SOFORTBANKING_PAYMENT_FEE           = 'payment/tig_buckaroo_sofortbanking/payment_fee';
+    const XPATH_SOFORTBANKING_ACTIVE_STATUS         = 'payment/tig_buckaroo_sofortbanking/active_status';
+    const XPATH_SOFORTBANKING_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_sofortbanking/order_status_success';
+    const XPATH_SOFORTBANKING_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_sofortbanking/order_status_failed';
+    const XPATH_SOFORTBANKING_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_sofortbanking/available_in_backend';
 
     /**
      * @return array|void
