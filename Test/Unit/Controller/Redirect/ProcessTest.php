@@ -159,8 +159,8 @@ class ProcessTest extends BaseTest
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(false);
 
-        $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
-        $this->order->shouldReceive('getId')->once()->andReturnNull();
+        $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
+        $this->order->shouldReceive('getId')->andReturnNull();
         $this->order->shouldReceive('getState')->once()->andReturn('!canceled');
         $this->order->shouldReceive('canCancel')->once()->andReturn(true);
         $this->order->shouldReceive('cancel')->once()->andReturnSelf();
@@ -182,15 +182,14 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => null
         ]);
 
-//        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
 
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(true);
 
         $this->order->makePartial();
-        $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
-        $this->order->shouldReceive('getId')->once()->andReturnNull();
+        $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
+        $this->order->shouldReceive('getId')->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(false);
 
         $this->messageManager->shouldReceive('addErrorMessage');
@@ -216,11 +215,11 @@ class ProcessTest extends BaseTest
         $this->configProviderFactory->shouldReceive('getOrderStatusPending');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
 
-        $this->order->shouldReceive('loadByIncrementId')->once()->with(null)->andReturnSelf();
-        $this->order->shouldReceive('getId')->once()->andReturn(true);
-        $this->order->shouldReceive('getQuoteId')->once()->andReturn(1);
-        $this->order->shouldReceive('setStatus')->andReturnSelf();
-        $this->order->shouldReceive('save')->andReturnSelf();
+        $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
+        $this->order->shouldReceive('getId')->andReturn(true);
+        $this->order->shouldReceive('getQuoteId')->andReturn(1);
+        $this->order->shouldReceive('setStatus')->once()->andReturnSelf();
+        $this->order->shouldReceive('save')->once()->andReturnSelf();
 
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 

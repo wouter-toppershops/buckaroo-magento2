@@ -39,6 +39,8 @@
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
+use TIG\Buckaroo\Exception;
+
 class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
 {
     /**
@@ -52,6 +54,16 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     protected $objectFactory;
 
     /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory
+     */
+    protected $configProviderFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Debug\Debugger $debugger
+     */
+    public $debugger;
+
+    /**
      * Bpe3 constructor.
      *
      * @param \TIG\Buckaroo\Gateway\Http\Client\Soap $client
@@ -59,10 +71,14 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function __construct(
         \TIG\Buckaroo\Gateway\Http\Client\Soap $client,
-        \Magento\Framework\Data\ObjectFactory $objectFactory
+        \Magento\Framework\Data\ObjectFactory $objectFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Debug\Debugger $debugger
     ) {
-        $this->client = $client;
-        $this->objectFactory = $objectFactory;
+        $this->client                = $client;
+        $this->objectFactory         = $objectFactory;
+        $this->configProviderFactory = $configProviderFactory;
+        $this->debugger              = $debugger;
     }
 
     /**
@@ -106,7 +122,16 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function refund(Transaction $transaction)
     {
-        return $this->doRequest($transaction);
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
+        $refundConfig = $this->configProviderFactory->get('refund');
+
+        if ($refundConfig->getEnabled()) {
+            return $this->doRequest($transaction);
+        }
+
+        $this->debugger->addToMessage('Failed to refund because the configuration is set to disabled')->log();
+        return false;
     }
 
     /**
