@@ -30,15 +30,15 @@
     margin-top: 20px;
 }
 
-.label-style{
-    padding: 6px 15px 0 0 !important;
-    text-align: left !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    float: left !important;
-}
-
 @media screen and (min-width: 1200px ){
+    .magento-blank .label-style{
+        padding: 6px 15px 0 0 !important;
+        text-align: left !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        float: left !important;
+    }
+
     .payment-method-content {
         width: 100%; box-sizing:border-box;
     }
