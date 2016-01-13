@@ -43,7 +43,6 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  * @method getActiveStatus()
  * @method getOrderStatusSuccess()
  * @method getOrderStatusFailed()
- * @method getPaymentFeeLabel();
  */
 class Ideal extends AbstractConfigProvider
 {
@@ -118,7 +117,7 @@ class Ideal extends AbstractConfigProvider
         $activeStatus = $this->getActiveStatus();
         $orderStatusSuccess = $this->getOrderStatusSuccess();
         $orderStatusFailed = $this->getOrderStatusFailed();
-        $paymentFeeLabel = $this->getPaymentFeeLabel();
+        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Ideal::PAYMENT_METHOD_CODE);
 
         // @TODO: get banks dynamic
         return [

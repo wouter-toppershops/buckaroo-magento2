@@ -127,7 +127,7 @@ class Creditcard extends AbstractConfigProvider
         $activeStatus = $this->getActiveStatus();
         $orderStatusSuccess = $this->getOrderStatusSuccess();
         $orderStatusFailed = $this->getOrderStatusFailed();
-        $paymentFeeLabel = $this->getPaymentFeeLabel();
+        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Creditcard::PAYMENT_METHOD_CODE);
 
         // @TODO: get banks dynamic
         return [
