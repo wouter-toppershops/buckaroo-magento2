@@ -103,7 +103,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 
         $methodInstance = $quote->getPayment()->getMethodInstance();
         if (!$methodInstance instanceof \TIG\Buckaroo\Model\Method\AbstractMethod) {
-            throw new \LogicException('Buckaroo payment fee is only available for Buckaroo payment methods.');
+            return $this;
         }
 
         $basePaymentFee = $this->getBaseFee($methodInstance, $quote);
