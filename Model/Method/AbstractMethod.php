@@ -420,15 +420,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->payment = $payment;
 
-        $transaction = $this->getOrderTransactionBuilder($payment)->build();
+        $transactionBuilder = $this->getOrderTransactionBuilder($payment);
 
-        if (!$transaction) {
+        if (!$transactionBuilder) {
             throw new \LogicException(
                 'Order action is not implemented for this payment method.'
             );
-        } elseif ($transaction === true) {
+        } elseif ($transactionBuilder === true) {
             return $this;
         }
+
+        $transaction = $transactionBuilder->build();
 
         $response = $this->orderTransaction($transaction);
 
@@ -494,15 +496,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->payment = $payment;
 
-        $transaction = $this->getAuthorizeTransactionBuilder($payment)->build();
+        $transactionBuilder = $this->getAuthorizeTransactionBuilder($payment);
 
-        if (!$transaction) {
+        if (!$transactionBuilder) {
             throw new \LogicException(
                 'Authorize action is not implemented for this payment method.'
             );
-        } elseif ($transaction === true) {
+        } elseif ($transactionBuilder === true) {
             return $this;
         }
+
+        $transaction = $transactionBuilder->build();
 
         $response = $this->authorizeTransaction($transaction);
 
@@ -568,15 +572,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->payment = $payment;
 
-        $transaction = $this->getCaptureTransactionBuilder($payment)->build();
+        $transactionBuilder = $this->getCaptureTransactionBuilder($payment);
 
-        if (!$transaction) {
+        if (!$transactionBuilder) {
             throw new \LogicException(
                 'Capture action is not implemented for this payment method.'
             );
-        } elseif ($transaction === true) {
+        } elseif ($transactionBuilder === true) {
             return $this;
         }
+
+        $transaction = $transactionBuilder->build();
 
         $response = $this->captureTransaction($transaction);
 
@@ -642,15 +648,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->payment = $payment;
 
-        $transaction = $this->getRefundTransactionBuilder($payment)->build();
+        $transactionBuilder = $this->getRefundTransactionBuilder($payment);
 
-        if (!$transaction) {
+        if (!$transactionBuilder) {
             throw new \LogicException(
                 'Refund action is not implemented for this payment method.'
             );
-        } elseif ($transaction === true) {
+        } elseif ($transactionBuilder === true) {
             return $this;
         }
+
+        $transaction = $transactionBuilder->build();
 
         $response = $this->refundTransaction($transaction);
 
@@ -724,15 +732,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->payment = $payment;
 
-        $transaction = $this->getVoidTransactionBuilder($payment)->build();
+        $transactionBuilder = $this->getVoidTransactionBuilder($payment);
 
-        if (!$transaction) {
+        if (!$transactionBuilder) {
             throw new \LogicException(
                 'Void action is not implemented for this payment method.'
             );
-        } elseif ($transaction === true) {
+        } elseif ($transactionBuilder === true) {
             return $this;
         }
+
+        $transaction = $transactionBuilder->build();
 
         $response = $this->voidTransaction($transaction);
 

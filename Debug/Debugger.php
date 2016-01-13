@@ -41,7 +41,6 @@ namespace TIG\Buckaroo\Debug;
 
 class Debugger
 {
-
     /**
      * @var null|Logger
      */

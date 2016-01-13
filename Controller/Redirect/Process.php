@@ -41,7 +41,7 @@ namespace TIG\Buckaroo\Controller\Redirect;
 
 class Process extends \Magento\Framework\App\Action\Action
 {
-
+    /** @var array */
     protected $response;
 
     /**
@@ -118,7 +118,7 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @throws \TIG\Buckaroo\Exception
      *
-     * @return void
+     * @return void|\Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {
@@ -145,8 +145,10 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
                 // Set the 'Pending payment status' here
                 $pendingStatus = $this->accountConfig->getOrderStatusPending();
-                $this->order->setStatus($pendingStatus);
-                $this->order->save();
+                if ($pendingStatus) {
+                    $this->order->setStatus($pendingStatus);
+                    $this->order->save();
+                }
 
                 // Send order confirmation mail
                 $this->orderSender->send($this->order, true);
@@ -170,23 +172,19 @@ class Process extends \Magento\Framework\App\Action\Action
                         ' error persists, please choose a different payment method.'
                     )
                 );
+
                 if (!$this->recreateQuote()) {
-                    $this->messageManager->addErrorMessage(
-                        __(
-                            'Could not recreate the quote.'
-                        )
-                    );
+                    $this->debugger->log('Could not recreate the quote.', \TIG\Buckaroo\Debug\Logger::ERROR);
                 }
+
                 if (!$this->cancelOrder()) {
-                    $this->messageManager->addErrorMessage(
-                        __(
-                            'Could not recreate the order.'
-                        )
-                    );
+                    $this->debugger->log('Could not cancel the order.', \TIG\Buckaroo\Debug\Logger::ERROR);
                 }
+
                 $this->redirectFailure();
                 break;
         }
+
         return;
     }
 
