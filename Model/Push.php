@@ -354,14 +354,20 @@ class Push implements PushInterface
             $this->orderSender->send($this->order);
         }
 
-        $this->saveInvoice();
-
         $amount = $this->order->getBaseGrandTotal();
 
         $description  = 'Payment status : <strong>'.$message ."</strong><br/>";
         $description .= 'Total amount of '. $this->order->getBaseCurrency()->formatTxt($amount). ' has been paid';
 
         $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
+
+        $paymentMethod = $this->order->getPayment()->getMethodInstance();
+
+        if ($paymentMethod->getConfigData('payment_action') == 'authorize') {
+            return true;
+        }
+
+        $this->saveInvoice();
 
         return true;
     }
