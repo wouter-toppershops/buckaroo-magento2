@@ -113,7 +113,6 @@ class ProcessTest extends BaseTest
 
         $this->configProviderFactory = m::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class)->makePartial();
         $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn(true);
 
         $this->context = $this->objectManagerHelper->getObject(Context::class, [
             'request' => $this->request,
