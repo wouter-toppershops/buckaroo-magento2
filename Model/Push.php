@@ -213,8 +213,6 @@ class Push implements PushInterface
     {
         $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
 
-//        /** @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig */
-//        $statesConfig  = $this->configProviderFactory->get('states');
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
 
@@ -368,7 +366,12 @@ class Push implements PushInterface
             return true;
         }
 
-        $this->saveInvoice();
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
+
+        if ($accountConfig->getAutoInvoice()) {
+            $this->saveInvoice();
+        }
 
         return true;
     }
