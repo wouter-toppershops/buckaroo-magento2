@@ -43,6 +43,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  * @method getActiveStatus()
  * @method getOrderStatusSuccess()
  * @method getOrderStatusFailed()
+ * @method getPaymentFeeLabel();
  */
 class Creditcard extends AbstractConfigProvider
 {
@@ -60,6 +61,7 @@ class Creditcard extends AbstractConfigProvider
     /**#@-*/
 
     const XPATH_CREDITCARD_PAYMENT_FEE          = 'payment/tig_buckaroo_creditcard/payment_fee';
+    const XPATH_CREDITCARD_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_creditcard/payment_fee_label';
     const XPATH_CREDITCARD_ACTIVE_STATUS        = 'payment/tig_buckaroo_creditcard/active_status';
     const XPATH_CREDITCARD_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_creditcard/order_status_success';
     const XPATH_CREDITCARD_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_creditcard/order_status_failed';
@@ -125,6 +127,7 @@ class Creditcard extends AbstractConfigProvider
         $activeStatus = $this->getActiveStatus();
         $orderStatusSuccess = $this->getOrderStatusSuccess();
         $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this->getPaymentFeeLabel();
 
         // @TODO: get banks dynamic
         return [
@@ -134,6 +137,9 @@ class Creditcard extends AbstractConfigProvider
             'payment' => [
                 'buckaroo' => [
                     'creditcards' => $issuers,
+                    'creditcard' => [
+                        'paymentFeeLabel' => $paymentFeeLabel,
+                    ],
                     'response' => [],
                 ],
             ],

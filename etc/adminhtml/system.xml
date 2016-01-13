@@ -492,6 +492,19 @@
                             <config_path>payment/tig_buckaroo_creditcard/limit_by_ip</config_path>
                         </field>
 
+                        <field id="payment_fee" translate="label comment" type="text" sortOrder="92" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment fee</label>
+                            <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
+                            <config_path>payment/tig_buckaroo_creditcard/payment_fee</config_path>
+                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
+                        </field>
+
+                        <field id="payment_fee_label" translate="label comment" type="text" sortOrder="93" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Payment fee frontend label</label>
+                            <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
+                            <config_path>payment/tig_buckaroo_creditcard/payment_fee_label</config_path>
+                        </field>
+
                         <!-- American Express specific -->
                         <field id="heading_american_express" translate="label" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>American Express Specific</label>
@@ -503,38 +516,6 @@
                             <comment><![CDATA[Set true to verify the address at American Express. Set false to disable address verification]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_creditcard/limit_by_ip</config_path>
-                        </field>
-
-                        <field id="amex_payment_fee" translate="label comment" type="text" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee</label>
-                            <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/amex_payment_fee</config_path>
-                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
-                        </field>
-
-                        <field id="amex_payment_fee_label" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee frontend label</label>
-                            <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/amex_payment_fee_label</config_path>
-                        </field>
-
-                        <!-- Maestro specific -->
-                        <field id="heading_maestro" translate="label" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Maestro Specific</label>
-                            <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
-                        </field>
-
-                        <field id="maestro_payment_fee" translate="label comment" type="text" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee</label>
-                            <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/maestro_payment_fee</config_path>
-                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
-                        </field>
-
-                        <field id="maestro_payment_fee_label" translate="label comment" type="text" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee frontend label</label>
-                            <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/maestro_payment_fee_label</config_path>
                         </field>
 
                         <!-- Mastercard specific -->
@@ -558,19 +539,6 @@
                             <config_path>payment/tig_buckaroo_creditcard/mastercard_unsecure_hold</config_path>
                         </field>
 
-                        <field id="mastercard_payment_fee" translate="label comment" type="text" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee</label>
-                            <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/mastercard_payment_fee</config_path>
-                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
-                        </field>
-
-                        <field id="mastercard_payment_fee_label" translate="label comment" type="text" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee frontend label</label>
-                            <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/mastercard_payment_fee_label</config_path>
-                        </field>
-
                         <!-- Visa specific -->
                         <field id="heading_visa" translate="label" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Visa Specific</label>
@@ -590,19 +558,6 @@
                             <comment><![CDATA[Hold orders which are not 3D Secure.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_creditcard/visa_unsecure_hold</config_path>
-                        </field>
-
-                        <field id="visa_payment_fee" translate="label comment" type="text" sortOrder="250" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee</label>
-                            <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/visa_payment_fee</config_path>
-                            <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
-                        </field>
-
-                        <field id="visa_payment_fee_label" translate="label comment" type="text" sortOrder="260" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>Payment fee frontend label</label>
-                            <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
-                            <config_path>payment/tig_buckaroo_creditcard/visa_payment_fee_label</config_path>
                         </field>
                     </group>
                 </group>
