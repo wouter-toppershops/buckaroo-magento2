@@ -41,7 +41,10 @@ namespace TIG\Buckaroo\Model\Method;
 
 class Mrcash extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_MRCASH_CODE = 'tig_buckaroo_mrcash';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_mrcash';
 
     const REFUND_EXTRA_FIELDS_XPATH = 'payment/tig_buckaroo_mrcash/refund_extra_fields';
 
@@ -56,7 +59,7 @@ class Mrcash extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_MRCASH_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool

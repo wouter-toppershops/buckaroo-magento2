@@ -48,6 +48,7 @@ class Transfer extends AbstractConfigProvider
 {
     const XPATH_TRANSFER_ACTIVE                 = 'payment/tig_buckaroo_transfer/active';
     const XPATH_TRANSFER_PAYMENT_FEE            = 'payment/tig_buckaroo_transfer/payment_fee';
+    const XPATH_TRANSFER_PAYMENT_FEE_LABEL      = 'payment/tig_buckaroo_transfer/payment_fee_label';
     const XPATH_TRANSFER_SEND_EMAIL             = 'payment/tig_buckaroo_transfer/send_email';
     const XPATH_TRANSFER_ACTIVE_STATUS          = 'payment/tig_buckaroo_transfer/active_status';
     const XPATH_TRANSFER_ORDER_STATUS_SUCCESS   = 'payment/tig_buckaroo_transfer/order_status_success';
@@ -63,19 +64,15 @@ class Transfer extends AbstractConfigProvider
             return [];
         }
 
-        $activeStatus = $this->getActiveStatus();
-        $orderStatusSuccess = $this->getOrderStatusSuccess();
-        $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Transfer::PAYMENT_METHOD_CODE);
 
         // @TODO: get banks dynamic
         return [
-            'active_status' => $activeStatus,
-            'order_status_success' => $orderStatusSuccess,
-            'order_status_failed' => $orderStatusFailed,
             'payment' => [
                 'buckaroo' => [
                     'transfer' => [
-                        'sendEmail' => (bool)$this->scopeConfig->getValue(self::XPATH_TRANSFER_SEND_EMAIL)
+                        'sendEmail' => (bool)$this->scopeConfig->getValue(self::XPATH_TRANSFER_SEND_EMAIL),
+                        'paymentFeeLabel' => $paymentFeeLabel
                     ]
                 ]
             ]
