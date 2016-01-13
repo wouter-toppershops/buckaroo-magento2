@@ -163,7 +163,8 @@ class Creditcard extends AbstractConfigProvider
     public function getCardName($cardType)
     {
         $config = $this->getConfig();
-        foreach ($config['payment']['buckaroo']['creditcards'] as $card) {
+
+        foreach ($config['payment']['buckaroo']['creditcard']['cards'] as $card) {
             if ($card['code'] == $cardType) {
                 return $card['name'];
             }
@@ -182,7 +183,7 @@ class Creditcard extends AbstractConfigProvider
     public function getCardCode($cardType)
     {
         $config = $this->getConfig();
-        foreach ($config['payment']['buckaroo']['creditcards'] as $card) {
+        foreach ($config['payment']['buckaroo']['creditcard']['cards'] as $card) {
             if ($card['name'] == $cardType) {
                 return $card['code'];
             }
