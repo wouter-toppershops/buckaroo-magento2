@@ -73,10 +73,11 @@ class CreditcardTest extends BaseTest
 
         $options = $this->object->getConfig();
 
-        $shouldReceive->times(count($options['payment']['buckaroo']['creditcards']));
+        $shouldReceive->times(count($options['payment']['buckaroo']['creditcard']['cards']));
 
         $this->assertTrue(array_key_exists('payment', $options));
         $this->assertTrue(array_key_exists('buckaroo', $options['payment']));
-        $this->assertTrue(array_key_exists('creditcards', $options['payment']['buckaroo']));
+        $this->assertTrue(array_key_exists('creditcard', $options['payment']['buckaroo']));
+        $this->assertTrue(array_key_exists('cards', $options['payment']['buckaroo']['creditcard']));
     }
 }

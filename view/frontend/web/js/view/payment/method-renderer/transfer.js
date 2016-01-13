@@ -43,20 +43,44 @@ define(
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/model/payment/additional-validators',
         'TIG_Buckaroo/js/action/place-order',
-        'ko'
+        'ko',
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/action/select-payment-method'
     ],
     function (
         $,
         Component,
         additionalValidators,
         placeOrderAction,
-        ko
+        ko,
+        checkoutData,
+        selectPaymentMethodAction
     ) {
         'use strict';
 
         return Component.extend({
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_transfer'
+            },
+            paymentFeeLabel : window.checkoutConfig.payment.buckaroo.transfer.paymentFeeLabel,
+
+            /**
+             * @override
+             */
+            initialize : function (options) {
+                if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                }
+
+                return this._super(options);
+            },
+
+            selectPaymentMethod: function() {
+                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+                return true;
             }
 
         });

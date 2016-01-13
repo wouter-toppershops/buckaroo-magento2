@@ -41,7 +41,10 @@ namespace TIG\Buckaroo\Model\Method;
 
 class Transfer extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_TRANSFER_CODE = 'tig_buckaroo_transfer';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_transfer';
 
     /**
      * @var string
@@ -54,7 +57,7 @@ class Transfer extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_TRANSFER_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool
