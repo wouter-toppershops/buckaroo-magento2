@@ -41,7 +41,10 @@ namespace TIG\Buckaroo\Model\Method;
 
 class Creditcard extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_CREDITCARD_CODE = 'tig_buckaroo_creditcard';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_creditcard';
 
     /**
      * @var string
@@ -54,7 +57,7 @@ class Creditcard extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_CREDITCARD_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool

@@ -41,7 +41,10 @@ namespace TIG\Buckaroo\Model\Method;
 
 class Paypal extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE = 'tig_buckaroo_paypal';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_paypal';
 
     /**
      * @var string
@@ -54,7 +57,7 @@ class Paypal extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_PAYPAL_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool

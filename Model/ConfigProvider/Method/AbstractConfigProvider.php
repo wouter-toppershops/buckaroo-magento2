@@ -69,18 +69,31 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
     protected $allowedCurrencies = null;
 
     /**
+     * @var \TIG\Buckaroo\Helper\PaymentFee
+     */
+    protected $paymentFeeHelper;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
+    protected $configProviderFactory;
+
+    /**
      * @param Repository                                         $assetRepo
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
+     * @param \TIG\Buckaroo\Helper\PaymentFee                    $paymentFeeHelper
      */
     public function __construct(
         \Magento\Framework\View\Asset\Repository $assetRepo,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Helper\PaymentFee $paymentFeeHelper
     ) {
         $this->assetRepo = $assetRepo;
         $this->scopeConfig = $scopeConfig;
         $this->configProviderFactory = $configProviderFactory;
+        $this->paymentFeeHelper = $paymentFeeHelper;
 
         if (!$this->allowedCurrencies) {
             $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
@@ -147,4 +160,13 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
         return $this->allowedCurrencies;
     }
 
+    /**
+     * @param string|bool $method
+     *
+     * @return string
+     */
+    public function getBuckarooPaymentFeeLabel($method = false)
+    {
+        return $this->paymentFeeHelper->getBuckarooPaymentFeeLabel($method);
+    }
 }

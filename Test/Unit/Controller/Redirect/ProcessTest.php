@@ -213,7 +213,7 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
         ]);
 
-        $this->configProviderFactory->shouldReceive('getOrderStatusPending');
+        $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn('tig_buckaroo_new');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
 
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();

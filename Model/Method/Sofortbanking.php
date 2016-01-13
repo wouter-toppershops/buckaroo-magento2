@@ -41,7 +41,10 @@ namespace TIG\Buckaroo\Model\Method;
 
 class Sofortbanking extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_SOFORTBANKING_CODE = 'tig_buckaroo_sofortbanking';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_sofortbanking';
 
     /**
      * @var string
@@ -54,7 +57,7 @@ class Sofortbanking extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_SOFORTBANKING_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool
