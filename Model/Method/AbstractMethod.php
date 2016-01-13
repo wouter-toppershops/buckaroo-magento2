@@ -96,32 +96,37 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var bool
      */
-    public $closeOrderTransaction = true;
+    public $closeOrderTransaction       = true;
 
     /**
      * @var bool
      */
-    public $closeAuthorizeTransaction = true;
+    public $closeAuthorizeTransaction   = true;
 
     /**
      * @var bool
      */
-    public $closeCaptureTransaction = true;
+    public $closeCaptureTransaction     = true;
 
     /**
      * @var bool
      */
-    public $closeRefundTransaction = true;
+    public $closeRefundTransaction      = true;
 
     /**
      * @var bool
      */
-    public $closeCancelTransaction = true;
+    public $closeCancelTransaction      = true;
 
     /**
      * @var bool|string
      */
-    public $orderPlaceRedirectUrl = true;
+    public $orderPlaceRedirectUrl       = true;
+
+    /**
+     * @var bool
+     */
+    protected $newStatusOnOrder         = false;
 
     /**
      * @var \Magento\Framework\App\Request\Http
@@ -253,6 +258,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if ($accountConfig->getActive() == 0) {
             return false;
         }
+
         $areaCode = $this->objectManager->get('Magento\Framework\App\State')->getAreaCode();
         if ('adminhtml' === $areaCode && $this->getConfigData('available_in_backend') == 0) {
             return false;
