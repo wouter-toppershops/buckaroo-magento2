@@ -65,20 +65,21 @@ class Creditcard extends AbstractConfigProvider
     const XPATH_CREDITCARD_ACTIVE_STATUS        = 'payment/tig_buckaroo_creditcard/active_status';
     const XPATH_CREDITCARD_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_creditcard/order_status_success';
     const XPATH_CREDITCARD_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_creditcard/order_status_failed';
+    const XPATH_CREDITCARD_ALLOWED_CREDITCARDS  = 'payment/tig_buckaroo_creditcard/allowed_creditcards';
 
     protected $issuers = [
         [
             'name' => 'American Express',
             'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
         ],
-        [
-            'name' => 'Carte Bancaire',
-            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
-        ],
-        [
-            'name' => 'Carte Bleue',
-            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
-        ],
+//        [
+//            'name' => 'Carte Bancaire',
+//            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
+//        ],
+//        [
+//            'name' => 'Carte Bleue',
+//            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
+//        ],
         [
             'name' => 'Maestro',
             'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,

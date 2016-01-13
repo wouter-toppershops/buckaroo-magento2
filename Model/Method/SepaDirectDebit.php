@@ -113,6 +113,11 @@ class SepaDirectDebit extends AbstractMethod
     // @codingStandardsIgnoreEnd
 
     /**
+     * @var bool
+     */
+    protected $newStatusOnOrder         = true;
+
+    /**
      * {@inheritdoc}
      */
     public function assignData(\Magento\Framework\DataObject $data)

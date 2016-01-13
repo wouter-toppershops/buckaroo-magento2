@@ -52,8 +52,7 @@ class Creditcard implements \Magento\Framework\Option\ArrayInterface
      */
     public function __construct(
         \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider
-    )
-    {
+    ) {
         $this->configProvider = $configProvider;
     }
 

@@ -111,6 +111,11 @@ class Transfer extends AbstractMethod
     // @codingStandardsIgnoreEnd
 
     /**
+     * @var bool
+     */
+    protected $newStatusOnOrder         = true;
+
+    /**
      * {@inheritdoc}
      */
     public function getOrderTransactionBuilder($payment)

@@ -153,6 +153,20 @@ class Creditcard extends AbstractMethod
     /**
      * {@inheritdoc}
      */
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        /** If there are no credit cards chosen, we can't be available */
+        $ccConfig = $this->configProviderMethodFactory->get('creditcard');
+        if (null === $ccConfig->getAllowedCreditcards()) {
+            return false;
+        }
+        /** Return the regular isAvailable result */
+        return parent::isAvailable($quote);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
