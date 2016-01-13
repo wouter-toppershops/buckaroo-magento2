@@ -50,7 +50,6 @@ class FeePercentageMode implements \Magento\Framework\Option\ArrayInterface
         return [
             ['value' => 'subtotal', 'label' => __('Subtotal')],
             ['value' => 'subtotal_incl_tax', 'label' => __('Subtotal incl. tax')],
-            ['value' => 'grandtotal', 'label' => __('Grand Total')]
         ];
     }
 }

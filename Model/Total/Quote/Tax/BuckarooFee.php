@@ -47,9 +47,14 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
     const CODE_QUOTE_GW = 'buckaroo_fee';
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
     protected $configProviderFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    protected $configProviderMethodFactory;
 
     /**
      * @var \Magento\Framework\Pricing\PriceCurrencyInterface
@@ -62,18 +67,21 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
     protected $helper;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
      * @param \TIG\Buckaroo\Helper\PaymentFee                   $helper
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \TIG\Buckaroo\Helper\PaymentFee $helper
     ) {
         $this->setCode('pretax_ buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
         $this->priceCurrency = $priceCurrency;
         $this->helper = $helper;
     }
