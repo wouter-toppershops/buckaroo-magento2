@@ -127,7 +127,7 @@ class Process extends \Magento\Framework\App\Action\Action
         /**
          * Check if there is a valid response. If not, redirect to home.
          */
-        if (count($this->response) == 0 || !array_key_exists('brq_statuscode', $this->response)) {
+        if (count($this->response) === 0 || !array_key_exists('brq_statuscode', $this->response)) {
             return $this->_redirect('/');
         }
 
@@ -150,8 +150,10 @@ class Process extends \Magento\Framework\App\Action\Action
                     $this->order->save();
                 }
 
-                // Send order confirmation mail
-                $this->orderSender->send($this->order, true);
+                // Send order confirmation mail if we're supposed to
+                if ($this->accountConfig->getInvoiceEmail() === "1") {
+                    $this->orderSender->send($this->order, true);
+                }
 
                 // Redirect to success page
                 $this->redirectSuccess();
@@ -261,5 +263,4 @@ class Process extends \Magento\Framework\App\Action\Action
 
         return $this->_redirect($url);
     }
-
 }
