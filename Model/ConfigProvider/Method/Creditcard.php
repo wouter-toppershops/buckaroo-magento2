@@ -124,23 +124,16 @@ class Creditcard extends AbstractConfigProvider
     public function getConfig()
     {
         $issuers = $this->formatIssuers();
-        $activeStatus = $this->getActiveStatus();
-        $orderStatusSuccess = $this->getOrderStatusSuccess();
-        $orderStatusFailed = $this->getOrderStatusFailed();
-        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Creditcard::PAYMENT_METHOD_CODE);
+        $paymentFeeLabel = $this
+            ->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Creditcard::PAYMENT_METHOD_CODE);
 
-        // @TODO: get banks dynamic
         return [
-            'active_status' => $activeStatus,
-            'order_status_success' => $orderStatusSuccess,
-            'order_status_failed' => $orderStatusFailed,
             'payment' => [
                 'buckaroo' => [
-                    'creditcards' => $issuers,
                     'creditcard' => [
+                        'cards' => $issuers,
                         'paymentFeeLabel' => $paymentFeeLabel,
                     ],
-                    'response' => [],
                 ],
             ],
         ];

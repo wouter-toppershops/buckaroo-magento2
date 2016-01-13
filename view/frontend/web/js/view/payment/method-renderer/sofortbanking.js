@@ -43,14 +43,18 @@ define(
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/model/payment/additional-validators',
         'TIG_Buckaroo/js/action/place-order',
-        'ko'
+        'ko',
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/action/select-payment-method'
     ],
     function (
         $,
         Component,
         additionalValidators,
         placeOrderAction,
-        ko
+        ko,
+        checkoutData,
+        selectPaymentMethodAction
     ) {
         'use strict';
 
@@ -59,6 +63,18 @@ define(
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_sofortbanking'
             },
             redirectAfterPlaceOrder: false,
+            paymentFeeLabel : window.checkoutConfig.payment.buckaroo.sofortbanking.paymentFeeLabel,
+
+            /**
+             * @override
+             */
+            initialize : function (options) {
+                if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                }
+
+                return this._super(options);
+            },
 
             /**
              * Place order.
@@ -95,6 +111,14 @@ define(
                 if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
                     window.location.replace(response.RequiredAction.RedirectURL);
                 }
+            },
+
+            selectPaymentMethod: function() {
+                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+                return true;
             }
         });
     }

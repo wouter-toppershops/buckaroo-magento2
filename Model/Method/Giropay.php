@@ -44,7 +44,10 @@ use Magento\Sales\Model\Order\Payment;
 
 class Giropay extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_GIROPAY_CODE = 'tig_buckaroo_giropay';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_giropay';
 
     /**
      * @var string
@@ -57,7 +60,7 @@ class Giropay extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_GIROPAY_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool

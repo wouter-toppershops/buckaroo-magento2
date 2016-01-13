@@ -114,23 +114,15 @@ class Ideal extends AbstractConfigProvider
         }
 
         $issuers = $this->formatIssuers();
-        $activeStatus = $this->getActiveStatus();
-        $orderStatusSuccess = $this->getOrderStatusSuccess();
-        $orderStatusFailed = $this->getOrderStatusFailed();
         $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Ideal::PAYMENT_METHOD_CODE);
 
-        // @TODO: get banks dynamic
         return [
-            'active_status' => $activeStatus,
-            'order_status_success' => $orderStatusSuccess,
-            'order_status_failed' => $orderStatusFailed,
             'payment' => [
                 'buckaroo' => [
                     'ideal' => [
                         'banks' => $issuers,
                         'paymentFeeLabel' => $paymentFeeLabel,
                     ],
-                    'response' => [],
                 ],
             ],
         ];

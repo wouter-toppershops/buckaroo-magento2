@@ -39,15 +39,25 @@
 /*global define*/
 define(
     [
-        'ko',
         'jquery',
         'Magento_Checkout/js/view/payment/default',
-        'Magento_Checkout/js/model/quote',
         'Magento_Checkout/js/model/payment/additional-validators',
-        'jquery/validate',
-        'mage/translate'
+        'TIG_Buckaroo/js/action/place-order',
+        'ko',
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Checkout/js/model/quote',
     ],
-    function (ko, $, Component, quote, additionalValidators) {
+        function (
+            $,
+            Component,
+            additionalValidators,
+            placeOrderAction,
+            ko,
+            checkoutData,
+            selectPaymentMethodAction,
+            quote
+        ) {
         'use strict';
 
         /**
@@ -102,6 +112,18 @@ define(
                 bicnumber: '',
                 minimumWords: 2
             },
+            paymentFeeLabel : window.checkoutConfig.payment.buckaroo.sepadirectdebit.paymentFeeLabel,
+
+            /**
+             * @override
+             */
+            initialize : function (options) {
+                if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                }
+
+                return this._super(options);
+            },
 
             initObservable: function () {
                 this._super().observe(['bankaccountholder', 'bankaccountnumber', 'bicnumber', 'minimumWords']);
@@ -153,6 +175,14 @@ define(
 
             validate: function () {
                 return $('.' + this.getCode() + ' [data-validate]').valid();
+            },
+
+            selectPaymentMethod: function() {
+                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+                return true;
             },
 
             getData: function() {

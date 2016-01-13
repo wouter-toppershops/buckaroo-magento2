@@ -48,6 +48,10 @@
                 <item name="buckaroo_config_provider3" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</item>
                 <item name="buckaroo_config_provider4" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
                 <item name="buckaroo_config_provider5" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Paypal</item>
+                <item name="buckaroo_config_provider6" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\SepaDirectDebit</item>
+                <item name="buckaroo_config_provider7" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Mrcash</item>
+                <item name="buckaroo_config_provider8" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Sofortbanking</item>
+                <item name="buckaroo_config_provider9" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Giropay</item>
             </argument>
         </arguments>
     </type>

@@ -47,6 +47,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 class Mrcash extends AbstractConfigProvider
 {
     const XPATH_MRCASH_PAYMENT_FEE              = 'payment/tig_buckaroo_mrcash/payment_fee';
+    const XPATH_MRCASH_PAYMENT_FEE_LABEL        = 'payment/tig_buckaroo_mrcash/payment_fee_label';
     const XPATH_MRCASH_ACTIVE_STATUS            = 'payment/tig_buckaroo_mrcash/active_status';
     const XPATH_MRCASH_ORDER_STATUS_SUCCESS     = 'payment/tig_buckaroo_mrcash/order_status_success';
     const XPATH_MRCASH_ORDER_STATUS_FAILED      = 'payment/tig_buckaroo_mrcash/order_status_failed';
@@ -57,15 +58,16 @@ class Mrcash extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        $activeStatus = $this->getActiveStatus();
-        $orderStatusSuccess = $this->getOrderStatusSuccess();
-        $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Mrcash::PAYMENT_METHOD_CODE);
 
-        // @TODO: get banks dynamic
         return [
-            'active_status' => $activeStatus,
-            'order_status_success' => $orderStatusSuccess,
-            'order_status_failed' => $orderStatusFailed,
+            'payment' => [
+                'buckaroo' => [
+                    'mrcash' => [
+                        'paymentFeeLabel' => $paymentFeeLabel,
+                    ],
+                ],
+            ],
         ];
     }
 

@@ -47,6 +47,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 class SepaDirectDebit extends AbstractConfigProvider
 {
     const XPATH_SEPADIRECTDEBIT_PAYMENT_FEE             = 'payment/tig_buckaroo_sepadirectdebit/payment_fee';
+    const XPATH_SEPADIRECTDEBIT_PAYMENT_FEE_LABEL       = 'payment/tig_buckaroo_sepadirectdebit/payment_fee_label';
     const XPATH_SEPADIRECTDEBIT_ACTIVE_STATUS           = 'payment/tig_buckaroo_sepadirectdebit/active_status';
     const XPATH_SEPADIRECTDEBIT_ORDER_STATUS_SUCCESS    = 'payment/tig_buckaroo_sepadirectdebit/order_status_success';
     const XPATH_SEPADIRECTDEBIT_ORDER_STATUS_FAILED     = 'payment/tig_buckaroo_sepadirectdebit/order_status_failed';
@@ -57,15 +58,18 @@ class SepaDirectDebit extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        $activeStatus = $this->getActiveStatus();
-        $orderStatusSuccess = $this->getOrderStatusSuccess();
-        $orderStatusFailed = $this->getOrderStatusFailed();
+        $paymentFeeLabel = $this
+            ->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\SepaDirectDebit::PAYMENT_METHOD_CODE);
 
         // @TODO: get banks dynamic
         return [
-            'active_status' => $activeStatus,
-            'order_status_success' => $orderStatusSuccess,
-            'order_status_failed' => $orderStatusFailed,
+            'payment' => [
+                'buckaroo' => [
+                    'sepadirectdebit' => [
+                        'paymentFeeLabel' => $paymentFeeLabel,
+                    ],
+                ],
+            ],
         ];
     }
 

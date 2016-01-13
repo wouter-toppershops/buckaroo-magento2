@@ -43,7 +43,10 @@ use Magento\Sales\Model\Order\Payment;
 
 class SepaDirectDebit extends AbstractMethod
 {
-    const PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE = 'tig_buckaroo_sepadirectdebit';
+    /**
+     * Payment Code
+     */
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_sepadirectdebit';
 
     /**
      * @var string
@@ -56,7 +59,7 @@ class SepaDirectDebit extends AbstractMethod
      *
      * @var string
      */
-    protected $_code = self::PAYMENT_METHOD_BUCKAROO_SEPA_DIRECT_DEBIT_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool

@@ -142,8 +142,6 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         $method = false;
         $label = false;
 
-        \Log::add(is_string($dataObject));
-
         /** Parse data object for payment method */
         if ($dataObject instanceof \Magento\Sales\Model\Order) {
             $method = $dataObject->getPayment()->getMethod();
@@ -155,28 +153,23 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
             $method = $dataObject;
         }
 
-        \Log::add($method);
-
         /** If a method is found, and the method has a config provider, try to get the label from config */
         if ($method && $this->configProviderMethodFactory->has($method)) {
             /** @noinspection PhpUndefinedMethodInspection */
             $label = $this->configProviderMethodFactory->get($method)->getPaymentFeeLabel();
         }
-        \Log::add($label);
 
         /** If no label is set yet, get the default configurable label */
         if (!$label) {
             /** @noinspection PhpUndefinedMethodInspection */
             $label = $this->configProviderFactory->get('account')->getPaymentFeeLabel();
         }
-        \Log::add($label);
 
         /** If no label is set yet, return a default label */
         if (!$label) {
             /** @noinspection PhpUndefinedMethodInspection */
             $label = __('Buckaroo Fee');
         }
-        \Log::add($label);
 
         return $label;
     }
