@@ -75,13 +75,21 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $accountConfig;
 
     /**
-     * @param \Magento\Framework\App\Action\Context      $context
-     * @param \TIG\Buckaroo\Helper\Data                  $helper
-     * @param \Magento\Checkout\Model\Cart               $cart
-     * @param \Magento\Sales\Model\Order                 $order
-     * @param \Magento\Quote\Model\Quote                 $quote
-     * @param \TIG\Buckaroo\Debug\Debugger               $debugger
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $orderSender;
+
+    /**
+     * @param \Magento\Framework\App\Action\Context                 $context
+     * @param \TIG\Buckaroo\Helper\Data                             $helper
+     * @param \Magento\Checkout\Model\Cart                          $cart
+     * @param \Magento\Sales\Model\Order                            $order
+     * @param \Magento\Quote\Model\Quote                            $quote
+     * @param \TIG\Buckaroo\Debug\Debugger                          $debugger
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderSender
+     *
+     * @throws \TIG\Buckaroo\Exception
      */
     public function __construct(
         \Magento\Framework\App\Action\Context $context,
@@ -90,7 +98,8 @@ class Process extends \Magento\Framework\App\Action\Action
         \Magento\Sales\Model\Order $order,
         \Magento\Quote\Model\Quote $quote,
         \TIG\Buckaroo\Debug\Debugger $debugger,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
     ) {
         parent::__construct($context);
         $this->helper                   = $helper;
@@ -99,6 +108,7 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->quote                    = $quote;
         $this->debugger                 = $debugger;
         $this->configProviderFactory    = $configProviderFactory;
+        $this->orderSender              = $orderSender;
 
         $this->accountConfig = $this->configProviderFactory->get('account');
     }
@@ -137,6 +147,9 @@ class Process extends \Magento\Framework\App\Action\Action
                 $pendingStatus = $this->accountConfig->getOrderStatusPending();
                 $this->order->setStatus($pendingStatus);
                 $this->order->save();
+
+                // Send order confirmation mail
+                $this->orderSender->send($this->order, true);
 
                 // Redirect to success page
                 $this->redirectSuccess();
