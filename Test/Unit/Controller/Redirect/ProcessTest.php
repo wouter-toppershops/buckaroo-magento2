@@ -113,7 +113,6 @@ class ProcessTest extends BaseTest
 
         $this->configProviderFactory = m::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class)->makePartial();
         $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn(true);
 
         $this->context = $this->objectManagerHelper->getObject(Context::class, [
             'request' => $this->request,
@@ -215,6 +214,7 @@ class ProcessTest extends BaseTest
 
         $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn('tig_buckaroo_new');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
+        $this->configProviderFactory->shouldReceive('getInvoiceEmail')->andReturn('0');
 
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturn(true);
