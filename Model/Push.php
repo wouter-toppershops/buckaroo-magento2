@@ -361,6 +361,7 @@ class Push implements PushInterface
 
         $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
+        /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
         $paymentMethod = $this->order->getPayment()->getMethodInstance();
 
         if ($paymentMethod->getConfigData('payment_action') == 'authorize') {
