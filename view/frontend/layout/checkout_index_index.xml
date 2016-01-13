@@ -44,6 +44,10 @@
     </head>
 
     <body>
+        <referenceBlock name="content">
+            <block class="TIG\Buckaroo\Block\Frontend\ThemeBodyClass" name="buckaroo.theme-body-class" />
+        </referenceBlock>
+
         <referenceBlock name="checkout.root">
             <arguments>
                 <argument name="jsLayout" xsi:type="array">
