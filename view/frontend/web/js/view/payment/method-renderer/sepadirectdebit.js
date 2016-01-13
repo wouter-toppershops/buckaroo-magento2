@@ -159,9 +159,9 @@ define(
                 this.accountNumberIsValid = ko.computed( function () {
                     if (this.isnl())
                     {
-                        return (this.bankaccountholder().length >= this.minimumWords() && this.bankaccountnumber().length > 0);
+                        return (this.bankaccountholder().length >= this.minimumWords() && this.bankaccountnumber().length > 0 && this.validate());
                     } else {
-                        return (this.bankaccountholder().length >= this.minimumWords() && this.bicnumber().length > 0);
+                        return (this.bankaccountholder().length >= this.minimumWords() && this.bicnumber().length > 0 && this.validate());
 
                     }
                 }, this);

@@ -109,7 +109,7 @@ define(
                  */
 
                 this.buttoncheck = ko.computed( function () {
-                    return this.bicnumber().length > 0;
+                    return this.bicnumber().length > 0 && this.validate();
                 }, this);
 
                 return this;
