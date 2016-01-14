@@ -42,22 +42,17 @@ namespace TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection;
 class Order
 {
     /**
-     * Xpath to the paypal seller's protection setting.
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
      */
-    const XPATH_PAYPAL_SELLERS_PROTECTION = 'payment/tig_buckaroo_paypal/sellers_protection';
+    protected $configProviderMethodFactory;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory  $configProviderMethodFactory
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
     ) {
-        $this->scopeConfig = $scopeConfig;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
     }
 
     /**
@@ -70,11 +65,12 @@ class Order
         \TIG\Buckaroo\Model\Method\Paypal $paymentMethod,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $result
     ) {
-        if (!(bool) $this->scopeConfig->getValue(
-            self::XPATH_PAYPAL_SELLERS_PROTECTION,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        )
-        ) {
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $sellersProtectionActive = (bool) $this->configProviderMethodFactory
+            ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE)
+            ->getSellersProtection();
+        if (!$sellersProtectionActive) {
             return $result;
         }
 
@@ -85,6 +81,7 @@ class Order
         $shippingAddress = $order->getShippingAddress();
 
         $services = $result->getServices();
+
         $services = [
             $services,
             [
@@ -97,7 +94,7 @@ class Order
                         'Name' => 'Name',
                     ],
                     [
-                        '_' => $shippingAddress->getStreet(),
+                        '_' => $shippingAddress->getStreetLine(1),
                         'Name' => 'Street1',
                     ],
                     [
@@ -113,7 +110,7 @@ class Order
                         'Name' => 'Country',
                     ],
                     [
-                        '_' => 'FALSE',
+                        '_' => 'TRUE',
                         'Name' => 'AddressOverride',
                     ],
                 ],

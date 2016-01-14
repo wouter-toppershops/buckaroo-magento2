@@ -53,6 +53,7 @@ class Paypal extends AbstractConfigProvider
     const XPATH_PAYPAL_ORDER_STATUS_SUCCESS     = 'payment/tig_buckaroo_paypal/order_status_success';
     const XPATH_PAYPAL_ORDER_STATUS_FAILED      = 'payment/tig_buckaroo_paypal/order_status_failed';
     const XPATH_PAYPAL_AVAILABLE_IN_BACKEND     = 'payment/tig_buckaroo_paypal/available_in_backend';
+    const XPATH_PAYPAL_SELLERS_PROTECTION       = 'payment/tig_buckaroo_paypal/sellers_protection';
 
     /**
      * @return array|void
