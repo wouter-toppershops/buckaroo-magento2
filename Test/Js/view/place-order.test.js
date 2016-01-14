@@ -1,4 +1,3 @@
-<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -25,53 +24,39 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+//requirejs.config({
+//    baseUrl: '../../view/frontend/web/js',
+//    paths: {
+//        'ko': '../../../../../../../lib/web/knockoutjs/knockout',
+//        'jquery': '../../../../../../../lib/web/jquery',
+//        'Magento_Checkout/js/model/quote': '../../../../../../../app/code/Magento/Checkout/view/frontend/web/js/model/quote',
+//        'Magento_Checkout/js/model/url-builder': '../../../../../../../app/code/Magento/Checkout/view/frontend/web/js/model/url-builder',
+//    }
+//});
 
-namespace TIG\Buckaroo\Observer;
+/**
+ * The + is to make the IDE recognize the path.
+ */
+define(['/base' + '/vendor/tig/buckaroo/view/frontend/web/js/action/place-order.js'], function (test) {
+//define([], function () {
+    console.log('test');
+});
 
-class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
-{
-    /** @var \TIG\Buckaroo\Model\ConfigProvider\Account */
-    protected $account;
-
-    /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Account $account
-     */
-    public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Account $account
-    ) {
-        $this->account = $account;
-    }
-
-    /**
-     * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return void
-     */
-    public function execute(\Magento\Framework\Event\Observer $observer)
-    {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $payment \Magento\Sales\Model\Order\Payment */
-        $payment = $observer->getPayment();
-
-        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
-            return;
-        }
-
-        $order = $payment->getOrder();
-        $newStatus = $this->account->getOrderStatusNew();
-        if ($newStatus) {
-            $order->setStatus($newStatus);
-        }
-    }
-}
+//requirejs(['action/place-order'], function (placeOrder) {
+//    describe('do something', function () {
+//        it('does something', function () {
+//                console.log(placeOrder);
+//        });
+//    });
+//});

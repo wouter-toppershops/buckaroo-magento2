@@ -25,53 +25,34 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Block\Frontend;
 
-namespace TIG\Buckaroo\Observer;
-
-class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
+class ThemeBodyClass extends \Magento\Framework\View\Element\Template
 {
-    /** @var \TIG\Buckaroo\Model\ConfigProvider\Account */
-    protected $account;
-
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Account $account
+     * @param \Magento\Backend\Block\Template\Context $context
+     * @param array                                   $data
      */
-    public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Account $account
-    ) {
-        $this->account = $account;
-    }
-
-    /**
-     * @param \Magento\Framework\Event\Observer $observer
-     *
-     * @return void
-     */
-    public function execute(\Magento\Framework\Event\Observer $observer)
+    public function __construct(\Magento\Backend\Block\Template\Context $context, array $data = [])
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $payment \Magento\Sales\Model\Order\Payment */
-        $payment = $observer->getPayment();
+        parent::__construct($context, $data);
 
-        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
-            return;
-        }
+        $this->_design = $context->getDesignPackage();
 
-        $order = $payment->getOrder();
-        $newStatus = $this->account->getOrderStatusNew();
-        if ($newStatus) {
-            $order->setStatus($newStatus);
-        }
+        $themeCode = $this->_design->getDesignTheme()->getCode();
+        $cssClass = preg_replace('/\W+/', '-', strtolower(strip_tags($themeCode)));
+
+        $this->pageConfig->addBodyClass($cssClass);
     }
 }

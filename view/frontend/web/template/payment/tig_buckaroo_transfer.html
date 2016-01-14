@@ -9,19 +9,23 @@
 
     <div class="payment-method-content">
 
-        <div class="payment-method-second-col billing-address-form">
-            <!-- ko if: checkoutConfig.payment.buckaroo.transfer.sendEmail -->
-                <span data-bind="i18n : 'You will receive an email with further payment instructions when you place your order.'"></span>
-            <!-- /ko -->
-            <!-- ko ifno: checkoutConfig.payment.buckaroo.transfer.sendEmail -->
-                <!-- @todo: What happens when the sendEmail option is set to false? -->
-            <!-- /ko -->
-        </div>
-
         <div class="payment-method-billing-address">
             <!-- ko foreach: $parent.getRegion(getBillingAddressFormName()) -->
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
+        </div>
+
+        <div class="payment-method-second-col billing-address-form">
+            <div class="fieldset payment">
+                <div class="field" >
+                    <!-- ko if: checkoutConfig.payment.buckaroo.transfer.sendEmail -->
+                        <span class="label-style" data-bind="i18n : 'You will receive an email with further payment instructions when you place your order.'"></span>
+                    <!-- /ko -->
+                    <!-- ko ifno: checkoutConfig.payment.buckaroo.transfer.sendEmail -->
+                        <!-- @todo: What happens when the sendEmail option is set to false? -->
+                    <!-- /ko -->
+                </div>
+            </div>
         </div>
 
         <div class="actions-toolbar">

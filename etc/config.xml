@@ -112,7 +112,7 @@
                 <mastercard_payment_fee_label>Fee</mastercard_payment_fee_label>
                 <visa_payment_fee_label>Fee</visa_payment_fee_label>
                 <group>tig_buckaroo</group>
-                <payment_action>authorize</payment_action>
+                <payment_action>order</payment_action>
                 <available_in_backend>0</available_in_backend>
             </tig_buckaroo_creditcard>
 
