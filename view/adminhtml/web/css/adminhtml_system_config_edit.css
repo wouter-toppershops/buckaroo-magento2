@@ -1,3 +1,15 @@
+/* ==================== Buckaroo / TIG -  Navigation Logo - Top Menu ==================== */
+.buckaroo-config-page .page-main-actions .page-actions._fixed .page-actions-inner:after {
+    background-image: url(../images/buckaroo_config_logo.png) !important;
+    background-repeat: no-repeat;
+    content: ' ';
+    width: 160px;
+    float: right;
+    height: 30px;
+    margin-top: 10px;
+    background-size: auto 30px;
+}
+
 /* ==================== Buckaroo / TIG -  Navigation Logo - Left Menu ==================== */
 
 .buckaroo-section .admin__page-nav-link:before {
