@@ -57,19 +57,7 @@ class Order extends AbstractTransactionBuilder
             $ip = $_SERVER['SERVER_ADDR'];
         }
 
-        // By default test mode is off
-        $testMode = 0;
-        // First check the extension's own setting, which is overruling if set to test
-        if ($accountConfig->getActive() == "1") {
-            $testMode = 1;
-            \Log::add('Buckaroo is set to test mode: ' . $accountConfig->getActive());
-        } else {
-            // The extension itself isn't set to test, so get the method
-            \Log::add('Buckaroo is not set to test mode: ' . $accountConfig->getActive());
-        }
-
         $body = [
-            'test' => $testMode,
             'Currency' => $order->getOrderCurrencyCode(),
             'AmountDebit' => $order->getBaseGrandTotal(),
             'AmountCredit' => 0,

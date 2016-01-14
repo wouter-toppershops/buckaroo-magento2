@@ -106,7 +106,7 @@ class Push
                     "Merchant is protected by PayPal Seller Protection Policy for both Unauthorized Payment and Item" .
                     " Not Received."
                 );
-
+                
                 $status = $this->scopeConfig->getValue(
                     self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ELIGIBLE,
                     \Magento\Store\Model\ScopeInterface::SCOPE_STORE
