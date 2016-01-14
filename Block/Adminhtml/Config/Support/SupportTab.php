@@ -47,6 +47,29 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
     protected $_template = 'supportTab.phtml';
 
     /**
+     * @var \Magento\Framework\Setup\ModuleContextInterface
+     */
+    protected $moduleContext;
+
+    /**
+     * Override the parent constructor to require our own dependencies.
+     *
+     * @param \Magento\Framework\View\Element\Template\Context $context
+     * @param \Magento\Framework\Module\ModuleResource         $moduleContext
+     * @param array                                            $data
+     */
+    public function __construct(
+        \Magento\Framework\View\Element\Template\Context $context,
+        \Magento\Framework\Module\ModuleResource $moduleContext,
+        array $data = []
+    )
+    {
+        parent::__construct($context, $data);
+
+        $this->moduleContext = $moduleContext;
+    }
+
+    /**
      * @param AbstractElement $element
      *
      * @return string
@@ -56,5 +79,17 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
         $this->setElement($element);
 
         return $this->toHtml();
+    }
+
+    /**
+     * Retrieve the version number from the database.
+     *
+     * @return bool|false|string
+     */
+    public function getVersionNumber()
+    {
+        $version = $this->moduleContext->getDbVersion('TIG_Buckaroo');
+
+        return $version;
     }
 }
