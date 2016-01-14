@@ -817,15 +817,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             ]
         );
 
-        \Log::add('--[ ' . $payment->getMethod() . ' ]------------------------------------');
-
-        $accountConfig = $this->configProviderFactory->get('account');
-        if (!$this->usesRedirect && $accountConfig->getInvoiceEmail() === "1") {
-            $orderSender = $this->objectManager->get('\Magento\Sales\Model\Order\Email\Sender\OrderSender');
-            \Log::add('SEND EMAIL');
-            \Log::add($response[0]->Invoice);
-        }
-
         return $this;
     }
 
