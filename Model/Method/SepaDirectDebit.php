@@ -115,7 +115,7 @@ class SepaDirectDebit extends AbstractMethod
     /**
      * @var bool
      */
-    protected $newStatusOnOrder         = true;
+    protected $usesRedirect            = false;
 
     /**
      * {@inheritdoc}

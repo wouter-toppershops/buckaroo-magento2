@@ -126,7 +126,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var bool
      */
-    protected $newStatusOnOrder         = false;
+    protected $usesRedirect            = true;
 
     /**
      * @var \Magento\Framework\App\Request\Http
@@ -253,6 +253,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
+        $invoice = $this->objectManager->get('\Magento\Sales\Order\Invoice');
+
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
         if ($accountConfig->getActive() == 0) {
@@ -797,6 +799,15 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
                 'response' => $response
             ]
         );
+
+        \Log::add('--[ ' . $payment->getMethod() . ' ]------------------------------------');
+
+        $accountConfig = $this->configProviderFactory->get('account');
+        if (!$this->usesRedirect && $accountConfig->getInvoiceEmail() === "1") {
+            $orderSender = $this->objectManager->get('\Magento\Sales\Model\Order\Email\Sender\OrderSender');
+            \Log::add('SEND EMAIL');
+            \Log::add($response[0]->Invoice);
+        }
 
         return $this;
     }
