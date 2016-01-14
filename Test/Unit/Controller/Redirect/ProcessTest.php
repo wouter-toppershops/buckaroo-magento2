@@ -155,6 +155,7 @@ class ProcessTest extends BaseTest
         ]);
 
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
+        $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn(true);
 
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(false);
@@ -164,6 +165,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('getState')->once()->andReturn('!canceled');
         $this->order->shouldReceive('canCancel')->once()->andReturn(true);
         $this->order->shouldReceive('cancel')->once()->andReturnSelf();
+        $this->order->shouldReceive('save')->once()->andReturnSelf();
 
         $this->messageManager->shouldReceive('addErrorMessage');
 
@@ -183,6 +185,7 @@ class ProcessTest extends BaseTest
         ]);
 
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
+        $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn(true);
 
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(true);

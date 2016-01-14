@@ -233,10 +233,17 @@ class Process extends \Magento\Framework\App\Action\Action
             return true;
         }
 
-        if ($this->order->canCancel()) {
-            $this->order->cancel();
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!$this->accountConfig->getCancelOnFailed()) {
             return true;
         }
+
+        if ($this->order->canCancel()) {
+            $this->order->cancel();
+            $this->order->save();
+            return true;
+        }
+
         return false;
     }
 
@@ -247,6 +254,7 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectSuccess()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $url = $this->accountConfig->getSuccessRedirect();
 
         return $this->_redirect($url);
@@ -259,6 +267,7 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectFailure()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $url = $this->accountConfig->getFailureRedirect();
 
         return $this->_redirect($url);
