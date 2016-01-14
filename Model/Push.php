@@ -354,13 +354,18 @@ class Push implements PushInterface
 
         $amount = $this->order->getBaseGrandTotal();
 
-        $description  = 'Payment status : <strong>'.$message ."</strong><br/>";
-        $description .= 'Total amount of '. $this->order->getBaseCurrency()->formatTxt($amount). ' has been paid';
-
-        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
-
         /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
         $paymentMethod = $this->order->getPayment()->getMethodInstance();
+        if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
+            $description = 'Payment status : <strong>' . $message . "</strong><br/>";
+            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
+        } else {
+            $description = 'Authorization status : <strong>' . $message . "</strong><br/>";
+            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been ' .
+                'authorized. Please create an invoice to capture the authorized amount.';
+        }
+
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
         if ($paymentMethod->getConfigData('payment_action') == 'authorize') {
             return true;

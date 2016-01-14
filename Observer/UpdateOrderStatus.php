@@ -70,7 +70,8 @@ class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
 
         $order = $payment->getOrder();
         $newStatus = $this->account->getOrderStatusNew();
-
-        $order->setStatus($newStatus);
+        if ($newStatus) {
+            $order->setStatus($newStatus);
+        }
     }
 }

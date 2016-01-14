@@ -223,6 +223,25 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * @return bool
+     */
+    public function canRefund()
+    {
+        if (!parent::canRefund()) {
+            return false;
+        }
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
+        $refundConfig = $this->configProviderFactory->get('refund');
+
+        if ($refundConfig->getEnabled()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * @param \Magento\Framework\DataObject $data
      *
      * @return $this

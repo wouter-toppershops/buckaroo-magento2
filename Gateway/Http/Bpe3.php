@@ -118,11 +118,10 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
      * @return array
-     * @throws \Exception
+     * @throws \Exception|\TIG\Buckaroo\Exception
      */
     public function refund(Transaction $transaction)
     {
-
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
         $refundConfig = $this->configProviderFactory->get('refund');
 
@@ -131,7 +130,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
         }
 
         $this->debugger->addToMessage('Failed to refund because the configuration is set to disabled')->log();
-        return false;
+        throw new \TIG\Buckaroo\Exception(__("Online refunds are currently disabled for Buckaroo payment methods."));
     }
 
     /**
