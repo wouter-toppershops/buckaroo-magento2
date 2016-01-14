@@ -126,7 +126,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @var bool
      */
-    protected $newStatusOnOrder         = false;
+    protected $usesRedirect            = true;
 
     /**
      * @var \Magento\Framework\App\Request\Http
