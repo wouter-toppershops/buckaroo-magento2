@@ -36,60 +36,28 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Model\Config\Source;
 
-namespace TIG\Buckaroo\Block\Adminhtml\Config\Support;
-
-use Magento\Framework\Data\Form\Element\AbstractElement;
-use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
-
-class SupportTab extends \Magento\Framework\View\Element\Template implements RendererInterface
+class PaymentFlow implements \Magento\Framework\Option\ArrayInterface
 {
-    protected $_template = 'supportTab.phtml';
-
     /**
-     * @var \Magento\Framework\Setup\ModuleContextInterface
-     */
-    protected $moduleContext;
-
-    /**
-     * Override the parent constructor to require our own dependencies.
+     * Options getter
      *
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Framework\Module\ModuleResource         $moduleContext
-     * @param array                                            $data
+     * @return array
      */
-    public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Framework\Module\ModuleResource $moduleContext,
-        array $data = []
-    )
+    public function toOptionArray()
     {
-        parent::__construct($context, $data);
+        $options = [
+            [
+                'value' => 'order',
+                'label' => __("Combined")
+            ],
+            [
+                'value' => 'authorize',
+                'label' => __("Separate authorize and capture"),
+            ],
+        ];
 
-        $this->moduleContext = $moduleContext;
-    }
-
-    /**
-     * @param AbstractElement $element
-     *
-     * @return string
-     */
-    public function render(AbstractElement $element)
-    {
-        $this->setElement($element);
-
-        return $this->toHtml();
-    }
-
-    /**
-     * Retrieve the version number from the database.
-     *
-     * @return bool|false|string
-     */
-    public function getVersionNumber()
-    {
-        $version = $this->moduleContext->getDbVersion('TIG_Buckaroo');
-
-        return $version;
+        return $options;
     }
 }
