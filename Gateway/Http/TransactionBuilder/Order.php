@@ -58,7 +58,6 @@ class Order extends AbstractTransactionBuilder
         }
 
         $body = [
-            'test' => '1',
             'Currency' => $order->getOrderCurrencyCode(),
             'AmountDebit' => $order->getBaseGrandTotal(),
             'AmountCredit' => 0,
