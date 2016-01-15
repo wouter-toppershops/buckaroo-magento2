@@ -56,7 +56,7 @@ class PaymentFee extends \Magento\Framework\App\Config\Value
         $withoutLastChar = substr($value, 0, -1);
 
         if (!empty($value) && !is_numeric(($onlyLastChar == '%' ? $withoutLastChar : $value))) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Please enter a valid number: "%1".', $value));
+            throw new \Magento\Framework\Exception\LocalizedException(__("Please enter a valid number: '%1'.", $value));
         }
 
         return parent::save();

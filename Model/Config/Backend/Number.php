@@ -58,7 +58,7 @@ class Number extends \Magento\Framework\App\Config\Value
         }
 
         if (!ctype_digit($value) || $value < 0) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Please enter a valid number: "%1".', $value));
+            throw new \Magento\Framework\Exception\LocalizedException(__("Please enter a valid number: '%1'.", $value));
         }
 
         return parent::save();
