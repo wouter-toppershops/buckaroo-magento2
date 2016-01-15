@@ -194,10 +194,6 @@ class Process extends \Magento\Framework\App\Action\Action
                     $this->debugger->log('Could not recreate the quote.', \TIG\Buckaroo\Debug\Logger::ERROR);
                 }
 
-                $failedStatus = $this->accountConfig->getOrderStatusFailed();
-                $this->order->setStatus($failedStatus);
-                $this->order->save();
-
                 if (!$this->cancelOrder()) {
                     $this->debugger->log('Could not cancel the order.', \TIG\Buckaroo\Debug\Logger::ERROR);
                 }
@@ -259,6 +255,8 @@ class Process extends \Magento\Framework\App\Action\Action
 
         if ($this->order->canCancel()) {
             $this->order->cancel();
+            $failedStatus = $this->accountConfig->getOrderStatusFailed();
+            $this->order->setStatus($failedStatus);
             $this->order->save();
             return true;
         }

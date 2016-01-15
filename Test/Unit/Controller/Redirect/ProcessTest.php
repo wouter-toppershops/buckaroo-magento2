@@ -154,8 +154,11 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => null
         ]);
 
+        $failureStatus = 'failure';
+
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
         $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn(true);
+        $this->configProviderFactory->shouldReceive('getOrderStatusFailed')->andReturn($failureStatus);
 
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(false);
@@ -165,6 +168,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('getState')->once()->andReturn('!canceled');
         $this->order->shouldReceive('canCancel')->once()->andReturn(true);
         $this->order->shouldReceive('cancel')->once()->andReturnSelf();
+        $this->order->shouldReceive('setStatus')->once()->with($failureStatus)->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
 
         $this->messageManager->shouldReceive('addErrorMessage');
@@ -215,9 +219,12 @@ class ProcessTest extends BaseTest
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
         ]);
 
+        $successStatus = 'success';
+
         $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn('tig_buckaroo_new');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
         $this->configProviderFactory->shouldReceive('getInvoiceEmail')->andReturn('0');
+        $this->configProviderFactory->shouldReceive('getOrderStatusSuccess')->andReturn($successStatus);
 
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturn(true);
