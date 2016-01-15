@@ -42,10 +42,4 @@
     <head>
          <css src="TIG_Buckaroo::css/sales_styles.css" />
     </head>
-
-    <body>
-        <referenceBlock name="creditmemo_totals">
-            <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Totals" name="buckaroo_fee"/>
-        </referenceBlock>
-    </body>
 </page>
