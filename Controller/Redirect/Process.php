@@ -142,30 +142,19 @@ class Process extends \Magento\Framework\App\Action\Action
 
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
-                //set the 'Success status' here
-                $successStatus = $this->accountConfig->getOrderStatusSuccess();
-                if ($successStatus) {
-                    $this->order->setStatus($successStatus);
-                    $this->order->save();
-                }
-
-                // Send order confirmation mail if we're supposed to
-                if ($this->accountConfig->getOrderConfirmationEmail() === "1") {
-                    $this->orderSender->send($this->order, true);
-                }
-
-                // Redirect to success page
-                $this->redirectSuccess();
-                break;
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
-                // Set the 'Pending payment status' here
-                $pendingStatus = $this->accountConfig->getOrderStatusPending();
-                if ($pendingStatus) {
-                    $this->order->setStatus($pendingStatus);
-                    $this->order->save();
+                if ($this->order->canInvoice()) {
+                    // Set the 'Pending payment status' here
+                    /** @noinspection PhpUndefinedMethodInspection */
+                    $pendingStatus = $this->accountConfig->getOrderStatusPending();
+                    if ($pendingStatus) {
+                        $this->order->setStatus($pendingStatus);
+                        $this->order->save();
+                    }
                 }
 
                 // Send order confirmation mail if we're supposed to
+                /** @noinspection PhpUndefinedMethodInspection */
                 if ($this->accountConfig->getOrderConfirmationEmail() === "1") {
                     $this->orderSender->send($this->order, true);
                 }
@@ -255,6 +244,7 @@ class Process extends \Magento\Framework\App\Action\Action
 
         if ($this->order->canCancel()) {
             $this->order->cancel();
+            /** @noinspection PhpUndefinedMethodInspection */
             $failedStatus = $this->accountConfig->getOrderStatusFailed();
             $this->order->setStatus($failedStatus);
             $this->order->save();
