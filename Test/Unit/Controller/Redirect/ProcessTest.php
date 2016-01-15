@@ -228,6 +228,7 @@ class ProcessTest extends BaseTest
 
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturn(true);
+        $this->order->shouldReceive('canInvoice')->once()->andReturn(true);
         $this->order->shouldReceive('getQuoteId')->andReturn(1);
         $this->order->shouldReceive('setStatus')->once()->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
