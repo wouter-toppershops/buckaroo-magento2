@@ -103,7 +103,7 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
         foreach ($value as $currency) {
             if (!in_array($currency, $allowedCurrencies)) {
                 throw new \Magento\Framework\Exception\LocalizedException(
-                    __('Please enter a valid currency: "%1".', $this->getCurrencyTranslation($currency))
+                    __("Please enter a valid currency: '%1'.", $this->getCurrencyTranslation($currency))
                 );
             }
         }
