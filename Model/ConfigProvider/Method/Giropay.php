@@ -60,7 +60,6 @@ class Giropay extends AbstractConfigProvider
     {
         $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Giropay::PAYMENT_METHOD_CODE);
 
-        // @TODO: get banks dynamic
         return [
             'payment' => [
                 'buckaroo' => [

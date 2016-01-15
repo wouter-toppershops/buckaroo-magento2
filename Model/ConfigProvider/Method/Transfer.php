@@ -54,6 +54,7 @@ class Transfer extends AbstractConfigProvider
     const XPATH_TRANSFER_ORDER_STATUS_SUCCESS   = 'payment/tig_buckaroo_transfer/order_status_success';
     const XPATH_TRANSFER_ORDER_STATUS_FAILED    = 'payment/tig_buckaroo_transfer/order_status_failed';
     const XPATH_TRANSFER_AVAILABLE_IN_BACKEND   = 'payment/tig_buckaroo_transfer/available_in_backend';
+    const XPATH_TRANSFER_DUE_DATE               = 'payment/tig_buckaroo_transfer/due_date';
 
     /**
      * @return array
@@ -66,7 +67,6 @@ class Transfer extends AbstractConfigProvider
 
         $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Transfer::PAYMENT_METHOD_CODE);
 
-        // @TODO: get banks dynamic
         return [
             'payment' => [
                 'buckaroo' => [
