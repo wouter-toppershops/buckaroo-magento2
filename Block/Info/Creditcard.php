@@ -41,11 +41,15 @@ namespace TIG\Buckaroo\Block\Info;
 
 class Creditcard extends \TIG\Buckaroo\Block\Info
 {
-
     /**
      * @var string
      */
     protected $cardType;
+
+    /**
+     * @var array
+     */
+    protected $mpiStatus;
 
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard
@@ -75,7 +79,7 @@ class Creditcard extends \TIG\Buckaroo\Block\Info
     }
 
     /**
-     * Enter description here...
+     * Get the selected creditcard for this order.
      *
      * @return string
      */
@@ -87,6 +91,19 @@ class Creditcard extends \TIG\Buckaroo\Block\Info
             );
         }
         return $this->cardType;
+    }
+
+    /**
+     * Get the order's MPI status.
+     *
+     * @return array
+     */
+    public function getMpiStatus()
+    {
+        if ($this->mpiStatus === null) {
+            $this->mpiStatus = $this->getInfo()->getAdditionalInformation('buckaroo_mpi_status');
+        }
+        return $this->mpiStatus;
     }
 
     /**

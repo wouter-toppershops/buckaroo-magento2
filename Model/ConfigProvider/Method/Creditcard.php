@@ -67,6 +67,10 @@ class Creditcard extends AbstractConfigProvider
     const XPATH_CREDITCARD_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_creditcard/order_status_failed';
     const XPATH_CREDITCARD_ALLOWED_CREDITCARDS  = 'payment/tig_buckaroo_creditcard/allowed_creditcards';
 
+    const XPATH_CREDITCARD_MASTERCARD_UNSECURE_HOLD = 'payment/tig_buckaroo_creditcard/mastercard_unsecure_hold';
+    const XPATH_CREDITCARD_VISA_UNSECURE_HOLD       = 'payment/tig_buckaroo_creditcard/visa_unsecure_hold';
+    const XPATH_CREDITCARD_MAESTRO_UNSECURE_HOLD    = 'payment/tig_buckaroo_creditcard/maestro_unsecure_hold';
+
     protected $issuers = [
         [
             'name' => 'American Express',

@@ -534,13 +534,14 @@
                             <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                         </field>
 
-                        <field id="mastercard_unsecure_status_processing" translate="label comment tooltip" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>No SecureCode order status</label>
-                            <comment><![CDATA[Leave empty to use default 'success' status.]]></comment>
-                            <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
-                            <config_path>payment/tig_buckaroo_creditcard/mastercard_unsecure_status_processing</config_path>
-                        </field>
+                        <!-- Disabled until specific on hold statuses are implemented -->
+                        <!--<field id="mastercard_unsecure_status_processing" translate="label comment tooltip" type="select" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                            <!--<label>No SecureCode order status</label>-->
+                            <!--<comment><![CDATA[Leave empty to use default 'success' status.]]></comment>-->
+                            <!--<tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>-->
+                            <!--<source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>-->
+                            <!--<config_path>payment/tig_buckaroo_creditcard/mastercard_unsecure_status_processing</config_path>-->
+                        <!--</field>-->
 
                         <field id="mastercard_unsecure_hold" translate="label comment" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Set no SecureCode orders onhold</label>
@@ -555,19 +556,42 @@
                             <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
                         </field>
 
-                        <field id="visa_unsecure_status_processing" translate="label comment tooltip" type="select" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
-                            <label>No 3D Secure order status</label>
-                            <comment><![CDATA[Leave empty to use default 'success' status.]]></comment>
-                            <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
-                            <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
-                            <config_path>payment/tig_buckaroo_creditcard/visa_unsecure_status_processing</config_path>
-                        </field>
+                        <!-- Disabled until specific on hold statuses are implemented -->
+                        <!--<field id="visa_unsecure_status_processing" translate="label comment tooltip" type="select" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                            <!--<label>No 3D Secure order status</label>-->
+                            <!--<comment><![CDATA[Leave empty to use default 'success' status.]]></comment>-->
+                            <!--<tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>-->
+                            <!--<source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>-->
+                            <!--<config_path>payment/tig_buckaroo_creditcard/visa_unsecure_status_processing</config_path>-->
+                        <!--</field>-->
 
-                        <field id="visa_unsecure_hold" translate="label comment" type="select" sortOrder="190" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <field id="visa_unsecure_hold" translate="label comment" type="select" sortOrder="200" showInDefault="1" showInWebsite="1" showInStore="1">
                             <label>Set no 3D Secure orders onhold</label>
                             <comment><![CDATA[Hold orders which are not 3D Secure.]]></comment>
                             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                             <config_path>payment/tig_buckaroo_creditcard/visa_unsecure_hold</config_path>
+                        </field>
+
+                        <!-- Maestro specific -->
+                        <field id="heading_maestro" translate="label" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Maestro Specific</label>
+                            <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+                        </field>
+
+                        <!-- Disabled until specific on hold statuses are implemented -->
+                        <!--<field id="maestro_unsecure_status_processing" translate="label comment tooltip" type="select" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">-->
+                        <!--<label>No 3D Secure order status</label>-->
+                        <!--<comment><![CDATA[Leave empty to use default 'success' status.]]></comment>-->
+                        <!--<tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>-->
+                        <!--<source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>-->
+                        <!--<config_path>payment/tig_buckaroo_creditcard/maestro_unsecure_status_processing</config_path>-->
+                        <!--</field>-->
+
+                        <field id="maestro_unsecure_hold" translate="label comment" type="select" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
+                            <label>Set unsecure orders onhold</label>
+                            <comment><![CDATA[Hold orders which are secure.]]></comment>
+                            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                            <config_path>payment/tig_buckaroo_creditcard/maestro_unsecure_hold</config_path>
                         </field>
                     </group>
                 </group>
