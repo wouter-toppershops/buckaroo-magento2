@@ -223,11 +223,12 @@ class ProcessTest extends BaseTest
 
         $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn('tig_buckaroo_new');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
-        $this->configProviderFactory->shouldReceive('getInvoiceEmail')->andReturn('0');
+        $this->configProviderFactory->shouldReceive('getOrderConfirmationEmail')->andReturn('0');
         $this->configProviderFactory->shouldReceive('getOrderStatusSuccess')->andReturn($successStatus);
 
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturn(true);
+        $this->order->shouldReceive('canInvoice')->once()->andReturn(true);
         $this->order->shouldReceive('getQuoteId')->andReturn(1);
         $this->order->shouldReceive('setStatus')->once()->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
