@@ -11,6 +11,13 @@
     width:100%;
 }
 
+.tig_buckaroo_payment_mpi_status ul li {
+    list-style: square;
+    padding-left: 0;
+    margin-left: 30px;
+    text-transform: capitalize;
+}
+
 
 @media screen and (max-width: 768px){
     .admin__page-section-item.order-billing-address,

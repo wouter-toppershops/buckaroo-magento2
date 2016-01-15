@@ -1,5 +1,5 @@
 /* ==================== Buckaroo / TIG -  Navigation Logo - Top Menu ==================== */
-.buckaroo-config-page .page-main-actions .page-actions._fixed .page-actions-inner:after {
+.buckaroo-config-page .page-main-actions .page-actions .page-actions-inner:after {
     background-image: url(../images/buckaroo_config_logo.png) !important;
     background-repeat: no-repeat;
     content: ' ';

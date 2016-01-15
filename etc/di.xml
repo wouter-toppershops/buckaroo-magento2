@@ -71,6 +71,7 @@
 
     <type name="TIG\Buckaroo\Model\Push">
         <plugin name="tig_buckaroo_paypal_sellersprotection_push" type="TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection\Push" />
+        <plugin name="tig_buckaroo_mpi_push" type="TIG\Buckaroo\Model\Service\Plugin\Mpi\Push" />
     </type>
 
     <type name="TIG\Buckaroo\Model\PaymentInformationManagement">
