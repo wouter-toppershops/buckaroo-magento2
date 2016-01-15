@@ -170,11 +170,11 @@
                         <config_path>tig_buckaroo/account/order_status_failed</config_path>
                     </field>
 
-                    <field id="invoice_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                        <label>Send transactional invoice email</label>
+                    <field id="order_confirmation_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                        <label>Send order confirmation email</label>
                         <comment><![CDATA[Send a mail after successful payment.]]></comment>
                         <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                        <config_path>tig_buckaroo/account/invoice_email</config_path>
+                        <config_path>tig_buckaroo/account/order_confirmation_email</config_path>
                     </field>
 
                     <field id="auto_invoice" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -189,7 +189,7 @@
                         <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
                         <config_path>tig_buckaroo/account/auto_invoice_status</config_path>
                         <depends>
-                            <field id="auto_invoice">1</field>
+                            <field id="auto_invoice">0</field>
                         </depends>
                     </field>
 

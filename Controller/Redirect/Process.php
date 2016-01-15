@@ -150,7 +150,7 @@ class Process extends \Magento\Framework\App\Action\Action
                 }
 
                 // Send order confirmation mail if we're supposed to
-                if ($this->accountConfig->getInvoiceEmail() === "1") {
+                if ($this->accountConfig->getOrderConfirmationEmail() === "1") {
                     $this->orderSender->send($this->order, true);
                 }
 
@@ -166,7 +166,7 @@ class Process extends \Magento\Framework\App\Action\Action
                 }
 
                 // Send order confirmation mail if we're supposed to
-                if ($this->accountConfig->getInvoiceEmail() === "1") {
+                if ($this->accountConfig->getOrderConfirmationEmail() === "1") {
                     $this->orderSender->send($this->order, true);
                 }
 

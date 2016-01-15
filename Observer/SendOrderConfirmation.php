@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,16 +36,55 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_payment_place_end">
-        <observer name="tig_buckaroo_update_order_status" instance="TIG\Buckaroo\Observer\UpdateOrderStatus" />
-        <observer name="tig_buckaroo_send_order_confirmation" instance="TIG\Buckaroo\Observer\SendOrderConfirmation" />
-    </event>
-    <event name="sales_model_service_quote_submit_before">
-        <observer name="tig_buckaroo_fee_set" instance="TIG\Buckaroo\Observer\SetBuckarooFee" />
-    </event>
-    <event name="sales_order_invoice_register">
-        <observer name="tig_buckaroo_fee_invoice" instance="TIG\Buckaroo\Observer\InvoiceRegister" />
-    </event>
-</config>
+
+namespace TIG\Buckaroo\Observer;
+
+class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterface
+{
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Account
+     */
+    protected $accountConfig;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $orderSender;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account          $accountConfig
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+    ) {
+        $this->accountConfig    = $accountConfig;
+        $this->orderSender      = $orderSender;
+    }
+
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return void
+     */
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        /** @noinspection PhpUndefinedMethodInspection */
+        /** @var $payment \Magento\Sales\Model\Order\Payment */
+        $payment = $observer->getPayment();
+
+        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
+            return;
+        }
+
+        $order = $payment->getOrder();
+        $order->save();
+        if (!$payment->getMethodInstance()->usesRedirect
+            && $this->accountConfig->getOrderConfirmationEmail()
+            && $order->getIncrementId()
+        ) {
+            $this->orderSender->send($order, true);
+        }
+    }
+}

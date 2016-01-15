@@ -113,7 +113,7 @@ class Transfer extends AbstractMethod
     /**
      * @var bool
      */
-    protected $usesRedirect            = false;
+    public $usesRedirect                = false;
 
     /**
      * {@inheritdoc}

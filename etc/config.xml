@@ -180,7 +180,7 @@
             <account>
                 <active>0</active>
                 <transaction_label>Magento Buckaroo</transaction_label>
-                <invoice_email>1</invoice_email>
+                <order_confirmation_email>1</order_confirmation_email>
                 <auto_invoice>1</auto_invoice>
                 <auto_invoice_status>tig_buckaroo_pending_payment</auto_invoice_status>
                 <success_redirect>checkout/onepage/success</success_redirect>
