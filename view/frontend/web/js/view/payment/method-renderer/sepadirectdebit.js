@@ -114,6 +114,7 @@ define(
             },
             paymentFeeLabel : window.checkoutConfig.payment.buckaroo.sepadirectdebit.paymentFeeLabel,
 
+
             /**
              * @override
              */
@@ -141,6 +142,11 @@ define(
 
                     return address.countryId == 'NL';
                 }, this);
+
+                /**
+                 * Repair IBAN value to uppercase
+                 */
+                this.bankaccountnumber.extend({ uppercase: true });
 
                 /**
                  * Run validation on the three inputfields
