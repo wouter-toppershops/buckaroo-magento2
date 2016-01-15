@@ -234,9 +234,9 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->order->shouldReceive('getBaseToOrderRate')->once()->andReturn(1);
         $this->order->shouldReceive('getBaseTotalRefunded')->once()->andReturn(null);
-        $this->order->shouldReceive('getBaseBuckarooFee', 'getBuckarooFeeBaseTaxAmountInvoiced')->andReturn(10);
+        $this->order->shouldReceive('getBaseBuckarooFeeInvoiced')->andReturn(10);
 
-        $this->assertEquals(80, $this->object->getAdjustmentRefundData());
+        $this->assertEquals(90, $this->object->getAdjustmentRefundData());
     }
 
     /**
