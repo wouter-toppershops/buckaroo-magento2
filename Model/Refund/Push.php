@@ -159,6 +159,7 @@ class Push
                     );
                 }
                 $creditmemo->setTransactionId($this->postData['brq_transactions']);
+
                 $this->saveCreditmemo($creditmemo, (bool)$creditData['do_offline'], !empty($creditData['send_email']));
                 if (!empty($data['send_email'])) {
                     $this->$creditEmailSender->send($creditmemo);
@@ -236,10 +237,11 @@ class Push
         $this->creditAmount  = $totalAmountToRefund + $this->order->getBaseTotalRefunded();
 
         if ($this->creditAmount != $this->order->getBaseGrandTotal()) {
+            $adjustment = $this->getAdjustmentRefundData();
             $this->debugger->addToMessage('This is an adjustment refund of '. $totalAmountToRefund);
             $data['shipping_amount']     = '0';
             $data['adjustment_negative'] = '0';
-            $data['adjustment_positive'] = $this->getAdjustmentRefundData();
+            $data['adjustment_positive'] = $adjustment;
             $data['items']               = '0';
             $data['qtys']                = '0';
         } else {
@@ -286,8 +288,7 @@ class Push
         $totalAmount = $this->totalAmountToRefund();
 
         if ($this->order->getBaseTotalRefunded() == null) {
-            $totalAmount = $totalAmount
-                - ($this->order->getBaseBuckarooFee() + $this->order->getBuckarooFeeBaseTaxAmountInvoiced());
+            $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced();
         }
 
         return $totalAmount;

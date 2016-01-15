@@ -151,7 +151,7 @@
                 <active>1</active>
                 <model>TIG\Buckaroo\Model\Method\Mrcash</model>
                 <order_status>pending</order_status>
-                <title>TIG Buckaroo Mrcash</title>
+                <title>TIG Buckaroo Bancontact/Mister Cash</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>140</sort_order>
                 <payment_fee_label>Fee</payment_fee_label>
