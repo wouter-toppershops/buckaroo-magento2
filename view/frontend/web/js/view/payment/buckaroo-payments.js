@@ -39,14 +39,24 @@
 /*global define*/
 define(
     [
+        'ko',
         'uiComponent',
         'Magento_Checkout/js/model/payment/renderer-list'
     ],
     function (
+        ko,
         Component,
         rendererList
     ) {
         'use strict';
+
+        ko.extenders.uppercase = function(target) {
+            target.subscribe(function(newValue) {
+                target(newValue.toUpperCase());
+            });
+            return target;
+        };
+
         rendererList.push(
             {
                 type: 'tig_buckaroo_ideal',
