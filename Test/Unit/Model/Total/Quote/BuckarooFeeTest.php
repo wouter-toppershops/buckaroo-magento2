@@ -82,8 +82,6 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        /** Require functions.php to be able to use the translate function */
-        require_once __DIR__ .'/../../../../../../../../app/functions.php';
         $this->priceCurrency = \Mockery::mock(\Magento\Framework\Pricing\PriceCurrencyInterface::class);
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);

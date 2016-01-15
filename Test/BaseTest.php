@@ -52,6 +52,13 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     {
         parent::setUp();
 
+        /** Require functions.php to be able to use the translate function */
+        require_once __DIR__ .'/../../../../app/functions.php';
+
+        ini_set('error_reporting', E_ALL);
+        ini_set('display_errors', '1');
+        ini_set('display_startup_errors', '1');
+
         $this->objectManagerHelper = new ObjectManager($this);
     }
 

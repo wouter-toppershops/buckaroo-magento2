@@ -142,6 +142,21 @@ class Process extends \Magento\Framework\App\Action\Action
 
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
+                //set the 'Success status' here
+                $successStatus = $this->accountConfig->getOrderStatusSuccess();
+                if ($successStatus) {
+                    $this->order->setStatus($successStatus);
+                    $this->order->save();
+                }
+
+                // Send order confirmation mail if we're supposed to
+                if ($this->accountConfig->getInvoiceEmail() === "1") {
+                    $this->orderSender->send($this->order, true);
+                }
+
+                // Redirect to success page
+                $this->redirectSuccess();
+                break;
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
                 // Set the 'Pending payment status' here
                 $pendingStatus = $this->accountConfig->getOrderStatusPending();
@@ -240,6 +255,8 @@ class Process extends \Magento\Framework\App\Action\Action
 
         if ($this->order->canCancel()) {
             $this->order->cancel();
+            $failedStatus = $this->accountConfig->getOrderStatusFailed();
+            $this->order->setStatus($failedStatus);
             $this->order->save();
             return true;
         }

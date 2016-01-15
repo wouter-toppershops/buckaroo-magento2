@@ -50,6 +50,15 @@ class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod {
     public function getCaptureTransactionBuilder($payment) {}
     public function getRefundTransactionBuilder($payment) {}
     public function getVoidTransactionBuilder($payment) {}
+    public function setCanRefund($value)
+    {
+        $this->_canRefund = $value;
+    }
+
+    public function setCanOrder($value)
+    {
+        $this->_canOrder = $value;
+    }
 }
 
 class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
@@ -63,6 +72,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      * @var \Mockery\MockInterface
      */
     protected $configProvider;
+
+    /**
+     * @var \Mockery\MockInterface
+     */
+    protected $configMethodProvider;
 
     /**
      * @var \TIG\Buckaroo\Model\Method\AbstractMethod
@@ -90,6 +104,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
         $this->account = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
         $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configMethodProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
 
         /**
@@ -99,6 +114,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             'objectManager' => $this->objectManager,
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,
+            'configProviderMethodFactory' => $this->configMethodProvider,
         ]);
     }
 
@@ -302,5 +318,62 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $result = $this->object->isAvailable($quote);
 
         $this->assertTrue($result);
+    }
+
+    public function testCanRefundParentFalse()
+    {
+        $this->object->setCanRefund(false);
+
+        $this->assertFalse($this->object->canRefund());
+    }
+
+    /**
+     * @dataProvider refundEnabledDisabledDataProvider
+     *
+     * @param $enabled
+     */
+    public function testCanRefundNotEnabled($enabled)
+    {
+        $this->object->setCanRefund(true);
+
+        $this->configProvider->shouldReceive('get')->andReturnSelf();
+        $this->configProvider->shouldReceive('getEnabled')->andReturn($enabled);
+
+        $this->assertEquals($enabled, $this->object->canRefund());
+    }
+
+    public function refundEnabledDisabledDataProvider()
+    {
+        return [
+            [
+                true,
+            ],
+            [
+                false,
+            ],
+        ];
+    }
+
+    public function testOrderInvalidArgument()
+    {
+        $this->setExpectedException('\InvalidArgumentException');
+
+        $payment = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $this->object->order($payment, 0);
+    }
+
+    public function testCantOrder()
+    {
+        $this->setExpectedException('\Magento\Framework\Exception\LocalizedException');
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $this->object->setCanOrder(false);
+        $this->object->order($payment, 0);
     }
 }
