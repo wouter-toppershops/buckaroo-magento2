@@ -61,7 +61,6 @@ class SepaDirectDebit extends AbstractConfigProvider
         $paymentFeeLabel = $this
             ->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\SepaDirectDebit::PAYMENT_METHOD_CODE);
 
-        // @TODO: get banks dynamic
         return [
             'payment' => [
                 'buckaroo' => [

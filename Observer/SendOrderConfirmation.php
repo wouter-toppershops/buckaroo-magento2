@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -38,25 +37,54 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Webapi\Rest\Request\Deserializer;
+namespace TIG\Buckaroo\Observer;
 
-class XWwwFormUrlencoded implements \Magento\Framework\Webapi\Rest\Request\DeserializerInterface
+class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterface
 {
     /**
-     * Parse Request body into array of params.
-     *
-     * @param string $encodedBody Posted content from request.
-     * @return array|null Return NULL if content is invalid.
-     * @throws \InvalidArgumentException
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Account
      */
-    public function deserialize($encodedBody)
+    protected $accountConfig;
+
+    /**
+     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender
+     */
+    protected $orderSender;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account          $accountConfig
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig,
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+    ) {
+        $this->accountConfig    = $accountConfig;
+        $this->orderSender      = $orderSender;
+    }
+
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     *
+     * @return void
+     */
+    public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        if (!is_string($encodedBody)) {
-            throw new \InvalidArgumentException(
-                __("'%s' data type is invalid. String is expected.", gettype($encodedBody))
-            );
+        /** @noinspection PhpUndefinedMethodInspection */
+        /** @var $payment \Magento\Sales\Model\Order\Payment */
+        $payment = $observer->getPayment();
+
+        if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
+            return;
         }
 
-        return $encodedBody;
+        $order = $payment->getOrder();
+        $order->save();
+        if (!$payment->getMethodInstance()->usesRedirect
+            && $this->accountConfig->getOrderConfirmationEmail()
+            && $order->getIncrementId()
+        ) {
+            $this->orderSender->send($order, true);
+        }
     }
 }

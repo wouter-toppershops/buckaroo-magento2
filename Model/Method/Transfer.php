@@ -113,7 +113,7 @@ class Transfer extends AbstractMethod
     /**
      * @var bool
      */
-    protected $usesRedirect            = false;
+    public $usesRedirect                = false;
 
     /**
      * {@inheritdoc}
@@ -121,6 +121,13 @@ class Transfer extends AbstractMethod
     public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $transferConfig = $this->configProviderMethodFactory->get('transfer');
+
+        $dueDays = abs($transferConfig->getDueDate());
+
+        $now = new \DateTime();
+        $now->modify('+' . $dueDays . ' day');
 
         /** @noinspection PhpUndefinedMethodInspection */
         $services = [
@@ -140,6 +147,10 @@ class Transfer extends AbstractMethod
                     '_'    => $payment->getOrder()->getCustomerEmail(),
                     'Name' => 'CustomerEmail',
                 ],
+                [
+                    '_'    => $now->format('Y-m-d'),
+                    'Name' => 'DateDue'
+                ]
             ],
         ];
 

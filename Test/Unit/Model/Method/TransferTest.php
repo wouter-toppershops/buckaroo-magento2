@@ -67,6 +67,11 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     protected $scopeConfig;
 
     /**
+     * @var
+     */
+    protected $configProviderMethodFactory;
+
+    /**
      * Setup the base mocks.
      */
     public function setUp()
@@ -76,11 +81,13 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
 
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Transfer::class, [
             'scopeConfig' => $this->scopeConfig,
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
+            'configProviderMethodFactory' => $this->configProviderMethodFactory
         ]);
 
         $this->paymentInterface = \Mockery::mock(
@@ -117,6 +124,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 
             return $order;
         });
+
+        $this->configProviderMethodFactory->shouldReceive('get')->once()->with('transfer')->andReturnSelf();
+        $this->configProviderMethodFactory->shouldReceive('getDueDate')->once()->andReturn('7');
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($order);
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
