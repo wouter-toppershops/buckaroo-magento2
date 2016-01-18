@@ -217,7 +217,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function buckarooPaymentFeeCaclulationExclTax($store = null)
+    public function buckarooPaymentFeeCalculationExclTax($store = null)
     {
         /** @noinspection PhpUndefinedMethodInspection */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax($store);
