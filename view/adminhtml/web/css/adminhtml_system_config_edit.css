@@ -241,6 +241,19 @@
 
 /* ==================================== SupportTab - 3rd Party | Version compatibility ==================================== */
 
+#tig_buckaroo_tig_buckaroo_support_section-head:after,
+#tig_buckaroo_tig_buckaroo_account_section-head:after,
+#tig_buckaroo_tig_buckaroo_payment_section-head:after,
+#tig_buckaroo_tig_buckaroo_refund_section-head:after {
+    color:#db1200;
+    content: 'Beta';
+    text-transform: uppercase;
+    font-size:10px;
+    margin-left:3px;
+    position :absolute;
+    font-weight:lighter;
+}
+
 .block-version h3 {
     cursor: auto !important;
 }
@@ -261,7 +274,7 @@
 }
 #supporttab .version-compatibility {
     float:left;
-    width: 100%;
+    width: calc(100% - 30px);
     clear:both;
 }
 #supporttab .version-compatibility li {
