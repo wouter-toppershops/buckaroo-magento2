@@ -1,13 +1,19 @@
 /* ==================== Buckaroo / TIG -  Navigation Logo - Top Menu ==================== */
 .buckaroo-config-page .page-main-actions .page-actions .page-actions-inner:after {
-    background-image: url(../images/buckaroo_config_logo.png) !important;
+    background-image: url(../images/buckaroo_config_logo_beta.png) !important;
     background-repeat: no-repeat;
     content: ' ';
-    width: 160px;
+    width: 156px;
     float: right;
     height: 30px;
     margin-top: 10px;
-    background-size: auto 30px;
+    background-size: auto 29px;
+
+    /*
+    * Remove _beta if extension isn't beta anymore.
+    * background-size 30px if not beta version.
+    * width: 160px if not beta
+    */
 }
 
 /* ==================== Buckaroo / TIG -  Navigation Logo - Left Menu ==================== */
@@ -54,13 +60,14 @@
 }
 
 .buckaroo-config-page #container:before  {
-    background-image: url(../images/buckaroo_config_logo.png) !important;
+    background-image: url(../images/buckaroo_config_logo_beta_left.png) !important;
     background-repeat: no-repeat;
     content: ' ';
-    width: 259px;
+    width: 295px;
     float:left;
     height: 50px;
     background-size: auto 50px;
+    /* width: 259px if not beta */
 }
 
 /* ==================== Buckaroo Active/Inactive Payments Feedback ==================== */
