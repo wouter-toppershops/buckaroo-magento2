@@ -118,6 +118,7 @@ class Push implements PushInterface
      * @param ConfigProvider\Factory                             $configProviderFactory
      * @param Refund\Push                                        $refundPush
      * @param \TIG\Buckaroo\Debug\Debugger                       $debugger
+     * @param ConfigProvider\Method\Factory                      $configProviderMethodFactory
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -130,18 +131,20 @@ class Push implements PushInterface
         \TIG\Buckaroo\Helper\Data $helper,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Model\Refund\Push $refundPush,
-        \TIG\Buckaroo\Debug\Debugger $debugger
+        \TIG\Buckaroo\Debug\Debugger $debugger,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
     ) {
-        $this->objectManager            = $objectManager;
-        $this->request                  = $request;
-        $this->validator                = $validator;
-        $this->orderSender              = $orderSender;
-        $this->validateAmount           = $amountValidator;
-        $this->helper                   = $helper;
-        $this->scopeConfig              = $scopeConfig;
-        $this->configProviderFactory    = $configProviderFactory;
-        $this->refundPush               = $refundPush;
-        $this->debugger                 = $debugger;
+        $this->objectManager                = $objectManager;
+        $this->request                      = $request;
+        $this->validator                    = $validator;
+        $this->orderSender                  = $orderSender;
+        $this->validateAmount               = $amountValidator;
+        $this->helper                       = $helper;
+        $this->scopeConfig                  = $scopeConfig;
+        $this->configProviderFactory        = $configProviderFactory;
+        $this->refundPush                   = $refundPush;
+        $this->debugger                     = $debugger;
+        $this->configProviderMethodFactory  = $configProviderMethodFactory;
     }
 
     /**
@@ -223,10 +226,19 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
                 $newStatus = $accountConfig->getOrderStatusNew();
+
                 $this->processFailedPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
                 $newStatus = $accountConfig->getOrderStatusSuccess();
+                if ($this->order->getPayment()->getMethod() == \TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE) {
+                    $paypalConfig = $this->configProviderMethodFactory
+                        ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE);
+                    $newSellersProtectionStatus = $paypalConfig->getSellersProtectionIneligible();
+                    if (!empty($newSellersProtectionStatus)) {
+                        $newStatus = $newSellersProtectionStatus;
+                    }
+                }
                 $this->processSucceededPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
