@@ -78,7 +78,7 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
         \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
         \TIG\Buckaroo\Helper\PaymentFee $helper
     ) {
-        $this->setCode('pretax_ buckaroo_fee');
+        $this->setCode('pretax_buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
