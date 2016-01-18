@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -38,44 +37,210 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace Tig\Buckaroo\Model\Method;
+namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Framework\DataObject;
-use Magento\Quote\Api\Data\CartInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal as IdealConfig;
 
-class Ideal extends \Magento\Payment\Model\Method\AbstractMethod
+class Ideal extends AbstractMethod
 {
     /**
-     * Assign data to info model instance
-     *
-     * @param DataObject|mixed $data
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
+     * Payment Code
      */
-    public function assignData(DataObject $data)
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_ideal';
+
+    /**
+     * @var string
+     */
+    public $buckarooPaymentMethodCode = 'ideal';
+
+    // @codingStandardsIgnoreStart
+    /**
+     * Payment method code
+     *
+     * @var string
+     */
+    protected $_code                    = self::PAYMENT_METHOD_CODE;
+
+    /**
+     * @var bool
+     */
+    protected $_isGateway               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canOrder                = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canAuthorize            = false;
+
+    /**
+     * @var bool
+     */
+    protected $_canCapture              = false;
+
+    /**
+     * @var bool
+     */
+    protected $_canCapturePartial       = false;
+
+    /**
+     * @var bool
+     */
+    protected $_canRefund               = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canVoid                 = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canUseInternal          = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canUseCheckout          = true;
+
+    /**
+     * @var bool
+     */
+    protected $_canRefundInvoicePartial = true;
+    // @codingStandardsIgnoreEnd
+
+    /**
+     * {@inheritdoc}
+     */
+    public function assignData(\Magento\Framework\DataObject $data)
     {
+        parent::assignData($data);
+
+        if (is_array($data)) {
+            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
+        } elseif ($data instanceof \Magento\Framework\DataObject) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
+        }
         return $this;
     }
 
     /**
-     * Validate payment method information object
+     * {@inheritdoc}
+     */
+    public function getOrderTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'ideal',
+            'Action'           => 'Pay',
+            'Version'          => 2,
+            'RequestParameter' => [
+                [
+                    '_'    => $payment->getAdditionalInformation('issuer'),
+                    'Name' => 'issuer',
+                ],
+            ],
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getCaptureTransactionBuilder($payment)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthorizeTransactionBuilder($payment)
+    {
+        return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRefundTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
+
+        $services = [
+            'Name'    => 'ideal',
+            'Action'  => 'Refund',
+            'Version' => 1,
+        ];
+
+        $requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+                           ->setServices($services)
+                           ->setMethod('TransactionRequest')
+                           ->setOriginalTransactionKey(
+                               $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+                           )
+                           ->setChannel('CallCenter');
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getVoidTransactionBuilder($payment)
+    {
+        return true;
+    }
+
+    /**
+     * Validate that we received a valid issuer ID.
      *
      * @return $this
      * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function validate()
     {
-        return $this;
-    }
+        parent::validate();
 
-    /**
-     * Check whether there are CC types set in configuration
-     *
-     * @param CartInterface|null $quote
-     * @return bool
-     */
-    public function isAvailable(CartInterface $quote = null)
-    {
-        return $this->getConfigData('cctypes', $quote ? $quote->getStoreId() : null) && parent::isAvailable($quote);
+        /** @var IdealConfig $config */
+        $config = $this->objectManager->get(IdealConfig::class);
+
+        $paymentInfo = $this->getInfoInstance();
+
+        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
+        if ($skipValidation) {
+            return $this;
+        }
+
+        $chosenIssuer = $paymentInfo->getAdditionalInformation('issuer');
+
+        $valid = false;
+        foreach ($config->getIssuers() as $issuer) {
+            if ($issuer['code'] == $chosenIssuer) {
+                $valid = true;
+                break;
+            }
+        }
+
+        if (!$valid) {
+            throw new \Magento\Framework\Exception\LocalizedException(__('Please select a issuer from the list'));
+        }
+
+        return $this;
     }
 }

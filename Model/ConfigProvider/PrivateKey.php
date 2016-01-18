@@ -1,0 +1,102 @@
+<?php
+
+/**
+ *                  ___________       __            __
+ *                  \__    ___/____ _/  |_ _____   |  |
+ *                    |    |  /  _ \\   __\\__  \  |  |
+ *                    |    | |  |_| ||  |   / __ \_|  |__
+ *                    |____|  \____/ |__|  (____  /|____/
+ *                                              \/
+ *          ___          __                                   __
+ *         |   |  ____ _/  |_   ____ _______   ____    ____ _/  |_
+ *         |   | /    \\   __\_/ __ \\_  __ \ /    \ _/ __ \\   __\
+ *         |   ||   |  \|  |  \  ___/ |  | \/|   |  \\  ___/ |  |
+ *         |___||___|  /|__|   \_____>|__|   |___|  / \_____>|__|
+ *                  \/                           \/
+ *                  ________
+ *                 /  _____/_______   ____   __ __ ______
+ *                /   \  ___\_  __ \ /  _ \ |  |  \\____ \
+ *                \    \_\  \|  | \/|  |_| ||  |  /|  |_| |
+ *                 \______  /|__|    \____/ |____/ |   __/
+ *                        \/                       |__|
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Creative Commons License.
+ * It is available through the world-wide-web at this URL:
+ * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * If you are unable to obtain it through the world-wide-web, please send an email
+ * to servicedesk@tig.nl so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this module to newer
+ * versions in the future. If you wish to customize this module for your
+ * needs please contact servicedesk@tig.nl for more information.
+ *
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ */
+namespace TIG\Buckaroo\Model\ConfigProvider;
+
+class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
+{
+    /**
+     * Xpath to the 'certificate_upload' setting.
+     */
+    const XPATH_CERTIFICATE_ID = 'tig_buckaroo/account/certificate_file';
+
+    /**
+     * @var \TIG\Buckaroo\Model\Certificate
+     */
+    protected $certificate;
+
+    /**
+     * @param \TIG\Buckaroo\Model\Certificate                    $certificate
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     *
+     * @todo rewrite to use the configProvider pattern
+     */
+    public function __construct(
+        \TIG\Buckaroo\Model\Certificate $certificate,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+    ) {
+        $this->certificate = $certificate;
+
+        $certificateId = $scopeConfig->getValue(
+            self::XPATH_CERTIFICATE_ID,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+        if (!$certificateId) {
+            throw new \LogicException('No Buckaroo certificate configured.');
+        }
+
+        $this->certificate->load($certificateId);
+        if (!$certificate->getId()) {
+            throw new \LogicException('Invalid Buckaroo certificate configured.');
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getConfig($store = null)
+    {
+        $config = [
+            'private_key' => $this->getPrivateKey($store),
+        ];
+        return $config;
+    }
+
+    /**
+     * Return private key from certificate
+     *
+     * @param null $store
+     *
+     * @return string
+     */
+    public function getPrivateKey($store = null)
+    {
+        return $this->certificate->getCertificate();
+    }
+}

@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!--
+/**
+ *                  ___________       __            __
+ *                  \__    ___/____ _/  |_ _____   |  |
+ *                    |    |  /  _ \\   __\\__  \  |  |
+ *                    |    | |  |_| ||  |   / __ \_|  |__
+ *                    |____|  \____/ |__|  (____  /|____/
+ *                                              \/
+ *          ___          __                                   __
+ *         |   |  ____ _/  |_   ____ _______   ____    ____ _/  |_
+ *         |   | /    \\   __\_/ __ \\_  __ \ /    \ _/ __ \\   __\
+ *         |   ||   |  \|  |  \  ___/ |  | \/|   |  \\  ___/ |  |
+ *         |___||___|  /|__|   \_____>|__|   |___|  / \_____>|__|
+ *                  \/                           \/
+ *                  ________
+ *                 /  _____/_______   ____   __ __ ______
+ *                /   \  ___\_  __ \ /  _ \ |  |  \\____ \
+ *                \    \_\  \|  | \/|  |_| ||  |  /|  |_| |
+ *                 \______  /|__|    \____/ |____/ |   __/
+ *                        \/                       |__|
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Creative Commons License.
+ * It is available through the world-wide-web at this URL:
+ * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * If you are unable to obtain it through the world-wide-web, please send an email
+ * to servicedesk@tig.nl so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this module to newer
+ * versions in the future. If you wish to customize this module for your
+ * needs please contact servicedesk@tig.nl for more information.
+ *
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ */
+ -->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+
+    <type name="Magento\Checkout\Model\CompositeConfigProvider">
+        <arguments>
+            <argument name="configProviders" xsi:type="array">
+                <item name="buckaroo_config_provider1" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Ideal</item>
+                <item name="buckaroo_config_provider2" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Transfer</item>
+                <item name="buckaroo_config_provider3" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</item>
+                <item name="buckaroo_config_provider4" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\BuckarooFee</item>
+                <item name="buckaroo_config_provider5" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Paypal</item>
+                <item name="buckaroo_config_provider6" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\SepaDirectDebit</item>
+                <item name="buckaroo_config_provider7" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Mrcash</item>
+                <item name="buckaroo_config_provider8" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Sofortbanking</item>
+                <item name="buckaroo_config_provider9" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Giropay</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Checkout\Block\Onepage">
+        <arguments>
+            <argument name="layoutProcessors" xsi:type="array">
+                <item name="buckarooFeeName" xsi:type="object">TIG\Buckaroo\Block\Checkout\TotalsProcessor</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Checkout\Block\Cart\Totals">
+        <arguments>
+            <argument name="layoutProcessors" xsi:type="array">
+                <item name="buckarooFeeName" xsi:type="object">TIG\Buckaroo\Block\Cart\CartTotalsProcessor</item>
+            </argument>
+        </arguments>
+    </type>
+
+</config>

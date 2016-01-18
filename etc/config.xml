@@ -40,15 +40,179 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
+        <tax>
+            <classes>
+                <buckaroo_fee_tax_class/>
+            </classes>
+            <calculation>
+                <buckaroo_fee>1</buckaroo_fee>
+            </calculation>
+            <cart_display>
+                <buckaroo_fee>1</buckaroo_fee>
+            </cart_display>
+
+            <sales_display>
+                <buckaroo_fee>1</buckaroo_fee>
+            </sales_display>
+        </tax>
         <payment>
             <tig_buckaroo_ideal>
                 <active>1</active>
-                <model>Tig\Buckaroo\Model\Method\Ideal</model>
+                <model>TIG\Buckaroo\Model\Method\Ideal</model>
                 <order_status>pending</order_status>
-                <title>Tig Buckaroo iDeal</title>
+                <title>TIG Buckaroo iDEAL</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>1</sort_order>
+                <sort_order>10</sort_order>
+                <order_email>1</order_email>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
             </tig_buckaroo_ideal>
+
+            <tig_buckaroo_sepadirectdebit>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\SepaDirectDebit</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo SEPA Direct Debit</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>110</sort_order>
+                <send_email>1</send_email>
+                <reminder_leve1>4</reminder_leve1>
+                <order_email>1</order_email>
+                <payment_fee_lavel>Fee</payment_fee_lavel>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_sepadirectdebit>
+
+            <tig_buckaroo_paypal>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Paypal</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo PayPal</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>90</sort_order>
+                <order_email>1</order_email>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_paypal>
+
+            <tig_buckaroo_creditcard>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Creditcard</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Creditcard and Debit Card</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>30</sort_order>
+                <amex_payment_fee_label>Fee</amex_payment_fee_label>
+                <maestro_payment_fee_label>Fee</maestro_payment_fee_label>
+                <mastercard_payment_fee_label>Fee</mastercard_payment_fee_label>
+                <visa_payment_fee_label>Fee</visa_payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_creditcard>
+
+            <tig_buckaroo_transfer>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Transfer</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Transfer</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>100</sort_order>
+                <send_email>1</send_email>
+                <due_date>7</due_date>
+                <due_date_invoice>0</due_date_invoice>
+                <reminder_level>4</reminder_level>
+                <order_email>1</order_email>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_transfer>
+
+            <tig_buckaroo_giropay>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Giropay</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Giropay</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>160</sort_order>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_giropay>
+
+            <tig_buckaroo_mrcash>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Mrcash</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Bancontact/Mister Cash</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>140</sort_order>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <refund_extra_fields>customeriban,customeraccountname,customerbic</refund_extra_fields>
+                <refund_extra_fields_labels>customer iban,customer account name,customer bic</refund_extra_fields_labels>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_mrcash>
+
+            <tig_buckaroo_sofortbanking>
+                <active>1</active>
+                <model>TIG\Buckaroo\Model\Method\Sofortbanking</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Sofortbanking</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>150</sort_order>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_sofortbanking>
         </payment>
+
+        <tig_buckaroo>
+            <account>
+                <active>0</active>
+                <transaction_label>Magento Buckaroo</transaction_label>
+                <order_confirmation_email>1</order_confirmation_email>
+                <auto_invoice>1</auto_invoice>
+                <auto_invoice_status>tig_buckaroo_pending_payment</auto_invoice_status>
+                <success_redirect>checkout/onepage/success</success_redirect>
+                <failure_redirect>checkout</failure_redirect>
+                <cancel_on_failed>1</cancel_on_failed>
+                <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
+                <cancel_on_failure>0</cancel_on_failure>
+                <payment_fee_label>Payment Fee</payment_fee_label>
+                <order_status_new>tig_buckaroo_new</order_status_new>
+                <order_status_pending>tig_buckaroo_pending_payment</order_status_pending>
+                <order_status_success>processing</order_status_success>
+                <order_status_failed>canceled</order_status_failed>
+            </account>
+
+            <refund>
+                <enabled>0</enabled>
+                <allow_push>0</allow_push>
+            </refund>
+
+            <states>
+                <order_state_new>processing</order_state_new>
+                <order_state_pending>processing</order_state_pending>
+                <order_state_success>processing</order_state_success>
+                <order_state_failed>canceled</order_state_failed>
+                <order_state_incorrect>holded</order_state_incorrect>
+            </states>
+
+            <predefined>
+                <location_live_web>http://checkout.buckaroo.nl/soap/Soap.svc</location_live_web>
+                <location_test_web>http://testcheckout.buckaroo.nl/soap/Soap.svc</location_test_web>
+            </predefined>
+        </tig_buckaroo>
+
     </default>
 </config>
