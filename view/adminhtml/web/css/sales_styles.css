@@ -101,7 +101,7 @@
     margin-right: 10px;
     background-size: auto 23px;
     width: 36px;
-    height: 30px;
+    height: 35px;
     content: ' ';
 }
 
@@ -173,97 +173,97 @@
 /* ===================== Order Overview -  Credit Card / Debit Card Method Styling ======================= */
 
 .tig_buckaroo_payment_card_mastercard:before {
-     background-image  :url(../images/creditcard/ico-mc.png);
-     background-repeat :no-repeat;
-     margin-top        :18px;
-     float             :left;
-     margin-right      :10px;
-     background-size   :auto 23px;
-     width             :36px;
-     height            :30px;
-     content           :' ';
+    background-image  :url(../images/creditcard/ico-mc.png);
+    background-repeat :no-repeat;
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
  }
 
 .tig_buckaroo_payment_card_maestro:before {
     background-image  :url(../images/creditcard/ico-mae.png);
     background-repeat :no-repeat;
-    margin-top        :18px;
-    float             :left;
-    margin-right      :10px;
-    background-size   :auto 23px;
-    width             :36px;
-    height            :30px;
-    content           :' ';
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
 }
 
 .tig_buckaroo_payment_card_amex:before {
     background-image  :url(../images/creditcard/ico-ae.png);
     background-repeat :no-repeat;
-    margin-top        :15px;
-    float             :left;
-    margin-right      :10px;
-    background-size   :auto 27px;
-    width             :36px;
-    height            :30px;
-    content           :' ';
+    margin-top: -3px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 27px;
+    width: 40px;
+    height: 28px;
+    content: ' ';
 }
 
 .tig_buckaroo_payment_card_visa:before {
     background-image  :url(../images/creditcard/ico-vi.png);
     background-repeat :no-repeat;
-    margin-top        :18px;
-    float             :left;
-    margin-right      :10px;
-    background-size   :auto 23px;
-    width             :36px;
-    height            :30px;
-    content           :' ';
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
 }
 
 .tig_buckaroo_payment_card_visaelectron:before {
      background-image  :url(../images/creditcard/ico-ve.png);
      background-repeat :no-repeat;
-     margin-top        :18px;
-     float             :left;
-     margin-right      :10px;
-     background-size   :auto 23px;
-     width             :36px;
-     height            :30px;
-     content           :' ';
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
  }
 
 .tig_buckaroo_payment_card_vpay:before {
     background-image  :url(../images/creditcard/ico-vp.png);
     background-repeat :no-repeat;
-    margin-top        :18px;
-    float             :left;
-    margin-right      :10px;
-    background-size   :auto 23px;
-    width             :36px;
-    height            :30px;
-    content           :' ';
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
 }
 
-.tig_buckaroo_payment_card_cartebleuevisa:before {
-    background-image  :url(../images/creditcard/ico-cbl.png);
-    background-repeat :no-repeat;
-    margin-top        :18px;
-    float             :left;
-    margin-right      :10px;
-    background-size   :auto 23px;
-    width             :40px;
-    height            :30px;
-    content           :' ';
-}
+/*.tig_buckaroo_payment_card_cartebleuevisa:before {*/
+    /*background-image  :url(../images/creditcard/ico-cbl.png);*/
+    /*background-repeat :no-repeat;*/
+    /*margin-top        :18px;*/
+    /*float             :left;*/
+    /*margin-right      :10px;*/
+    /*background-size   :auto 23px;*/
+    /*width             :40px;*/
+    /*height            :30px;*/
+    /*content           :' ';*/
+/*}*/
 
-.tig_buckaroo_payment_card_cartebancaire:before {
-    background-image  :url(../images/creditcard/ico-cb.png);
-    background-repeat :no-repeat;
-    margin-top        :18px;
-    float             :left;
-    margin-right      :10px;
-    background-size   :auto 23px;
-    width             :40px;
-    height            :30px;
-    content           :' ';
-}
+/*.tig_buckaroo_payment_card_cartebancaire:before {*/
+    /*background-image  :url(../images/creditcard/ico-cb.png);*/
+    /*background-repeat :no-repeat;*/
+    /*margin-top        :18px;*/
+    /*float             :left;*/
+    /*margin-right      :10px;*/
+    /*background-size   :auto 23px;*/
+    /*width             :40px;*/
+    /*height            :30px;*/
+    /*content           :' ';*/
+/*}*/
