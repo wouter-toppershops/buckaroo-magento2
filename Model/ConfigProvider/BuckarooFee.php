@@ -57,7 +57,7 @@ class BuckarooFee extends AbstractConfigProvider
     /**
      * Calculation fee tax settings
      */
-    const XPATH_BUCKAROOFEE_PAYMENTFEE_TAX      = 'tax/calculation/buckaroo_fee';
+    const XPATH_BUCKAROOFEE_PAYMENT_FEE_TAX      = 'tax/calculation/buckaroo_fee';
 
     /**
      * Shopping cart display settings

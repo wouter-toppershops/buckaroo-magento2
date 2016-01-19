@@ -56,20 +56,28 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     public $priceCurrency;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @var \Magento\Tax\Api\Data\TaxClassInterfaceFactory
+     */
+    protected $taxClassRepositoryInterface;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Tax\Api\Data\TaxClassInterfaceFactory    $taxClassDataObjectFactory
      */
     public function __construct(
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
+        \Magento\Tax\Api\Data\TaxClassInterfaceFactory $taxClassDataObjectFactory = null
     ) {
         $this->setCode('buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
         $this->priceCurrency = $priceCurrency;
+        $this->taxClassDataObjectFactory = $taxClassDataObjectFactory;
     }
 
     /**
@@ -176,6 +184,12 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         $basePaymentFee = trim($configProvider->getPaymentFee());
 
         if (is_numeric($basePaymentFee)) {
+            if ($this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax() == 2) {
+                $taxClass = $this->configProviderFactory->get('buckaroo_fee')->getTaxClass();
+//                $taxRate = $this->taxClassRepositoryInterface->get($taxClass);
+//                $basePaymentFee = ($basePaymentFee/ (($taxRate->getRate()/100)+1));
+            }
+
             /** Payment fee is a number */
             return $basePaymentFee;
         } elseif (strpos($basePaymentFee, '%') === false) {
