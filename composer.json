@@ -6,14 +6,13 @@
         "mockery/mockery": "^0.9.4"
     },
     "type": "magento2-module",
-    "license": [
-        "OSL-3.0",
-        "AFL-3.0"
-    ],
-    "authors": [{
+    "license": "CC BY-NC-ND 3.0 NL",
+    "authors": [
+      {
         "name": "TIG",
         "email": "servicedesk@tig.nl"
-    }],
+      }
+    ],
     "minimum-stability": "dev",
     "autoload": {
         "files": [
