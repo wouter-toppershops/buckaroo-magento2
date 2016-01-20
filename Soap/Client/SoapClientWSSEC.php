@@ -38,7 +38,8 @@ class SoapClientWSSEC extends \SoapClient
         return $ret;
     }
 
-    public function __doRequest ($request, $location, $action, $version, $one_way = 0) {
+    public function __doRequest($request, $location, $action, $version, $one_way = 0)
+    {
 
         $domDOC = new \DOMDocument();
         $domDOC->loadXML($request);

@@ -109,5 +109,4 @@ class BankFields extends \Magento\Backend\Block\Template
 
         return $paymentMethod;
     }
-
 }

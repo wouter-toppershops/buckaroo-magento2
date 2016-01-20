@@ -44,7 +44,9 @@ use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
 
 class SupportTab extends \Magento\Framework\View\Element\Template implements RendererInterface
 {
+    // @codingStandardsIgnoreStart
     protected $_template = 'supportTab.phtml';
+    // @codingStandardsIgnoreEnd
 
     /**
      * @var \Magento\Framework\Setup\ModuleContextInterface
@@ -62,8 +64,7 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Module\ModuleResource $moduleContext,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $data);
 
         $this->moduleContext = $moduleContext;

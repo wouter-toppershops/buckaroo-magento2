@@ -43,8 +43,12 @@ namespace TIG\Buckaroo\Test\Unit\Model\Method;
  *
  * @package TIG\Buckaroo\Test\Unit\Model\Method
  */
-class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod {
+class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
+{
+    // @codingStandardsIgnoreStart
     protected $_code = 'tig_buckaroo_test';
+    // @codingStandardsIgnoreEnd
+    
     public function getOrderTransactionBuilder($payment) {}
     public function getAuthorizeTransactionBuilder($payment) {}
     public function getCaptureTransactionBuilder($payment) {}

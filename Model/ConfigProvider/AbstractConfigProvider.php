@@ -177,5 +177,4 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
             $store
         );
     }
-
 }

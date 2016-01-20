@@ -190,8 +190,6 @@ class Process extends \Magento\Framework\App\Action\Action
                 $this->redirectFailure();
                 break;
         }
-
-        return;
     }
 
     /**

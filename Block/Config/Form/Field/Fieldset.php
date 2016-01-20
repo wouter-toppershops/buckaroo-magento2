@@ -40,6 +40,10 @@ namespace TIG\Buckaroo\Block\Config\Form\Field;
 
 class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 {
+    // @codingStandardsIgnoreStart
+    /**
+     * {@inheritdoc}
+     */
     protected function _getFrontendClass($element)
     {
         $class = 'payment_method_';
@@ -58,4 +62,5 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 
         return $classes;
     }
+    // @codingStandardsIgnoreStart
 }

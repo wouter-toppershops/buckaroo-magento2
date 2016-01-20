@@ -65,5 +65,4 @@ class Refund extends AbstractConfigProvider
         ];
         return $config;
     }
-
 }

@@ -131,5 +131,4 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
     {
         return $this->toOptionArray($method);
     }
-
 }

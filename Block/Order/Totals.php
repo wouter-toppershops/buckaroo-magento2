@@ -104,5 +104,4 @@ class Totals extends \Magento\Sales\Block\Order\Totals
         }
         return $totals;
     }
-
 }
