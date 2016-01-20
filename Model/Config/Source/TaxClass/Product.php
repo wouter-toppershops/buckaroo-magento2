@@ -94,6 +94,8 @@ class Product implements \Magento\Framework\Option\ArrayInterface
                 ->create();
             $searchCriteria = $this->searchCriteriaBuilder->addFilters([$filter])->create();
             $taxClasses = $this->taxClassRepository->getList($searchCriteria)->getItems();
+
+            /** @var \Magento\Tax\Api\Data\TaxClassInterface $taxClass */
             foreach ($taxClasses as $taxClass) {
                 $this->options[] = [
                     'value' => $taxClass->getClassId(),

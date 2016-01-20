@@ -43,6 +43,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  * @method getActiveStatus()
  * @method getOrderStatusSuccess()
  * @method getOrderStatusFailed()
+ * @method getDueDate()
  */
 class Transfer extends AbstractConfigProvider
 {

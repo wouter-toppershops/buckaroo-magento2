@@ -130,18 +130,22 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($fixture['order']);
-        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn($fixture['card_type']);
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')
+            ->with('card_type')
+            ->andReturn($fixture['card_type']);
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals($fixture['card_type'], $services['Name']);
-            $this->assertEquals('Pay', $services['Action']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals($fixture['card_type'], $services['Name']);
+                $this->assertEquals('Pay', $services['Action']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -163,7 +167,9 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($fixture['order']);
-        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn($fixture['card_type']);
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')
+            ->with('card_type')
+            ->andReturn($fixture['card_type']);
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
             \TIG\Buckaroo\Model\Method\Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn($fixture['transaction_key']);
@@ -174,12 +180,14 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
         $order->shouldReceive('setOriginalTransactionKey')->with($fixture['transaction_key'])->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals($fixture['card_type'], $services['Name']);
-            $this->assertEquals('Capture', $services['Action']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals($fixture['card_type'], $services['Name']);
+                $this->assertEquals('Capture', $services['Action']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -201,18 +209,22 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($fixture['order']);
-        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn($fixture['card_type']);
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')
+            ->with('card_type')
+            ->andReturn($fixture['card_type']);
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals($fixture['card_type'], $services['Name']);
-            $this->assertEquals('Authorize', $services['Action']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals($fixture['card_type'], $services['Name']);
+                $this->assertEquals('Authorize', $services['Action']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -233,24 +245,33 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn('orderr');
-        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn($fixture['card_type']);
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')
+            ->with('card_type')
+            ->andReturn($fixture['card_type']);
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
             \TIG\Buckaroo\Model\Method\Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with('orderr')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing( function ($services) {
-            $services['Name'] = 'creditcard';
-            $services['Action'] = 'Refund';
+        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing(
+            function ($services) {
+                $services['Name'] = 'creditcard';
+                $services['Action'] = 'Refund';
 
-            return $this->transactionBuilderFactory;
-        });
+                return $this->transactionBuilderFactory;
+            }
+        );
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
+            ->with('getAdditionalInformation')
+            ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
-        $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($this->paymentInterface));
+        $this->assertEquals(
+            $this->transactionBuilderFactory,
+            $this->object->getRefundTransactionBuilder($this->paymentInterface)
+        );
     }
 
     /**

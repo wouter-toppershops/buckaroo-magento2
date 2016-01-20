@@ -99,6 +99,7 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
             $methodConfig = $this->configProviderMethodFactory->get($methodName);
 
             $location = $predefinedConfig->getLocationLiveWeb();
+            /** @noinspection PhpUndefinedMethodInspection */
             if ($methodConfig->getActive() == 1) {
                 $location = $predefinedConfig->getLocationTestWeb();
             }

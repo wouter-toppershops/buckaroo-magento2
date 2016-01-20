@@ -78,11 +78,14 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $data = \Mockery::mock(\Magento\Framework\DataObject::class);
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
 
-        foreach($fixture as $key => $value)
-        {
-            $camelCase = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
-                return strtoupper($matches[1]);
-            }, $key);
+        foreach ($fixture as $key => $value) {
+            $camelCase = preg_replace_callback(
+                "/(?:^|_)([a-z])/",
+                function ($matches) {
+                    return strtoupper($matches[1]);
+                },
+                $key
+            );
 
             $data->shouldReceive('get' . $camelCase)->andReturn($value);
             $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
