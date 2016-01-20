@@ -44,7 +44,7 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
      * Core order config
      * @var \Magento\Sales\Model\Order\Config
      */
-    protected $_orderConfig;
+    protected $orderConfig;
 
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
@@ -59,7 +59,7 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
         \Magento\Sales\Model\Order\Config $orderConfig,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->_orderConfig = $orderConfig;
+        $this->orderConfig = $orderConfig;
         $this->configProviderFactory = $configProviderFactory;
     }
 
@@ -74,7 +74,7 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
         $statesConfig = $this->configProviderFactory->get('states');
         $state = $statesConfig->getOrderStateFailed();
 
-        $statuses = $this->_orderConfig->getStateStatuses($state);
+        $statuses = $this->orderConfig->getStateStatuses($state);
 
         $options = [];
         $options[] = ['value' => '', 'label' => __('-- Please Select --')];

@@ -43,7 +43,7 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
     /**
      * @var \TIG\Buckaroo\Model\CertificateFactory $certificateModel
      */
-    protected $_modelCertificateFactory;
+    protected $modelCertificateFactory;
 
     /**
      * @param \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
@@ -51,7 +51,7 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
     public function __construct(
         \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
     ) {
-        $this->_modelCertificateFactory = $modelCertificateFactory;
+        $this->modelCertificateFactory = $modelCertificateFactory;
     }
 
     /**
@@ -93,7 +93,7 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
      */
     protected function getCertificateData()
     {
-        $certificateModel = $this->_modelCertificateFactory->create();
+        $certificateModel = $this->modelCertificateFactory->create();
         $certificateCollection = $certificateModel->getCollection();
 
         return $certificateCollection->getData();

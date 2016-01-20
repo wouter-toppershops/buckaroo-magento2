@@ -57,6 +57,7 @@ class Totals extends \TIG\Buckaroo\Block\Order\Totals
         $this->_isScopePrivate = true;
     }
 
+    // @codingStandardsIgnoreStart
     /**
      * Initialize order totals array
      *
@@ -68,4 +69,5 @@ class Totals extends \TIG\Buckaroo\Block\Order\Totals
         $this->removeTotal('base_grandtotal');
         return $this;
     }
+    // @codingStandardsIgnoreEnd
 }

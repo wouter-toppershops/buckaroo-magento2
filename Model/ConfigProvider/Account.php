@@ -206,5 +206,4 @@ class Account extends AbstractConfigProvider
 
         return $this->methodConfigProviderFactory->get($methodCode);
     }
-
 }
