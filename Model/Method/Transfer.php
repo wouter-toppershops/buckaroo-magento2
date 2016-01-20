@@ -122,6 +122,7 @@ class Transfer extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig */
         $transferConfig = $this->configProviderMethodFactory->get('transfer');
 
         $dueDays = abs($transferConfig->getDueDate());

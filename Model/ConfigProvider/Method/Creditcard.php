@@ -44,6 +44,10 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  * @method getOrderStatusSuccess()
  * @method getOrderStatusFailed()
  * @method getPaymentFeeLabel();
+ * @method getMaestroUnsecureHold()
+ * @method getMastercardUnsecureHold()
+ * @method getVisaUnsecureHold()
+ * @method getAllowedCreditcards()
  */
 class Creditcard extends AbstractConfigProvider
 {

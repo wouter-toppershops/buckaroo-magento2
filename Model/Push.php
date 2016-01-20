@@ -234,6 +234,8 @@ class Push implements PushInterface
                 if ($this->order->getPayment()->getMethod() == \TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE) {
                     $paypalConfig = $this->configProviderMethodFactory
                         ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE);
+
+                    /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Paypal $transferConfig */
                     $newSellersProtectionStatus = $paypalConfig->getSellersProtectionIneligible();
                     if (!empty($newSellersProtectionStatus)) {
                         $newStatus = $newSellersProtectionStatus;
@@ -283,7 +285,7 @@ class Push implements PushInterface
     protected function getOrderByTransactionKey($transactionId)
     {
         if ($transactionId) {
-            /** @var  \Magento\Sales\Model\Order\Payment\Transaction $transaction */
+            /** @var \Magento\Sales\Model\Order\Payment\Transaction $transaction */
             $transaction = $this->objectManager->create('Magento\Sales\Model\Order\Payment\Transaction');
             $transaction->load($transactionId, 'txn_id');
             $order = $transaction->getOrder();

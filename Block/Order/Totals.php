@@ -94,9 +94,10 @@ class Totals extends \Magento\Sales\Block\Order\Totals
         if ($area === null) {
             $totals = $this->initTotals();
         } else {
-            $area = (string)$area;
+            $area = (string) $area;
             foreach ($this->_totals as $total) {
-                $totalArea = (string)$total->getArea();
+                /** @noinspection PhpUndefinedMethodInspection */
+                $totalArea = (string) $total->getArea();
                 if ($totalArea == $area) {
                     $totals[] = $total;
                 }

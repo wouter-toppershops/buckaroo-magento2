@@ -370,7 +370,7 @@
     .tig_buckaroo_creditcard .tig_buckaroo_image_title:before {
         background-image: url(../images/tig_buckaroo_creditcard_title.png);
         background-repeat: no-repeat;
-        margin-top: 0px;
+        margin-top: 0;
         float: left;
         margin-right: 10px;
         background-size: auto 20px;

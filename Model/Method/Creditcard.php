@@ -156,6 +156,7 @@ class Creditcard extends AbstractMethod
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         /** If there are no credit cards chosen, we can't be available */
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $ccConfig */
         $ccConfig = $this->configProviderMethodFactory->get('creditcard');
         if (null === $ccConfig->getAllowedCreditcards()) {
             return false;

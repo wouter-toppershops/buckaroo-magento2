@@ -118,7 +118,7 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @throws \TIG\Buckaroo\Exception
      *
-     * @return void|\Magento\Framework\App\ResponseInterface
+     * @return \Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {
@@ -189,7 +189,10 @@ class Process extends \Magento\Framework\App\Action\Action
 
                 $this->redirectFailure();
                 break;
+            //no default
         }
+
+        return $this->_response;
     }
 
     /**

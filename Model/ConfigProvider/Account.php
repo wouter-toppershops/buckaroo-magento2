@@ -60,6 +60,7 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getFeePercentageMode()
  * @method mixed getOrderStatusPending()
  * @method mixed getOrderStatusNew()
+ * @method mixed getPaymentFeeLabel()
  */
 class Account extends AbstractConfigProvider
 {

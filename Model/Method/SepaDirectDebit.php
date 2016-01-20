@@ -280,6 +280,7 @@ class SepaDirectDebit extends AbstractMethod
         if ($paymentInfo instanceof Payment) {
             $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
         } else {
+            /** @noinspection PhpUndefinedMethodInspection */
             $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
         }
 

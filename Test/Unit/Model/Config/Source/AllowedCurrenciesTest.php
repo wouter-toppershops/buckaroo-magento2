@@ -79,7 +79,8 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
         $this->resource = \Mockery::mock(\Magento\Framework\Model\ResourceModel\AbstractResource::class);
         $this->resource->shouldReceive('save');
 
-        $this->allowedCurrenciesConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies::class)->makePartial();
+        $this->allowedCurrenciesConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies::class)
+            ->makePartial();
         $this->allowedCurrenciesConfig->shouldReceive('getAllowedCurrencies')->andReturn(['ABC', 'DEF', 'GHI']);
 
         $this->currencyBundle = \Mockery::mock(\Magento\Framework\Locale\Bundle\CurrencyBundle::class)->makePartial();
@@ -87,11 +88,14 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
             'Currencies' => $this->fixture,
         ]);
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::class, [
-            'resource' => $this->resource,
-            'currencyBundle' => $this->currencyBundle,
-            'allowedCurrenciesConfig' => $this->allowedCurrenciesConfig,
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::class,
+            [
+                'resource' => $this->resource,
+                'currencyBundle' => $this->currencyBundle,
+                'allowedCurrenciesConfig' => $this->allowedCurrenciesConfig,
+            ]
+        );
     }
 
     /**

@@ -54,24 +54,30 @@ class SoapClientWSSEC extends \SoapClient
         return parent::__doRequest($domDOC->saveXML($domDOC->documentElement), $location, $action, $version, $one_way);
     }
 
-    public function loadPem($pemFile) {
+    public function loadPem($pemFile)
+    {
         $this->pemdata = $pemFile;
     }
 
-    private function SignDomDocument($domDocument) {
+    private function SignDomDocument(\DomDocument $domDocument)
+    {
 
         //create xPath
         $xPath = new \DOMXPath($domDocument);
 
         //register namespaces to use in xpath query's
-        $xPath->registerNamespace('wsse','http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd');
-        $xPath->registerNamespace('sig','http://www.w3.org/2000/09/xmldsig#');
-        $xPath->registerNamespace('soap','http://schemas.xmlsoap.org/soap/envelope/');
+        $xPath->registerNamespace(
+            'wsse',
+            'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd'
+        );
+        $xPath->registerNamespace('sig', 'http://www.w3.org/2000/09/xmldsig#');
+        $xPath->registerNamespace('soap', 'http://schemas.xmlsoap.org/soap/envelope/');
 
         //Set id on soap body to easily extract the body later.
         $bodyNodeList = $xPath->query('/soap:Envelope/soap:Body');
         $bodyNode = $bodyNodeList->item(0);
-        $bodyNode->setAttribute('Id','_body');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $bodyNode->setAttribute('Id', '_body');
 
         //Get the digest values
         $controlHash = $this->CalculateDigestValue($this->GetCanonical($this->GetReference('_control', $xPath)));
@@ -117,19 +123,25 @@ class SoapClientWSSEC extends \SoapClient
 
         //Create keyinfo element and Add public key to KeyIdentifier element
         $KeyTypeNode = $domDocument->createElementNS("http://www.w3.org/2000/09/xmldsig#","KeyInfo");
-        $SecurityTokenReference = $domDocument->createElementNS('http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd','SecurityTokenReference');
+        $SecurityTokenReference = $domDocument->createElementNS(
+            'http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-wssecurity-secext-1.0.xsd','SecurityTokenReference'
+        );
         $KeyIdentifier = $domDocument->createElement("KeyIdentifier");
 
         $thumbprint = $this->sha1_thumbprint($this->pemdata);
         $KeyIdentifier->nodeValue = $thumbprint;
-        $KeyIdentifier->setAttribute('ValueType','http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#ThumbPrintSHA1');
+        $KeyIdentifier->setAttribute(
+            'ValueType',
+            'http://docs.oasis-open.org/wss/oasis-wss-soap-message-security-1.1#ThumbPrintSHA1'
+        );
         $SecurityTokenReference->appendChild($KeyIdentifier);
         $KeyTypeNode->appendChild($SecurityTokenReference);
         $sigNodeSet->appendChild($KeyTypeNode);
     }
 
     //Get nodeset based on xpath and ID
-    private function GetReference($ID, $xPath) {
+    private function GetReference($ID, \DOMXPath $xPath)
+    {
         $query = '//*[@Id="'.$ID.'"]';
         $nodeset = $xPath->query($query);
         $Object = $nodeset->item(0);
@@ -138,27 +150,28 @@ class SoapClientWSSEC extends \SoapClient
     }
 
     //Canonicalize nodeset
-    private function GetCanonical($Object) {
+    private function GetCanonical(\DOMNode $Object)
+    {
         $output = $Object->C14N(true, false);
         return $output;
     }
 
     //Calculate digest value (sha1 hash)
     private function CalculateDigestValue($input) {
-        $digValueControl = base64_encode(pack("H*",sha1($input)));
+        $digValueControl = base64_encode(pack("H*", sha1($input)));
 
         return $digValueControl;
     }
 
     private function sha1_thumbprint($fullcert) {
         // First, strip out only the right section
-        $result = openssl_x509_export($fullcert, $pem);
+        openssl_x509_export($fullcert, $pem);
 
         // Then calculate sha1 of base64 decoded cert
-        $pem = preg_replace('/\-+BEGIN CERTIFICATE\-+/','',$pem);
-        $pem = preg_replace('/\-+END CERTIFICATE\-+/','',$pem);
+        $pem = preg_replace('/\-+BEGIN CERTIFICATE\-+/', '', $pem);
+        $pem = preg_replace('/\-+END CERTIFICATE\-+/', '', $pem);
         $pem = trim($pem);
-        $pem = str_replace( array("\n\r","\n","\r"), '', $pem);
+        $pem = str_replace(array("\n\r","\n","\r"), '', $pem);
         $bin = base64_decode($pem);
         return sha1($bin);
     }

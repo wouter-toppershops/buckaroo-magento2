@@ -49,11 +49,7 @@
 
                 //<![CDATA[
                     toggleRewardPointsRefundAmount = function() {
-                        if ($('creditmemo_refund_reward_points_enable').checked) {
-                            $('creditmemo_refund_reward_points').disabled = false;
-                        } else {
-                            $('creditmemo_refund_reward_points').disabled = true;
-                        }
+                        $('creditmemo_refund_reward_points').disabled = !$('creditmemo_refund_reward_points_enable').checked;
                     };
                     Event.observe($('creditmemo_refund_reward_points_enable'), 'change', toggleRewardPointsRefundAmount);
                     toggleRewardPointsRefundAmount();

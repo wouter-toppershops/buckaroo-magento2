@@ -104,12 +104,14 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals('giropay', $services['Name']);
-            $this->assertEquals($fixture['customer_bic'], $services['RequestParameter'][0]['_']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals('giropay', $services['Name']);
+                $this->assertEquals($fixture['customer_bic'], $services['RequestParameter'][0]['_']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -160,7 +162,9 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
             return $this->transactionBuilderFactory;
         });
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
+            ->with('getAdditionalInformation')
+            ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
         $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($payment));
@@ -209,7 +213,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         try {
             $this->object->validate();
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertEquals('Please enter a valid BIC number', $e->getMessage());
             $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
         }
@@ -223,7 +227,10 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
         $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->once()->andReturnSelf();
         $paymentInfo->shouldReceive('getCountryId')->once()->andReturn(4);
-        $paymentInfo->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(true);
+        $paymentInfo->shouldReceive('getAdditionalInformation')
+            ->with('buckaroo_skip_validation')
+            ->once()
+            ->andReturn(true);
 
         $this->object->setData('info_instance', $paymentInfo);
 

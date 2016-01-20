@@ -58,9 +58,12 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::class, [
-            'scopeConfig' => $this->scopeConfig,
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::class,
+            [
+                'scopeConfig' => $this->scopeConfig,
+            ]
+        );
     }
 
     /**
@@ -100,7 +103,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $sendEmail = '1';
         $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/active')->andReturn(true);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/send_email')->andReturn($sendEmail);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with('payment/tig_buckaroo_transfer/send_email')
+            ->andReturn($sendEmail);
         $this->scopeConfig->shouldReceive('getValue')->andReturn(false);
 
         $result = $this->object->getConfig();
@@ -130,7 +135,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $value = null;
         $this->paymentFeeConfig($value);
 
-        $this->assertFalse($this->object->getPaymentFee());
+        $this->assertFalse((bool) $this->object->getPaymentFee());
     }
 
     /**
@@ -152,6 +157,6 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $value = '';
         $this->paymentFeeConfig($value);
 
-        $this->assertFalse($this->object->getPaymentFee());
+        $this->assertFalse((bool) $this->object->getPaymentFee());
     }
 }
