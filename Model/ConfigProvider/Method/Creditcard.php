@@ -40,9 +40,6 @@
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
  * @method getPaymentFeeLabel();
  * @method getMaestroUnsecureHold()
  * @method getMastercardUnsecureHold()
