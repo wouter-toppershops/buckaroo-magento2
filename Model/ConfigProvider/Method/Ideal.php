@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class Ideal extends AbstractConfigProvider
 {
     const XPATH_IDEAL_PAYMENT_FEE           = 'payment/tig_buckaroo_ideal/payment_fee';

@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class SepaDirectDebit extends AbstractConfigProvider
 {
     const XPATH_SEPADIRECTDEBIT_PAYMENT_FEE             = 'payment/tig_buckaroo_sepadirectdebit/payment_fee';

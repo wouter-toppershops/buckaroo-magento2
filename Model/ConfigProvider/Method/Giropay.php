@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class Giropay extends AbstractConfigProvider
 {
     const XPATH_GIROPAY_PAYMENT_FEE             = 'payment/tig_buckaroo_giropay/payment_fee';
