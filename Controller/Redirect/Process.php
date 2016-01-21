@@ -257,6 +257,7 @@ class Process extends \Magento\Framework\App\Action\Action
 
         if ($this->order->canCancel()) {
             $this->order->cancel();
+
             $failedStatus = $this->orderStatusFactory->get(
                 $statusCode,
                 $this->order

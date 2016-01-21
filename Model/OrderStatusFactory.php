@@ -89,11 +89,9 @@ class OrderStatusFactory
             /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
             $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
 
-            if (!$configProvider->getActiveStatus()) {
-                return $status;
+            if ($configProvider->getActiveStatus()) {
+                $status = $this->getPaymentMethodStatus($statusCode, $configProvider);
             }
-
-            $status = $this->getPaymentMethodStatus($statusCode, $configProvider);
         }
 
         if ($status) {
@@ -104,23 +102,21 @@ class OrderStatusFactory
         $configProvider = $this->configProviderFactory->get('account');
 
         switch ($statusCode) {
-            case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-            case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
-            case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
-            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
-            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
-            case 'TIG_BUCKAROO_STATUSCODE_FAILED':
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
                 $status = $configProvider->getOrderStatusFailed();
                 break;
-            case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
                 $status = $configProvider->getOrderStatusSuccess();
                 break;
-            case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
-                break;
-            case 'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD':
-            case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
-            case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
-            case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT'):
                 $status = $configProvider->getOrderStatusPending();
                 break;
         }
@@ -139,15 +135,15 @@ class OrderStatusFactory
         $status = false;
 
         switch ($statusCode) {
-            case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
-            case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
-            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
-            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
-            case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-            case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
                 $status = $configProvider->getOrderStatusFailed();
                 break;
-            case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
                 $status = $configProvider->getOrderStatusSuccess();
                 break;
         }
