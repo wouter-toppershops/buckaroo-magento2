@@ -104,12 +104,14 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals('ideal', $services['Name']);
-            $this->assertEquals($fixture['issuer'], $services['RequestParameter'][0]['_']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals('ideal', $services['Name']);
+                $this->assertEquals($fixture['issuer'], $services['RequestParameter'][0]['_']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -153,14 +155,18 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with('orderr')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing( function ($services) {
-            $services['Name'] = 'ideal';
-            $services['Action'] = 'Refund';
+        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing(
+            function ($services) {
+                $services['Name'] = 'ideal';
+                $services['Action'] = 'Refund';
 
-            return $this->transactionBuilderFactory;
-        });
+                return $this->transactionBuilderFactory;
+            }
+        );
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
+            ->with('getAdditionalInformation')
+            ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
         $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($payment));
@@ -189,7 +195,10 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
         $idealConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class);
         $idealConfig->shouldReceive('getIssuers')->andReturn([['code' => 'NLRABO']]);
 
-        $this->objectManager->shouldReceive('get')->once()->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)->andReturn($idealConfig);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)
+            ->andReturn($idealConfig);
 
         $this->object->setData('info_instance', $paymentInfo);
         $result = $this->object->validate();
@@ -212,14 +221,17 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
         $idealConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class);
         $idealConfig->shouldReceive('getIssuers')->andReturn([['code' => 'NLRABO']]);
 
-        $this->objectManager->shouldReceive('get')->once()->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)->andReturn($idealConfig);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)
+            ->andReturn($idealConfig);
 
         $this->object->setData('info_instance', $paymentInfo);
 
         try {
             $this->object->validate();
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertEquals('Please select a issuer from the list', $e->getMessage());
             $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
         }
@@ -234,10 +246,16 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
         $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->once()->andReturnSelf();
         $paymentInfo->shouldReceive('getCountryId')->once()->andReturn(4);
 
-        $paymentInfo->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(true);
+        $paymentInfo->shouldReceive('getAdditionalInformation')
+            ->with('buckaroo_skip_validation')
+            ->once()
+            ->andReturn(true);
         $idealConfig = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class);
 
-        $this->objectManager->shouldReceive('get')->once()->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)->andReturn($idealConfig);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\TIG\Buckaroo\Model\ConfigProvider\Method\Ideal::class)
+            ->andReturn($idealConfig);
 
         $this->object->setData('info_instance', $paymentInfo);
 

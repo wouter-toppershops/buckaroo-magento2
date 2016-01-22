@@ -39,8 +39,6 @@
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
-use TIG\Buckaroo\Exception;
-
 class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
 {
     /**
@@ -66,8 +64,10 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     /**
      * Bpe3 constructor.
      *
-     * @param \TIG\Buckaroo\Gateway\Http\Client\Soap $client
-     * @param \Magento\Framework\Data\ObjectFactory  $objectFactory
+     * @param \TIG\Buckaroo\Gateway\Http\Client\Soap     $client
+     * @param \Magento\Framework\Data\ObjectFactory      $objectFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @param \TIG\Buckaroo\Debug\Debugger               $debugger
      */
     public function __construct(
         \TIG\Buckaroo\Gateway\Http\Client\Soap $client,

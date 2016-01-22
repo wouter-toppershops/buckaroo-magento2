@@ -87,11 +87,9 @@ KEY;
     /**
      * Return public key
      *
-     * @param null $store
-     *
      * @return null|string
      */
-    public function getPublicKey($store = null)
+    public function getPublicKey()
     {
         return $this->publicKey;
     }

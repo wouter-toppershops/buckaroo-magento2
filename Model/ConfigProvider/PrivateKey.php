@@ -91,11 +91,9 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Return private key from certificate
      *
-     * @param null $store
-     *
      * @return string
      */
-    public function getPrivateKey($store = null)
+    public function getPrivateKey()
     {
         return $this->certificate->getCertificate();
     }
