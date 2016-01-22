@@ -39,9 +39,11 @@
 
 namespace TIG\Buckaroo\Model;
 
+use Magento\Checkout\Model\PaymentInformationManagement as MagentoPaymentInformationManagement;
+use TIG\Buckaroo\Api\PaymentInformationManagementInterface;
+
 // @codingStandardsIgnoreStart
-class PaymentInformationManagement extends \Magento\Checkout\Model\PaymentInformationManagement
-    implements \TIG\Buckaroo\Api\PaymentInformationManagementInterface
+class PaymentInformationManagement extends MagentoPaymentInformationManagement implements PaymentInformationManagementInterface
 // @codingStandardsIgnoreEnd
 {
 
