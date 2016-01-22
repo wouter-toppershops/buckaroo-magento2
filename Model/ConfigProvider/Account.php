@@ -152,7 +152,7 @@ class Account extends AbstractConfigProvider
          * If a Payment Method is set, get the payment method status
          */
         if (!is_null($paymentMethod)) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider */
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
@@ -182,7 +182,7 @@ class Account extends AbstractConfigProvider
          * If a Payment Method is set, get the payment method status
          */
         if (!is_null($paymentMethod)) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider */
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
