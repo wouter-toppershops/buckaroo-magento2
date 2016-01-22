@@ -67,8 +67,7 @@
 
 /* PayPal */
 .tig_buckaroo_payment_paypal:before {
-    background-image: url(../images/tig_buckaroo_paypal_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_paypal_title.png) no-repeat;
     float: left;
     margin-right: 10px;
     margin-top: -4px;
@@ -80,8 +79,7 @@
 
 /* iDeal */
 .tig_buckaroo_payment_ideal:before {
-    background-image: url(../images/tig_buckaroo_ideal_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_ideal_title.png) no-repeat;
     float: left;
     margin-right: 10px;
     margin-top: -3px;
@@ -94,8 +92,7 @@
 
 /* Credit Card */
 .tig_buckaroo_payment_creditcard:before {
-    background-image: url(../images/tig_buckaroo_creditcard_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_creditcard_title.png) no-repeat;
     margin-top: 0;
     float: left;
     margin-right: 10px;
@@ -107,8 +104,7 @@
 
 /* Sepa Direct Debit */
 .tig_buckaroo_payment_sepadirectdebit:before {
-    background-image: url(../images/tig_buckaroo_sepa_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_sepa_title.png) no-repeat;
     margin-top: 2px;
     float: left;
     margin-right: 10px;
@@ -120,8 +116,7 @@
 
 /* Bank Transfer */
 .tig_buckaroo_payment_transfer:before {
-    background-image: url(../images/tig_buckaroo_transfer_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_transfer_title.png) no-repeat;
     margin-top: 2px;
     float: left;
     margin-right: 10px;
@@ -133,8 +128,7 @@
 
 /* Mr Cash */
 .tig_buckaroo_payment_mrcash:before {
-    background-image: url(../images/tig_buckaroo_mrcash_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_mrcash_title.png) no-repeat;
     margin-top: -2px;
     float: left;
     margin-right: 10px;
@@ -146,8 +140,7 @@
 
 /* Sofort Banking */
 .tig_buckaroo_payment_sofortbanking:before {
-    background-image: url(../images/tig_buckaroo_sofort_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
     margin-top: 1px;
     float: left;
     margin-right: 10px;
@@ -159,8 +152,7 @@
 
 /* Giropay */
 .tig_buckaroo_payment_giropay:before {
-    background-image  :url(../images/tig_buckaroo_giropay_title.png);
-    background-repeat :no-repeat;
+    background: url(../images/tig_buckaroo_giropay_title.png) no-repeat;
     margin-top        :2px;
     float             :left;
     margin-right      :10px;
@@ -173,8 +165,7 @@
 /* ===================== Order Overview -  Credit Card / Debit Card Method Styling ======================= */
 
 .tig_buckaroo_payment_card_mastercard:before {
-    background-image  :url(../images/creditcard/ico-mc.png);
-    background-repeat :no-repeat;
+    background: url(../images/creditcard/ico-mc.png) no-repeat;
     margin-top: -2px;
     float: left;
     margin-right: 7px;
@@ -185,8 +176,7 @@
  }
 
 .tig_buckaroo_payment_card_maestro:before {
-    background-image  :url(../images/creditcard/ico-mae.png);
-    background-repeat :no-repeat;
+    background: url(../images/creditcard/ico-mae.png) no-repeat;
     margin-top: -2px;
     float: left;
     margin-right: 7px;
@@ -197,8 +187,7 @@
 }
 
 .tig_buckaroo_payment_card_amex:before {
-    background-image  :url(../images/creditcard/ico-ae.png);
-    background-repeat :no-repeat;
+    background: url(../images/creditcard/ico-ae.png) no-repeat;
     margin-top: -3px;
     float: left;
     margin-right: 7px;
@@ -209,8 +198,7 @@
 }
 
 .tig_buckaroo_payment_card_visa:before {
-    background-image  :url(../images/creditcard/ico-vi.png);
-    background-repeat :no-repeat;
+    background: url(../images/creditcard/ico-vi.png) no-repeat;
     margin-top: -2px;
     float: left;
     margin-right: 7px;
@@ -221,8 +209,7 @@
 }
 
 .tig_buckaroo_payment_card_visaelectron:before {
-     background-image  :url(../images/creditcard/ico-ve.png);
-     background-repeat :no-repeat;
+    background: url(../images/creditcard/ico-ve.png) no-repeat;
     margin-top: -2px;
     float: left;
     margin-right: 7px;
@@ -233,8 +220,7 @@
  }
 
 .tig_buckaroo_payment_card_vpay:before {
-    background-image  :url(../images/creditcard/ico-vp.png);
-    background-repeat :no-repeat;
+    background: url(../images/creditcard/ico-vp.png) no-repeat;
     margin-top: -2px;
     float: left;
     margin-right: 7px;

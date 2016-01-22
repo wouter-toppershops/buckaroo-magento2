@@ -78,29 +78,21 @@
 }
 
 .payment_method_payment_method_inactive > .entry-edit-head {
-    background-image: url(../images/tig_buckaroo_disabled.png);
     background-size:16px;
-    background-repeat: no-repeat;
-
     box-sizing: border-box;
-    background-position: calc(100% - 1.3rem);
+    background: url(../images/tig_buckaroo_disabled.png) no-repeat calc(100% - 1.3rem);
 }
 
 .payment_method_live  > .entry-edit-head {
-    background-image: url(../images/tig_buckaroo_live.png);
     background-size:16px;
-    background-repeat: no-repeat;
-
     box-sizing: border-box;
-    background-position: calc(100% - 1.3rem);
+    background: url(../images/tig_buckaroo_live.png) no-repeat calc(100% - 1.3rem);
 }
 
 .payment_method_test  > .entry-edit-head {
-    background-image: url(../images/tig_buckaroo_test.png);
     background-size:16px;
-    background-repeat: no-repeat;
     box-sizing: border-box;
-    background-position: calc(100% - 1.3rem);
+    background: url(../images/tig_buckaroo_test.png) no-repeat calc(100% - 1.3rem);
 }
 
 

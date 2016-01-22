@@ -60,8 +60,7 @@ class HelperTest extends BaseTest
     {
         $this->assertNull($this->helper->getStatusCode(''));
 
-        foreach($this->helper->getStatusCodes() as $name => $code)
-        {
+        foreach ($this->helper->getStatusCodes() as $name => $code) {
             $this->assertEquals($code, $this->helper->getStatusCode($name));
         }
     }
@@ -70,8 +69,7 @@ class HelperTest extends BaseTest
     {
         $this->assertNull($this->helper->getStatusByValue(''));
 
-        foreach($this->helper->getStatusCodes() as $name => $code)
-        {
+        foreach ($this->helper->getStatusCodes() as $name => $code) {
             $this->assertEquals($name, $this->helper->getStatusByValue($code));
         }
     }

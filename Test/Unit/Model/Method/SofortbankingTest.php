@@ -73,15 +73,17 @@ class SofortbankingTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->objectManager             = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
-        $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->scopeConfig               = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Sofortbanking::class, [
-            'scopeConfig' => $this->scopeConfig,
-            'objectManager' => $this->objectManager,
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Method\Sofortbanking::class, [
+            'scopeConfig'               => $this->scopeConfig,
+            'objectManager'             => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
-        ]);
+        ]
+        );
 
         $this->paymentInterface = \Mockery::mock(
             \Magento\Payment\Model\InfoInterface::class,
@@ -104,12 +106,14 @@ class SofortbankingTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals('Sofortueberweisung', $services['Name']);
-            $this->assertEquals('Pay', $services['Action']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals('Sofortueberweisung', $services['Name']);
+                $this->assertEquals('Pay', $services['Action']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -142,28 +146,36 @@ class SofortbankingTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $fixture = [
             'card_type' => 'fooname',
-            'order' => 'orderrr!',
+            'order'     => 'orderrr!',
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn('orderr');
-        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn($fixture['card_type']);
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn(
+            $fixture['card_type']
+        );
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
             \TIG\Buckaroo\Model\Method\Sofortbanking::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with('orderr')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing( function ($services) {
-            $services['Name'] = 'sofortbanking';
-            $services['Action'] = 'Refund';
+        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing(
+            function ($services) {
+                $services['Name']   = 'sofortbanking';
+                $services['Action'] = 'Refund';
 
-            return $this->transactionBuilderFactory;
-        });
+                return $this->transactionBuilderFactory;
+            }
+        );
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')
+                                        ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
-        $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($this->paymentInterface));
+        $this->assertEquals(
+            $this->transactionBuilderFactory,
+            $this->object->getRefundTransactionBuilder($this->paymentInterface)
+        );
     }
 
     /**

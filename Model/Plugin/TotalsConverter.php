@@ -46,6 +46,7 @@ class TotalsConverter
 
         $total = $addressTotals[$this->code];
         /** @var \Magento\Quote\Api\Data\TotalSegmentExtensionInterface $totalSegmentExtension */
+        /** @noinspection PhpUndefinedMethodInspection */
         $totalSegmentExtension = $this->totalSegmentExtensionFactory->create();
 
         /** @noinspection PhpUndefinedMethodInspection */

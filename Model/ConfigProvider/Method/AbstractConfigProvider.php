@@ -46,8 +46,10 @@ use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
  * @method getOrderStatusSuccess()
  * @method getOrderStatusFailed()
  */
+ // @codingStandardsIgnoreStart
 abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider
     implements CheckoutConfigProvider, ConfigProviderInterface
+// @codingStandardsIgnoreEnd
 {
     /**
      * The asset repository to generate the correct url to our assets.
@@ -101,6 +103,7 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
         $this->paymentFeeHelper = $paymentFeeHelper;
 
         if (!$this->allowedCurrencies) {
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig */
             $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
             if ($allowedCurrenciesConfig) {
                 $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();

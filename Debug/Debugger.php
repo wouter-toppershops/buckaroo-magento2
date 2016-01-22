@@ -456,5 +456,4 @@ class Debugger
         $this->mailFrom = $mailFrom;
         return $this;
     }
-
 }

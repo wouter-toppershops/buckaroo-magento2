@@ -51,6 +51,7 @@ class CartTotalRepository
         /** @var \Magento\Quote\Api\Data\TotalsExtensionInterface $extensionAttributes */
         $extensionAttributes = $totals->getExtensionAttributes();
         if ($extensionAttributes === null) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $extensionAttributes = $this->totalsExtensionFactory->create();
         }
 
