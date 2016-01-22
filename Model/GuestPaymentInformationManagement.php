@@ -39,9 +39,12 @@
 
 namespace TIG\Buckaroo\Model;
 
-class GuestPaymentInformationManagement
-    extends \Magento\Checkout\Model\GuestPaymentInformationManagement
-    implements \TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface
+use Magento\Checkout\Model\GuestPaymentInformationManagement as MagentoGuestPaymentInformationManagement;
+use TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface;
+
+// @codingStandardsIgnoreStart
+class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationManagement implements GuestPaymentInformationManagementInterface
+// @codingStandardsIgnoreEnd
 {
 
     protected $registry = null;

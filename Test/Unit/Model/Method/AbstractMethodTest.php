@@ -43,13 +43,37 @@ namespace TIG\Buckaroo\Test\Unit\Model\Method;
  *
  * @package TIG\Buckaroo\Test\Unit\Model\Method
  */
-class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod {
+class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
+{
+    // @codingStandardsIgnoreStart
     protected $_code = 'tig_buckaroo_test';
-    public function getOrderTransactionBuilder($payment) {}
-    public function getAuthorizeTransactionBuilder($payment) {}
-    public function getCaptureTransactionBuilder($payment) {}
-    public function getRefundTransactionBuilder($payment) {}
-    public function getVoidTransactionBuilder($payment) {}
+    // @codingStandardsIgnoreEnd
+
+    public function getOrderTransactionBuilder($payment)
+    {
+
+    }
+
+    public function getAuthorizeTransactionBuilder($payment)
+    {
+
+    }
+
+    public function getCaptureTransactionBuilder($payment)
+    {
+
+    }
+
+    public function getRefundTransactionBuilder($payment)
+    {
+
+    }
+
+    public function getVoidTransactionBuilder($payment)
+    {
+
+    }
+
     public function setCanRefund($value)
     {
         $this->_canRefund = $value;
@@ -61,7 +85,9 @@ class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod {
     }
 }
 
+// @codingStandardsIgnoreStart
 class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
+// @codingStandardsIgnoreEnd
 {
     /**
      * @var \Mockery\MockInterface
@@ -108,7 +134,8 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
 
         /**
-         * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod class.
+         * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
+         * class.
          */
         $this->object = $this->objectManagerHelper->getObject(AbstractMethod::class, [
             'objectManager' => $this->objectManager,
@@ -127,13 +154,32 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @return $this
      */
-    public function getValues($active = 1, $maxAmount = 80, $minAmount = 80, $limitByIp = null, $allowedCurrencies = 'ABC,DEF')
-    {
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn($active);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn($maxAmount);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)->andReturn($minAmount);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null)->andReturn($limitByIp);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_test/allowed_currencies', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null)->andReturn($allowedCurrencies);
+    public function getValues(
+        $active = 1,
+        $maxAmount = 80,
+        $minAmount = 80,
+        $limitByIp = null,
+        $allowedCurrencies = 'ABC,DEF'
+    ) {
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with('payment/tig_buckaroo_test/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)
+            ->andReturn($active);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)
+            ->andReturn($maxAmount);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)
+            ->andReturn($minAmount);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null)
+            ->andReturn($limitByIp);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with(
+                'payment/tig_buckaroo_test/allowed_currencies',
+                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                null
+            )
+            ->andReturn($allowedCurrencies);
 
         $this->account->shouldReceive('getActive')->once()->andReturn(1);
         $this->account->shouldReceive('getLimitByIp')->once()->andReturn(1);
@@ -174,8 +220,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
+        $this->objectManager->shouldReceive('create')
+            ->once()
+            ->with(\Magento\Developer\Helper\Data::class)
+            ->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\Magento\Framework\App\State::class)
+            ->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -204,8 +256,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
+        $this->objectManager->shouldReceive('create')
+            ->once()
+            ->with(\Magento\Developer\Helper\Data::class)
+            ->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\Magento\Framework\App\State::class)
+            ->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -230,8 +288,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
+        $this->objectManager->shouldReceive('create')
+            ->once()
+            ->with(\Magento\Developer\Helper\Data::class)
+            ->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\Magento\Framework\App\State::class)
+            ->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -256,8 +320,13 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
+        $this->objectManager->shouldReceive('create')
+            ->once()->with(\Magento\Developer\Helper\Data::class)
+            ->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\Magento\Framework\App\State::class)
+            ->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -284,8 +353,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
+        $this->objectManager->shouldReceive('create')
+            ->once()
+            ->with(\Magento\Developer\Helper\Data::class)
+            ->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\Magento\Framework\App\State::class)
+            ->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -312,8 +387,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Magento\Developer\Helper\Data::class)->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')->once()->with(\Magento\Framework\App\State::class)->andReturn($stateMock);
+        $this->objectManager->shouldReceive('create')
+            ->once()
+            ->with(\Magento\Developer\Helper\Data::class)
+            ->andReturn($developerHelper);
+        $this->objectManager->shouldReceive('get')
+            ->once()
+            ->with(\Magento\Framework\App\State::class)
+            ->andReturn($stateMock);
 
         $result = $this->object->isAvailable($quote);
 
@@ -322,6 +403,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testCanRefundParentFalse()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setCanRefund(false);
 
         $this->assertFalse($this->object->canRefund());
@@ -334,6 +416,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testCanRefundNotEnabled($enabled)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setCanRefund(true);
 
         $this->configProvider->shouldReceive('get')->andReturnSelf();
@@ -373,6 +456,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $payment = \Mockery::mock($mockClass);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setCanOrder(false);
         $this->object->order($payment, 0);
     }

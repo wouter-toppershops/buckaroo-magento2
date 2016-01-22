@@ -104,12 +104,14 @@ class PaypalTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals('paypal', $services['Name']);
-            $this->assertEquals('Pay', $services['Action']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals('paypal', $services['Name']);
+                $this->assertEquals('Pay', $services['Action']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
@@ -146,24 +148,33 @@ class PaypalTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn('orderr');
-        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with('card_type')->andReturn($fixture['card_type']);
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')
+            ->with('card_type')
+            ->andReturn($fixture['card_type']);
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
             \TIG\Buckaroo\Model\Method\Paypal::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with('orderr')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing( function ($services) {
-            $services['Name'] = 'paypal';
-            $services['Action'] = 'Refund';
+        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing(
+            function ($services) {
+                $services['Name'] = 'paypal';
+                $services['Action'] = 'Refund';
 
-            return $this->transactionBuilderFactory;
-        });
+                return $this->transactionBuilderFactory;
+            }
+        );
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
+            ->with('getAdditionalInformation')
+            ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
-        $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($this->paymentInterface));
+        $this->assertEquals(
+            $this->transactionBuilderFactory,
+            $this->object->getRefundTransactionBuilder($this->paymentInterface)
+        );
     }
 
     /**

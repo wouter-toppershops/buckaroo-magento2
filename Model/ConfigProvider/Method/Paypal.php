@@ -40,10 +40,8 @@
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
  * @method getPaymentFeeLabel()
+ * @method getSellersProtectionIneligible()
  */
 class Paypal extends AbstractConfigProvider
 {

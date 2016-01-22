@@ -98,6 +98,11 @@ class ProcessTest extends BaseTest
     protected $configProviderFactory;
 
     /**
+     * @var m\MockInterface
+     */
+    protected $orderStatusFactory;
+
+    /**
      * Setup the base mocks
      */
     public function setUp()
@@ -114,6 +119,8 @@ class ProcessTest extends BaseTest
         $this->configProviderFactory = m::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class)->makePartial();
         $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
 
+        $this->orderStatusFactory = m::mock(\TIG\Buckaroo\Model\OrderStatusFactory::class)->makePartial();
+
         $this->context = $this->objectManagerHelper->getObject(Context::class, [
             'request' => $this->request,
             'redirect' => $this->redirect,
@@ -126,6 +133,7 @@ class ProcessTest extends BaseTest
             'order' => $this->order,
             'cart' => $this->cart,
             'configProviderFactory' => $this->configProviderFactory,
+            'orderStatusFactory' => $this->orderStatusFactory,
         ]);
     }
 
@@ -170,6 +178,10 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('cancel')->once()->andReturnSelf();
         $this->order->shouldReceive('setStatus')->once()->with($failureStatus)->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
+
+        $this->orderStatusFactory
+            ->shouldReceive('get')
+            ->andReturn($failureStatus);
 
         $this->messageManager->shouldReceive('addErrorMessage');
 
@@ -224,7 +236,10 @@ class ProcessTest extends BaseTest
         $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn('tig_buckaroo_new');
         $this->configProviderFactory->shouldReceive('getSuccessRedirect')->andReturn('success_url');
         $this->configProviderFactory->shouldReceive('getOrderConfirmationEmail')->andReturn('0');
-        $this->configProviderFactory->shouldReceive('getOrderStatusSuccess')->andReturn($successStatus);
+
+        $this->orderStatusFactory
+            ->shouldReceive('get')
+            ->andReturn($successStatus);
 
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturn(true);

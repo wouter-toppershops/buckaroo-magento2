@@ -48,6 +48,7 @@ class Price extends \Magento\Framework\App\Config\Value
      */
     public function save()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $value = $this->getValue();
         if (!empty($value) && !is_numeric($value)) {
             throw new \Magento\Framework\Exception\LocalizedException(__("Please enter a valid number: '%1'.", $value));

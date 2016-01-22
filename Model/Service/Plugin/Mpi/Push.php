@@ -85,19 +85,19 @@ class Push
         if ($push->postData["brq_service_{$card}_authentication"] != 'Y') {
             switch ($card) {
                 case 'maestro':
-                    $putOrderOnHold = (bool) $this->configProviderMethodFactory
-                        ->get('creditcard')
-                        ->getMaestroUnsecureHold();
+                    /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider */
+                    $configProvider = $this->configProviderMethodFactory ->get('creditcard');
+                    $putOrderOnHold = (bool) $configProvider->getMaestroUnsecureHold();
                     break;
                 case 'visa':
-                    $putOrderOnHold = (bool) $this->configProviderMethodFactory
-                        ->get('creditcard')
-                        ->getVisaUnsecureHold();
+                    /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider */
+                    $configProvider = $this->configProviderMethodFactory ->get('creditcard');
+                    $putOrderOnHold = (bool) $configProvider->getVisaUnsecureHold();
                     break;
                 case 'mastercard':
-                    $putOrderOnHold = (bool) $this->configProviderMethodFactory
-                        ->get('creditcard')
-                        ->getMastercardUnsecureHold();
+                    /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider */
+                    $configProvider = $this->configProviderMethodFactory ->get('creditcard');
+                    $putOrderOnHold = (bool) $configProvider->getMastercardUnsecureHold();
                     break;
                 default:
                     $putOrderOnHold = false;

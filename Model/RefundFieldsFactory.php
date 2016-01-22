@@ -44,5 +44,4 @@ class RefundFieldsFactory
 
         return $this->refundFields[$paymentMethod];
     }
-
 }

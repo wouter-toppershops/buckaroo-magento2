@@ -115,7 +115,10 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->debugger->shouldReceive('addToMessage', 'log')->andReturnSelf();
 
-        $this->objectManager->shouldReceive('create')->once()->with('Magento\Sales\Api\CreditmemoManagementInterface')->andReturnSelf();
+        $this->objectManager->shouldReceive('create')
+            ->once()
+            ->with('Magento\Sales\Api\CreditmemoManagementInterface')
+            ->andReturnSelf();
         $this->objectManager->shouldReceive('refund')->once();
 
         $postData = [
@@ -142,8 +145,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         try {
             $this->object->receiveRefundPush([], false, $this->order);
             $this->fail();
-        } catch(\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\TIG\Buckaroo\Exception::class, $e);
             $this->assertEquals('Buckaroo refund push validation failed', $e->getMessage());
         }

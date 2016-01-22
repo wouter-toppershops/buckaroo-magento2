@@ -39,9 +39,11 @@
 
 // @codingStandardsIgnoreFile
 /**
- * @var $block \TIG\Buckaroo\Block\Info\Creditcard
+ * @var $block \TIG\Buckaroo\Block\Info
  */
 ?>
-<div class="tig_buckaroo_payment_<?php echo $block->escapeHtml($block->getMethod()->buckarooPaymentMethodCode); ?>">
+<?php /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $method */ ?>
+<?php $method = $block->getMethod(); ?>
+<div class="tig_buckaroo_payment_<?php echo $block->escapeHtml($method->buckarooPaymentMethodCode); ?>">
     <?php echo $block->escapeHtml($block->getMethod()->getTitle()) ?>
 </div>

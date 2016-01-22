@@ -60,6 +60,7 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getFeePercentageMode()
  * @method mixed getOrderStatusPending()
  * @method mixed getOrderStatusNew()
+ * @method mixed getPaymentFeeLabel()
  */
 class Account extends AbstractConfigProvider
 {
@@ -144,12 +145,14 @@ class Account extends AbstractConfigProvider
      */
     public function getOrderStatusSuccess($paymentMethod = null)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $orderStatusSuccess = parent::getOrderStatusSuccess();
 
         /**
          * If a Payment Method is set, get the payment method status
          */
         if (!is_null($paymentMethod)) {
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
@@ -172,12 +175,14 @@ class Account extends AbstractConfigProvider
      */
     public function getOrderStatusFailed($paymentMethod = null)
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $orderStatusFailed = parent::getOrderStatusFailed();
 
         /**
          * If a Payment Method is set, get the payment method status
          */
         if (!is_null($paymentMethod)) {
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
@@ -206,5 +211,4 @@ class Account extends AbstractConfigProvider
 
         return $this->methodConfigProviderFactory->get($methodCode);
     }
-
 }

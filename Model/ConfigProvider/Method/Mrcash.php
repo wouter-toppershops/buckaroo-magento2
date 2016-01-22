@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class Mrcash extends AbstractConfigProvider
 {
     const XPATH_MRCASH_PAYMENT_FEE              = 'payment/tig_buckaroo_mrcash/payment_fee';

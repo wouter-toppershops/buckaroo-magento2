@@ -39,10 +39,32 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+/**
+ * @method getActiveStatus()
+ * @method getOrderStatusSuccess()
+ * @method getOrderStatusFailed()
+ */
 interface ConfigProviderInterface
 {
     /**
      * @return float|false
      */
     public function getPaymentFee();
+
+    /**
+     * @return array
+     */
+    public function getAllowedCurrencies();
+
+    /**
+     * @return string
+     */
+    public function getBuckarooPaymentFeeLabel();
+
+    /**
+     * @param string $imgName
+     *
+     * @return string
+     */
+    public function getImageUrl($imgName);
 }

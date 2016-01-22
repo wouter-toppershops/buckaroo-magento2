@@ -53,5 +53,4 @@ interface ValidatorInterface
      * @return mixed
      */
     public function validate($data);
-
 }

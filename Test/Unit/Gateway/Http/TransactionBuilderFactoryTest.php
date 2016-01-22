@@ -108,7 +108,7 @@ class TransactionBuilderFactoryTest extends BaseTest
         try {
             $object->get('model1');
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(Exception::class, $e);
         }
     }
@@ -131,7 +131,7 @@ class TransactionBuilderFactoryTest extends BaseTest
         try {
             $object->get('model1');
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\LogicException::class, $e);
         }
     }
@@ -146,7 +146,7 @@ class TransactionBuilderFactoryTest extends BaseTest
         try {
             $object->get('');
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\LogicException::class, $e);
         }
     }

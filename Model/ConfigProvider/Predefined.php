@@ -65,5 +65,4 @@ class Predefined extends AbstractConfigProvider
         ];
         return $config;
     }
-
 }

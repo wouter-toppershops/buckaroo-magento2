@@ -40,9 +40,9 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 use Magento\Framework\View\Asset\Repository;
 use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
+use TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider as BaseAbstractConfigProvider;
 
-abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider
-    implements CheckoutConfigProvider, ConfigProviderInterface
+abstract class AbstractConfigProvider extends BaseAbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
 {
     /**
      * The asset repository to generate the correct url to our assets.
@@ -96,6 +96,7 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
         $this->paymentFeeHelper = $paymentFeeHelper;
 
         if (!$this->allowedCurrencies) {
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig */
             $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
             if ($allowedCurrenciesConfig) {
                 $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();
@@ -135,11 +136,11 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
     /**
      * Generate the url to the desired asset.
      *
-     * @param $imgName
+     * @param string $imgName
      *
      * @return string
      */
-    protected function getImageUrl($imgName)
+    public function getImageUrl($imgName)
     {
         return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
     }

@@ -131,9 +131,13 @@ class AllowedCurrencies extends \Magento\Framework\App\Config\Value
         return $output;
     }
 
+    /**
+     * @param $path
+     */
     protected function getMethodNameFromPath($path)
     {
-
+        /**
+         * @todo implement method
+         */
     }
-
 }

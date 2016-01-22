@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class Sofortbanking extends AbstractConfigProvider
 {
     const XPATH_SOFORTBANKING_PAYMENT_FEE           = 'payment/tig_buckaroo_sofortbanking/payment_fee';

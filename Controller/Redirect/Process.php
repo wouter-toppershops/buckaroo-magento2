@@ -80,14 +80,20 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $orderSender;
 
     /**
-     * @param \Magento\Framework\App\Action\Context                 $context
-     * @param \TIG\Buckaroo\Helper\Data                             $helper
-     * @param \Magento\Checkout\Model\Cart                          $cart
-     * @param \Magento\Sales\Model\Order                            $order
-     * @param \Magento\Quote\Model\Quote                            $quote
-     * @param \TIG\Buckaroo\Debug\Debugger                          $debugger
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
-     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender   $orderSender
+     * @var \TIG\Buckaroo\Model\OrderStatusFactory
+     */
+    protected $orderStatusFactory;
+
+    /**
+     * @param \Magento\Framework\App\Action\Context               $context
+     * @param \TIG\Buckaroo\Helper\Data                           $helper
+     * @param \Magento\Checkout\Model\Cart                        $cart
+     * @param \Magento\Sales\Model\Order                          $order
+     * @param \Magento\Quote\Model\Quote                          $quote
+     * @param \TIG\Buckaroo\Debug\Debugger                        $debugger
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory          $configProviderFactory
+     * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @param \TIG\Buckaroo\Model\OrderStatusFactory              $orderStatusFactory
      *
      * @throws \TIG\Buckaroo\Exception
      */
@@ -99,7 +105,8 @@ class Process extends \Magento\Framework\App\Action\Action
         \Magento\Quote\Model\Quote $quote,
         \TIG\Buckaroo\Debug\Debugger $debugger,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
+        \TIG\Buckaroo\Model\OrderStatusFactory $orderStatusFactory
     ) {
         parent::__construct($context);
         $this->helper                   = $helper;
@@ -109,6 +116,7 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->debugger                 = $debugger;
         $this->configProviderFactory    = $configProviderFactory;
         $this->orderSender              = $orderSender;
+        $this->orderStatusFactory       = $orderStatusFactory;
 
         $this->accountConfig = $this->configProviderFactory->get('account');
     }
@@ -118,7 +126,7 @@ class Process extends \Magento\Framework\App\Action\Action
      *
      * @throws \TIG\Buckaroo\Exception
      *
-     * @return void|\Magento\Framework\App\ResponseInterface
+     * @return \Magento\Framework\App\ResponseInterface
      */
     public function execute()
     {
@@ -145,8 +153,10 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
                 if ($this->order->canInvoice()) {
                     // Set the 'Pending payment status' here
-                    /** @noinspection PhpUndefinedMethodInspection */
-                    $pendingStatus = $this->accountConfig->getOrderStatusPending();
+                    $pendingStatus = $this->orderStatusFactory->get(
+                        $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'),
+                        $this->order
+                    );
                     if ($pendingStatus) {
                         $this->order->setStatus($pendingStatus);
                         $this->order->save();
@@ -183,15 +193,16 @@ class Process extends \Magento\Framework\App\Action\Action
                     $this->debugger->log('Could not recreate the quote.', \TIG\Buckaroo\Debug\Logger::ERROR);
                 }
 
-                if (!$this->cancelOrder()) {
+                if (!$this->cancelOrder($statusCode)) {
                     $this->debugger->log('Could not cancel the order.', \TIG\Buckaroo\Debug\Logger::ERROR);
                 }
 
                 $this->redirectFailure();
                 break;
+            //no default
         }
 
-        return;
+        return $this->_response;
     }
 
     /**
@@ -228,9 +239,11 @@ class Process extends \Magento\Framework\App\Action\Action
     /**
      * If possible, cancel the order
      *
+     * @param $statusCode
+     *
      * @return bool
      */
-    protected function cancelOrder()
+    protected function cancelOrder($statusCode)
     {
         // Mostly the push api already canceled the order, so first check in wich state the order is.
         if ($this->order->getState() == \Magento\Sales\Model\Order::STATE_CANCELED) {
@@ -244,9 +257,15 @@ class Process extends \Magento\Framework\App\Action\Action
 
         if ($this->order->canCancel()) {
             $this->order->cancel();
-            /** @noinspection PhpUndefinedMethodInspection */
-            $failedStatus = $this->accountConfig->getOrderStatusFailed();
-            $this->order->setStatus($failedStatus);
+
+            $failedStatus = $this->orderStatusFactory->get(
+                $statusCode,
+                $this->order
+            );
+
+            if ($failedStatus) {
+                $this->order->setStatus($failedStatus);
+            }
             $this->order->save();
             return true;
         }

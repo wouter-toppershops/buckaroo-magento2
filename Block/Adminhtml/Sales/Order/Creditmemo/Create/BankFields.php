@@ -101,13 +101,14 @@ class BankFields extends \Magento\Backend\Block\Template
         $paymentMethod = false;
 
         $layout = $this->getLayout();
+        /** @var \Magento\Sales\Block\Adminhtml\Order\Payment $paymentBlock */
         $paymentBlock = $layout->getBlock($this->orderPaymentBlock);
 
         if ($paymentBlock) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $paymentMethod = $paymentBlock->getPayment()->getMethod();
         }
 
         return $paymentMethod;
     }
-
 }

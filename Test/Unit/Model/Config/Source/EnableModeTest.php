@@ -71,11 +71,10 @@ class EnableModeTest extends BaseTest
         $options = $this->object->toOptionArray();
         $this->assertTrue($options >= 3);
 
-        foreach($this->shouldHaveOptions as $key => $shouldHaveOptionValue)
-        {
-            foreach($options as $option)
-            {
-                if($option['value'] == $key) {
+        foreach ($this->shouldHaveOptions as $key => $shouldHaveOptionValue) {
+            foreach ($options as $option) {
+                if ($option['value'] == $key) {
+                    /** @noinspection PhpUndefinedMethodInspection */
                     $this->assertEquals($option['label']->getText(), $shouldHaveOptionValue->getText());
                     break;
                 }
@@ -87,10 +86,9 @@ class EnableModeTest extends BaseTest
     {
         $options = $this->object->toArray();
 
-        foreach ($options as $key => $option)
-        {
-            if (array_key_exists($key, $this->shouldHaveOptions))
-            {
+        foreach ($options as $key => $option) {
+            if (array_key_exists($key, $this->shouldHaveOptions)) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $this->assertEquals($option->getText(), $this->shouldHaveOptions[$key]->getText());
             }
         }

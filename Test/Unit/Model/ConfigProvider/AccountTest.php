@@ -44,7 +44,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 
-class AccountTest extends  BaseTest
+class AccountTest extends BaseTest
 {
     /**
      * @var Account
@@ -77,19 +77,17 @@ class AccountTest extends  BaseTest
         $account = new \ReflectionClass(Account::class);
         $classConstants = $account->getConstants();
 
-        foreach($classConstants as $constant => $value)
-        {
+        foreach ($classConstants as $constant => $value) {
             $this->scopeConfig
                 ->shouldReceive('getValue')
                 ->once()
-                ->with($value, ScopeInterface::SCOPE_STORE, NULL)
+                ->with($value, ScopeInterface::SCOPE_STORE, null)
                 ->andReturn($constant);
         }
 
         $results = $this->object->getConfig();
 
-        foreach($results as $name => $value)
-        {
+        foreach ($results as $name => $value) {
             $this->assertEquals('XPATH_ACCOUNT_' . strtoupper($name), $value);
         }
     }

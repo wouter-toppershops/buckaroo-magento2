@@ -42,7 +42,7 @@ namespace TIG\Buckaroo\Test\Unit\Model\Method;
 class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
-     * @var \TIG\Buckaroo\Model\Method\TransferTransfer
+     * @var \TIG\Buckaroo\Model\Method\Transfer
      */
     protected $object;
 
@@ -78,17 +78,21 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
-        $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->objectManager               = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->transactionBuilderFactory   = \Mockery::mock(
+            \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class
+        );
+        $this->scopeConfig                 = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
         $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Transfer::class, [
-            'scopeConfig' => $this->scopeConfig,
-            'objectManager' => $this->objectManager,
-            'transactionBuilderFactory' => $this->transactionBuilderFactory,
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Method\Transfer::class, [
+            'scopeConfig'                 => $this->scopeConfig,
+            'objectManager'               => $this->objectManager,
+            'transactionBuilderFactory'   => $this->transactionBuilderFactory,
             'configProviderMethodFactory' => $this->configProviderMethodFactory
-        ]);
+        ]
+        );
 
         $this->paymentInterface = \Mockery::mock(
             \Magento\Payment\Model\InfoInterface::class,
@@ -103,8 +107,8 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $fixture = [
             'firstname' => 'John',
-            'lastname' => 'Doe',
-            'email' => 'john@doe.com',
+            'lastname'  => 'Doe',
+            'email'     => 'john@doe.com',
         ];
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
@@ -114,18 +118,22 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setOrder')->with($order)->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals($fixture['firstname'], $services['RequestParameter'][0]['_']);
-            $this->assertEquals($fixture['lastname'], $services['RequestParameter'][1]['_']);
-            $this->assertEquals($fixture['email'], $services['RequestParameter'][2]['_']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals($fixture['firstname'], $services['RequestParameter'][0]['_']);
+                $this->assertEquals($fixture['lastname'], $services['RequestParameter'][1]['_']);
+                $this->assertEquals($fixture['email'], $services['RequestParameter'][2]['_']);
 
-            $this->assertEquals('transfer', $services['Name']);
-            $this->assertEquals('Pay', $services['Action']);
+                $this->assertEquals('transfer', $services['Name']);
+                $this->assertEquals('Pay', $services['Action']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->configProviderMethodFactory->shouldReceive('get')->once()->with('transfer')->andReturnSelf();
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->configProviderMethodFactory->shouldReceive('getDueDate')->once()->andReturn('7');
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($order);
@@ -133,7 +141,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setData('info_instance', $infoInterface);
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($this->paymentInterface));
     }
 
@@ -142,6 +152,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetCaptureTransactionBuilder()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertFalse($this->object->getCaptureTransactionBuilder($this->paymentInterface));
     }
 
@@ -150,6 +161,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetAuthorizeTransactionBuilder()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertFalse($this->object->getAuthorizeTransactionBuilder($this->paymentInterface));
     }
 
@@ -169,17 +181,25 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing( function ($services) {
-            $services['Name'] = 'sofortbanking';
-            $services['Action'] = 'Refund';
+        $this->transactionBuilderFactory->shouldReceive('setServices')->andReturnUsing(
+            function ($services) {
+                $services['Name']   = 'sofortbanking';
+                $services['Action'] = 'Refund';
 
-            return $this->transactionBuilderFactory;
-        });
+                return $this->transactionBuilderFactory;
+            }
+        );
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
+                                        ->with('getAdditionalInformation')
+                                        ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
-        $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($this->paymentInterface));
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals(
+            $this->transactionBuilderFactory,
+            $this->object->getRefundTransactionBuilder($this->paymentInterface)
+        );
     }
 
     /**
@@ -187,6 +207,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetVoidTransactionBuilder()
     {
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertTrue($this->object->getVoidTransactionBuilder(''));
     }
 }

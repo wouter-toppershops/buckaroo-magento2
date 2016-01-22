@@ -88,6 +88,7 @@ class Total extends \Magento\Checkout\Block\Total\DefaultTotal
     public function getValues()
     {
         $values = [];
+        /** @noinspection PhpUndefinedMethodInspection */
         $total = $this->getTotal();
         $totals = $this->helper->getTotals($total);
         foreach ($totals as $total) {

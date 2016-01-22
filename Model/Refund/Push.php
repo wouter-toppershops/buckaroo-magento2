@@ -207,7 +207,9 @@ class Push
             /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
             $creditmemo = $this->creditmemoFactory->createByOrder($this->order, $creditData);
 
+            /** @var \Magento\Sales\Model\Order\Creditmemo\Item $creditmemoItem */
             foreach ($creditmemo->getAllItems() as $creditmemoItem) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $creditmemoItem->setBackToStock(false);
             }
 
@@ -288,6 +290,7 @@ class Push
         $totalAmount = $this->totalAmountToRefund();
 
         if ($this->order->getBaseTotalRefunded() == null) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced();
         }
 
