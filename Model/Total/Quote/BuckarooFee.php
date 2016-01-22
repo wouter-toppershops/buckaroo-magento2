@@ -219,21 +219,27 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     /**
      * Get payment fee price with correct tax
      *
-     * @param  float $price
-     * @param null   $priceIncl
+     * @param  float                             $price
+     * @param null                               $priceIncl
+     *
+     * @param \Magento\Framework\DataObject|null $pseudoProduct
      *
      * @return float
      * @throws \TIG\Buckaroo\Exception
      */
-    public function getFeePrice($price, $priceIncl = null)
+    public function getFeePrice($price, $priceIncl = null, \Magento\Framework\DataObject $pseudoProduct = null)
     {
-        $pseudoProduct = new \Magento\Framework\DataObject();
+        if (is_null($pseudoProduct)) {
+            $pseudoProduct = new \Magento\Framework\DataObject();
+        }
+
+        $feeConfig = $this->configProviderFactory->get('buckaroo_fee');
         /** @noinspection PhpUndefinedMethodInspection */
-        $pseudoProduct->setTaxClassId($this->configProviderFactory->get('buckaroo_fee')->getTaxClass());
+        $pseudoProduct->setTaxClassId($feeConfig->getTaxClass());
 
         /** @noinspection PhpUndefinedMethodInspection */
         if (is_null($priceIncl)
-            && $this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax()
+            && $feeConfig->getPaymentFeeTax()
                 == \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX
         ) {
             $priceIncl = true;
