@@ -56,20 +56,28 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
     public $priceCurrency;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @var \Magento\Catalog\Helper\Data
+     */
+    public $catalogHelper;
+
+    /**
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+     * @param \Magento\Catalog\Helper\Data                      $catalogHelper
      */
     public function __construct(
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
+        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
+        \Magento\Catalog\Helper\Data $catalogHelper
     ) {
         $this->setCode('buckaroo_fee');
 
         $this->configProviderFactory = $configProviderFactory;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
         $this->priceCurrency = $priceCurrency;
+        $this->catalogHelper = $catalogHelper;
     }
 
     /**
@@ -177,7 +185,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 
         if (is_numeric($basePaymentFee)) {
             /** Payment fee is a number */
-            return $basePaymentFee;
+            return $this->getFeePrice($basePaymentFee);
         } elseif (strpos($basePaymentFee, '%') === false) {
             /** Payment fee is invalid */
             return false;
@@ -208,6 +216,50 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         return $basePaymentFee;
     }
 
+    /**
+     * Get payment fee price with correct tax
+     *
+     * @param  float                             $price
+     * @param null                               $priceIncl
+     *
+     * @param \Magento\Framework\DataObject|null $pseudoProduct
+     *
+     * @return float
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getFeePrice($price, $priceIncl = null, \Magento\Framework\DataObject $pseudoProduct = null)
+    {
+        if (is_null($pseudoProduct)) {
+            $pseudoProduct = new \Magento\Framework\DataObject();
+        }
+
+        $feeConfig = $this->configProviderFactory->get('buckaroo_fee');
+        /** @noinspection PhpUndefinedMethodInspection */
+        $pseudoProduct->setTaxClassId($feeConfig->getTaxClass());
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (is_null($priceIncl)
+            && $feeConfig->getPaymentFeeTax()
+                == \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX
+        ) {
+            $priceIncl = true;
+        } else {
+            $priceIncl = false;
+        }
+
+        $price = $this->catalogHelper->getTaxPrice(
+            $pseudoProduct,
+            $price,
+            false,
+            null,
+            null,
+            null,
+            null,
+            $priceIncl
+        );
+
+        return $price;
+    }
 
     /**
      * Get Buckaroo label
