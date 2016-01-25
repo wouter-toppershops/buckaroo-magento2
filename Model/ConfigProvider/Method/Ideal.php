@@ -50,6 +50,8 @@ class Ideal extends AbstractConfigProvider
     const XPATH_IDEAL_ORDER_EMAIL           = 'payment/tig_buckaroo_ideal/order_email';
     const XPATH_IDEAL_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_ideal/available_in_backend';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_ideal/allowed_currencies';
+
     /**
      * @var array
      */
@@ -89,6 +91,10 @@ class Ideal extends AbstractConfigProvider
         [
             'name' => 'Knab Bank',
             'code' => 'KNABNL2H',
+        ],
+        [
+            'name' => 'Bunq Bank',
+            'code' => 'BUNQNL2A',
         ],
     ];
 

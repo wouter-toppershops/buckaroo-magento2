@@ -54,6 +54,8 @@ class Transfer extends AbstractConfigProvider
     const XPATH_TRANSFER_AVAILABLE_IN_BACKEND   = 'payment/tig_buckaroo_transfer/available_in_backend';
     const XPATH_TRANSFER_DUE_DATE               = 'payment/tig_buckaroo_transfer/due_date';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_transfer/allowed_currencies';
+
     /**
      * @return array
      */

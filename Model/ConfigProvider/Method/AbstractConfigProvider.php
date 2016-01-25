@@ -42,8 +42,18 @@ use Magento\Framework\View\Asset\Repository;
 use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
 use TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider as BaseAbstractConfigProvider;
 
+/**
+ * @method getActiveStatus()
+ * @method getOrderStatusSuccess()
+ * @method getOrderStatusFailed()
+ */
 abstract class AbstractConfigProvider extends BaseAbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
 {
+    /**
+     * This xpath should be overridden in child classes.
+     */
+    const XPATH_ALLOWED_CURRENCIES = '';
+
     /**
      * The asset repository to generate the correct url to our assets.
      *
@@ -156,7 +166,22 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
     /**
      * @return array
      */
-    public function getAllowedCurrencies()
+    public function getAllowedCurrencies($store = null)
+    {
+        $configuredAllowedCurrencies = trim($this->getConfigFromXpath(static::XPATH_ALLOWED_CURRENCIES, $store));
+        if (empty($configuredAllowedCurrencies)) {
+            return $this->getBaseAllowedCurrencies();
+        }
+
+        $configuredAllowedCurrencies = explode(',', $configuredAllowedCurrencies);
+
+        return $configuredAllowedCurrencies;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBaseAllowedCurrencies()
     {
         return $this->allowedCurrencies;
     }

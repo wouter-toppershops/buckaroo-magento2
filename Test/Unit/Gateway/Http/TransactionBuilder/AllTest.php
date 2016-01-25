@@ -88,11 +88,6 @@ class AllTest extends BaseTest
         $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
 
-        $this->order->shouldReceive('getOrderCurrencyCode')->once()->andReturn($expected['Currency']);
-        $this->order
-            ->shouldReceive('getBaseGrandTotal')
-            ->once()
-            ->andReturn(max($expected['AmountDebit'], $expected['AmountCredit']));
         $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->object->setOrder($this->order);
@@ -122,6 +117,8 @@ class AllTest extends BaseTest
             ],
         ];
 
+        $this->object->amount = 50;
+        $this->object->currency = 'EUR';
         $this->object->setStartRecurrent($expected['StartRecurrent']);
         $this->object->setServices($expected['Services']['Service']);
 
@@ -157,6 +154,9 @@ class AllTest extends BaseTest
         $this->object = $this->objectManagerHelper->getObject(Refund::class, [
             'configProviderFactory' => $this->configProvider,
         ]);
+
+        $this->object->amount = 50;
+        $this->object->currency = 'EUR';
 
         $this->createGetBodyMock($expected);
 

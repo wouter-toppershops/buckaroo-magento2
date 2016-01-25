@@ -48,6 +48,8 @@ class SepaDirectDebit extends AbstractConfigProvider
     const XPATH_SEPADIRECTDEBIT_ORDER_STATUS_FAILED     = 'payment/tig_buckaroo_sepadirectdebit/order_status_failed';
     const XPATH_SEPADIRECTDEBIT_AVAILABLE_IN_BACKEND    = 'payment/tig_buckaroo_sepadirectdebit/available_in_backend';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_sepadirectdebit/allowed_currencies';
+
     /**
      * @return array|void
      */

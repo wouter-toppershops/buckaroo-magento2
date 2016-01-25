@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 interface ConfigProviderInterface
 {
     /**
@@ -55,6 +50,11 @@ interface ConfigProviderInterface
      * @return array
      */
     public function getAllowedCurrencies();
+
+    /**
+     * @return array
+     */
+    public function getBaseAllowedCurrencies();
 
     /**
      * @return string

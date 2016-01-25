@@ -668,6 +668,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->payment = $payment;
 
         $transactionBuilder = $this->getRefundTransactionBuilder($payment);
+        $transactionBuilder->setAmount($amount);
 
         if (!$transactionBuilder) {
             throw new \LogicException(

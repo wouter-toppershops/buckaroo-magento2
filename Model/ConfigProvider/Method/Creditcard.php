@@ -72,6 +72,8 @@ class Creditcard extends AbstractConfigProvider
     const XPATH_CREDITCARD_VISA_UNSECURE_HOLD       = 'payment/tig_buckaroo_creditcard/visa_unsecure_hold';
     const XPATH_CREDITCARD_MAESTRO_UNSECURE_HOLD    = 'payment/tig_buckaroo_creditcard/maestro_unsecure_hold';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_creditcard/allowed_currencies';
+
     protected $issuers = [
         [
             'name' => 'American Express',
