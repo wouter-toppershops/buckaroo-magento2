@@ -47,28 +47,11 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     public $configProviderFactory;
 
     /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    public $checkoutSession;
-
-    /**
-     * @var \TIG\Buckaroo\Helper\Data
-     */
-    public $helper;
-
-    /**
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
-     * @param \Magento\Checkout\Model\Session            $checkoutSession
-     * @param \TIG\Buckaroo\Helper\Data                  $helper
      */
-    public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \TIG\Buckaroo\Helper\Data $helper
-    ) {
+    public function __construct(\TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory)
+    {
         $this->configProviderFactory = $configProviderFactory;
-        $this->checkoutSession = $checkoutSession;
-        $this->helper = $helper;
     }
 
     /**
@@ -84,39 +67,9 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     {
         $client = new Client\SoapClientWSSEC($wsdl, $options);
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig */
-        $predefinedConfig = $this->configProviderFactory->get('predefined');
-
         /** @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig */
         $privateKeyConfig = $this->configProviderFactory->get('private_key');
 
-        /**
-         * active 0 is disabled, 1 is test, 2 is live
-         */
-        $location = null;
-
-        $mode = $this->helper->getMode($this->checkoutSession->getQuote()->getPayment()->getMethod());
-        switch ($mode) {
-            case \TIG\Buckaroo\Helper\Data::MODE_LIVE:
-                $location = $predefinedConfig->getLocationLiveWeb();
-                break;
-            case \TIG\Buckaroo\Helper\Data::MODE_TEST:
-                $location = $predefinedConfig->getLocationTestWeb();
-                break;
-            case \TIG\Buckaroo\Helper\Data::MODE_INACTIVE:
-                throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
-            default:
-                throw new \TIG\Buckaroo\Exception(
-                    __(
-                        "Invalid mode set: %1",
-                        [
-                            $mode
-                        ]
-                    )
-                );
-        }
-
-        $client->__setLocation($location);
         $client->loadPem($privateKeyConfig->getPrivateKey());
 
         return $client;
