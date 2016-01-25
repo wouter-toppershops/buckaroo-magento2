@@ -89,9 +89,14 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $payment;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
     public $configProviderFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    public $configProviderMethodFactory;
 
     /**
      * @var bool
@@ -220,6 +225,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
+
+        $this->gateway->setMode(
+            $this->helper->getMode($this->buckarooPaymentMethodCode)
+        );
     }
 
     /**

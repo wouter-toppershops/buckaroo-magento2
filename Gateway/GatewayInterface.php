@@ -40,17 +40,47 @@
 
 namespace TIG\Buckaroo\Gateway;
 
-use TIG\Buckaroo\Gateway\Http\Transaction;
-
 interface GatewayInterface
 {
-    public function order(Transaction $transaction);
+    /**
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setMode($mode);
 
-    public function capture(Transaction $transaction);
+    /**
+     * @param Http\Transaction $transaction
+     *
+     * @return mixed
+     */
+    public function order(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
 
-    public function authorize(Transaction $transaction);
+    /**
+     * @param Http\Transaction $transaction
+     *
+     * @return mixed
+     */
+    public function capture(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
 
-    public function refund(Transaction $transaction);
+    /**
+     * @param Http\Transaction $transaction
+     *
+     * @return mixed
+     */
+    public function authorize(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
 
-    public function void(Transaction $transaction);
+    /**
+     * @param Http\Transaction $transaction
+     *
+     * @return mixed
+     */
+    public function refund(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+
+    /**
+     * @param Http\Transaction $transaction
+     *
+     * @return mixed
+     */
+    public function void(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
 }

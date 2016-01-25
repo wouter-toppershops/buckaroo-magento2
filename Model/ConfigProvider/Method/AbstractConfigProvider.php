@@ -43,11 +43,14 @@ use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
 use TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider as BaseAbstractConfigProvider;
 
 /**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
+ * @method string getActiveStatus()
+ * @method string getOrderStatusSuccess()
+ * @method string getOrderStatusFailed()
+ * @method int    getActive()
  */
+// @codingStandardsIgnoreStart
 abstract class AbstractConfigProvider extends BaseAbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+// @codingStandardsIgnoreEnd
 {
     /**
      * This xpath should be overridden in child classes.

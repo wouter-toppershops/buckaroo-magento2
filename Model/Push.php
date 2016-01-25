@@ -112,7 +112,6 @@ class Push implements PushInterface
      * @param \Magento\Framework\ObjectManagerInterface          $objectManager
      * @param Request                                            $request
      * @param Validator\Push                                     $validator
-     * @param Validator\Amount                                   $amountValidator
      * @param Order\Email\Sender\OrderSender                     $orderSender
      * @param \TIG\Buckaroo\Helper\Data                          $helper
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig

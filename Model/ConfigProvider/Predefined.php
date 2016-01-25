@@ -42,8 +42,10 @@ namespace TIG\Buckaroo\Model\ConfigProvider;
 use \TIG\Buckaroo\Model\ConfigProvider;
 
 /**
- * @method mixed getLocationLiveWeb()
- * @method mixed getLocationTestWeb()
+ * @method string getLocationLiveWeb()
+ * @method string getLocationTestWeb()
+ * @method string getWsdlLiveWeb()
+ * @method string getWsdlTestWeb()
  */
 class Predefined extends AbstractConfigProvider
 {
@@ -51,8 +53,10 @@ class Predefined extends AbstractConfigProvider
     /**
      * XPATHs to configuration values for tig_buckaroo_predefined
      */
-    const XPATH_PREDEFINED_LOCATION_LIVE_WEB   = 'tig_buckaroo/predefined/location_live_web';
-    const XPATH_PREDEFINED_LOCATION_TEST_WEB   = 'tig_buckaroo/predefined/location_test_web';
+    const XPATH_PREDEFINED_LOCATION_LIVE_WEB = 'tig_buckaroo/predefined/location_live_web';
+    const XPATH_PREDEFINED_LOCATION_TEST_WEB = 'tig_buckaroo/predefined/location_test_web';
+    const XPATH_PREDEFINED_WSDL_LIVE_WEB     = 'tig_buckaroo/predefined/wsdl_live_web';
+    const XPATH_PREDEFINED_WSDL_TEST_WEB     = 'tig_buckaroo/predefined/wsdl_test_web';
 
     /**
      * {@inheritdoc}
@@ -62,6 +66,8 @@ class Predefined extends AbstractConfigProvider
         $config = [
             'location_live_web' => $this->getLocationLiveWeb($store),
             'location_test_web' => $this->getLocationTestWeb($store),
+            'wsdl_live_web'     => $this->getWsdlLiveWeb($store),
+            'wsdl_test_web'     => $this->getWsdlTestWeb($store),
         ];
         return $config;
     }

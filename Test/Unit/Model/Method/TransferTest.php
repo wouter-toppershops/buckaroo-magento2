@@ -86,12 +86,13 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Transfer::class, [
-            'scopeConfig'                 => $this->scopeConfig,
-            'objectManager'               => $this->objectManager,
-            'transactionBuilderFactory'   => $this->transactionBuilderFactory,
-            'configProviderMethodFactory' => $this->configProviderMethodFactory
-        ]
+            \TIG\Buckaroo\Model\Method\Transfer::class,
+            [
+                'scopeConfig'                 => $this->scopeConfig,
+                'objectManager'               => $this->objectManager,
+                'transactionBuilderFactory'   => $this->transactionBuilderFactory,
+                'configProviderMethodFactory' => $this->configProviderMethodFactory
+            ]
         );
 
         $this->paymentInterface = \Mockery::mock(

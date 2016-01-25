@@ -68,10 +68,11 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
                                                    ->makePartial();
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\SepaDirectDebit::class, [
-            'objectManager'             => $this->objectManager,
-            'transactionBuilderFactory' => $this->transactionBuilderFactory,
-        ]
+            \TIG\Buckaroo\Model\Method\SepaDirectDebit::class,
+            [
+                'objectManager'             => $this->objectManager,
+                'transactionBuilderFactory' => $this->transactionBuilderFactory,
+            ]
         );
     }
 
