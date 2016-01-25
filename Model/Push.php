@@ -451,7 +451,7 @@ class Push implements PushInterface
     {
         $description = 'Payment push status : '.$message;
 
-        $this->updateOrderStatus(Order::STATE_NEW, $newStatus, $description);
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
         return true;
     }
