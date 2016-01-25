@@ -57,10 +57,9 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     public $helper;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
-     * @param \Magento\Checkout\Model\Session                   $checkoutSession
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
-     * @param \TIG\Buckaroo\Helper\Data                         $helper
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @param \Magento\Checkout\Model\Session            $checkoutSession
+     * @param \TIG\Buckaroo\Helper\Data                  $helper
      */
     public function __construct(
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
@@ -76,9 +75,10 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
      * Factory method for \TIG\Buckaroo\Soap\Client\SoapClientWSSEC
      *
      * @param string $wsdl
-     * @param array $options
+     * @param array  $options
      *
      * @return Client\SoapClientWSSEC
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function create($wsdl, array $options = [])
     {
@@ -103,6 +103,17 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
             case \TIG\Buckaroo\Helper\Data::MODE_TEST:
                 $location = $predefinedConfig->getLocationTestWeb();
                 break;
+            case \TIG\Buckaroo\Helper\Data::MODE_INACTIVE:
+                throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
+            default:
+                throw new \TIG\Buckaroo\Exception(
+                    __(
+                        "Invalid mode set: %1",
+                        [
+                            $mode
+                        ]
+                    )
+                );
         }
 
         $client->__setLocation($location);
