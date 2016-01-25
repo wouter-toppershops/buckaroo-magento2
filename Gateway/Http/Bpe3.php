@@ -163,7 +163,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
                 'body'     => $transaction->getBody(),
                 'auth'     => [], //auth,
                 'method'   => $transaction->getMethod(),
-                'uri'      => 'https://testcheckout.buckaroo.nl/soap/',
+                'uri'      => '',
                 'encode'   => false
             ]
         );
