@@ -54,6 +54,8 @@ class Paypal extends AbstractConfigProvider
     const XPATH_PAYPAL_SELLERS_PROTECTION               = 'payment/tig_buckaroo_paypal/sellers_protection';
     const XPATH_PAYPAL_SELLERS_PROTECTION_INELIGIBLE    = 'payment/tig_buckaroo_paypal/sellers_protection_ineligible';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_paypal/allowed_currencies';
+
     /**
      * @return array|void
      */

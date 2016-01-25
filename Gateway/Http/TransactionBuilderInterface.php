@@ -102,6 +102,30 @@ interface TransactionBuilderInterface
     public function getChannel();
 
     /**
+     * @return int|null
+     */
+    public function getAmount();
+
+    /**
+     * @param int $amount
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setAmount($amount);
+
+    /**
+     * @return string|null
+     */
+    public function getCurrency();
+
+    /**
+     * @param string $currency
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setCurrency($currency);
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

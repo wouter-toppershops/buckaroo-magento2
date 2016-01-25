@@ -48,6 +48,8 @@ class Sofortbanking extends AbstractConfigProvider
     const XPATH_SOFORTBANKING_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_sofortbanking/order_status_failed';
     const XPATH_SOFORTBANKING_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_sofortbanking/available_in_backend';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_sofortbanking/allowed_currencies';
+
     /**
      * @return array|void
      */

@@ -48,6 +48,8 @@ class Mrcash extends AbstractConfigProvider
     const XPATH_MRCASH_ORDER_STATUS_FAILED      = 'payment/tig_buckaroo_mrcash/order_status_failed';
     const XPATH_MRCASH_AVAILABLE_IN_BACKEND     = 'payment/tig_buckaroo_mrcash/available_in_backend';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_mrcash/allowed_currencies';
+
     /**
      * @return array|void
      */
