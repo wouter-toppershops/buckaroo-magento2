@@ -152,9 +152,9 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     protected function doRequest(Transaction $transaction)
     {
-        /** @var \TIG\Buckaroo\Gateway\Http\Transfer $transfer */
+        /** @var \Magento\Payment\Gateway\Http\Transfer $transfer */
         $transfer = $this->objectFactory->create(
-            '\TIG\Buckaroo\Gateway\Http\Transfer',
+            '\Magento\Payment\Gateway\Http\Transfer',
             [
                 'clientConfig' => [
                     'wsdl' => 'https://checkout.buckaroo.nl/soap/soap.svc?wsdl'
