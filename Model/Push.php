@@ -64,11 +64,6 @@ class Push implements PushInterface
     public $validator;
 
     /**
-     * @var \TIG\Buckaroo\Model\Validator\Amount $validateAmount;
-     */
-    public $validateAmount;
-
-    /**
      * @var Order $order
      */
     public $order;
@@ -132,7 +127,6 @@ class Push implements PushInterface
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Webapi\Rest\Request $request,
         \TIG\Buckaroo\Model\Validator\Push $validator,
-        \TIG\Buckaroo\Model\Validator\Amount $amountValidator,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \TIG\Buckaroo\Helper\Data $helper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
@@ -147,7 +141,6 @@ class Push implements PushInterface
         $this->request                      = $request;
         $this->validator                    = $validator;
         $this->orderSender                  = $orderSender;
-        $this->validateAmount               = $amountValidator;
         $this->helper                       = $helper;
         $this->scopeConfig                  = $scopeConfig;
         $this->configProviderFactory        = $configProviderFactory;
@@ -242,6 +235,7 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
             case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
             case 'TIG_BUCKAROO_STATUSCODE_FAILED':
+            case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
                 $this->processFailedPush($newStatus, $response['message']);
                 break;
             case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
@@ -265,9 +259,6 @@ class Push implements PushInterface
             case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
             case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
                 $this->processPendingPaymentPush($newStatus, $response['message']);
-                break;
-            case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $this->processIncorrectPaymentPush($newStatus, $response['message']);
                 break;
         }
     }
@@ -403,40 +394,6 @@ class Push implements PushInterface
         if ($accountConfig->getAutoInvoice()) {
             $this->saveInvoice();
         }
-
-        return true;
-    }
-
-    /**
-     * @param $newStatus
-     * @param $message
-     * @return bool
-     * @throws Exception
-     */
-    public function processIncorrectPaymentPush($newStatus, $message)
-    {
-        $baseTotal    = round($this->order->getBaseGrandTotal(), 0);
-        $orderAmount  = $this->getCorrectOrderAmount();
-
-        /**
-         * Determine whether too much or not has been paid
-         */
-        $description = $this->validateAmount->validate([
-            'baseTotal'   => $baseTotal,
-            'orderAmount' => $orderAmount,
-            'message'     => $message,
-            'brq_amount'  => $this->postData['brq_amount']
-        ]);
-
-        if (!$description) {
-            $this->debugger->addToMessage(
-                'Invalid status send by buckaroo, but the payment amount was correct.'
-            );
-            throw new Exception(__('Invalid status send by buckaroo, but the payment amount was correct.'));
-        }
-
-        $this->order->hold()->save()->addStatusHistoryComment($description, $newStatus);
-        $this->order->save();
 
         return true;
     }
