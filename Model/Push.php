@@ -375,7 +375,7 @@ class Push implements PushInterface
     public function processSucceededPush($newStatus, $message)
     {
         if (!$this->order->getEmailSent()) {
-            $this->orderSender->send($this->order);
+            //$this->orderSender->send($this->order);
         }
 
         $amount = $this->order->getBaseGrandTotal();
