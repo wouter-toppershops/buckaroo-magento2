@@ -78,11 +78,12 @@ class SofortbankingTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig               = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Sofortbanking::class, [
-            'scopeConfig'               => $this->scopeConfig,
-            'objectManager'             => $this->objectManager,
-            'transactionBuilderFactory' => $this->transactionBuilderFactory,
-        ]
+            \TIG\Buckaroo\Model\Method\Sofortbanking::class,
+            [
+                'scopeConfig'               => $this->scopeConfig,
+                'objectManager'             => $this->objectManager,
+                'transactionBuilderFactory' => $this->transactionBuilderFactory,
+            ]
         );
 
         $this->paymentInterface = \Mockery::mock(

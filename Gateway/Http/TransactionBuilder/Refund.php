@@ -87,7 +87,6 @@ class Refund extends AbstractTransactionBuilder
         $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
 
         $body = [
-            'test' => '1',
             'Currency' => $this->currency,
             'AmountDebit' => 0,
             'AmountCredit' => $this->amount,

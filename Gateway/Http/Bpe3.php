@@ -57,6 +57,11 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     protected $configProviderFactory;
 
     /**
+     * @var int
+     */
+    protected $mode;
+
+    /**
      * @var \TIG\Buckaroo\Debug\Debugger $debugger
      */
     public $debugger;
@@ -79,6 +84,18 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
         $this->objectFactory         = $objectFactory;
         $this->configProviderFactory = $configProviderFactory;
         $this->debugger              = $debugger;
+    }
+
+    /**
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+
+        return $this;
     }
 
     /**
@@ -145,19 +162,54 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     }
 
     /**
+     * @return string
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException
+     */
+    public function getWsdl()
+    {
+        if (!$this->mode) {
+            throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
+        }
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig */
+        $predefinedConfig = $this->configProviderFactory->get('predefined');
+
+        switch ($this->mode) {
+            case \TIG\Buckaroo\Helper\Data::MODE_TEST:
+                $wsdl = $predefinedConfig->getWsdlTestWeb();
+                break;
+            case \TIG\Buckaroo\Helper\Data::MODE_LIVE:
+                $wsdl = $predefinedConfig->getWsdlLiveWeb();
+                break;
+            default:
+                throw new \TIG\Buckaroo\Exception(
+                    __(
+                        "Invalid mode set: %1",
+                        [
+                            $this->mode
+                        ]
+                    )
+                );
+        }
+
+        return $wsdl;
+    }
+
+    /**
      * @param Transaction $transaction
      *
      * @return array
      * @throws \Exception
      */
-    protected function doRequest(Transaction $transaction)
+    public function doRequest(Transaction $transaction)
     {
         /** @var \Magento\Payment\Gateway\Http\Transfer $transfer */
         $transfer = $this->objectFactory->create(
             '\Magento\Payment\Gateway\Http\Transfer',
             [
                 'clientConfig' => [
-                    'wsdl' => 'https://checkout.buckaroo.nl/soap/soap.svc?wsdl'
+                    'wsdl' => $this->getWsdl()
                 ],
                 'headers'  => $transaction->getHeaders(),
                 'body'     => $transaction->getBody(),

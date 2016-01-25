@@ -64,7 +64,6 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  */
 class Account extends AbstractConfigProvider
 {
-
     /**
      * XPATHs to configuration values for tig_buckaroo_account
      */
@@ -90,10 +89,26 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_ORDER_STATUS_SUCCESS        = 'tig_buckaroo/account/order_status_success';
     const XPATH_ACCOUNT_ORDER_STATUS_FAILED         = 'tig_buckaroo/account/order_status_failed';
 
+    /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
     protected $objectManager;
+
+    /**
+     * @var Method\Factory
+     */
     protected $methodConfigProviderFactory;
+
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
     protected $scopeConfig;
 
+    /**
+     * @param \Magento\Framework\ObjectManagerInterface          $objectManager
+     * @param Method\Factory                                     $methodConfigProviderFactory
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $methodConfigProviderFactory,
