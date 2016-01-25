@@ -88,6 +88,16 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $configProviderFactory;
 
     /**
+     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
+     */
+    protected $remoteAddress;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    protected $configProviderMethodFactory;
+
+    /**
      * @var bool
      */
     protected $startRecurrent = false;
@@ -101,6 +111,16 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      * @var null|string
      */
     protected $channel = 'Web';
+
+    /**
+     * @var int
+     */
+    public $amount;
+
+    /**
+     * @var string
+     */
+    public $currency;
 
     /**
      * {@inheritdoc}
@@ -151,23 +171,81 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
+     * @return int
+     */
+    public function getAmount()
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param int $amount
+     *
+     * @return $this
+     */
+    public function setAmount($amount)
+    {
+        $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     *
+     * @return $this
+     */
+    public function setCurrency($currency)
+    {
+        $this->currency = $currency;
+
+        return $this;
+    }
+
+    /**
      * TransactionBuilder constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadataInterface   $productMetadata
-     * @param \Magento\Framework\Module\ModuleListInterface     $moduleList
-     * @param \Magento\Framework\UrlInterface                   $urlBuilder
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
+     * @param \Magento\Framework\App\ProductMetadataInterface      $productMetadata
+     * @param \Magento\Framework\Module\ModuleListInterface        $moduleList
+     * @param \Magento\Framework\UrlInterface                      $urlBuilder
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory           $configProviderFactory
+     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory    $configProviderMethodFactory
+     * @param null                                                 $amount
+     * @param null                                                 $currency
      */
     public function __construct(
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Module\ModuleListInterface $moduleList,
         \Magento\Framework\UrlInterface $urlBuilder,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
+        $amount = null,
+        $currency = null
     ) {
-        $this->productMetadata = $productMetadata;
-        $this->moduleList = $moduleList;
-        $this->urlBuilder = $urlBuilder;
-        $this->configProviderFactory = $configProviderFactory;
+        $this->productMetadata             = $productMetadata;
+        $this->moduleList                  = $moduleList;
+        $this->urlBuilder                  = $urlBuilder;
+        $this->configProviderFactory       = $configProviderFactory;
+        $this->remoteAddress               = $remoteAddress;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+
+        if ($amount !== null) {
+            $this->amount = $amount;
+        }
+
+        if ($currency !== null) {
+            $this->currency = $currency;
+        }
     }
 
     /**

@@ -48,6 +48,8 @@ class Giropay extends AbstractConfigProvider
     const XPATH_GIROPAY_ORDER_STATUS_FAILED     = 'payment/tig_buckaroo_giropay/order_status_failed';
     const XPATH_GIROPAY_AVAILABLE_IN_BACKEND    = 'payment/tig_buckaroo_giropay/available_in_backend';
 
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_giropay/allowed_currencies';
+
     /**
      * @return array|void
      */
