@@ -376,6 +376,13 @@ class Push implements PushInterface
     {
         $amount = $this->order->getBaseGrandTotal();
 
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        $accountConfig = $this->configProviderFactory->get('account');
+
+        if (!$this->order->getEmailSent() && $accountConfig->getOrderConfirmationEmail()) {
+            $this->orderSender->send($this->order);
+        }
+
         /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
         $paymentMethod = $this->order->getPayment()->getMethodInstance();
         if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
@@ -393,8 +400,6 @@ class Push implements PushInterface
             return true;
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
-        $accountConfig = $this->configProviderFactory->get('account');
 
         if ($accountConfig->getAutoInvoice()) {
             $this->saveInvoice();
