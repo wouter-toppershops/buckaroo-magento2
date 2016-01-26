@@ -98,6 +98,11 @@ class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
     {
         $this->_canCapture = $value;
     }
+
+    public function setEventManager($eventManager)
+    {
+        $this->_eventManager = $eventManager;
+    }
 }
 
 // @codingStandardsIgnoreStart
@@ -827,7 +832,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      * @param      $setCanMethod
      * @param      $methodTransactionBuilder
      * @param      $methodTransaction
-     * @param      $afterMethod
+     * @param      $afterMethodEvent
      *
      * @param bool $canMethod
      *
@@ -842,7 +847,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $setCanMethod,
         $methodTransactionBuilder,
         $methodTransaction,
-        $afterMethod,
+        $afterMethodEvent,
         $canMethod = false,
         $closeTransaction = true,
         $saveId = true
@@ -873,11 +878,20 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         }
         $transactionBuilderMock->shouldReceive('build')->once()->andReturn($transaction);
 
-        $stubbedMethods = [$methodTransaction, 'saveTransactionData', $afterMethod, $methodTransactionBuilder];
+        $stubbedMethods = [$methodTransaction, 'saveTransactionData', $methodTransactionBuilder];
 
         if ($canMethod) {
             $stubbedMethods[] = $canMethod;
         }
+
+        $eventManagerMock = \Mockery::mock(\Magento\Framework\Event\ManagerInterface::class);
+        $eventManagerMock->shouldReceive('dispatch')->once()->with(
+            $afterMethodEvent,
+            [
+                'payment' => $payment,
+                'response' => $response
+            ]
+        );
 
         $partialMock = $this->getPartialObject(
             AbstractMethod::class,
@@ -889,6 +903,8 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             ],
             $stubbedMethods
         );
+
+        $partialMock->setEventManager($eventManagerMock);
 
         $partialMock->$setCanMethod(true);
 
@@ -905,10 +921,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $partialMock->expects($this->once())
             ->method('saveTransactionData')
             ->with($response[0], $payment, $partialMock->$closeTransaction, $saveId);
-
-        $partialMock->expects($this->once())
-            ->method($afterMethod)
-            ->with($payment, $response);
 
         if ($canMethod) {
             $partialMock->expects($this->any())
@@ -932,7 +944,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'setCanOrder',
                 'getOrderTransactionBuilder',
                 'orderTransaction',
-                'afterOrder',
+                'tig_buckaroo_method_order_after',
                 false,
                 'closeOrderTransaction',
             ],
@@ -941,7 +953,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'setCanAuthorize',
                 'getAuthorizeTransactionBuilder',
                 'authorizeTransaction',
-                'afterAuthorize',
+                'tig_buckaroo_method_authorize_after',
                 false,
                 'closeAuthorizeTransaction',
             ],
@@ -950,7 +962,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'setCanCapture',
                 'getCaptureTransactionBuilder',
                 'captureTransaction',
-                'afterCapture',
+                'tig_buckaroo_method_capture_after',
                 false,
                 'closeCaptureTransaction',
             ],
@@ -959,7 +971,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'setCanRefund',
                 'getRefundTransactionBuilder',
                 'refundTransaction',
-                'afterRefund',
+                'tig_buckaroo_method_refund_after',
                 'canRefund',
                 'closeRefundTransaction',
                 false,
@@ -969,7 +981,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'setCanVoid',
                 'getVoidTransactionBuilder',
                 'VoidTransaction',
-                'afterVoid',
+                'tig_buckaroo_method_void_after',
                 false,
                 'closeCancelTransaction',
                 false,

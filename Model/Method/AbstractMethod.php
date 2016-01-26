@@ -819,15 +819,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterOrder($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_order_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_order_after', $payment, $response);
     }
 
     /**
@@ -838,15 +830,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterAuthorize($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_authorize_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_authorize_after', $payment, $response);
     }
 
     /**
@@ -857,15 +841,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterCapture($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_capture_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_capture_after', $payment, $response);
     }
 
     /**
@@ -876,15 +852,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterRefund($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_refund_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_refund_after', $payment, $response);
     }
 
     /**
@@ -895,11 +863,23 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterVoid($payment, $response)
     {
+        return $this->dispatchAfterEvent('tig_buckaroo_method_void_after', $payment, $response);
+    }
+
+    /**
+     * @param $name
+     * @param $payment
+     * @param $response
+     *
+     * @return $this
+     */
+    protected function dispatchAfterEvent($name, $payment, $response)
+    {
         $this->_eventManager->dispatch(
-            'tig_buckaroo_method_void_after',
+            $name,
             [
                 'payment' => $payment,
-                'response' => $response
+                'response' => $response,
             ]
         );
 
