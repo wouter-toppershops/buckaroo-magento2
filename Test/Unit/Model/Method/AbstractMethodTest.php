@@ -186,7 +186,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->gateway = \Mockery::mock(\TIG\Buckaroo\Gateway\GatewayInterface::class);
         $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
         $this->request = \Mockery::mock(\Magento\Framework\App\RequestInterface::class);
-        $this->refundFieldsFactory = \Mockery::mock('\TIG\Buckaroo\Model\RefundFieldsFactory');
+        $this->refundFieldsFactory = \Mockery::mock(\TIG\Buckaroo\Model\RefundFieldsFactory::class);
 
         $mode = \TIG\Buckaroo\Helper\Data::MODE_TEST;
         $this->helper->shouldReceive('getMode')->andReturn($mode);

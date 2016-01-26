@@ -129,7 +129,6 @@ class Push implements PushInterface
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \TIG\Buckaroo\Helper\Data $helper,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \TIG\Buckaroo\Helper\Data $helper,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Model\Refund\Push $refundPush,
         \TIG\Buckaroo\Debug\Debugger $debugger,
@@ -346,7 +345,7 @@ class Push implements PushInterface
 
         $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
 
-        if ($this->order->canCancel() && $buckarooCancelOnFailed) {
+        if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
             $this->order->cancel()->save();
         }
@@ -438,7 +437,7 @@ class Push implements PushInterface
      */
     protected function updateOrderStatus($orderState, $newStatus, $description)
     {
-        if ($this->order->getState() ==  $orderState) {
+        if ($this->order->getState() == $orderState) {
             $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
             $this->order->addStatusHistoryComment($description);
