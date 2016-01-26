@@ -139,4 +139,17 @@ class IdealTest extends BaseTest
 
         $this->assertEquals(10, $this->object->getPaymentFee());
     }
+
+    /**
+     * Test if the getActive magic method returns the correct value.
+     */
+    public function testGetActive()
+    {
+        $this->scopeConfig->shouldReceive('getValue')
+            ->once()
+            ->withArgs([Ideal::XPATH_IDEAL_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null])
+            ->andReturn('1');
+
+        $this->assertEquals(1, $this->object->getActive());
+    }
 }
