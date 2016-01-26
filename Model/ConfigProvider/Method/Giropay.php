@@ -43,6 +43,7 @@ class Giropay extends AbstractConfigProvider
 {
     const XPATH_GIROPAY_PAYMENT_FEE             = 'payment/tig_buckaroo_giropay/payment_fee';
     const XPATH_GIROPAY_PAYMENT_FEE_LABEL       = 'payment/tig_buckaroo_giropay/payment_fee_label';
+    const XPATH_GIROPAY_ACTIVE                  = 'payment/tig_buckaroo_giropay/active';
     const XPATH_GIROPAY_ACTIVE_STATUS           = 'payment/tig_buckaroo_giropay/active_status';
     const XPATH_GIROPAY_ORDER_STATUS_SUCCESS    = 'payment/tig_buckaroo_giropay/order_status_success';
     const XPATH_GIROPAY_ORDER_STATUS_FAILED     = 'payment/tig_buckaroo_giropay/order_status_failed';
