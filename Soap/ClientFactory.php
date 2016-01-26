@@ -47,65 +47,29 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     public $configProviderFactory;
 
     /**
-     * @var \Magento\Checkout\Model\Session
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
-    public $checkoutSession;
-
-    /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
-     * @param \Magento\Checkout\Model\Session                   $checkoutSession
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
-     */
-    public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \Magento\Checkout\Model\Session $checkoutSession,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
-    ) {
+    public function __construct(\TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory)
+    {
         $this->configProviderFactory = $configProviderFactory;
-        $this->configProviderMethodFactory = $configProviderMethodFactory;
-        $this->checkoutSession = $checkoutSession;
     }
 
     /**
      * Factory method for \TIG\Buckaroo\Soap\Client\SoapClientWSSEC
      *
      * @param string $wsdl
-     * @param array $options
+     * @param array  $options
      *
      * @return Client\SoapClientWSSEC
+     * @throws \TIG\Buckaroo\Exception|\LogicException
      */
     public function create($wsdl, array $options = [])
     {
         $client = new Client\SoapClientWSSEC($wsdl, $options);
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
-        $accountConfig = $this->configProviderFactory->get('account');
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig */
-        $predefinedConfig = $this->configProviderFactory->get('predefined');
         /** @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig */
         $privateKeyConfig = $this->configProviderFactory->get('private_key');
 
-        /**
-         * active 0 is disabled, 1 is test, 2 is live
-         */
-        $location = null;
-        if ($accountConfig->getActive() == 1) {
-            $location = $predefinedConfig->getLocationTestWeb();
-        } elseif ($accountConfig->getActive() == 2) {
-            $methodName = $this->checkoutSession->getQuote()->getPayment()->getMethod();
-            $methodNameParts = explode('_', $methodName);
-            $methodName = end($methodNameParts);
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
-            $methodConfig = $this->configProviderMethodFactory->get($methodName);
-
-            $location = $predefinedConfig->getLocationLiveWeb();
-            /** @noinspection PhpUndefinedMethodInspection */
-            if ($methodConfig->getActive() == 1) {
-                $location = $predefinedConfig->getLocationTestWeb();
-            }
-        }
-
-        $client->__setLocation($location);
         $client->loadPem($privateKeyConfig->getPrivateKey());
 
         return $client;
