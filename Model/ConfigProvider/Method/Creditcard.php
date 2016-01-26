@@ -63,6 +63,7 @@ class Creditcard extends AbstractConfigProvider
 
     const XPATH_CREDITCARD_PAYMENT_FEE          = 'payment/tig_buckaroo_creditcard/payment_fee';
     const XPATH_CREDITCARD_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_creditcard/payment_fee_label';
+    const XPATH_CREDITCARD_ACTIVE               = 'payment/tig_buckaroo_creditcard/active';
     const XPATH_CREDITCARD_ACTIVE_STATUS        = 'payment/tig_buckaroo_creditcard/active_status';
     const XPATH_CREDITCARD_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_creditcard/order_status_success';
     const XPATH_CREDITCARD_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_creditcard/order_status_failed';

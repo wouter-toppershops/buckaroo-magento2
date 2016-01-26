@@ -166,7 +166,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException
      */
-    public function getWsdl()
+    protected function getWsdl()
     {
         if (!$this->mode) {
             throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
@@ -213,9 +213,9 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
                 ],
                 'headers'  => $transaction->getHeaders(),
                 'body'     => $transaction->getBody(),
-                'auth'     => [], //auth,
+                'auth'     => [], // The authorization is done by the request headers and encryption.
                 'method'   => $transaction->getMethod(),
-                'uri'      => '',
+                'uri'      => '', // The URI is part of the wsdl file.
                 'encode'   => false
             ]
         );
