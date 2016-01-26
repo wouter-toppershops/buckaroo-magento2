@@ -159,4 +159,23 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->assertFalse((bool) $this->object->getPaymentFee());
     }
+
+    /**
+     * Test if the getActive magic method returns the correct value.
+     */
+    public function testGetActive()
+    {
+        $this->scopeConfig->shouldReceive('getValue')
+                          ->once()
+                          ->withArgs(
+                              [
+                                  \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::XPATH_TRANSFER_ACTIVE,
+                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                                  null
+                              ]
+                          )
+                          ->andReturn('1');
+
+        $this->assertEquals(1, $this->object->getActive());
+    }
 }
