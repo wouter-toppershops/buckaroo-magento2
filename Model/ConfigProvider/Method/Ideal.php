@@ -123,6 +123,7 @@ class Ideal extends AbstractConfigProvider
                     'ideal' => [
                         'banks' => $issuers,
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

@@ -69,6 +69,7 @@ class Paypal extends AbstractConfigProvider
                 'buckaroo' => [
                     'paypal' => [
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

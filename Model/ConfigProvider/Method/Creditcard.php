@@ -142,6 +142,7 @@ class Creditcard extends AbstractConfigProvider
                     'creditcard' => [
                         'cards' => $issuers,
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

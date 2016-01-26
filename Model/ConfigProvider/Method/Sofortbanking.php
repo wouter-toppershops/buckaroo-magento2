@@ -64,6 +64,7 @@ class Sofortbanking extends AbstractConfigProvider
                 'buckaroo' => [
                     'sofortbanking' => [
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

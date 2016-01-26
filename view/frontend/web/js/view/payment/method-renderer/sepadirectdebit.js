@@ -113,6 +113,8 @@ define(
                 minimumWords: 2
             },
             paymentFeeLabel : window.checkoutConfig.payment.buckaroo.sepadirectdebit.paymentFeeLabel,
+            currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+            baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
 
             /**
@@ -201,6 +203,18 @@ define(
                         "customer_account_name": this.bankaccountholder()
                     }
                 };
+            },
+
+            payWithBaseCurrency: function() {
+                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.sepadirectdebit.allowedCurrencies;
+
+                return allowedCurrencies.indexOf(this.currencyCode) < 0;
+            },
+
+            getPayWithBaseCurrencyText: function() {
+                var text = $.mage.__('The transaction will be processed using %s.');
+
+                return text.replace('%s', this.baseCurrencyCode);
             }
         });
     }
