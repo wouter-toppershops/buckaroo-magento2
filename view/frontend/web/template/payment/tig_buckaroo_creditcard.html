@@ -46,6 +46,7 @@
             <!-- ko template: getTemplate() --><!-- /ko -->
             <!--/ko-->
         </div>
+
         <div class="actions-toolbar">
             <div class="primary">
                 <button class="action primary checkout"
@@ -62,5 +63,10 @@
             </div>
         </div>
 
+        <!-- ko if: payWithBaseCurrency() -->
+        <div class="tig_buckaroo_currency-notification">
+            <span data-bind="text: getPayWithBaseCurrencyText()"></span>
+        </div>
+        <!--/ko-->
     </div>
 </div>

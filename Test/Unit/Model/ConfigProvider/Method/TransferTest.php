@@ -104,7 +104,14 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $sendEmail = '1';
         $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/active')->andReturn(true);
         $this->scopeConfig->shouldReceive('getValue')
-            ->with('payment/tig_buckaroo_transfer/send_email')
+            ->withArgs(
+                [
+                    'payment/tig_buckaroo_transfer/send_email',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    null
+                ]
+            )
+            ->once()
             ->andReturn($sendEmail);
         $this->scopeConfig->shouldReceive('getValue')->andReturn(false);
 

@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
  * @method getDueDate()
+ * @method getSendEmail()
  */
 class Transfer extends AbstractConfigProvider
 {
@@ -71,8 +72,9 @@ class Transfer extends AbstractConfigProvider
             'payment' => [
                 'buckaroo' => [
                     'transfer' => [
-                        'sendEmail' => (bool)$this->scopeConfig->getValue(self::XPATH_TRANSFER_SEND_EMAIL),
-                        'paymentFeeLabel' => $paymentFeeLabel
+                        'sendEmail' => (bool) $this->getSendEmail(),
+                        'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ]
                 ]
             ]

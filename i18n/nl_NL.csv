@@ -215,7 +215,7 @@
 "Place Order","Plaats bestelling"
 "Select a bank:","Selecteer een bank:"
 "BIC number:","BIC nummer:"
-"Select a Credit Card or Debit Card:","Selecteer een Creditkaart of Debitkaart"
+"Select a Credit Card or Debit Card:","Selecteer een Creditkaart of Debitkaart:"
 "Bank account holder","Rekeninghouder"
 "Bank account number","Rekeningnummer"
 "BIC Number","BIC nummer"
@@ -284,3 +284,4 @@
 "(DD/MM/YYYY)","(DD/MM/JJJJ)"
 "Any comments about this Beta release? <a target=\"_blank\" href=\"%s\"> Please let us know! </a>","Heeft u opmerkingen over deze Beta release? <a target=\"_blank\" href=\"%s\"> Laat het ons weten! </a>"
 "Buckaroo version","Buckaroo versie"
+"The transaction will be processed using %s.","De betaling zal verwerkt worden in %s."

@@ -75,11 +75,23 @@ class CreditcardTest extends BaseTest
     public function testGetImageUrl()
     {
         $issuers = 'amex,visa';
+        $allowedCurrencies = 'USD,EUR';
         $this->scopeConfig->shouldReceive('getValue')
                           ->once()
                           ->withArgs(
                               [
                                   Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
+                              ]
+                          )
+                          ->andReturn($issuers);
+
+        $this->scopeConfig->shouldReceive('getValue')
+                          ->once()
+                          ->withArgs(
+                              [
+                                  Creditcard::XPATH_ALLOWED_CURRENCIES,
+                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                                  null
                               ]
                           )
                           ->andReturn($issuers);

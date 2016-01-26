@@ -63,6 +63,7 @@ class Mrcash extends AbstractConfigProvider
                 'buckaroo' => [
                     'mrcash' => [
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

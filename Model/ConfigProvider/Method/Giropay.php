@@ -63,6 +63,7 @@ class Giropay extends AbstractConfigProvider
                 'buckaroo' => [
                     'giropay' => [
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

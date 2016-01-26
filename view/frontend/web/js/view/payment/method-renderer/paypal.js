@@ -64,6 +64,8 @@ define(
             },
             redirectAfterPlaceOrder: false,
             paymentFeeLabel : window.checkoutConfig.payment.buckaroo.paypal.paymentFeeLabel,
+            currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+            baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
             /**
              * @override
@@ -119,6 +121,18 @@ define(
                 selectPaymentMethodAction(this.getData());
                 checkoutData.setSelectedPaymentMethod(this.item.method);
                 return true;
+            },
+
+            payWithBaseCurrency: function() {
+                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.paypal.allowedCurrencies;
+
+                return allowedCurrencies.indexOf(this.currencyCode) < 0;
+            },
+
+            getPayWithBaseCurrencyText: function() {
+                var text = $.mage.__('The transaction will be processed using %s.');
+
+                return text.replace('%s', this.baseCurrencyCode);
             }
         });
     }
