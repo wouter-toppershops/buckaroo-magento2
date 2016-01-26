@@ -79,9 +79,24 @@ class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
         $this->_canRefund = $value;
     }
 
+    public function setCanVoid($value)
+    {
+        $this->_canVoid = $value;
+    }
+
     public function setCanOrder($value)
     {
         $this->_canOrder = $value;
+    }
+
+    public function setCanAuthorize($value)
+    {
+        $this->_canAuthorize = $value;
+    }
+
+    public function setCanCapture($value)
+    {
+        $this->_canCapture = $value;
     }
 }
 
@@ -89,6 +104,11 @@ class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
 class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 // @codingStandardsIgnoreEnd
 {
+    /**
+     * @var \Mockery\MockInterface
+     */
+    protected $validatorFactory;
+
     /**
      * @var \Mockery\MockInterface
      */
@@ -120,6 +140,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $account;
 
     /**
+     * @var \Mockery\MockInterface
+     */
+    protected $gateway;
+
+    /**
      * Setup the standard mocks
      */
     public function setUp()
@@ -132,6 +157,10 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
         $this->configMethodProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
+        $this->validatorFactory = \Mockery::mock(\TIG\Buckaroo\Model\ValidatorFactory::class);
+        $this->gateway = \Mockery::mock(\TIG\Buckaroo\Gateway\GatewayInterface::class);
+
+        $this->gateway->shouldReceive('setMode')->withAnyArgs();
 
         /**
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
@@ -142,6 +171,8 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,
             'configProviderMethodFactory' => $this->configMethodProvider,
+            'validatorFactory' => $this->validatorFactory,
+            'gateway' => $this->gateway,
         ]);
     }
 
@@ -469,28 +500,87 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         ];
     }
 
-    public function testOrderInvalidArgument()
+    /**
+     * @dataProvider testProcessInvalidArgumentDataProvider
+     *
+     * @param $method
+     */
+    public function testProcessInvalidArgument($method)
     {
         $this->setExpectedException('\InvalidArgumentException');
 
         $payment = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
 
-        $this->object->order($payment, 0);
+        $this->object->$method($payment, 0);
     }
 
-    public function testCantOrder()
+    public function testProcessInvalidArgumentDataProvider()
     {
-        $this->setExpectedException('\Magento\Framework\Exception\LocalizedException');
+        return [
+            [
+                'order',
+            ],
+            [
+                'authorize',
+            ],
+            [
+                'capture',
+            ],
+            [
+                'refund',
+            ],
+            [
+                'void',
+            ],
+        ];
+    }
+
+    /**
+     * @param $method
+     * @param $canMethod
+     *
+     * @dataProvider testCantProcessDataProvider
+     */
+    public function testCantProcess($method, $canMethod)
+    {
+        $this->setExpectedException(\Magento\Framework\Exception\LocalizedException::class);
         $mockClass = \Magento\Payment\Model\InfoInterface::class
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+
         $payment = \Mockery::mock($mockClass);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->object->setCanOrder(false);
-        $this->object->order($payment, 0);
+        $this->object->$canMethod(false);
+        $this->object->$method($payment, 0);
+    }
+
+    public function testCantProcessDataProvider()
+    {
+        return [
+            [
+                'order',
+                'setCanOrder',
+            ],
+            [
+                'authorize',
+                'setCanAuthorize',
+            ],
+            [
+                'capture',
+                'setCanCapture',
+            ],
+            [
+                'refund',
+                'setCanRefund',
+            ],
+            [
+                'void',
+                'setCanVoid',
+            ],
+        ];
     }
 
     public function testGetConfigDataRedirectUrl()
@@ -591,14 +681,29 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         ];
     }
 
-    public function testOrderTransactionBuilderFalse()
+    /**
+     * @param      $method
+     * @param      $setCanMethod
+     * @param      $methodTransactionBuilder
+     *
+     * @param bool $canMethod
+     *
+     * @dataProvider testTransactionBuilderFalseTrueDataProvider
+     */
+    public function testTransactionBuilderFalse($method, $setCanMethod, $methodTransactionBuilder, $canMethod = false)
     {
-        $this->setExpectedException('\LogicException');
+        $this->setExpectedException(\LogicException::class);
         $mockClass = \Magento\Payment\Model\InfoInterface::class
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $stubbedMethods = [$methodTransactionBuilder];
+
+        if ($canMethod) {
+            $stubbedMethods[] = $canMethod;
+        }
 
         $partialMock = $this->getPartialObject(
             AbstractMethod::class,
@@ -607,30 +712,84 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'configProviderFactory' => $this->configProvider,
                 'configProviderMethodFactory' => $this->configMethodProvider,
             ],
-            array('getOrderTransactionBuilder')
+            $stubbedMethods
         );
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $partialMock->setCanOrder(true);
+        $partialMock->$setCanMethod(true);
 
         $partialMock->expects($this->once())
-            ->method('getOrderTransactionBuilder')
+            ->method($methodTransactionBuilder)
             ->with($payment)
             ->willReturn(false);
 
+        if ($canMethod) {
+            $partialMock->expects($this->any())
+                ->method($canMethod)
+                ->withAnyParameters()
+                ->willReturn(true);
+        }
+
         /** @noinspection PhpUndefinedMethodInspection */
-        $partialMock->order($payment, 0);
+        $partialMock->$method($payment, 0);
 
         $this->assertSame($payment, $partialMock->payment);
     }
 
-    public function testOrderTransactionBuilderTrue()
+    public function testTransactionBuilderFalseTrueDataProvider()
+    {
+        return [
+            [
+                'order',
+                'setCanOrder',
+                'getOrderTransactionBuilder',
+            ],
+            [
+                'authorize',
+                'setCanAuthorize',
+                'getAuthorizeTransactionBuilder',
+            ],
+            [
+                'capture',
+                'setCanCapture',
+                'getCaptureTransactionBuilder',
+            ],
+            [
+                'refund',
+                'setCanRefund',
+                'getRefundTransactionBuilder',
+                'canRefund',
+            ],
+            [
+                'void',
+                'setCanVoid',
+                'getVoidTransactionBuilder',
+            ],
+        ];
+    }
+
+    /**
+     * @param $method
+     * @param $setCanMethod
+     * @param $methodTransactionBuilder
+     *
+     * @param $canMethod
+     *
+     * @dataProvider testTransactionBuilderFalseTrueDataProvider
+     */
+    public function testTransactionBuilderTrue($method, $setCanMethod, $methodTransactionBuilder, $canMethod = false)
     {
         $mockClass = \Magento\Payment\Model\InfoInterface::class
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $stubbedMethods = [$methodTransactionBuilder];
+
+        if ($canMethod) {
+            $stubbedMethods[] = $canMethod;
+        }
 
         $partialMock = $this->getPartialObject(
             AbstractMethod::class,
@@ -639,26 +798,57 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'configProviderFactory' => $this->configProvider,
                 'configProviderMethodFactory' => $this->configMethodProvider,
             ],
-            array('getOrderTransactionBuilder')
+            $stubbedMethods
         );
 
         /** @noinspection PhpUndefinedMethodInspection */
-        $partialMock->setCanOrder(true);
+        $partialMock->$setCanMethod(true);
 
         $partialMock->expects($this->once())
-            ->method('getOrderTransactionBuilder')
+            ->method($methodTransactionBuilder)
             ->with($payment)
             ->willReturn(true);
 
+        if ($canMethod) {
+            $partialMock->expects($this->any())
+                ->method($canMethod)
+                ->withAnyParameters()
+                ->willReturn(true);
+        }
+
         /** @noinspection PhpUndefinedMethodInspection */
-        $this->assertEquals($partialMock, $partialMock->order($payment, 0));
+        $this->assertEquals($partialMock, $partialMock->$method($payment, 0));
 
         $this->assertSame($payment, $partialMock->payment);
     }
 
+    /**
+     * @param      $method
+     * @param      $setCanMethod
+     * @param      $methodTransactionBuilder
+     * @param      $methodTransaction
+     * @param      $afterMethod
+     *
+     * @param bool $canMethod
+     *
+     * @param bool $closeTransaction
+     *
+     * @param bool $saveId
+     *
+     * @dataProvider testFullFlowDataProvider
+     */
+    public function testFullFlow(
+        $method,
+        $setCanMethod,
+        $methodTransactionBuilder,
+        $methodTransaction,
+        $afterMethod,
+        $canMethod = false,
+        $closeTransaction = true,
+        $saveId = true
+    ) {
+        $amount = 0;
 
-    public function testOrderFullFlow()
-    {
         $responseObject = new \stdClass();
         $response = [$responseObject];
 
@@ -668,13 +858,26 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $payment = \Mockery::mock($mockClass);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
 
-        $transaction = \Mockery::mock('\TIG\Buckaroo\Gateway\Http\Transaction');
+        $transaction = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
 
-        $registryMock = \Mockery::mock('\Magento\Framework\Registry');
-        $registryMock->shouldReceive('register')->once()->with('buckaroo_response', $response);
+        $registryMock = \Mockery::mock(\Magento\Framework\Registry::class);
 
-        $transactionBuilderMock = \Mockery::mock('\TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface');
+        if ($method != 'refund' && $method != 'void') {
+            $registryMock->shouldReceive('register')->once()->with('buckaroo_response', $response);
+        }
+
+        $transactionBuilderMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface::class);
+
+        if ($method == 'refund') {
+            $transactionBuilderMock->shouldReceive('setAmount')->with($amount)->once()->andReturn($transaction);
+        }
         $transactionBuilderMock->shouldReceive('build')->once()->andReturn($transaction);
+
+        $stubbedMethods = [$methodTransaction, 'saveTransactionData', $afterMethod, $methodTransactionBuilder];
+
+        if ($canMethod) {
+            $stubbedMethods[] = $canMethod;
+        }
 
         $partialMock = $this->getPartialObject(
             AbstractMethod::class,
@@ -684,33 +887,222 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'configProviderMethodFactory' => $this->configMethodProvider,
                 'registry' => $registryMock
             ],
-            array('orderTransaction', 'saveTransactionData', 'afterOrder', 'getOrderTransactionBuilder')
+            $stubbedMethods
         );
 
-        $partialMock->setCanOrder(true);
+        $partialMock->$setCanMethod(true);
 
         $partialMock->expects($this->once())
-            ->method('getOrderTransactionBuilder')
+            ->method($methodTransactionBuilder)
             ->with($payment)
             ->willReturn($transactionBuilderMock);
 
         $partialMock->expects($this->once())
-            ->method('orderTransaction')
+            ->method($methodTransaction)
             ->with($transaction)
             ->willReturn($response);
 
         $partialMock->expects($this->once())
             ->method('saveTransactionData')
-            ->with($response[0], $payment, true, true);
+            ->with($response[0], $payment, $partialMock->$closeTransaction, $saveId);
 
         $partialMock->expects($this->once())
-            ->method('afterOrder')
+            ->method($afterMethod)
             ->with($payment, $response);
 
-        $result = $partialMock->order($payment, 0);
+        if ($canMethod) {
+            $partialMock->expects($this->any())
+                ->method($canMethod)
+                ->withAnyParameters()
+                ->willReturn(true);
+        }
+
+        $result = $partialMock->$method($payment, $amount);
 
         $this->assertEquals($partialMock, $result);
 
         $this->assertSame($payment, $partialMock->payment);
+    }
+
+    public function testFullFlowDataProvider()
+    {
+        return [
+            [
+                'order',
+                'setCanOrder',
+                'getOrderTransactionBuilder',
+                'orderTransaction',
+                'afterOrder',
+                false,
+                'closeOrderTransaction',
+            ],
+            [
+                'authorize',
+                'setCanAuthorize',
+                'getAuthorizeTransactionBuilder',
+                'authorizeTransaction',
+                'afterAuthorize',
+                false,
+                'closeAuthorizeTransaction',
+            ],
+            [
+                'capture',
+                'setCanCapture',
+                'getCaptureTransactionBuilder',
+                'captureTransaction',
+                'afterCapture',
+                false,
+                'closeCaptureTransaction',
+            ],
+            [
+                'refund',
+                'setCanRefund',
+                'getRefundTransactionBuilder',
+                'refundTransaction',
+                'afterRefund',
+                'canRefund',
+                'closeRefundTransaction',
+                false,
+            ],
+            [
+                'void',
+                'setCanVoid',
+                'getVoidTransactionBuilder',
+                'VoidTransaction',
+                'afterVoid',
+                false,
+                'closeCancelTransaction',
+                false,
+            ],
+        ];
+    }
+
+    /**
+     * @param $method
+     *
+     * @param $gatewayMethod
+     *
+     * @dataProvider testProcessTransactionDataProvider
+     */
+    public function testProcessTransactionResponseNotValid($method, $gatewayMethod)
+    {
+        $this->setExpectedException(\TIG\Buckaroo\Exception::class);
+
+        $response = [];
+
+        $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
+        /** @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock */
+
+        $this->gateway->shouldReceive($gatewayMethod)
+            ->once()
+            ->with($transactionMock)
+            ->andReturn($response);
+
+        $this->validatorFactory->shouldReceive('get')
+            ->once()
+            ->with('transaction_response')
+            ->andReturnSelf();
+
+        $this->validatorFactory->shouldReceive('validate')->with($response)->andReturn(false);
+
+        $this->object->$method($transactionMock);
+    }
+
+    public function testProcessTransactionDataProvider()
+    {
+        return [
+            [
+                'orderTransaction',
+                'authorize',
+            ],
+            [
+                'authorizeTransaction',
+                'authorize',
+            ],
+            [
+                'captureTransaction',
+                'capture',
+            ],
+            [
+                'refundTransaction',
+                'refund',
+            ],
+            [
+                'voidTransaction',
+                'void',
+            ],
+        ];
+    }
+
+    /**
+     * @param $method
+     *
+     * @param $gatewayMethod
+     *
+     * @dataProvider testProcessTransactionDataProvider
+     */
+    public function testProcessTransactionResponseStatusNotValid($method, $gatewayMethod)
+    {
+        $this->setExpectedException(\TIG\Buckaroo\Exception::class);
+
+        $response = [];
+
+        $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
+        /** @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock */
+
+        $this->gateway->shouldReceive($gatewayMethod)
+            ->once()
+            ->with($transactionMock)
+            ->andReturn($response);
+
+        $this->validatorFactory->shouldReceive('get')
+            ->once()
+            ->with('transaction_response')
+            ->andReturnSelf();
+
+        $this->validatorFactory->shouldReceive('validate')->once()->with($response)->andReturn(true);
+
+        $this->validatorFactory->shouldReceive('get')
+            ->once()
+            ->with('transaction_response_status')
+            ->andReturnSelf();
+        $this->validatorFactory->shouldReceive('validate')->once()->with($response)->andReturn(false);
+
+        $this->object->$method($transactionMock);
+    }
+
+    /**
+     * @param $method
+     *
+     * @param $gatewayMethod
+     *
+     * @dataProvider testProcessTransactionDataProvider
+     */
+    public function testProcessTransactionSuccessful($method, $gatewayMethod)
+    {
+        $response = ['test_response'];
+
+        $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
+        /** @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock */
+
+        $this->gateway->shouldReceive($gatewayMethod)
+            ->once()
+            ->with($transactionMock)
+            ->andReturn($response);
+
+        $this->validatorFactory->shouldReceive('get')
+            ->once()
+            ->with('transaction_response')
+            ->andReturnSelf();
+
+        $this->validatorFactory->shouldReceive('validate')->once()->with($response)->andReturn(true);
+
+        $this->validatorFactory->shouldReceive('get')
+            ->once()
+            ->with('transaction_response_status')
+            ->andReturnSelf();
+        $this->validatorFactory->shouldReceive('validate')->once()->with($response)->andReturn(true);
+
+        $this->assertSame($response, $this->object->$method($transactionMock));
     }
 }

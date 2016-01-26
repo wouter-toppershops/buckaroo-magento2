@@ -551,7 +551,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
-     * @return array|\StdClass
+     * @return array
      * @throws \TIG\Buckaroo\Exception
      */
     public function authorizeTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
@@ -677,7 +677,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->payment = $payment;
 
         $transactionBuilder = $this->getRefundTransactionBuilder($payment);
-        $transactionBuilder->setAmount($amount);
 
         if (!$transactionBuilder) {
             throw new \LogicException(
@@ -686,6 +685,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         } elseif ($transactionBuilder === true) {
             return $this;
         }
+        $transactionBuilder->setAmount($amount);
 
         $transaction = $transactionBuilder->build();
 
@@ -757,7 +757,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        parent::cancel($payment);
+        parent::void($payment);
 
         $this->payment = $payment;
 
