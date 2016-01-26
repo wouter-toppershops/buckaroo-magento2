@@ -118,7 +118,7 @@ class Creditcard extends AbstractConfigProvider
     public function formatIssuers()
     {
         $issuers = parent::formatIssuers();
-        $allowed = explode(',', $this->scopeConfig->getValue('payment/tig_buckaroo_creditcard/allowed_creditcards'));
+        $allowed = explode(',', $this->scopeConfig->getValue(self::XPATH_CREDITCARD_ALLOWED_CREDITCARDS));
 
         foreach ($issuers as $key => $issuer) {
             $issuers[$key]['active'] = in_array($issuer['code'], $allowed);
