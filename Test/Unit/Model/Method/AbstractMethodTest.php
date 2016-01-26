@@ -202,6 +202,38 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
+     * Test what happens if the payment method is disabled.
+     */
+    public function testIsAvailableAdminhtmlDisabled()
+    {
+        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+
+        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+
+        $this->objectManager->shouldReceive('get')->with('Magento\Framework\App\State')->andReturnSelf();
+        $this->objectManager->shouldReceive('getAreaCode')->andReturn('adminhtml');
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [
+                'objectManager' => $this->objectManager,
+                'configProviderFactory' => $this->configProvider,
+            ],
+            array('getConfigData')
+        );
+
+        $partialMock->expects($this->once())->method('getConfigData')->with('available_in_backend')->willReturn(0);
+
+        /**
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
+         */
+        $result = $partialMock->isAvailable($quote);
+
+        $this->assertFalse($result);
+    }
+
+    /**
      * Test what happens if the allow by ip option is on, but our ip is not in the list.
      */
     public function testIsAvailableInvalidIp()
@@ -459,5 +491,226 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setCanOrder(false);
         $this->object->order($payment, 0);
+    }
+
+    public function testGetConfigDataRedirectUrl()
+    {
+        $expectedUrl = 'test.com';
+
+        $this->object->orderPlaceRedirectUrl = $expectedUrl;
+
+        $result = $this->object->getConfigData('order_place_redirect_url');
+
+        $this->assertEquals($expectedUrl, $result);
+    }
+
+    public function testGetTitleNoConfigProvider()
+    {
+        $method = 'tig_buckaroo_abstract_test';
+        $expectedTitle = 'tig_buckaroo_abstract_test_title';
+        $this->configMethodProvider->shouldReceive('has')->with($method)->andReturn(false);
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [
+                'objectManager' => $this->objectManager,
+                'configProviderFactory' => $this->configProvider,
+                'configProviderMethodFactory' => $this->configMethodProvider,
+            ],
+            array('getConfigData')
+        );
+
+        $partialMock->expects($this->once())->method('getConfigData')->with('title')->willReturn($expectedTitle);
+
+        /**
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
+         */
+        $partialMock->buckarooPaymentMethodCode = $method;
+
+
+        $this->assertEquals($expectedTitle, $partialMock->getTitle());
+    }
+
+    /**
+     * @dataProvider testGetTitleNoPaymentFeeDataProvider
+     *
+     * @param $title
+     * @param $expectedTitle
+     * @param $fee
+     */
+    public function testGetTitleNoPaymentFee($title, $expectedTitle, $fee)
+    {
+        $method = 'tig_buckaroo_abstract_test';
+
+        $this->configMethodProvider->shouldReceive('has')->with($method)->andReturn(true);
+        $this->configMethodProvider->shouldReceive('get')->with($method)->andReturnSelf();
+        $this->configMethodProvider->shouldReceive('getPaymentFee')->andReturn($fee);
+
+        $priceHelperMock = \Mockery::mock(\Magento\Framework\Pricing\Helper\Data::class);
+        $priceHelperMock->shouldReceive('currency')->with($fee, true, false)->andReturn($fee);
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [
+                'objectManager' => $this->objectManager,
+                'configProviderFactory' => $this->configProvider,
+                'configProviderMethodFactory' => $this->configMethodProvider,
+                'priceHelper' => $priceHelperMock,
+            ],
+            array('getConfigData')
+        );
+
+        $partialMock->expects($this->once())->method('getConfigData')->with('title')->willReturn($title);
+        /**
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
+         */
+
+        $partialMock->buckarooPaymentMethodCode = $method;
+
+        $this->assertEquals($expectedTitle, $partialMock->getTitle());
+    }
+
+    public function testGetTitleNoPaymentFeeDataProvider()
+    {
+        return [
+            [
+                'tig_buckaroo_abstract_test_title',
+                'tig_buckaroo_abstract_test_title',
+                false,
+            ],
+            [
+                'tig_buckaroo_abstract_test_title',
+                'tig_buckaroo_abstract_test_title + 5.00',
+                '5.00',
+            ],
+            [
+                'tig_buckaroo_abstract_test_title',
+                'tig_buckaroo_abstract_test_title + 5%',
+                '5%',
+            ],
+        ];
+    }
+
+    public function testOrderTransactionBuilderFalse()
+    {
+        $this->setExpectedException('\LogicException');
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [
+                'objectManager' => $this->objectManager,
+                'configProviderFactory' => $this->configProvider,
+                'configProviderMethodFactory' => $this->configMethodProvider,
+            ],
+            array('getOrderTransactionBuilder')
+        );
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $partialMock->setCanOrder(true);
+
+        $partialMock->expects($this->once())
+            ->method('getOrderTransactionBuilder')
+            ->with($payment)
+            ->willReturn(false);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $partialMock->order($payment, 0);
+
+        $this->assertSame($payment, $partialMock->payment);
+    }
+
+    public function testOrderTransactionBuilderTrue()
+    {
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [
+                'objectManager' => $this->objectManager,
+                'configProviderFactory' => $this->configProvider,
+                'configProviderMethodFactory' => $this->configMethodProvider,
+            ],
+            array('getOrderTransactionBuilder')
+        );
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $partialMock->setCanOrder(true);
+
+        $partialMock->expects($this->once())
+            ->method('getOrderTransactionBuilder')
+            ->with($payment)
+            ->willReturn(true);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->assertEquals($partialMock, $partialMock->order($payment, 0));
+
+        $this->assertSame($payment, $partialMock->payment);
+    }
+
+
+    public function testOrderFullFlow()
+    {
+        $responseObject = new \stdClass();
+        $response = [$responseObject];
+
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $transaction = \Mockery::mock('\TIG\Buckaroo\Gateway\Http\Transaction');
+
+        $registryMock = \Mockery::mock('\Magento\Framework\Registry');
+        $registryMock->shouldReceive('register')->once()->with('buckaroo_response', $response);
+
+        $transactionBuilderMock = \Mockery::mock('\TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface');
+        $transactionBuilderMock->shouldReceive('build')->once()->andReturn($transaction);
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [
+                'objectManager' => $this->objectManager,
+                'configProviderFactory' => $this->configProvider,
+                'configProviderMethodFactory' => $this->configMethodProvider,
+                'registry' => $registryMock
+            ],
+            array('orderTransaction', 'saveTransactionData', 'afterOrder', 'getOrderTransactionBuilder')
+        );
+
+        $partialMock->setCanOrder(true);
+
+        $partialMock->expects($this->once())
+            ->method('getOrderTransactionBuilder')
+            ->with($payment)
+            ->willReturn($transactionBuilderMock);
+
+        $partialMock->expects($this->once())
+            ->method('orderTransaction')
+            ->with($transaction)
+            ->willReturn($response);
+
+        $partialMock->expects($this->once())
+            ->method('saveTransactionData')
+            ->with($response[0], $payment, true, true);
+
+        $partialMock->expects($this->once())
+            ->method('afterOrder')
+            ->with($payment, $response);
+
+        $result = $partialMock->order($payment, 0);
+
+        $this->assertEquals($partialMock, $result);
+
+        $this->assertSame($payment, $partialMock->payment);
     }
 }

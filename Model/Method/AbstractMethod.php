@@ -475,7 +475,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
-     * @return array|\StdClass
+     * @return array
      * @throws \TIG\Buckaroo\Exception
      */
     public function orderTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
