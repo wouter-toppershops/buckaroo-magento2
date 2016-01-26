@@ -103,6 +103,11 @@ class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
     {
         $this->_eventManager = $eventManager;
     }
+
+    public function getCode()
+    {
+        return $this->_code;
+    }
 }
 
 // @codingStandardsIgnoreStart
@@ -150,6 +155,21 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $gateway;
 
     /**
+     * @var \Mockery\MockInterface
+     */
+    protected $helper;
+
+    /**
+     * @var \Mockery\MockInterface
+     */
+    protected $request;
+
+    /**
+     * @var \Mockery\MockInterface
+     */
+    protected $refundFieldsFactory;
+
+    /**
      * Setup the standard mocks
      */
     public function setUp()
@@ -164,8 +184,13 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
         $this->validatorFactory = \Mockery::mock(\TIG\Buckaroo\Model\ValidatorFactory::class);
         $this->gateway = \Mockery::mock(\TIG\Buckaroo\Gateway\GatewayInterface::class);
+        $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
+        $this->request = \Mockery::mock(\Magento\Framework\App\RequestInterface::class);
+        $this->refundFieldsFactory = \Mockery::mock('\TIG\Buckaroo\Model\RefundFieldsFactory');
 
-        $this->gateway->shouldReceive('setMode')->withAnyArgs();
+        $mode = \TIG\Buckaroo\Helper\Data::MODE_TEST;
+        $this->helper->shouldReceive('getMode')->andReturn($mode);
+        $this->gateway->shouldReceive('setMode')->with($mode);
 
         /**
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
@@ -178,6 +203,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             'configProviderMethodFactory' => $this->configMethodProvider,
             'validatorFactory' => $this->validatorFactory,
             'gateway' => $this->gateway,
+            'helper' => $this->helper,
+            'request' => $this->request,
+            'refundFieldsFactory' => $this->refundFieldsFactory,
         ]);
     }
 
@@ -904,6 +932,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             $stubbedMethods
         );
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $partialMock->setEventManager($eventManagerMock);
 
         $partialMock->$setCanMethod(true);
@@ -1116,5 +1145,152 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->validatorFactory->shouldReceive('validate')->once()->with($response)->andReturn(true);
 
         $this->assertSame($response, $this->object->$method($transactionMock));
+    }
+
+    public function testCancel()
+    {
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [],
+            ['void']
+        );
+
+        $partialMock->expects($this->once())->method('void')->with($payment)->willReturnSelf();
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->assertSame($partialMock, $partialMock->cancel($payment));
+    }
+
+    public function testGetTransactionAdditionalInfo()
+    {
+        $data = [];
+        $this->helper->shouldReceive('getTransactionAdditionalInfo')->once()->with($data);
+        $this->object->getTransactionAdditionalInfo($data);
+    }
+
+    public function testSaveTransactionDataResponseKeyEmpty()
+    {
+        $response = new \stdClass();
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+
+        $this->object->saveTransactionData($response, $payment, true, false);
+    }
+
+    /**
+     * @param $close
+     * @param $saveId
+     *
+     * @dataProvider testSaveTransactionDataDataProvider
+     */
+    public function testSaveTransactionData($close, $saveId)
+    {
+        $response = new \stdClass();
+        $key = 'test_transaction_key';
+        $response->Key = $key;
+
+        $arrayResponse = json_decode(json_encode($response), true);
+        $mockClass = \Magento\Payment\Model\InfoInterface::class
+            . ','
+            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
+        $payment = \Mockery::mock($mockClass);
+
+        $payment->shouldReceive('setTransactionAdditionalInfo')
+            ->once()
+            ->with(
+                \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
+                $arrayResponse
+            );
+
+        $payment->shouldReceive('setIsTransactionClosed')->once()->with($close);
+        $payment->shouldReceive('setTransactionId')->once()->with($key);
+
+        if ($saveId) {
+            $payment->shouldReceive('setAdditionalInformation')
+                ->once()
+                ->with(AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $key);
+        }
+        /** @var \Magento\Payment\Model\InfoInterface $payment */
+
+        $partialMock = $this->getPartialObject(
+            AbstractMethod::class,
+            [],
+            ['getTransactionAdditionalInfo']
+        );
+
+        $partialMock->expects($this->once())
+            ->method('getTransactionAdditionalInfo')
+            ->with($arrayResponse)
+            ->willReturn($arrayResponse);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $partialMock->saveTransactionData($response, $payment, $close, $saveId);
+    }
+
+    public function testSaveTransactionDataDataProvider()
+    {
+        return [
+            [
+                true,
+                true,
+            ],
+            [
+                true,
+                false,
+            ],
+            [
+                false,
+                true,
+            ],
+            [
+                false,
+                false,
+            ],
+        ];
+    }
+
+    public function testAddExtraFields()
+    {
+        $testCode = 'testCode';
+        $testValue = 'testValue';
+
+        $params = [
+            'creditmemo' => [
+                $testCode => $testValue
+            ],
+        ];
+
+        $extraFields = [
+            [
+                'code' => $testCode,
+            ],
+        ];
+
+        $expectedServices = [
+            'RequestParameter' => [
+                [
+                    '_' => $testValue,
+                    'Name' => $testCode,
+                ],
+            ],
+        ];
+
+        $this->request->shouldReceive('getParams')->once()->andReturn($params);
+        $this->refundFieldsFactory->shouldReceive('get')
+            ->with($this->object->getCode())
+            ->once()
+            ->andReturn($extraFields);
+
+        $this->assertEquals($expectedServices, $this->object->addExtraFields($this->object->getCode()));
     }
 }
