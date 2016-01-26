@@ -97,6 +97,15 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         return $this;
     }
 
+    public function getPartialObject($object, $arguments = array(), $mockMethods = array())
+    {
+        $constructorArgs = $this->objectManagerHelper->getConstructArguments($object, $arguments);
+
+        $mock = $this->getMock($object, $mockMethods, $constructorArgs);
+
+        return $mock;
+    }
+
     public function tearDown()
     {
         m::close();
