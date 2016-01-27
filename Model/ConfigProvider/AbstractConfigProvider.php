@@ -48,6 +48,11 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     protected $xpathPrefix = 'XPATH_';
 
     /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     */
+    protected $scopeConfig;
+
+    /**
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      */
     public function __construct(
@@ -164,8 +169,8 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     /**
      * Return the config value for the given Xpath (optionally with $store)
      *
-     * @param      $xpath
-     * @param null $store
+     * @param string                              $xpath
+     * @param null|int|\Magento\Store\Model\Store $store
      *
      * @return mixed
      */

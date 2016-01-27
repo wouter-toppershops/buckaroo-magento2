@@ -99,6 +99,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $configProviderMethodFactory;
 
     /**
+     * @var \TIG\Buckaroo\Model\RefundFieldsFactory
+     */
+    public $refundFieldsFactory;
+
+    /**
      * @var bool
      */
     public $closeOrderTransaction       = true;
@@ -545,7 +550,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $configProvider = $this->configProviderMethodFactory->get($this->buckarooPaymentMethodCode);
         $allowedCurrencies = $configProvider->getAllowedCurrencies();
 
+        /** @noinspection PhpUndefinedMethodInspection */
         if (!$payment->getCurrencyCode() || !in_array($payment->getCurrencyCode(), $allowedCurrencies)) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $this->payment->setIsFraudDetected(false);
         }
 

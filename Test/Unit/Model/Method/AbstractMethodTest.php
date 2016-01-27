@@ -766,6 +766,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         /** @noinspection PhpUndefinedMethodInspection */
         $partialMock->$method($payment, 0);
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -852,6 +853,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals($partialMock, $partialMock->$method($payment, 0));
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -972,6 +974,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->assertEquals($partialMock, $result);
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertSame($payment, $partialMock->payment);
     }
 

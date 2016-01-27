@@ -109,6 +109,21 @@ class Push implements PushInterface
     public $orderStatusFactory;
 
     /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    public $objectManager;
+
+    /**
+     * @var ConfigProvider\Factory
+     */
+    public $configProviderFactory;
+
+    /**
+     * @var ConfigProvider\Method\Factory
+     */
+    public $configProviderMethodFactory;
+
+    /**
      * @param \Magento\Framework\ObjectManagerInterface          $objectManager
      * @param Request                                            $request
      * @param Validator\Push                                     $validator

@@ -331,6 +331,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                     $orderMock->shouldReceive('save')->andReturnSelf();
                     $objectMock->expects($this->exactly(2))->method('addTransactionData');
 
+                    /** @noinspection PhpUndefinedFieldInspection */
                     $objectMock->postData = $postData;
 
                     $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
@@ -350,8 +351,10 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
 
         }
 
+        /** @noinspection PhpUndefinedFieldInspection */
         $objectMock->order = $orderMock;
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertTrue($objectMock->processSucceededPush($status, $message));
     }
 

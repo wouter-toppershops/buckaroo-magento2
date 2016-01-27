@@ -94,7 +94,7 @@ class CreditcardTest extends BaseTest
                                   null
                               ]
                           )
-                          ->andReturn($issuers);
+                          ->andReturn($allowedCurrencies);
 
         $shouldReceive = $this->assetRepository
             ->shouldReceive('getUrl')

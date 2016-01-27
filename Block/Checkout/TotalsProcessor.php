@@ -25,7 +25,7 @@ class TotalsProcessor extends AbstractTotalsProcessor implements LayoutProcessor
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->scopeConfig = $scopeConfig;
+        parent::__construct($scopeConfig);
         $this->configProviderFactory = $configProviderFactory;
     }
 

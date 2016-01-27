@@ -48,6 +48,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase
      */
     protected $objectManagerHelper;
 
+    protected $object;
+
     public function setUp()
     {
         parent::setUp();
@@ -91,7 +93,9 @@ class BaseTest extends \PHPUnit_Framework_TestCase
             $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setData('info_instance', $infoInterface);
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals($this->object, $this->object->assignData($data));
 
         return $this;

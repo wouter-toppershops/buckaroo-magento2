@@ -45,6 +45,16 @@ class BankFields extends \Magento\Backend\Block\Template
     protected $orderPaymentBlock    = 'order_payment';
 
     /**
+     * @var \TIG\Buckaroo\Model\RefundFieldsFactory
+     */
+    protected $refundFieldsFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory
+     */
+    protected $transactionBuilder;
+
+    /**
      * @param \Magento\Backend\Block\Template\Context              $context
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory
      * @param \TIG\Buckaroo\Model\RefundFieldsFactory              $refundFieldsFactory
