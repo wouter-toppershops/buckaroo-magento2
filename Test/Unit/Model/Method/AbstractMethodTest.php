@@ -958,6 +958,16 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 ->willReturn(true);
         }
 
+        if ($method == 'authorize') {
+            $this->configMethodProvider->shouldReceive('get')->withAnyArgs()->andReturnSelf();
+            $this->configMethodProvider->shouldReceive('getAllowedCurrencies')->once()->withAnyArgs()->andReturnSelf();
+
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->shouldReceive('getCurrencyCode')->once()->andReturn(false);
+            /** @noinspection PhpUndefinedMethodInspection */
+            $payment->shouldReceive('setIsFraudDetected')->once()->with(false);
+        }
+
         $result = $partialMock->$method($payment, $amount);
 
         $this->assertEquals($partialMock, $result);
