@@ -107,7 +107,7 @@ class Push implements ValidatorInterface
      * Checks if the status code is returned by the bpe push and is valid.
      * @param $code
      *
-     * @return Array
+     * @return array
      */
     public function validateStatusCode($code)
     {

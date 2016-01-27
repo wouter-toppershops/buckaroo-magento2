@@ -114,9 +114,10 @@ class Account extends AbstractConfigProvider
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $methodConfigProviderFactory,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
     ) {
+        parent::__construct($scopeConfig);
+
         $this->objectManager = $objectManager;
         $this->methodConfigProviderFactory = $methodConfigProviderFactory;
-        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -167,7 +168,7 @@ class Account extends AbstractConfigProvider
          * If a Payment Method is set, get the payment method status
          */
         if (!is_null($paymentMethod)) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfigProvider */
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
@@ -197,7 +198,7 @@ class Account extends AbstractConfigProvider
          * If a Payment Method is set, get the payment method status
          */
         if (!is_null($paymentMethod)) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfigProvider */
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();

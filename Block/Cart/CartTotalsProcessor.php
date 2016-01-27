@@ -25,7 +25,7 @@ class CartTotalsProcessor extends AbstractTotalsProcessor implements LayoutProce
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->scopeConfig = $scopeConfig;
+        parent::__construct($scopeConfig);
         $this->configProviderFactory = $configProviderFactory;
     }
 

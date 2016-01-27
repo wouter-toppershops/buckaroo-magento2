@@ -86,7 +86,7 @@ class OrderStatusFactory
         $paymentMethod = $paymentMethodInstance->buckarooPaymentMethodCode;
 
         if (!$this->configProviderMethodFactory->has($paymentMethod)) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $configProvider */
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
             $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
 
             if ($configProvider->getActiveStatus()) {
@@ -134,6 +134,7 @@ class OrderStatusFactory
         $statusCode,
         \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $configProvider
     ) {
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
         $status = false;
 
         switch ($statusCode) {

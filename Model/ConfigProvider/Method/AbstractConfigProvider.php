@@ -103,8 +103,9 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Helper\PaymentFee $paymentFeeHelper
     ) {
+        parent::__construct($scopeConfig);
+
         $this->assetRepo = $assetRepo;
-        $this->scopeConfig = $scopeConfig;
         $this->configProviderFactory = $configProviderFactory;
         $this->paymentFeeHelper = $paymentFeeHelper;
 
@@ -167,6 +168,8 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
     }
 
     /**
+     * @param null|int|\Magento\Store\Model\Store $store
+     *
      * @return array
      */
     public function getAllowedCurrencies($store = null)

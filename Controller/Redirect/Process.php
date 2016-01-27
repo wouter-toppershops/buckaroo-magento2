@@ -85,6 +85,11 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $orderStatusFactory;
 
     /**
+     * @var \TIG\Buckaroo\Debug\Debugger
+     */
+    protected $debugger;
+
+    /**
      * @param \Magento\Framework\App\Action\Context               $context
      * @param \TIG\Buckaroo\Helper\Data                           $helper
      * @param \Magento\Checkout\Model\Cart                        $cart
