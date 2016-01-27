@@ -74,5 +74,4 @@ class States extends AbstractConfigProvider
         ];
         return $config;
     }
-
 }

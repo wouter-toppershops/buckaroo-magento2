@@ -39,19 +39,17 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class Giropay extends AbstractConfigProvider
 {
     const XPATH_GIROPAY_PAYMENT_FEE             = 'payment/tig_buckaroo_giropay/payment_fee';
     const XPATH_GIROPAY_PAYMENT_FEE_LABEL       = 'payment/tig_buckaroo_giropay/payment_fee_label';
+    const XPATH_GIROPAY_ACTIVE                  = 'payment/tig_buckaroo_giropay/active';
     const XPATH_GIROPAY_ACTIVE_STATUS           = 'payment/tig_buckaroo_giropay/active_status';
     const XPATH_GIROPAY_ORDER_STATUS_SUCCESS    = 'payment/tig_buckaroo_giropay/order_status_success';
     const XPATH_GIROPAY_ORDER_STATUS_FAILED     = 'payment/tig_buckaroo_giropay/order_status_failed';
     const XPATH_GIROPAY_AVAILABLE_IN_BACKEND    = 'payment/tig_buckaroo_giropay/available_in_backend';
+
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_giropay/allowed_currencies';
 
     /**
      * @return array|void
@@ -65,6 +63,7 @@ class Giropay extends AbstractConfigProvider
                 'buckaroo' => [
                     'giropay' => [
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

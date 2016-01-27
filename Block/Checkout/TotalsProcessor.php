@@ -25,7 +25,7 @@ class TotalsProcessor extends AbstractTotalsProcessor implements LayoutProcessor
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
-        $this->scopeConfig = $scopeConfig;
+        parent::__construct($scopeConfig);
         $this->configProviderFactory = $configProviderFactory;
     }
 
@@ -34,7 +34,9 @@ class TotalsProcessor extends AbstractTotalsProcessor implements LayoutProcessor
      */
     public function process($jsLayout)
     {
-        $paymentFeeLabel = $this->configProviderFactory->get('account')->getPaymentFeeLabel();
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        $configProvider = $this->configProviderFactory->get('account');
+        $paymentFeeLabel = $configProvider->getPaymentFeeLabel();
 
         $jsLayout['components']['checkout']['children']['sidebar']['children']['summary']['children']['totals']
         ['children']['before_grandtotal']['children']['buckaroo_fee']['config']['title'] = $paymentFeeLabel;

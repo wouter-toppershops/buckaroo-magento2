@@ -187,7 +187,6 @@
                 <failure_redirect>checkout</failure_redirect>
                 <cancel_on_failed>1</cancel_on_failed>
                 <digital_signature>17433DEE2CCB4B8A94CE5DF47079ABC1</digital_signature>
-                <cancel_on_failure>0</cancel_on_failure>
                 <payment_fee_label>Payment Fee</payment_fee_label>
                 <order_status_new>tig_buckaroo_new</order_status_new>
                 <order_status_pending>tig_buckaroo_pending_payment</order_status_pending>
@@ -211,6 +210,8 @@
             <predefined>
                 <location_live_web>http://checkout.buckaroo.nl/soap/Soap.svc</location_live_web>
                 <location_test_web>http://testcheckout.buckaroo.nl/soap/Soap.svc</location_test_web>
+                <wsdl_live_web>https://checkout.buckaroo.nl/soap/soap.svc?wsdl</wsdl_live_web>
+                <wsdl_test_web>https://testcheckout.buckaroo.nl/soap/soap.svc?wsdl</wsdl_test_web>
             </predefined>
         </tig_buckaroo>
 

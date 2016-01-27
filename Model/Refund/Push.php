@@ -97,8 +97,8 @@ class Push
      * This is called when a refund is made in Buckaroo Payment Plaza.
      * This Function will result in a creditmemo being created for the order in question.
      *
-     * @param Array $postData
-     * @param Bool $signatureValidation
+     * @param array $postData
+     * @param bool  $signatureValidation
      * @param $order
      *
      * @return bool
@@ -162,7 +162,7 @@ class Push
 
                 $this->saveCreditmemo($creditmemo, (bool)$creditData['do_offline'], !empty($creditData['send_email']));
                 if (!empty($data['send_email'])) {
-                    $this->$creditEmailSender->send($creditmemo);
+                    $this->creditEmailSender->send($creditmemo);
                 }
                 return true;
             } else {
@@ -207,7 +207,9 @@ class Push
             /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
             $creditmemo = $this->creditmemoFactory->createByOrder($this->order, $creditData);
 
+            /** @var \Magento\Sales\Model\Order\Creditmemo\Item $creditmemoItem */
             foreach ($creditmemo->getAllItems() as $creditmemoItem) {
+                /** @noinspection PhpUndefinedMethodInspection */
                 $creditmemoItem->setBackToStock(false);
             }
 
@@ -288,6 +290,7 @@ class Push
         $totalAmount = $this->totalAmountToRefund();
 
         if ($this->order->getBaseTotalRefunded() == null) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced();
         }
 

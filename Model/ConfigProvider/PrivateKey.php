@@ -55,6 +55,7 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
      * @param \TIG\Buckaroo\Model\Certificate                    $certificate
      * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
      *
+     * @throws \LogicException
      * @todo rewrite to use the configProvider pattern
      */
     public function __construct(
@@ -91,11 +92,9 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Return private key from certificate
      *
-     * @param null $store
-     *
      * @return string
      */
-    public function getPrivateKey($store = null)
+    public function getPrivateKey()
     {
         return $this->certificate->getCertificate();
     }

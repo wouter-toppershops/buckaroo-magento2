@@ -45,4 +45,26 @@ interface ConfigProviderInterface
      * @return float|false
      */
     public function getPaymentFee();
+
+    /**
+     * @return array
+     */
+    public function getAllowedCurrencies();
+
+    /**
+     * @return array
+     */
+    public function getBaseAllowedCurrencies();
+
+    /**
+     * @return string
+     */
+    public function getBuckarooPaymentFeeLabel();
+
+    /**
+     * @param string $imgName
+     *
+     * @return string
+     */
+    public function getImageUrl($imgName);
 }

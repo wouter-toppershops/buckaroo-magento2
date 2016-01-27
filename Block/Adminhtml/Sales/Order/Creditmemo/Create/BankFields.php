@@ -45,6 +45,16 @@ class BankFields extends \Magento\Backend\Block\Template
     protected $orderPaymentBlock    = 'order_payment';
 
     /**
+     * @var \TIG\Buckaroo\Model\RefundFieldsFactory
+     */
+    protected $refundFieldsFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory
+     */
+    protected $transactionBuilder;
+
+    /**
      * @param \Magento\Backend\Block\Template\Context              $context
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory
      * @param \TIG\Buckaroo\Model\RefundFieldsFactory              $refundFieldsFactory
@@ -101,13 +111,14 @@ class BankFields extends \Magento\Backend\Block\Template
         $paymentMethod = false;
 
         $layout = $this->getLayout();
+        /** @var \Magento\Sales\Block\Adminhtml\Order\Payment $paymentBlock */
         $paymentBlock = $layout->getBlock($this->orderPaymentBlock);
 
         if ($paymentBlock) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $paymentMethod = $paymentBlock->getPayment()->getMethod();
         }
 
         return $paymentMethod;
     }
-
 }

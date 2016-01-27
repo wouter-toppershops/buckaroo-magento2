@@ -63,13 +63,17 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class)->makePartial();
+        $this->objectManager             = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class)
+                                                   ->makePartial();
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\SepaDirectDebit::class, [
-            'objectManager' => $this->objectManager,
-            'transactionBuilderFactory' => $this->transactionBuilderFactory,
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Method\SepaDirectDebit::class,
+            [
+                'objectManager'             => $this->objectManager,
+                'transactionBuilderFactory' => $this->transactionBuilderFactory,
+            ]
+        );
     }
 
     /**
@@ -98,8 +102,8 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     public function testAssignData()
     {
         $fixture = [
-            'customer_bic' => 'bicc',
-            'customer_iban' => 'ibann',
+            'customer_bic'          => 'bicc',
+            'customer_iban'         => 'ibann',
             'customer_account_name' => 'myname',
         ];
 
@@ -113,9 +117,9 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $fixture = [
             'customer_account_name' => 'firstname',
-            'customer_iban' => 'ibanio',
-            'customer_bic' => 'biccc',
-            'order' => 'orderrr!',
+            'customer_iban'         => 'ibanio',
+            'customer_bic'          => 'biccc',
+            'order'                 => 'orderrr!',
         ];
 
         $payment = \Mockery::mock(
@@ -129,21 +133,29 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
-        $order->shouldReceive('setServices')->andReturnUsing( function ($services) use ($fixture, $order) {
-            $this->assertEquals('sepadirectdebit', $services['Name']);
-            $this->assertEquals($fixture['customer_bic'], $services[0]['RequestParameter'][0][0]['_']);
-            $this->assertEquals($fixture['customer_iban'], $services['RequestParameter'][1]['_']);
-            $this->assertEquals($fixture['customer_account_name'], $services['RequestParameter'][0]['_']);
+        $order->shouldReceive('setServices')->andReturnUsing(
+            function ($services) use ($fixture, $order) {
+                $this->assertEquals('sepadirectdebit', $services['Name']);
+                $this->assertEquals($fixture['customer_bic'], $services[0]['RequestParameter'][0][0]['_']);
+                $this->assertEquals($fixture['customer_iban'], $services['RequestParameter'][1]['_']);
+                $this->assertEquals($fixture['customer_account_name'], $services['RequestParameter'][0]['_']);
 
-            return $order;
-        });
+                return $order;
+            }
+        );
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
-        $infoInterface->shouldReceive('getAdditionalInformation')->with('customer_account_name')->andReturn($fixture['customer_account_name']);
-        $infoInterface->shouldReceive('getAdditionalInformation')->with('customer_iban')->andReturn($fixture['customer_iban']);
-        $infoInterface->shouldReceive('getAdditionalInformation')->with('customer_bic')->andReturn($fixture['customer_bic']);
+        $infoInterface->shouldReceive('getAdditionalInformation')
+                      ->with('customer_account_name')
+                      ->andReturn($fixture['customer_account_name']);
+        $infoInterface->shouldReceive('getAdditionalInformation')
+                      ->with('customer_iban')
+                      ->andReturn($fixture['customer_iban']);
+        $infoInterface->shouldReceive('getAdditionalInformation')
+                      ->with('customer_bic')
+                      ->andReturn($fixture['customer_bic']);
 
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
@@ -190,13 +202,17 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with('orderr')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setServices')->with([
-            'Name' => 'sepadirectdebit',
-            'Action' => 'Refund',
-            'Version' => 1,
-        ])->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setServices')->with(
+            [
+                'Name'    => 'sepadirectdebit',
+                'Action'  => 'Refund',
+                'Version' => 1,
+            ]
+        )->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
-        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')->with('getAdditionalInformation')->andReturnSelf();
+        $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
+                                        ->with('getAdditionalInformation')
+                                        ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
         $this->assertEquals($this->transactionBuilderFactory, $this->object->getRefundTransactionBuilder($payment));
@@ -214,13 +230,18 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $infoInstanceMock = $this->getInfoInstanceMock();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn(
+            'first name'
+        );
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()
+                         ->andReturn(false);
 
         $ibanValidator = \Mockery::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn($ibanValidator);
+        $this->objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn(
+            $ibanValidator
+        );
 
         $this->object->setData('info_instance', $infoInstanceMock);
 
@@ -235,15 +256,18 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $infoInstanceMock = $this->getInfoInstanceMock();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn();
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first');
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn(
+            'first'
+        );
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()
+                         ->andReturn(false);
 
         $this->object->setData('info_instance', $infoInstanceMock);
 
         try {
             $this->object->validate();
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\Exception::class, $e);
         }
     }
@@ -258,15 +282,18 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $infoInstanceMock = $this->getInfoInstanceMock('BE');
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn(
+            'first name'
+        );
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()
+                         ->andReturn(false);
 
         $this->object->setData('info_instance', $infoInstanceMock);
 
         try {
             $this->object->validate();
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\Exception::class, $e);
         }
     }
@@ -281,20 +308,25 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $infoInstanceMock = $this->getInfoInstanceMock();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn(
+            'first name'
+        );
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()
+                         ->andReturn(false);
 
         $ibanValidator = \Mockery::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(false);
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn($ibanValidator);
+        $this->objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn(
+            $ibanValidator
+        );
 
         $this->object->setData('info_instance', $infoInstanceMock);
 
         try {
             $this->object->validate();
             $this->fail();
-        } catch(\Exception $e) {
+        } catch (\Exception $e) {
             $this->assertInstanceOf(\Exception::class, $e);
         }
     }
@@ -311,13 +343,18 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $infoInstanceMock = $this->getInfoInstanceMock('NL', 'Magento\Sales\Model\Order\Payment');
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_bic')->once()->andReturnNull();
         $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_iban')->once()->andReturn($iban);
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn('first name');
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(false);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('customer_account_name')->once()->andReturn(
+            'first name'
+        );
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()
+                         ->andReturn(false);
 
         $ibanValidator = \Mockery::mock(\Zend\Validator\Iban::class);
         $ibanValidator->shouldReceive('isValid')->once()->with($iban)->andReturn(true);
 
-        $this->objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn($ibanValidator);
+        $this->objectManager->shouldReceive('create')->once()->with(\Zend\Validator\Iban::class)->andReturn(
+            $ibanValidator
+        );
         $this->object->setData('info_instance', $infoInstanceMock);
 
         $this->assertEquals($this->object, $this->object->validate());
@@ -329,7 +366,8 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     public function testValidateSkip()
     {
         $infoInstanceMock = $this->getInfoInstanceMock('NL', 'Magento\Sales\Model\Order\Payment');
-        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()->andReturn(true);
+        $infoInstanceMock->shouldReceive('getAdditionalInformation')->with('buckaroo_skip_validation')->once()
+                         ->andReturn(true);
 
         $this->object->setData('info_instance', $infoInstanceMock);
 

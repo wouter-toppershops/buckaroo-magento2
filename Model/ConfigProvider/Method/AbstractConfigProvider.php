@@ -40,10 +40,23 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 use Magento\Framework\View\Asset\Repository;
 use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
+use TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider as BaseAbstractConfigProvider;
 
-abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider
-    implements CheckoutConfigProvider, ConfigProviderInterface
+/**
+ * @method string getActiveStatus()
+ * @method string getOrderStatusSuccess()
+ * @method string getOrderStatusFailed()
+ * @method int    getActive()
+ */
+// @codingStandardsIgnoreStart
+abstract class AbstractConfigProvider extends BaseAbstractConfigProvider implements CheckoutConfigProvider, ConfigProviderInterface
+// @codingStandardsIgnoreEnd
 {
+    /**
+     * This xpath should be overridden in child classes.
+     */
+    const XPATH_ALLOWED_CURRENCIES = '';
+
     /**
      * The asset repository to generate the correct url to our assets.
      *
@@ -90,12 +103,14 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \TIG\Buckaroo\Helper\PaymentFee $paymentFeeHelper
     ) {
+        parent::__construct($scopeConfig);
+
         $this->assetRepo = $assetRepo;
-        $this->scopeConfig = $scopeConfig;
         $this->configProviderFactory = $configProviderFactory;
         $this->paymentFeeHelper = $paymentFeeHelper;
 
         if (!$this->allowedCurrencies) {
+            /** @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig */
             $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
             if ($allowedCurrenciesConfig) {
                 $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();
@@ -135,11 +150,11 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
     /**
      * Generate the url to the desired asset.
      *
-     * @param $imgName
+     * @param string $imgName
      *
      * @return string
      */
-    protected function getImageUrl($imgName)
+    public function getImageUrl($imgName)
     {
         return $this->assetRepo->getUrl('TIG_Buckaroo::images/' . $imgName . '.png');
     }
@@ -153,9 +168,26 @@ abstract class AbstractConfigProvider extends \TIG\Buckaroo\Model\ConfigProvider
     }
 
     /**
+     * @param null|int|\Magento\Store\Model\Store $store
+     *
      * @return array
      */
-    public function getAllowedCurrencies()
+    public function getAllowedCurrencies($store = null)
+    {
+        $configuredAllowedCurrencies = trim($this->getConfigFromXpath(static::XPATH_ALLOWED_CURRENCIES, $store));
+        if (empty($configuredAllowedCurrencies)) {
+            return $this->getBaseAllowedCurrencies();
+        }
+
+        $configuredAllowedCurrencies = explode(',', $configuredAllowedCurrencies);
+
+        return $configuredAllowedCurrencies;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBaseAllowedCurrencies()
     {
         return $this->allowedCurrencies;
     }

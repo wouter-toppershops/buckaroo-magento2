@@ -48,6 +48,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase
      */
     protected $objectManagerHelper;
 
+    protected $object;
+
     public function setUp()
     {
         parent::setUp();
@@ -78,20 +80,34 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         $data = \Mockery::mock(\Magento\Framework\DataObject::class);
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
 
-        foreach($fixture as $key => $value)
-        {
-            $camelCase = preg_replace_callback("/(?:^|_)([a-z])/", function($matches) {
-                return strtoupper($matches[1]);
-            }, $key);
+        foreach ($fixture as $key => $value) {
+            $camelCase = preg_replace_callback(
+                "/(?:^|_)([a-z])/",
+                function ($matches) {
+                    return strtoupper($matches[1]);
+                },
+                $key
+            );
 
             $data->shouldReceive('get' . $camelCase)->andReturn($value);
             $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->object->setData('info_instance', $infoInterface);
+        /** @noinspection PhpUndefinedMethodInspection */
         $this->assertEquals($this->object, $this->object->assignData($data));
 
         return $this;
+    }
+
+    public function getPartialObject($object, $arguments = array(), $mockMethods = array())
+    {
+        $constructorArgs = $this->objectManagerHelper->getConstructArguments($object, $arguments);
+
+        $mock = $this->getMock($object, $mockMethods, $constructorArgs);
+
+        return $mock;
     }
 
     public function tearDown()

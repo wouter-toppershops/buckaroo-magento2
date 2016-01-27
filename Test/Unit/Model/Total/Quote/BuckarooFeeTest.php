@@ -76,6 +76,11 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
     protected $priceCurrency;
 
     /**
+     * @var \Mockery\MockInterface
+     */
+    protected $catalogHelper;
+
+    /**
      * Setup the base mock objects.
      */
     public function setUp()
@@ -86,11 +91,13 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
         $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
+        $this->catalogHelper = \Mockery::mock(\Magento\Catalog\Helper\Data::class);
 
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Total\Quote\BuckarooFee::class, [
             'configProviderFactory' => $this->configProviderFactory,
             'configProviderMethodFactory' => $this->configProviderMethodFactory,
             'priceCurrency' => $this->priceCurrency,
+            'catalogHelper' => $this->catalogHelper,
         ]);
     }
 
@@ -98,12 +105,19 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $expectedFee = 1.89;
         $paymentCode = 'tig_buckaroo_ideal';
+        $taxIncl = \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX;
+
         /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod */
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
         $quote = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         /** @var \Magento\Quote\Model\Quote $quote */
+
+        $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
+        $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
+        $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($expectedFee);
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
@@ -340,7 +354,9 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testCollectShouldReturnSelfIfFeeIsZero()
     {
+        $expectedFee = 0;
         $paymentCode = 'tig_buckaroo_ideal';
+        $taxIncl = \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX;
 
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod */
@@ -354,7 +370,12 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
-        $this->configProviderMethodFactory->shouldReceive('getPaymentFee')->atleast()->once()->andReturn(0);
+        $this->configProviderMethodFactory->shouldReceive('getPaymentFee')->atleast()->once()->andReturn($expectedFee);
+
+        $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
+        $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
+        $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($expectedFee);
 
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
         $shippingAssignmentMock->shouldReceive('getItems')->once()->andReturn(true);
@@ -396,6 +417,7 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $fee = 1.1;
         $grandTotal = 45.0000;
         $baseGrandTotal = 45.0000;
+        $taxIncl = \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX;
 
         $store = 1;
 
@@ -404,6 +426,12 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderMethodFactory->shouldReceive('getPaymentFee')->atleast()->once()->andReturn(1.1);
 
         $this->priceCurrency->shouldReceive('convert')->once()->with($fee, $store)->andReturn($fee);
+
+        $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
+        $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
+        $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
+        $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($fee);
+
 
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod */

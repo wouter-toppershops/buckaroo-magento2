@@ -105,8 +105,7 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         try {
             $this->object->save();
             $this->fail();
-        } catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->assertNotFalse('Disallowed file type.', $e->getMessage());
             $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
         }
@@ -122,8 +121,7 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         try {
             $this->object->save();
             $this->fail();
-        } catch (\Exception $e)
-        {
+        } catch (\Exception $e) {
             $this->assertEquals('Enter a name for the certificate.', $e->getMessage());
             $this->assertInstanceOf(\Magento\Framework\Exception\LocalizedException::class, $e);
         }

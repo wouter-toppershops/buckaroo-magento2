@@ -149,79 +149,95 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             }
         }
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $quoteInstaller = $this->quoteSetupFactory->create(['resourceName' => 'quote_setup', 'setup' => $setup]);
+        /** @noinspection PhpUndefinedMethodInspection */
         $salesInstaller = $this->salesSetupFactory->create(['resourceName' => 'sales_setup', 'setup' => $setup]);
 
         if (version_compare($context->getVersion(), '0.1.3', '<')) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote',
                 'buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote',
                 'base_buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote_address',
                 'buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote_address',
                 'base_buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'base_buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_invoiced',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'base_buckaroo_fee_invoiced',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_refunded',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'base_buckaroo_fee_refunded',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'invoice',
                 'base_buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'invoice',
                 'buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'creditmemo',
                 'base_buckaroo_fee',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'creditmemo',
                 'buckaroo_fee',
@@ -230,63 +246,75 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '0.1.4', '<')) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote',
                 'base_buckaroo_fee_incl_tax',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote',
                 'buckaroo_fee_incl_tax',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote',
                 'buckaroo_fee_base_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote',
                 'buckaroo_fee_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote_address',
                 'base_buckaroo_fee_incl_tax',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote_address',
                 'buckaroo_fee_incl_tax',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote_address',
                 'buckaroo_fee_base_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $quoteInstaller->addAttribute(
                 'quote_address',
                 'buckaroo_fee_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'base_buckaroo_fee_incl_tax',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_incl_tax',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_base_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_tax_amount',
@@ -295,22 +323,26 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '0.1.5', '<')) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'invoice',
                 'buckaroo_fee_base_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'invoice',
                 'buckaroo_fee_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'creditmemo',
                 'buckaroo_fee_base_tax_amount',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'creditmemo',
                 'buckaroo_fee_tax_amount',
@@ -319,22 +351,26 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '0.1.6', '<')) {
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_base_tax_amount_invoiced',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_tax_amount_invoiced',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
 
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_base_tax_amount_refunded',
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
+            /** @noinspection PhpUndefinedMethodInspection */
             $salesInstaller->addAttribute(
                 'order',
                 'buckaroo_fee_tax_amount_refunded',

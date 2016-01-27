@@ -89,9 +89,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $payment;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
      */
     public $configProviderFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    public $configProviderMethodFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\RefundFieldsFactory
+     */
+    public $refundFieldsFactory;
 
     /**
      * @var bool
@@ -220,6 +230,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
+
+        $this->gateway->setMode(
+            $this->helper->getMode($this->buckarooPaymentMethodCode)
+        );
     }
 
     /**
@@ -249,12 +263,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
-        if (is_array($data) && isset($data['buckaroo_skip_validation'])) {
-            $this->getInfoInstance()->setAdditionalInformation(
-                'buckaroo_skip_validation',
-                $data['buckaroo_skip_validation']
-            );
-        } elseif ($data instanceof \Magento\Framework\DataObject) {
+        if ($data instanceof \Magento\Framework\DataObject) {
             /** @noinspection PhpUndefinedMethodInspection */
             $this->getInfoInstance()->setAdditionalInformation(
                 'buckaroo_skip_validation',
@@ -466,7 +475,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
-     * @return array|\StdClass
+     * @return array
      * @throws \TIG\Buckaroo\Exception
      */
     public function orderTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
@@ -534,6 +543,19 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
 
+        /**
+         * Fix for Magento setting the order to suspected fraud when the order currency doe snot match with the
+         * payment's currency.
+         */
+        $configProvider = $this->configProviderMethodFactory->get($this->buckarooPaymentMethodCode);
+        $allowedCurrencies = $configProvider->getAllowedCurrencies();
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        if (!$payment->getCurrencyCode() || !in_array($payment->getCurrencyCode(), $allowedCurrencies)) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $this->payment->setIsFraudDetected(false);
+        }
+
         $this->afterAuthorize($payment, $response);
 
         return $this;
@@ -542,7 +564,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
-     * @return array|\StdClass
+     * @return array
      * @throws \TIG\Buckaroo\Exception
      */
     public function authorizeTransaction(\TIG\Buckaroo\Gateway\Http\Transaction $transaction)
@@ -676,6 +698,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         } elseif ($transactionBuilder === true) {
             return $this;
         }
+        $transactionBuilder->setAmount($amount);
 
         $transaction = $transactionBuilder->build();
 
@@ -747,7 +770,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
-        parent::cancel($payment);
+        parent::void($payment);
 
         $this->payment = $payment;
 
@@ -809,15 +832,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterOrder($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_order_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_order_after', $payment, $response);
     }
 
     /**
@@ -828,15 +843,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterAuthorize($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_authorize_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_authorize_after', $payment, $response);
     }
 
     /**
@@ -847,15 +854,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterCapture($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_capture_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_capture_after', $payment, $response);
     }
 
     /**
@@ -866,15 +865,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterRefund($payment, $response)
     {
-        $this->_eventManager->dispatch(
-            'tig_buckaroo_method_refund_after',
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
-
-        return $this;
+        return $this->dispatchAfterEvent('tig_buckaroo_method_refund_after', $payment, $response);
     }
 
     /**
@@ -885,11 +876,23 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected function afterVoid($payment, $response)
     {
+        return $this->dispatchAfterEvent('tig_buckaroo_method_void_after', $payment, $response);
+    }
+
+    /**
+     * @param $name
+     * @param $payment
+     * @param $response
+     *
+     * @return $this
+     */
+    protected function dispatchAfterEvent($name, $payment, $response)
+    {
         $this->_eventManager->dispatch(
-            'tig_buckaroo_method_void_after',
+            $name,
             [
                 'payment' => $payment,
-                'response' => $response
+                'response' => $response,
             ]
         );
 
@@ -962,7 +965,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function addExtraFields($paymentMethodCode)
     {
-        $requestParams = $this->request->getparams();
+        $requestParams = $this->request->getParams();
         $creditMemoParams = $requestParams['creditmemo'];
 
         $extraFields = $this->refundFieldsFactory->get($paymentMethodCode);

@@ -39,11 +39,6 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
-/**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
- */
 class Ideal extends AbstractConfigProvider
 {
     const XPATH_IDEAL_PAYMENT_FEE           = 'payment/tig_buckaroo_ideal/payment_fee';
@@ -54,6 +49,8 @@ class Ideal extends AbstractConfigProvider
     const XPATH_IDEAL_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_ideal/order_status_failed';
     const XPATH_IDEAL_ORDER_EMAIL           = 'payment/tig_buckaroo_ideal/order_email';
     const XPATH_IDEAL_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_ideal/available_in_backend';
+
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_ideal/allowed_currencies';
 
     /**
      * @var array
@@ -95,6 +92,10 @@ class Ideal extends AbstractConfigProvider
             'name' => 'Knab Bank',
             'code' => 'KNABNL2H',
         ],
+        [
+            'name' => 'Bunq Bank',
+            'code' => 'BUNQNL2A',
+        ],
     ];
 
     /**
@@ -122,6 +123,7 @@ class Ideal extends AbstractConfigProvider
                     'ideal' => [
                         'banks' => $issuers,
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

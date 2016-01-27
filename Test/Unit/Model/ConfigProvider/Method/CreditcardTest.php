@@ -55,18 +55,47 @@ class CreditcardTest extends BaseTest
      */
     protected $assetRepository;
 
+    /**
+     * @var m\MockInterface
+     */
+    protected $scopeConfig;
+
     public function setUp()
     {
         parent::setUp();
 
         $this->assetRepository = m::mock(Repository::class);
+        $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(Creditcard::class, [
-            'assetRepo' => $this->assetRepository
+            'assetRepo' => $this->assetRepository,
+            'scopeConfig' => $this->scopeConfig
         ]);
     }
 
     public function testGetImageUrl()
     {
+        $issuers = 'amex,visa';
+        $allowedCurrencies = 'USD,EUR';
+        $this->scopeConfig->shouldReceive('getValue')
+                          ->once()
+                          ->withArgs(
+                              [
+                                  Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
+                              ]
+                          )
+                          ->andReturn($issuers);
+
+        $this->scopeConfig->shouldReceive('getValue')
+                          ->once()
+                          ->withArgs(
+                              [
+                                  Creditcard::XPATH_ALLOWED_CURRENCIES,
+                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                                  null
+                              ]
+                          )
+                          ->andReturn($allowedCurrencies);
+
         $shouldReceive = $this->assetRepository
             ->shouldReceive('getUrl')
             ->with(\Mockery::type('string'));
@@ -79,5 +108,24 @@ class CreditcardTest extends BaseTest
         $this->assertTrue(array_key_exists('buckaroo', $options['payment']));
         $this->assertTrue(array_key_exists('creditcard', $options['payment']['buckaroo']));
         $this->assertTrue(array_key_exists('cards', $options['payment']['buckaroo']['creditcard']));
+    }
+
+    /**
+     * Test if the getActive magic method returns the correct value.
+     */
+    public function testGetActive()
+    {
+        $this->scopeConfig->shouldReceive('getValue')
+                          ->once()
+                          ->withArgs(
+                              [
+                                  \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::XPATH_CREDITCARD_ACTIVE,
+                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                                  null
+                              ]
+                          )
+                          ->andReturn('1');
+
+        $this->assertEquals(1, $this->object->getActive());
     }
 }

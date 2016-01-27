@@ -39,8 +39,6 @@
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
-use TIG\Buckaroo\Exception;
-
 class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
 {
     /**
@@ -59,6 +57,11 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     protected $configProviderFactory;
 
     /**
+     * @var int
+     */
+    protected $mode;
+
+    /**
      * @var \TIG\Buckaroo\Debug\Debugger $debugger
      */
     public $debugger;
@@ -66,8 +69,10 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     /**
      * Bpe3 constructor.
      *
-     * @param \TIG\Buckaroo\Gateway\Http\Client\Soap $client
-     * @param \Magento\Framework\Data\ObjectFactory  $objectFactory
+     * @param \TIG\Buckaroo\Gateway\Http\Client\Soap     $client
+     * @param \Magento\Framework\Data\ObjectFactory      $objectFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @param \TIG\Buckaroo\Debug\Debugger               $debugger
      */
     public function __construct(
         \TIG\Buckaroo\Gateway\Http\Client\Soap $client,
@@ -79,6 +84,18 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
         $this->objectFactory         = $objectFactory;
         $this->configProviderFactory = $configProviderFactory;
         $this->debugger              = $debugger;
+    }
+
+    /**
+     * @param int $mode
+     *
+     * @return $this
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+
+        return $this;
     }
 
     /**
@@ -145,25 +162,60 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     }
 
     /**
+     * @return string
+     *
+     * @throws \TIG\Buckaroo\Exception|\LogicException
+     */
+    protected function getWsdl()
+    {
+        if (!$this->mode) {
+            throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
+        }
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig */
+        $predefinedConfig = $this->configProviderFactory->get('predefined');
+
+        switch ($this->mode) {
+            case \TIG\Buckaroo\Helper\Data::MODE_TEST:
+                $wsdl = $predefinedConfig->getWsdlTestWeb();
+                break;
+            case \TIG\Buckaroo\Helper\Data::MODE_LIVE:
+                $wsdl = $predefinedConfig->getWsdlLiveWeb();
+                break;
+            default:
+                throw new \TIG\Buckaroo\Exception(
+                    __(
+                        "Invalid mode set: %1",
+                        [
+                            $this->mode
+                        ]
+                    )
+                );
+        }
+
+        return $wsdl;
+    }
+
+    /**
      * @param Transaction $transaction
      *
      * @return array
      * @throws \Exception
      */
-    protected function doRequest(Transaction $transaction)
+    public function doRequest(Transaction $transaction)
     {
-        /** @var \TIG\Buckaroo\Gateway\Http\Transfer $transfer */
+        /** @var \Magento\Payment\Gateway\Http\Transfer $transfer */
         $transfer = $this->objectFactory->create(
-            '\TIG\Buckaroo\Gateway\Http\Transfer',
+            '\Magento\Payment\Gateway\Http\Transfer',
             [
                 'clientConfig' => [
-                    'wsdl' => 'https://checkout.buckaroo.nl/soap/soap.svc?wsdl'
+                    'wsdl' => $this->getWsdl()
                 ],
                 'headers'  => $transaction->getHeaders(),
                 'body'     => $transaction->getBody(),
-                'auth'     => [], //auth,
+                'auth'     => [], // The authorization is done by the request headers and encryption.
                 'method'   => $transaction->getMethod(),
-                'uri'      => 'https://testcheckout.buckaroo.nl/soap/',
+                'uri'      => '', // The URI is part of the wsdl file.
                 'encode'   => false
             ]
         );

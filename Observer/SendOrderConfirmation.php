@@ -80,7 +80,9 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
 
         $order = $payment->getOrder();
         $order->save();
+        /** @noinspection PhpUndefinedFieldInspection */
         if (!$payment->getMethodInstance()->usesRedirect
+            && !$order->getEmailSent()
             && $this->accountConfig->getOrderConfirmationEmail()
             && $order->getIncrementId()
         ) {

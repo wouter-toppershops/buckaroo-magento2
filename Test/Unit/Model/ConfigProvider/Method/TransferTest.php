@@ -58,9 +58,12 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::class, [
-            'scopeConfig' => $this->scopeConfig,
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::class,
+            [
+                'scopeConfig' => $this->scopeConfig,
+            ]
+        );
     }
 
     /**
@@ -100,7 +103,16 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $sendEmail = '1';
         $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/active')->andReturn(true);
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_transfer/send_email')->andReturn($sendEmail);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->withArgs(
+                [
+                    'payment/tig_buckaroo_transfer/send_email',
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    null
+                ]
+            )
+            ->once()
+            ->andReturn($sendEmail);
         $this->scopeConfig->shouldReceive('getValue')->andReturn(false);
 
         $result = $this->object->getConfig();
@@ -130,7 +142,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $value = null;
         $this->paymentFeeConfig($value);
 
-        $this->assertFalse($this->object->getPaymentFee());
+        $this->assertFalse((bool) $this->object->getPaymentFee());
     }
 
     /**
@@ -152,6 +164,25 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $value = '';
         $this->paymentFeeConfig($value);
 
-        $this->assertFalse($this->object->getPaymentFee());
+        $this->assertFalse((bool) $this->object->getPaymentFee());
+    }
+
+    /**
+     * Test if the getActive magic method returns the correct value.
+     */
+    public function testGetActive()
+    {
+        $this->scopeConfig->shouldReceive('getValue')
+                          ->once()
+                          ->withArgs(
+                              [
+                                  \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::XPATH_TRANSFER_ACTIVE,
+                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                                  null
+                              ]
+                          )
+                          ->andReturn('1');
+
+        $this->assertEquals(1, $this->object->getActive());
     }
 }

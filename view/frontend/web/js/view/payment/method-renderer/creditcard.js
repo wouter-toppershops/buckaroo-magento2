@@ -65,6 +65,8 @@ define(
             creditcards: [],
             redirectAfterPlaceOrder: false,
             paymentFeeLabel : window.checkoutConfig.payment.buckaroo.creditcard.paymentFeeLabel,
+            currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+            baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
             /**
              * @override
@@ -161,6 +163,18 @@ define(
                         "card_type" : selectedCardCode
                     }
                 };
+            },
+
+            payWithBaseCurrency: function() {
+                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.creditcard.allowedCurrencies;
+
+                return allowedCurrencies.indexOf(this.currencyCode) < 0;
+            },
+
+            getPayWithBaseCurrencyText: function() {
+                var text = $.mage.__('The transaction will be processed using %s.');
+
+                return text.replace('%s', this.baseCurrencyCode);
             }
 
         });

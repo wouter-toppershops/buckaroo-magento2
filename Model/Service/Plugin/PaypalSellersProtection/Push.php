@@ -80,7 +80,8 @@ class Push
      * @param \TIG\Buckaroo\Model\Push $push
      * @param boolean                  $result
      *
-     * @return boolean
+     * @return bool
+     * @throws \InvalidArgumentException
      */
     public function afterProcessSucceededPush(
         \TIG\Buckaroo\Model\Push $push,

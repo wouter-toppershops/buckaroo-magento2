@@ -40,10 +40,11 @@
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
  * @method getPaymentFeeLabel();
+ * @method getMaestroUnsecureHold()
+ * @method getMastercardUnsecureHold()
+ * @method getVisaUnsecureHold()
+ * @method getAllowedCreditcards()
  */
 class Creditcard extends AbstractConfigProvider
 {
@@ -62,6 +63,7 @@ class Creditcard extends AbstractConfigProvider
 
     const XPATH_CREDITCARD_PAYMENT_FEE          = 'payment/tig_buckaroo_creditcard/payment_fee';
     const XPATH_CREDITCARD_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_creditcard/payment_fee_label';
+    const XPATH_CREDITCARD_ACTIVE               = 'payment/tig_buckaroo_creditcard/active';
     const XPATH_CREDITCARD_ACTIVE_STATUS        = 'payment/tig_buckaroo_creditcard/active_status';
     const XPATH_CREDITCARD_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_creditcard/order_status_success';
     const XPATH_CREDITCARD_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_creditcard/order_status_failed';
@@ -70,6 +72,8 @@ class Creditcard extends AbstractConfigProvider
     const XPATH_CREDITCARD_MASTERCARD_UNSECURE_HOLD = 'payment/tig_buckaroo_creditcard/mastercard_unsecure_hold';
     const XPATH_CREDITCARD_VISA_UNSECURE_HOLD       = 'payment/tig_buckaroo_creditcard/visa_unsecure_hold';
     const XPATH_CREDITCARD_MAESTRO_UNSECURE_HOLD    = 'payment/tig_buckaroo_creditcard/maestro_unsecure_hold';
+
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_creditcard/allowed_currencies';
 
     protected $issuers = [
         [
@@ -114,7 +118,7 @@ class Creditcard extends AbstractConfigProvider
     public function formatIssuers()
     {
         $issuers = parent::formatIssuers();
-        $allowed = explode(',', $this->scopeConfig->getValue('payment/tig_buckaroo_creditcard/allowed_creditcards'));
+        $allowed = explode(',', $this->scopeConfig->getValue(self::XPATH_CREDITCARD_ALLOWED_CREDITCARDS));
 
         foreach ($issuers as $key => $issuer) {
             $issuers[$key]['active'] = in_array($issuer['code'], $allowed);
@@ -138,6 +142,7 @@ class Creditcard extends AbstractConfigProvider
                     'creditcard' => [
                         'cards' => $issuers,
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

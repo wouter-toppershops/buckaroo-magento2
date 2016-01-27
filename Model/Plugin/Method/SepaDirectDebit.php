@@ -47,7 +47,7 @@ class SepaDirectDebit
      *
      * @return $this
      */
-    public function afterAuthorizeTransaction(
+    public function afterOrderTransaction(
         \TIG\Buckaroo\Model\Method\SepaDirectDebit $payment,
         $response
     ) {

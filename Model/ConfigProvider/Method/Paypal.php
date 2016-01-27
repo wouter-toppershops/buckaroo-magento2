@@ -40,21 +40,22 @@
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
- * @method getActiveStatus()
- * @method getOrderStatusSuccess()
- * @method getOrderStatusFailed()
  * @method getPaymentFeeLabel()
+ * @method getSellersProtectionIneligible()
  */
 class Paypal extends AbstractConfigProvider
 {
     const XPATH_PAYPAL_PAYMENT_FEE                      = 'payment/tig_buckaroo_paypal/payment_fee';
     const XPATH_PAYPAL_PAYMENT_FEE_LABEL                = 'payment/tig_buckaroo_paypal/payment_fee_label';
+    const XPATH_PAYPAL_ACTIVE                           = 'payment/tig_buckaroo_paypal/active';
     const XPATH_PAYPAL_ACTIVE_STATUS                    = 'payment/tig_buckaroo_paypal/active_status';
     const XPATH_PAYPAL_ORDER_STATUS_SUCCESS             = 'payment/tig_buckaroo_paypal/order_status_success';
     const XPATH_PAYPAL_ORDER_STATUS_FAILED              = 'payment/tig_buckaroo_paypal/order_status_failed';
     const XPATH_PAYPAL_AVAILABLE_IN_BACKEND             = 'payment/tig_buckaroo_paypal/available_in_backend';
     const XPATH_PAYPAL_SELLERS_PROTECTION               = 'payment/tig_buckaroo_paypal/sellers_protection';
     const XPATH_PAYPAL_SELLERS_PROTECTION_INELIGIBLE    = 'payment/tig_buckaroo_paypal/sellers_protection_ineligible';
+
+    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_paypal/allowed_currencies';
 
     /**
      * @return array|void
@@ -68,6 +69,7 @@ class Paypal extends AbstractConfigProvider
                 'buckaroo' => [
                     'paypal' => [
                         'paymentFeeLabel' => $paymentFeeLabel,
+                        'allowedCurrencies' => $this->getAllowedCurrencies(),
                     ],
                 ],
             ],

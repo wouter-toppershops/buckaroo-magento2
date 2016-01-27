@@ -43,31 +43,64 @@ namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 class Refund extends AbstractTransactionBuilder
 {
     /**
+     * @throws \TIG\Buckaroo\Exception
+     */
+    protected function setRefundCurrency()
+    {
+        /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance */
+        $methodInstance = $this->order->getPayment()->getMethodInstance();
+        $method = $methodInstance->buckarooPaymentMethodCode;
+
+        $configProvider = $this->configProviderMethodFactory->get($method);
+        $allowedCurrencies = $configProvider->getAllowedCurrencies();
+
+        if (in_array($this->order->getOrderCurrencyCode(), $allowedCurrencies)) {
+            $this->currency = $this->order->getOrderCurrencyCode();
+        } elseif (in_array($this->order->getBaseCurrencyCode(), $allowedCurrencies)) {
+            $this->currency = $this->order->getBaseCurrencyCode();
+        } else {
+            throw new \TIG\Buckaroo\Exception(
+                __("The selected payment method does not support the selected currency or the store's base currency.")
+            );
+        }
+    }
+
+    /**
      * @return array
      */
     public function getBody()
     {
+        if (!$this->currency) {
+            $this->setRefundCurrency();
+        }
+
         $order = $this->getOrder();
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
 
+        $ip = $order->getRemoteIp();
+        if (!$ip) {
+            $ip = $this->remoteAddress->getRemoteAddress();
+        }
+
+        $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
+
         $body = [
-            'test' => '1',
-            'Currency' => $order->getOrderCurrencyCode(),
+            'Currency' => $this->currency,
             'AmountDebit' => 0,
-            'AmountCredit' => $order->getBaseGrandTotal(),
+            'AmountCredit' => $this->amount,
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
             'ClientIP' => [
-                '_' => $order->getRemoteIp(),
-                'Type' => strpos($order->getRemoteIp(), ':') === false ? 'IPv4' : 'IPv6',
+                '_' => $ip,
+                'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
             ],
-            'ReturnURL' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLCancel' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLError' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
-            'ReturnURLReject' => $this->urlBuilder->getRouteUrl('buckaroo/redirect/process'),
+            'ReturnURL' => $processUrl,
+            'ReturnURLCancel' => $processUrl,
+            'ReturnURLError' => $processUrl,
+            'ReturnURLReject' => $processUrl,
             'OriginalTransactionKey' => $this->originalTransactionKey,
             'StartRecurrent' => $this->startRecurrent,
             'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),

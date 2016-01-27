@@ -48,6 +48,9 @@ use \Magento\Framework\App\Helper\AbstractHelper;
  */
 class Data extends AbstractHelper
 {
+    const MODE_INACTIVE = 0;
+    const MODE_TEST     = 1;
+    const MODE_LIVE     = 2;
 
     /**
      * TIG_Buckaroo status codes
@@ -74,6 +77,32 @@ class Data extends AbstractHelper
     ];
 
     protected $debugConfig = [];
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     */
+    public $configProviderFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     */
+    public $configProviderMethodFactory;
+
+    /**
+     * @param \Magento\Framework\App\Helper\Context             $context
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+     */
+    public function __construct(
+        \Magento\Framework\App\Helper\Context $context,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+    ) {
+        parent::__construct($context);
+
+        $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+    }
 
     /**
      * Return the requested status $code, or null if not found
@@ -141,5 +170,28 @@ class Data extends AbstractHelper
         }
 
         return $rawInfo;
+    }
+
+    /**
+     * @param null|string $paymentMethod
+     *
+     * @return int
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getMode($paymentMethod = null)
+    {
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        $configProvider = $this->configProviderFactory->get('account');
+        $baseMode = $configProvider->getActive();
+
+        if (!$paymentMethod || !$baseMode) {
+            return $baseMode;
+        }
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
+        $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
+        $mode = $configProvider->getActive();
+
+        return $mode;
     }
 }

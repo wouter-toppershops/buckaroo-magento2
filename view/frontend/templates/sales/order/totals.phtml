@@ -7,12 +7,11 @@
 // @codingStandardsIgnoreFile
 
 /**
- * @var $block \TIG\Buckaroo\Block\Order\Totals
+ * @var \TIG\Buckaroo\Block\Order\Totals $block
  * @see \TIG\Buckaroo\Block\Order\Totals
  */
 ?>
 <?php foreach ($block->getTotals() as $_code => $_total): ?>
-
     <?php if ($_total->getBlockName()): ?>
         <?php echo $block->getChildHtml($_total->getBlockName(), false); ?>
     <?php else:?>

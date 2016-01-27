@@ -37,8 +37,8 @@ define(
                 /**
                  * Build the URL for saving the selected payment method.
                  */
-                var params = {}
-                var payload = {}
+                var params = {};
+                var payload = {};
 
                 /**
                  * If we're checking out as guest, we're going to need a cartId and a guest email
@@ -46,7 +46,7 @@ define(
                 if (resourceUrlManager.getCheckoutMethod() == 'guest') {
                     params = {
                         cartId: quote.getQuoteId()
-                    }
+                    };
                     payload.email = quote.guestEmail;
                 }
 

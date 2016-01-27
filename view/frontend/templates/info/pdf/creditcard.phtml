@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -37,9 +36,18 @@
  * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Gateway\Http;
 
-class Transfer extends \Magento\Payment\Gateway\Http\Transfer
-{
-
-}
+// @codingStandardsIgnoreFile
+/**
+ * @var $block \TIG\Buckaroo\Block\Info\Creditcard
+ */
+?>
+<?php echo $block->escapeHtml($block->getMethod()->getTitle()) ?>
+    {{pdf_row_separator}}
+<?php if ($block->getInfo()->getAdditionalInformation()): ?>
+    {{pdf_row_separator}}
+    <?php if ($block->getCardType()): ?>
+        <?php echo $block->escapeHtml(__('Selected card: %1', $block->getCardType())) ?>
+        {{pdf_row_separator}}
+    <?php endif; ?>
+<?php endif; ?>

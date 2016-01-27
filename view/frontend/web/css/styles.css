@@ -125,13 +125,19 @@
 
 }
 
-
+.tig_buckaroo_currency-notification {
+    text-align:right;
+    margin-top:15px;
+    font-size:12px;
+}
+.tig_buckaroo_currency-notification:before {
+    content: '*';
+}
 
 
 /* ===================== PayPal =============================== */
 .tig_buckaroo_paypal .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_paypal_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_paypal_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -4px;
@@ -154,8 +160,7 @@
 }
 
 .tig_buckaroo_ideal .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_ideal_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_ideal_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -1px;
@@ -178,8 +183,7 @@
 }
 
 .tig_buckaroo_creditcard .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_creditcard_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_creditcard_title.png) no-repeat;
     margin-top: -1px;
     float: right;
     margin-right: 10px;
@@ -191,8 +195,7 @@
 
 /* ===================== Sepa Direct Debit  ============================= */
 .tig_buckaroo_sepadirectdebit .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_sepa_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_sepa_title.png) no-repeat;
     margin-top: 5px;
     float: right;
     margin-right: 10px;
@@ -204,8 +207,7 @@
 
 /* ===================== Bank Transfer ==================== */
 .tig_buckaroo_transfer .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_transfer_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_transfer_title.png) no-repeat;
     margin-top: 5px;
     float: right;
     margin-right: 10px;
@@ -217,8 +219,7 @@
 
 /* ===================== Mr Cash ============================== */
 .tig_buckaroo_mrcash .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_mrcash_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_mrcash_title.png) no-repeat;
     margin-top: -2px;
     float: right;
     margin-right: 10px;
@@ -230,8 +231,7 @@
 
 /* ===================== Sofort Banking ======================= */
 .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_sofort_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
     margin-top: 5px;
     float: right;
     margin-right: 10px;
@@ -243,8 +243,7 @@
 
 /* ===================== Giropay ============================== */
 .tig_buckaroo_giropay .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_giropay_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_giropay_title.png) no-repeat;
     margin-top: 3px;
     float: right;
     margin-right: 10px;
@@ -256,8 +255,7 @@
 
 /* ===================== Giftcard ============================ */
 .tig_buckaroo_giftcard .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_giftcard_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_giftcard_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -2px;
@@ -269,8 +267,7 @@
 
 /* ===================== Afterpay ============================ */
 .tig_buckaroo_afterpay .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_afterpay_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: 5px;
@@ -294,8 +291,7 @@
 
 /* ===================== PayPerEmail ============================ */
 .tig_buckaroo_payperemail .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_payperemail_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_payperemail_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -3px;
@@ -307,8 +303,7 @@
 
 /* ======================= PaymentGuarantee ======================== */
 .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_paymentguarantee_small_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -7px;
@@ -320,8 +315,7 @@
 
 /* ======================= EPS ======================== */
 .tig_buckaroo_eps .tig_buckaroo_image_title:after {
-    background-image: url(../images/tig_buckaroo_eps_title.png);
-    background-repeat: no-repeat;
+    background: url(../images/tig_buckaroo_eps_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -6px;
@@ -342,8 +336,7 @@
 
     /* PayPal */
     .tig_buckaroo_paypal .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_paypal_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_paypal_title.png) no-repeat;
         float: left;
         margin-right: 10px;
         margin-top: -4px;
@@ -355,8 +348,7 @@
 
     /* iDeal */
     .tig_buckaroo_ideal .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_ideal_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_ideal_title.png) no-repeat;
         float: left;
         margin-right: 10px;
         margin-top: -1px;
@@ -368,9 +360,8 @@
 
     /* Credit Card */
     .tig_buckaroo_creditcard .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_creditcard_title.png);
-        background-repeat: no-repeat;
-        margin-top: 0px;
+        background: url(../images/tig_buckaroo_creditcard_title.png) no-repeat;
+        margin-top: 0;
         float: left;
         margin-right: 10px;
         background-size: auto 20px;
@@ -381,8 +372,7 @@
 
     /* Sepa Direct Debit */
     .tig_buckaroo_sepadirectdebit .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_sepa_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_sepa_title.png) no-repeat;
         margin-top: 4px;
         float:left;
         margin-right: 10px;
@@ -394,8 +384,7 @@
 
     /* Bank Transfer */
     .tig_buckaroo_transfer .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_transfer_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_transfer_title.png) no-repeat;
         margin-top: 4px;
         float:left;
         margin-right: 10px;
@@ -407,8 +396,7 @@
 
     /* Mr Cash */
     .tig_buckaroo_mrcash .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_mrcash_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_mrcash_title.png) no-repeat;
         margin-top: -1px;
         float: left;
         margin-right: 10px;
@@ -420,8 +408,7 @@
 
     /* Sofort Banking */
     .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_sofort_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
         margin-top: 5px;
         float:left;
         margin-right: 10px;
@@ -433,8 +420,7 @@
 
     /* Giropay */
     .tig_buckaroo_giropay .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_giropay_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_giropay_title.png) no-repeat;
         margin-top: 2px;
         float:left;
         margin-right: 10px;
@@ -446,8 +432,7 @@
 
     /* Giftcard */
     .tig_buckaroo_giftcard .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_giftcard_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_giftcard_title.png) no-repeat;
         margin-top: -1px;
         float: left;
         margin-right: 10px;
@@ -459,8 +444,7 @@
 
     /* Afterpay */
     .tig_buckaroo_afterpay .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_afterpay_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
         margin-top: 6px;
         float: left;
         margin-right: 10px;
@@ -472,8 +456,7 @@
 
     /* PayPerEmail */
     .tig_buckaroo_payperemail .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_payperemail_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_payperemail_title.png) no-repeat;
         margin-top: -1px;
         float: left;
         margin-right: 10px;
@@ -485,8 +468,7 @@
 
     /* PaymentGuarantee */
     .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_paymentguarantee_small_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
         margin-top: -4px;
         float: left;
         margin-right: 10px;
@@ -498,8 +480,7 @@
 
     /* EPS */
     .tig_buckaroo_eps .tig_buckaroo_image_title:before {
-        background-image: url(../images/tig_buckaroo_eps_title.png);
-        background-repeat: no-repeat;
+        background: url(../images/tig_buckaroo_eps_title.png) no-repeat;
         margin-top: -4px;
         float: left;
         margin-right: 10px;

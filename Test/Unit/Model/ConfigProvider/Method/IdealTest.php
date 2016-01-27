@@ -114,8 +114,7 @@ class IdealTest extends BaseTest
     {
         $issuers = $this->object->getIssuers();
 
-        foreach($issuers as $issuer)
-        {
+        foreach ($issuers as $issuer) {
             $this->assertTrue(array_key_exists('name', $issuer));
             $this->assertTrue(array_key_exists('code', $issuer));
         }
@@ -128,7 +127,7 @@ class IdealTest extends BaseTest
     {
         $this->scopeConfig->shouldReceive('getValue')->once()->andReturn(0);
 
-        $this->assertFalse($this->object->getPaymentFee());
+        $this->assertFalse((bool) $this->object->getPaymentFee());
     }
 
     /**
@@ -139,5 +138,18 @@ class IdealTest extends BaseTest
         $this->scopeConfig->shouldReceive('getValue')->once()->andReturn('10');
 
         $this->assertEquals(10, $this->object->getPaymentFee());
+    }
+
+    /**
+     * Test if the getActive magic method returns the correct value.
+     */
+    public function testGetActive()
+    {
+        $this->scopeConfig->shouldReceive('getValue')
+            ->once()
+            ->withArgs([Ideal::XPATH_IDEAL_ACTIVE, \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null])
+            ->andReturn('1');
+
+        $this->assertEquals(1, $this->object->getActive());
     }
 }
