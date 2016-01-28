@@ -53,21 +53,20 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
 
     /**
      * @param \TIG\Buckaroo\Model\Certificate                    $certificate
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param Factory                                            $configProviderFactory
      *
      * @throws \LogicException
-     * @todo rewrite to use the configProvider pattern
      */
     public function __construct(
         \TIG\Buckaroo\Model\Certificate $certificate,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
     ) {
         $this->certificate = $certificate;
 
-        $certificateId = $scopeConfig->getValue(
-            self::XPATH_CERTIFICATE_ID,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        $configProvider = $configProviderFactory->get('account');
+        $certificateId = $configProvider->getCertificateFile();
+
         if (!$certificateId) {
             throw new \LogicException('No Buckaroo certificate configured.');
         }

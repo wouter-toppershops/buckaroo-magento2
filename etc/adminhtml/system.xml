@@ -74,8 +74,6 @@
             <resource>Sales_Buckaroo::configuration</resource>
             <class>buckaroo-section</class>
 
-            <!-- TODO: Default values? -->
-
             <!-- Support section -->
             <group id="tig_buckaroo_support_section" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Version &amp; Support</label>
@@ -406,7 +404,6 @@
                         <config_path>payment/tig_buckaroo_creditcard/sort_order</config_path>
                     </field>
 
-                    <!-- TODO: Grab and offer available creditcards -->
                     <field id="allowed_creditcards" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                         <label>Allowed Creditcards</label>
                         <comment><![CDATA[Select payment method specific Creditcards]]></comment>

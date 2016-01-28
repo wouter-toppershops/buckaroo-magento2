@@ -53,6 +53,11 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     protected $_eventObject = 'certificate';
 
     /**
+     * @var bool
+     */
+    protected $skipEncryptionOnSave = false;
+
+    /**
      * Initialize resource model
      *
      * @return void
@@ -115,5 +120,25 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     public function setCreatedAt($createdAt)
     {
         return $this->setData('created_at', $createdAt);
+    }
+
+    /**
+     * @param boolean $skipEncryptionOnSave
+     *
+     * @return $this
+     */
+    public function setSkipEncryptionOnSave($skipEncryptionOnSave)
+    {
+        $this->skipEncryptionOnSave = $skipEncryptionOnSave;
+
+        return $this;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSkipEncryptionOnSave()
+    {
+        return $this->skipEncryptionOnSave;
     }
 }
