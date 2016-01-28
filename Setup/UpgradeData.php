@@ -55,15 +55,31 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     protected $quoteSetupFactory;
 
     /**
-     * @param \Magento\Sales\Setup\SalesSetupFactory $salesSetupFactory
-     * @param \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory
+     * @var \TIG\Buckaroo\Model\ResourceModel\Certificate\Collection
+     */
+    protected $certificateCollection;
+
+    /**
+     * @var \Magento\Framework\Encryption\Encryptor
+     */
+    protected $encryptor;
+
+    /**
+     * @param \Magento\Sales\Setup\SalesSetupFactory                   $salesSetupFactory
+     * @param \Magento\Quote\Setup\QuoteSetupFactory                   $quoteSetupFactory
+     * @param \TIG\Buckaroo\Model\ResourceModel\Certificate\Collection $certificateCollection
+     * @param \Magento\Framework\Encryption\Encryptor                  $encryptor
      */
     public function __construct(
         \Magento\Sales\Setup\SalesSetupFactory $salesSetupFactory,
-        \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory
+        \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory,
+        \TIG\Buckaroo\Model\ResourceModel\Certificate\Collection $certificateCollection,
+        \Magento\Framework\Encryption\Encryptor $encryptor
     ) {
         $this->salesSetupFactory = $salesSetupFactory;
         $this->quoteSetupFactory = $quoteSetupFactory;
+        $this->certificateCollection = $certificateCollection;
+        $this->encryptor = $encryptor;
     }
 
     /**
@@ -377,5 +393,29 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                 ['type' => \Magento\Framework\DB\Ddl\Table::TYPE_DECIMAL]
             );
         }
+
+
+        if (version_compare($context->getVersion(), '0.9.4', '<')) {
+            $this->encryptCertificates();
+        }
+    }
+
+    /**
+     * @return $this
+     */
+    public function encryptCertificates()
+    {
+        /** @var \TIG\Buckaroo\Model\Certificate $certificate */
+        foreach ($this->certificateCollection as $certificate) {
+            $certificate->setCertificate(
+                $this->encryptor->encrypt(
+                    $certificate->getCertificate()
+                )
+            )->setSkipEncryptionOnSave(true);
+
+            $certificate->save();
+        }
+
+        return $this;
     }
 }
