@@ -27,7 +27,7 @@ define(
                 },
 
                 /**
-                 * @returns {globalOptions.priceFormat|*|mage.configurable.options.priceFormat|.options.priceFormat|priceFormat}
+                 * @returns {window.buckarooConfig.priceFormat|*|mage.configurable.options.priceFormat|.options.priceFormat|priceFormat}
                  */
                 getPriceFormat: function() {
                     return window.buckarooConfig.priceFormat;
