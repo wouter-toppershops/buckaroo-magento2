@@ -85,7 +85,7 @@ class OrderStatusFactory
         $paymentMethodInstance = $order->getPayment()->getMethodInstance();
         $paymentMethod = $paymentMethodInstance->buckarooPaymentMethodCode;
 
-        if (!$this->configProviderMethodFactory->has($paymentMethod)) {
+        if ($this->configProviderMethodFactory->has($paymentMethod)) {
             /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
             $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
 
