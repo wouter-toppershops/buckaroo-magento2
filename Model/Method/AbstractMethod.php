@@ -288,7 +288,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         $areaCode = $this->objectManager->get('Magento\Framework\App\State')->getAreaCode();
-        if ('adminhtml' === $areaCode && $this->getConfigData('available_in_backend') == 0) {
+        if ('adminhtml' === $areaCode
+            && $this->getConfigData('available_in_backend') !== null
+            && $this->getConfigData('available_in_backend') == 0
+        ) {
             return false;
         }
 

@@ -131,7 +131,7 @@
                 <payment_fee_label>Fee</payment_fee_label>
                 <group>tig_buckaroo</group>
                 <payment_action>order</payment_action>
-                <available_in_backend>0</available_in_backend>
+                <available_in_backend>1</available_in_backend>
             </tig_buckaroo_transfer>
 
             <tig_buckaroo_giropay>

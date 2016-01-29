@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 /**
  *                  ___________       __            __
@@ -34,29 +34,18 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-    <system>
-        <section id="tax">
-            <include path="TIG_Buckaroo::system/tax.xml"/>
-        </section>
-
-        <section id="tig_buckaroo" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Buckaroo</label>
-            <tab>sales</tab>
-            <resource>Sales_Buckaroo::configuration</resource>
-            <class>buckaroo-section</class>
-
-            <include path="TIG_Buckaroo::system/support.xml"/>
-
-            <include path="TIG_Buckaroo::system/account.xml"/>
-
-            <include path="TIG_Buckaroo::system/payment_methods.xml"/>
-
-            <include path="TIG_Buckaroo::system/refund.xml"/>
-        </section>
-    </system>
-</config>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <!-- Support section -->
+    <group id="tig_buckaroo_support_section" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Version &amp; Support</label>
+        <fieldset_css>tig_buckaroo-section</fieldset_css>
+        <attribute type="expanded">1</attribute>
+        <group id="tig_buckaroo" translate="label" type="text" sortOrder="25" showInDefault="1" showInWebsite="1" showInStore="1">
+            <frontend_model>TIG\Buckaroo\Block\Adminhtml\Config\Support\SupportTab</frontend_model>
+        </group>
+    </group>
+</include>

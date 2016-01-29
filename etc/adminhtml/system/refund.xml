@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 /**
  *                  ___________       __            __
@@ -34,29 +34,32 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
-    <system>
-        <section id="tax">
-            <include path="TIG_Buckaroo::system/tax.xml"/>
-        </section>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <!-- Refunding section -->
+    <group id="tig_buckaroo_refund_section" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+        <label>Refunding</label>
+        <fieldset_css>tig_buckaroo-section</fieldset_css>
 
-        <section id="tig_buckaroo" translate="label" type="text" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Buckaroo</label>
-            <tab>sales</tab>
-            <resource>Sales_Buckaroo::configuration</resource>
-            <class>buckaroo-section</class>
+        <field id="active" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Enabled</label>
+            <comment><![CDATA[Enable or disable refunding.]]></comment>
+            <tooltip>Set to 'No' refunds must be done manualy in Payment Plaza.</tooltip>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>tig_buckaroo/refund/enabled</config_path>
+        </field>
 
-            <include path="TIG_Buckaroo::system/support.xml"/>
-
-            <include path="TIG_Buckaroo::system/account.xml"/>
-
-            <include path="TIG_Buckaroo::system/payment_methods.xml"/>
-
-            <include path="TIG_Buckaroo::system/refund.xml"/>
-        </section>
-    </system>
-</config>
+        <field id="allow_push" translate="label comment tooltip" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Push Payment Plaza refunds to Magento</label>
+            <comment><![CDATA[Allow 2-way refunding from Magento and Payment Plaza.]]></comment>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>tig_buckaroo/refund/allow_push</config_path>
+            <depends>
+                <field id="active">1</field>
+            </depends>
+        </field>
+    </group>
+</include>
