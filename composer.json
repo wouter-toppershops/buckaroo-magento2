@@ -7,14 +7,13 @@
         "magento/module-payment": "100.*.*"
     },
     "type": "magento2-module",
-    "license": "CC BY-NC-ND 3.0 NL",
+    "license": "CC-BY-NC-ND-3.0",
     "authors": [
       {
         "name": "TIG",
         "email": "servicedesk@tig.nl"
       }
     ],
-    "version": "100.0.4",
     "minimum-stability": "dev",
     "autoload": {
         "files": [
