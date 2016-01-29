@@ -287,7 +287,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             array('getConfigData')
         );
 
-        $partialMock->expects($this->once())->method('getConfigData')->with('available_in_backend')->willReturn(0);
+        $partialMock->expects($this->exactly(2))->method('getConfigData')->with('available_in_backend')->willReturn(0);
 
         /**
          * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
