@@ -261,10 +261,6 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderHasInvoices = false,
         $postData = false
     ) {
-        $this->markTestIncomplete(
-            'This test requires fixing'
-        );
-
         $message = 'testMessage';
         $status = 'testStatus';
 
@@ -284,9 +280,11 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             $this->orderSender->shouldReceive('send')->with($orderMock);
         }
 
-        $orderMock->shouldReceive('getPayment')->andReturnSelf();
-        $orderMock->shouldReceive('getMethodInstance')->andReturnSelf();
-        $orderMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
+        $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
+        $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
+        $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
+
+        $orderMock->shouldReceive('getPayment')->andReturn($paymentMock);
         $orderMock->shouldReceive('getBaseCurrency')->andReturnSelf();
         $orderMock->shouldReceive('formatTxt')->andReturn($textAmount);
 
@@ -299,10 +297,12 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 'authorized. Please create an invoice to capture the authorized amount.';
         }
 
-        if ($state == $successPaymentState) {
-            $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
-        } else {
-            $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription);
+        if (!$autoInvoice || ($autoInvoice && $orderCanInvoice && !$orderHasInvoices)) {
+            if ($state == $successPaymentState) {
+                $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
+            } else {
+                $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription);
+            }
         }
 
         $this->configProviderFactory->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
@@ -324,31 +324,30 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             $orderMock->shouldReceive('canInvoice')->andReturn($orderCanInvoice);
             $orderMock->shouldReceive('hasInvoices')->andReturn($orderHasInvoices);
 
-            if (!$orderCanInvoice && $orderHasInvoices) {
+            if (!$orderCanInvoice || $orderHasInvoices) {
                 $this->setExpectedException(\TIG\Buckaroo\Exception::class);
                 $this->debugger->shouldReceive('addToMessage')->withAnyArgs();
             } else {
                 $orderMock->shouldReceive('save')->andReturnSelf();
+                $orderMock->shouldReceive('save')->andReturnSelf();
 
-                if ($orderCanInvoice && !$orderHasInvoices) {
-                    $orderMock->shouldReceive('save')->andReturnSelf();
-                    $objectMock->expects($this->exactly(2))->method('addTransactionData');
+                $paymentMock->shouldReceive('registerCaptureNotification')->once()->with($amount);
+                $paymentMock->shouldReceive('save')->once();
 
-                    /** @noinspection PhpUndefinedFieldInspection */
-                    $objectMock->postData = $postData;
+                $objectMock->expects($this->once())->method('addTransactionData');
 
-                    $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
+                /** @noinspection PhpUndefinedFieldInspection */
+                $objectMock->postData = $postData;
 
-                    $orderMock->shouldReceive('getInvoiceCollection')->andReturn([$invoiceMock]);
+                $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
 
-                    if (isset($postData['brq_transactions'])) {
-                        $invoiceMock->shouldReceive('setTransactionId')
-                            ->with($postData['brq_transactions'])
-                            ->andReturnSelf();
-                        $invoiceMock->shouldReceive('save');
-                    }
-                } else {
-                    $objectMock->expects($this->once())->method('addTransactionData');
+                $orderMock->shouldReceive('getInvoiceCollection')->andReturn([$invoiceMock]);
+
+                if (isset($postData['brq_transactions'])) {
+                    $invoiceMock->shouldReceive('setTransactionId')
+                        ->with($postData['brq_transactions'])
+                        ->andReturnSelf();
+                    $invoiceMock->shouldReceive('save');
                 }
             }
 
