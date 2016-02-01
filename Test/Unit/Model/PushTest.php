@@ -264,40 +264,56 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $message = 'testMessage';
         $status = 'testStatus';
 
+        /** Only orders with this state should have their status updated */
         $successPaymentState = \Magento\Sales\Model\Order::STATE_PROCESSING;
 
+        /** Set config values on config provider mock */
         $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getOrderConfirmationEmail')
             ->andReturn($sendOrderConfirmationEmail);
+        $this->configProviderFactory->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
 
+        /** Build an order mock and set several non mandatory method calls */
         $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $orderMock->shouldReceive('getEmailSent')->andReturn($orderEmailSent);
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
+
+        /** The order state has to be checked at least once */
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
 
+        /** If order email is not sent and order email should be sent, expect sending of order email */
         if (!$orderEmailSent && $sendOrderConfirmationEmail) {
             $this->orderSender->shouldReceive('send')->with($orderMock);
         }
 
+        /** Build a payment mock and set the payment action */
         $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
         $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
 
+        /** Build a currency mock */
+        $currencyMock = \Mockery::mock(\Magento\Directory\Model\Currency::class);
+        $currencyMock->shouldReceive('formatTxt')->andReturn($textAmount);
+
+        /** Update order mock with payment and currency mock */
         $orderMock->shouldReceive('getPayment')->andReturn($paymentMock);
-        $orderMock->shouldReceive('getBaseCurrency')->andReturnSelf();
-        $orderMock->shouldReceive('formatTxt')->andReturn($textAmount);
+        $orderMock->shouldReceive('getBaseCurrency')->andReturn($currencyMock);
 
-        if ($paymentAction != 'authorize') {
-            $expectedDescription = 'Payment status : <strong>' . $message . "</strong><br/>";
-            $expectedDescription .= 'Total amount of ' . $textAmount . ' has been paid';
-        } else {
-            $expectedDescription = 'Authorization status : <strong>' . $message . "</strong><br/>";
-            $expectedDescription .= 'Total amount of ' . $textAmount . ' has been ' .
-                'authorized. Please create an invoice to capture the authorized amount.';
-        }
-
+        /** If no auto invoicing is required, or if auto invoice is required and the order can be invoiced and
+         *  has no invoices, expect a status update
+         */
         if (!$autoInvoice || ($autoInvoice && $orderCanInvoice && !$orderHasInvoices)) {
+            if ($paymentAction != 'authorize') {
+                $expectedDescription = 'Payment status : <strong>' . $message . "</strong><br/>";
+                $expectedDescription .= 'Total amount of ' . $textAmount . ' has been paid';
+            } else {
+                $expectedDescription = 'Authorization status : <strong>' . $message . "</strong><br/>";
+                $expectedDescription .= 'Total amount of ' . $textAmount . ' has been ' .
+                    'authorized. Please create an invoice to capture the authorized amount.';
+            }
+
+            /** Only orders with the success state should have their status updated */
             if ($state == $successPaymentState) {
                 $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
             } else {
@@ -305,8 +321,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             }
         }
 
-        $this->configProviderFactory->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
-
+        /** Build a PHP_Unit (not Mockery) partial mock to capture internal calls to public method addTransactionData */
         $objectMock = $this->getPartialObject(
             get_class($this->object),
             [
@@ -320,29 +335,35 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             ['addTransactionData']
         );
 
+        /** If autoInvoice is required, also test protected method saveInvoice */
         if ($autoInvoice) {
             $orderMock->shouldReceive('canInvoice')->andReturn($orderCanInvoice);
             $orderMock->shouldReceive('hasInvoices')->andReturn($orderHasInvoices);
 
             if (!$orderCanInvoice || $orderHasInvoices) {
+                /** If order cannot be invoiced or if order already has invoices, expect an exception */
                 $this->setExpectedException(\TIG\Buckaroo\Exception::class);
                 $this->debugger->shouldReceive('addToMessage')->withAnyArgs();
             } else {
-                $orderMock->shouldReceive('save')->andReturnSelf();
-                $orderMock->shouldReceive('save')->andReturnSelf();
-
-                $paymentMock->shouldReceive('registerCaptureNotification')->once()->with($amount);
-                $paymentMock->shouldReceive('save')->once();
-
+                /** Order can be invoice, so test invoice flow */
                 $objectMock->expects($this->once())->method('addTransactionData');
+
+                /** Payment should receive register capture notification only once and payment should be saved */
+                $paymentMock->shouldReceive('registerCaptureNotification')->once()->with($amount);
+                $paymentMock->shouldReceive('save')->once()->withNoArgs();
+
+                /** Order should be saved at least once  */
+                $orderMock->shouldReceive('save')->atLeast(1)->withNoArgs();
 
                 /** @noinspection PhpUndefinedFieldInspection */
                 $objectMock->postData = $postData;
 
                 $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
 
+                /** Invoice collection should be array iterable so a simple array is used for a mock collection */
                 $orderMock->shouldReceive('getInvoiceCollection')->andReturn([$invoiceMock]);
 
+                /** If key brq_transactions is set in postData, invoice should expect a transaction id to be set */
                 if (isset($postData['brq_transactions'])) {
                     $invoiceMock->shouldReceive('setTransactionId')
                         ->with($postData['brq_transactions'])
@@ -350,7 +371,6 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                     $invoiceMock->shouldReceive('save');
                 }
             }
-
         }
 
         /** @noinspection PhpUndefinedFieldInspection */
