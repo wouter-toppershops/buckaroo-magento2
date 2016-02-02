@@ -430,7 +430,7 @@ class Push implements PushInterface
      */
     protected function setOrderNotificationNote($message)
     {
-        $note = 'Buckaroo attempted to update this order, but failed : ' .$message;
+        $note = 'Buckaroo attempted to update this order, but failed: ' .$message;
         try {
             $this->order->addStatusHistoryComment($note);
             $this->order->save();
