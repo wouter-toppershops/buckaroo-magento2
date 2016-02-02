@@ -43,7 +43,6 @@ namespace TIG\Buckaroo\Model;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Sales\Model\Order;
 use TIG\Buckaroo\Api\PushInterface;
-use TIG\Buckaroo\Exception;
 use \TIG\Buckaroo\Model\Method\AbstractMethod;
 
 /**
@@ -202,7 +201,7 @@ class Push implements PushInterface
             if ($response['status'] !== 'TIG_BUCKAROO_STATUSCODE_SUCCESS'
                 && !$this->order->hasInvoices()
             ) {
-                throw new Exception(
+                throw new \TIG\Buckaroo\Exception(
                     __('Refund failed ! Status : %1 and the order does not contain an invoice', $response['status'])
                 );
             }
@@ -212,12 +211,14 @@ class Push implements PushInterface
         //Last validation before push can be completed
         if (!$validSignature) {
             $this->debugger->addToMessage('Invalid push signature');
-            throw new Exception(__('Signature from push is incorrect'));
+            throw new \TIG\Buckaroo\Exception(__('Signature from push is incorrect'));
             //If the signature is valid but the order cant be updated, try to add a notification to the order comments.
         } elseif ($validSignature && !$canUpdateOrder) {
-            $this->setOrderNotificationNote($response['message']);
+            $this->setOrderNotificationNote(__('The order has already been processed.'));
             $this->debugger->addToMessage('Order can not receive updates');
-            throw new Exception(__('Signature from push is correct but the order can not receive updates'));
+            throw new \TIG\Buckaroo\Exception(
+                __('Signature from push is correct but the order can not receive updates')
+            );
         }
 
         $this->setTransactionKey();
@@ -234,7 +235,7 @@ class Push implements PushInterface
      *
      * @param $response
      *
-     * @throws Exception
+     * @throws \TIG\Buckaroo\Exception
      */
     public function processPush($response)
     {
@@ -296,7 +297,7 @@ class Push implements PushInterface
      *
      * @param $transactionId
      * @return Order
-     * @throws Exception
+     * @throws \TIG\Buckaroo\Exception
      */
     protected function getOrderByTransactionKey($transactionId)
     {
@@ -309,7 +310,7 @@ class Push implements PushInterface
                 return $order;
             }
         }
-        throw new Exception(__('There was no order found by transaction Id'));
+        throw new \TIG\Buckaroo\Exception(__('There was no order found by transaction Id'));
     }
 
     /**
@@ -333,11 +334,11 @@ class Push implements PushInterface
         /**
          * If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
          */
-        if ($completedStateAndStatus != $currentStateAndStatus &&
-           $cancelledStateAndStatus  != $currentStateAndStatus &&
-           $holdedStateAndStatus     != $currentStateAndStatus &&
-           $closedStateAndStatus     != $currentStateAndStatus &&
-           $this->order->canInvoice()
+        if ($completedStateAndStatus   != $currentStateAndStatus
+           && $cancelledStateAndStatus != $currentStateAndStatus
+           && $holdedStateAndStatus    != $currentStateAndStatus
+           && $closedStateAndStatus    != $currentStateAndStatus
+           && $this->order->canInvoice()
         ) {
             return true;
         }
@@ -398,16 +399,11 @@ class Push implements PushInterface
                 'authorized. Please create an invoice to capture the authorized amount.';
         }
 
-        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
-
-        if ($paymentMethod->getConfigData('payment_action') == 'authorize') {
-            return true;
-        }
-
-
-        if ($accountConfig->getAutoInvoice()) {
+        if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $accountConfig->getAutoInvoice()) {
             $this->saveInvoice();
         }
+
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
 
         return true;
     }
@@ -434,11 +430,11 @@ class Push implements PushInterface
      */
     protected function setOrderNotificationNote($message)
     {
-        $note = 'Buckaroo attempted to update this order, but failed : ' .$message;
+        $note = 'Buckaroo attempted to update this order, but failed: ' .$message;
         try {
             $this->order->addStatusHistoryComment($note);
             $this->order->save();
-        } catch (Exception $e) {
+        } catch (\TIG\Buckaroo\Exception $e) {
             $this->debugger->addToMessage($e->getLogMessage());
         }
     }
@@ -464,39 +460,39 @@ class Push implements PushInterface
      * Only when the order can be invoiced and has not been invoiced before.
      *
      * @return bool
-     * @throws Exception
+     * @throws \TIG\Buckaroo\Exception
      */
     protected function saveInvoice()
     {
-        if (!$this->order->canInvoice() && $this->order->hasInvoices()) {
+        if (!$this->order->canInvoice() || $this->order->hasInvoices()) {
             $this->debugger->addToMessage(__('Order can not be invoiced'));
-            throw new Exception(__('Order can not be invoiced'));
+            throw new \TIG\Buckaroo\Exception(__('Order can not be invoiced'));
         }
-
-        $this->addTransactionData();
-
-        $this->order->save();
 
         /**
          * Only when the order can be invoiced and has not been invoiced before.
          */
-        if ($this->order->canInvoice() && !$this->order->hasInvoices()) {
-            $this->addTransactionData();
 
-            $this->order->save();
+        $this->addTransactionData();
 
-            foreach ($this->order->getInvoiceCollection() as $invoice) {
-                if (!isset($this->postData['brq_transactions'])) {
-                    continue;
-                }
-                /** @var \Magento\Sales\Model\Order\Invoice $invoice */
-                $invoice->setTransactionId($this->postData['brq_transactions'])
-                    ->save();
+        /** @var \Magento\Sales\Model\Order\Payment $payment */
+        $payment = $this->order->getPayment();
+        $payment->registerCaptureNotification($this->order->getGrandTotal());
+        $payment->save();
+
+        $this->order->save();
+
+        foreach ($this->order->getInvoiceCollection() as $invoice) {
+            if (!isset($this->postData['brq_transactions'])) {
+                continue;
             }
 
-            return true;
+            /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+            $invoice->setTransactionId($this->postData['brq_transactions'])
+                ->save();
         }
-        return false;
+
+        return true;
     }
 
     /**
@@ -532,8 +528,6 @@ class Push implements PushInterface
             \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY,
             $transactionKey
         );
-
-        $payment->registerCaptureNotification($this->order->getBaseGrandTotal());
 
         return $payment;
     }

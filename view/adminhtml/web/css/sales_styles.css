@@ -253,3 +253,9 @@
     /*height            :30px;*/
     /*content           :' ';*/
 /*}*/
+
+/* ===================== Creditmemo create -  Warning message regarding rounding errors ======================= */
+.tig-buckaroo-warning-message {
+    text-align: justify;
+    margin-top: 3rem;
+}

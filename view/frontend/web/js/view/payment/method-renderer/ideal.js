@@ -108,11 +108,8 @@ define(
             /**
              * Place order.
              *
-             * @todo    To override the script used for placeOrderAction, we need to override the placeOrder method
-             *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
-             *
-             *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
-             *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
+             * placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own version
+             * (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
              */
             placeOrder: function (data, event) {
                 var self = this,

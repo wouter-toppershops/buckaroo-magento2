@@ -39,7 +39,6 @@
  */
 -->
 <!--
-@todo: Packages.tig.nl toevoegen zodra die live is
 composer config repositories.tig composer https://packages.tig.nl
 -->
 <project name="Buckaroo" default="build" basedir=".">

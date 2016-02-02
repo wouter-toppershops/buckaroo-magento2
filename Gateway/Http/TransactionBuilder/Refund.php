@@ -45,7 +45,7 @@ class Refund extends AbstractTransactionBuilder
     /**
      * @throws \TIG\Buckaroo\Exception
      */
-    protected function setRefundCurrency()
+    protected function setRefundCurrencyAndAmount()
     {
         /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance */
         $methodInstance = $this->order->getPayment()->getMethodInstance();
@@ -55,7 +55,13 @@ class Refund extends AbstractTransactionBuilder
         $allowedCurrencies = $configProvider->getAllowedCurrencies();
 
         if (in_array($this->order->getOrderCurrencyCode(), $allowedCurrencies)) {
+            /**
+             * @todo find a way to fix the cumulative rounding issue that occurs in creditmemos.
+             *       This problem occurs when the creditmemo is being refunded in the order's currency, rather than the
+             *       store's base currency.
+             */
             $this->currency = $this->order->getOrderCurrencyCode();
+            $this->amount = round($this->amount * $this->order->getBaseToOrderRate(), 2);
         } elseif (in_array($this->order->getBaseCurrencyCode(), $allowedCurrencies)) {
             $this->currency = $this->order->getBaseCurrencyCode();
         } else {
@@ -71,7 +77,7 @@ class Refund extends AbstractTransactionBuilder
     public function getBody()
     {
         if (!$this->currency) {
-            $this->setRefundCurrency();
+            $this->setRefundCurrencyAndAmount();
         }
 
         $order = $this->getOrder();

@@ -98,6 +98,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $configProviderMethodFactory;
 
     /**
+     * @var \Magento\Framework\ObjectManagerInterface
+     */
+    protected $objectManager;
+
+    /**
      * @var bool
      */
     protected $startRecurrent = false;
@@ -219,6 +224,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory           $configProviderFactory
      * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory    $configProviderMethodFactory
+     * @param \Magento\Framework\ObjectManagerInterface            $objectManager
      * @param null                                                 $amount
      * @param null                                                 $currency
      */
@@ -229,6 +235,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
+        \Magento\Framework\ObjectManagerInterface $objectManager,
         $amount = null,
         $currency = null
     ) {
@@ -238,6 +245,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         $this->configProviderFactory       = $configProviderFactory;
         $this->remoteAddress               = $remoteAddress;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->objectManager               = $objectManager;
 
         if ($amount !== null) {
             $this->amount = $amount;
@@ -304,12 +312,19 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
 
     /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
-     *
-     * @todo fix to not directly instantiate class by using objectmanager
      */
     public function build()
     {
-        return new \TIG\Buckaroo\Gateway\Http\Transaction($this->getBody(), $this->getHeaders(), $this->getMethod());
+        $transaction = $this->objectManager->create(
+            '\TIG\Buckaroo\Gateway\Http\Transaction',
+            [
+                'body'    => $this->getBody(),
+                'headers' => $this->getHeaders(),
+                'method'  => $this->getMethod(),
+            ]
+        );
+
+        return $transaction;
     }
 
     /**

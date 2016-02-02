@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 /**
  *                  ___________       __            __
@@ -34,21 +34,30 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <css src="TIG_Buckaroo::css/sales_order_creditmemo_new.css" />
-        <css src="TIG_Buckaroo::css/sales_styles.css" />
-    </head>
-    <body>
-        <referenceBlock name="creditmemo_totals">
-            <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Totals" name="buckaroo_fee"/>
-        </referenceBlock>
-        <referenceContainer name="submit_before">
-            <block class="TIG\Buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Create\RoundingWarning" name="buckaroo_rounding_warning" template="TIG_Buckaroo::sales/order/creditmemo/create/rounding_warning.phtml"/>
-        </referenceContainer>
-    </body>
-</page>
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <!-- Payment section -->
+    <group id="tig_buckaroo_payment_section" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>Buckaroo payment methods</label>
+        <fieldset_css>tig_buckaroo-section</fieldset_css>
+
+        <include path="TIG_Buckaroo::system/payment_methods/ideal.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/creditcard.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/paypal.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/transfer.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/sepa_direct_debit.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/mrcash.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/sofort_banking.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/giropay.xml"/>
+    </group>
+</include>

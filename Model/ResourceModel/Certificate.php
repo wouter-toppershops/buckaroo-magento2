@@ -63,18 +63,25 @@ class Certificate extends \Magento\Framework\Model\ResourceModel\Db\VersionContr
     protected $dateTime;
 
     /**
+     * @var \Magento\Framework\Encryption\Encryptor
+     */
+    protected $encryptor;
+
+    /**
      * @param \Magento\Framework\Model\ResourceModel\Db\Context                          $context
      * @param \Magento\Framework\Model\ResourceModel\Db\VersionControl\Snapshot          $entitySnapshot
      * @param \Magento\Framework\Model\ResourceModel\Db\VersionControl\RelationComposite $entityRelationComposite
-     * @param string                                                                     $connectionName
+     * @param \Magento\Framework\Encryption\Encryptor                                    $encryptor
      * @param \Magento\Framework\Stdlib\DateTime\DateTime                                $dateTime
+     * @param string                                                                     $connectionName
      */
     public function __construct(
         \Magento\Framework\Model\ResourceModel\Db\Context $context,
         \Magento\Framework\Model\ResourceModel\Db\VersionControl\Snapshot $entitySnapshot,
         \Magento\Framework\Model\ResourceModel\Db\VersionControl\RelationComposite $entityRelationComposite,
-        $connectionName = null,
-        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime = null
+        \Magento\Framework\Encryption\Encryptor $encryptor,
+        \Magento\Framework\Stdlib\DateTime\DateTime $dateTime,
+        $connectionName = null
     ) {
         parent::__construct(
             $context,
@@ -84,6 +91,7 @@ class Certificate extends \Magento\Framework\Model\ResourceModel\Db\VersionContr
         );
 
         $this->dateTime = $dateTime;
+        $this->encryptor = $encryptor;
     }
 
     // @codingStandardsIgnoreStart
@@ -102,15 +110,47 @@ class Certificate extends \Magento\Framework\Model\ResourceModel\Db\VersionContr
      *
      * @param \Magento\Framework\Model\AbstractModel|\Magento\Framework\DataObject $object
      * @return $this
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function _beforeSave(\Magento\Framework\Model\AbstractModel $object)
     {
+        /** @var \TIG\Buckaroo\Model\Certificate $object */
         if ($object->isObjectNew()) {
             $object->setData('created_at', $this->dateTime->gmtDate());
         }
 
+        /**
+         * Encrypt the key before saving.
+         */
+        if (!$object->isSkipEncryptionOnSave()) {
+            $object->setData(
+                'certificate',
+                $this->encryptor->encrypt(
+                    $object->getData('certificate')
+                )
+            );
+        }
+
         return $this;
+    }
+
+    /**
+     * @param \Magento\Framework\Model\AbstractModel $object
+     *
+     * @return $this
+     */
+    protected function _afterLoad(\Magento\Framework\Model\AbstractModel $object)
+    {
+        /**
+         * Decrypt the key after loading.
+         */
+        $object->setData(
+            'certificate',
+            $this->encryptor->decrypt(
+                $object->getData('certificate')
+            )
+        );
+
+        return parent::_afterLoad($object);
     }
     // @codingStandardsIgnoreEnd
 }

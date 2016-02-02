@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ *                  ___________       __            __
+ *                  \__    ___/____ _/  |_ _____   |  |
+ *                    |    |  /  _ \\   __\\__  \  |  |
+ *                    |    | |  |_| ||  |   / __ \_|  |__
+ *                    |____|  \____/ |__|  (____  /|____/
+ *                                              \/
+ *          ___          __                                   __
+ *         |   |  ____ _/  |_   ____ _______   ____    ____ _/  |_
+ *         |   | /    \\   __\_/ __ \\_  __ \ /    \ _/ __ \\   __\
+ *         |   ||   |  \|  |  \  ___/ |  | \/|   |  \\  ___/ |  |
+ *         |___||___|  /|__|   \_____>|__|   |___|  / \_____>|__|
+ *                  \/                           \/
+ *                  ________
+ *                 /  _____/_______   ____   __ __ ______
+ *                /   \  ___\_  __ \ /  _ \ |  |  \\____ \
+ *                \    \_\  \|  | \/|  |_| ||  |  /|  |_| |
+ *                 \______  /|__|    \____/ |____/ |   __/
+ *                        \/                       |__|
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Creative Commons License.
+ * It is available through the world-wide-web at this URL:
+ * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * If you are unable to obtain it through the world-wide-web, please send an email
+ * to servicedesk@tig.nl so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this module to newer
+ * versions in the future. If you wish to customize this module for your
+ * needs please contact servicedesk@tig.nl for more information.
+ *
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ */
+ -->
+<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
+    <!-- General settings section -->
+    <group id="tig_buckaroo_account_section" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+        <label>General configuration and account information</label>
+        <fieldset_css>tig_buckaroo-section</fieldset_css>
+
+        <field id="active" translate="label comment tooltip" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Enabled</label>
+            <comment>Enable or disable the Buckaroo module.</comment>
+            <tooltip>Selecting 'No' will overrule all individual settings.</tooltip>
+            <source_model>TIG\Buckaroo\Model\Config\Source\Enablemode</source_model>
+            <config_path>tig_buckaroo/account/active</config_path>
+        </field>
+
+        <field id="secret_key" translate="label comment tooltip" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Secret key</label>
+            <comment><![CDATA[Enter your Buckaroo Secret Key.]]></comment>
+            <tooltip>The Secret Key can be retrieved in Payment Plaza under the configuration tab. For support contact Buckaroo.</tooltip>
+            <config_path>tig_buckaroo/account/secret_key</config_path>
+        </field>
+
+        <field id="merchant_key" translate="label comment tooltip" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>(Merchant) key</label>
+            <comment><![CDATA[Enter your Buckaroo merchant/website key.]]></comment>
+            <tooltip>The (Merchant) Key can be retrieved in Payment Plaza under the profile tab. For support contact Buckaroo.</tooltip>
+            <config_path>tig_buckaroo/account/merchant_key</config_path>
+        </field>
+
+        <field id="transaction_label" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Transaction label</label>
+            <comment><![CDATA[The transaction description in Payment Plaza.]]></comment>
+            <config_path>tig_buckaroo/account/transaction_label</config_path>
+        </field>
+
+        <field id="certificate_label" translate="label comment" type="text" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Certificate label</label>
+            <comment><![CDATA[Enter a name for the certificate. This is purely administrative.]]></comment>
+            <backend_model>TIG\Buckaroo\Model\Config\Backend\CertificateLabel</backend_model>
+        </field>
+
+        <field id="certificate_upload" translate="label" type="file" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
+            <label>Upload your Buckaroo private key certificate</label>
+            <backend_model>TIG\Buckaroo\Model\Config\Backend\Certificate</backend_model>
+            <config_path>tig_buckaroo/account/certificate_upload</config_path>
+        </field>
+
+        <field id="certificate_file" translate="label tooltip" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Certificate file</label>
+            <tooltip>The certificate can be retrieved in Payment Plaza under the profile tab. For support contact Buckaroo.</tooltip>
+            <source_model>TIG\Buckaroo\Model\Config\Source\Certificates</source_model>
+            <config_path>tig_buckaroo/account/certificate_file</config_path>
+        </field>
+
+        <group id="tig_buckaroo_advanced" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Advanced Configuration</label>
+            <comment><![CDATA[These options are only intended for expert users. Tampering with the default settings may negatively affect the workflow and performance of all Buckaroo payment methods. Use at your own risk.]]></comment>
+
+            <field id="order_status_new" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>New status</label>
+                <comment><![CDATA[This status will be given to new orders.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
+                <config_path>tig_buckaroo/account/order_status_new</config_path>
+            </field>
+
+            <field id="order_status_pending" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Pending payment status</label>
+                <comment><![CDATA[This status will be given to orders pending payment.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
+                <config_path>tig_buckaroo/account/order_status_pending</config_path>
+            </field>
+
+            <field id="order_status_success" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment success status</label>
+                <comment><![CDATA[This status will be given to orders paid.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
+                <config_path>tig_buckaroo/account/order_status_success</config_path>
+            </field>
+
+            <field id="order_status_failed" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment failed status</label>
+                <comment><![CDATA[This status will be given to unsuccessful orders.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
+                <config_path>tig_buckaroo/account/order_status_failed</config_path>
+            </field>
+
+            <field id="order_confirmation_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Send order confirmation email</label>
+                <comment><![CDATA[Send a mail after successful payment.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>tig_buckaroo/account/order_confirmation_email</config_path>
+            </field>
+
+            <field id="auto_invoice" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Create invoice after success</label>
+                <comment><![CDATA[If set to 'No' the order is not invoiced.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>tig_buckaroo/account/auto_invoice</config_path>
+            </field>
+
+            <field id="auto_invoice_status" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment success status without invoice</label>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
+                <config_path>tig_buckaroo/account/auto_invoice_status</config_path>
+                <depends>
+                    <field id="auto_invoice">0</field>
+                </depends>
+            </field>
+
+            <field id="success_redirect" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Redirect url after 'Success'</label>
+                <comment><![CDATA[Redirect after successful payments.]]></comment>
+                <config_path>tig_buckaroo/account/success_redirect</config_path>
+            </field>
+
+            <field id="failure_redirect" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Redirect url after 'Failure'</label>
+                <comment><![CDATA[Redirect after failed payments.]]></comment>
+                <config_path>tig_buckaroo/account/failure_redirect</config_path>
+            </field>
+
+            <field id="cancel_on_failed" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>'Canceled' state on failed payment</label>
+                <comment><![CDATA[Orders will stay open after failed payments.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>tig_buckaroo/account/cancel_on_failed</config_path>
+            </field>
+
+            <field id="debug_mode" translate="label comment" type="select" sortOrder="105" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Debug mode</label>
+                <comment><![CDATA[Decide whether to debug and where to send the log]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\DebugModes</source_model>
+                <config_path>tig_buckaroo/account/debug_mode</config_path>
+            </field>
+
+            <field id="debug_email" translate="label comment" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Debug email</label>
+                <comment><![CDATA[Debug information will be sent to these comma-separated email addresses]]></comment>
+                <config_path>tig_buckaroo/account/debug_email</config_path>
+                <depends>
+                    <field id="debug_mode" separator="||">mail||maillog</field>
+                </depends>
+            </field>
+
+            <field id="limit_by_ip" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Display only for selected IPs</label>
+                <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>tig_buckaroo/account/limit_by_ip</config_path>
+            </field>
+
+            <field id="fee_percentage_mode" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Fee percentage mode</label>
+                <comment><![CDATA[This setting only applies to percentage-based Buckaroo fees.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\FeePercentageMode</source_model>
+                <config_path>tig_buckaroo/account/fee_percentage_mode</config_path>
+            </field>
+
+            <field id="payment_fee_label" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment fee frontend label</label>
+                <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
+                <config_path>tig_buckaroo/account/payment_fee_label</config_path>
+            </field>
+        </group>
+    </group>
+</include>
