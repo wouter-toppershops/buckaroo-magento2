@@ -7,7 +7,7 @@
     float: right;
     height: 30px;
     margin-top: 10px;
-    background-size: auto 29px;
+    background-size: auto 24px;
 
     /*
     * Remove _beta if extension isn't beta anymore.
@@ -65,8 +65,8 @@
     content: ' ';
     width: 295px;
     float:left;
-    height: 50px;
-    background-size: auto 50px;
+    height: 40px;
+    background-size: auto 40px;
     /* width: 259px if not beta */
 }
 
@@ -78,21 +78,22 @@
 }
 
 .payment_method_payment_method_inactive > .entry-edit-head {
-    background-size:16px;
+
     box-sizing: border-box;
     background: url(../images/tig_buckaroo_disabled.png) no-repeat calc(100% - 1.3rem);
+    background-size:16px;
 }
 
 .payment_method_live  > .entry-edit-head {
-    background-size:16px;
     box-sizing: border-box;
     background: url(../images/tig_buckaroo_live.png) no-repeat calc(100% - 1.3rem);
+    background-size:16px;
 }
 
 .payment_method_test  > .entry-edit-head {
-    background-size:16px;
     box-sizing: border-box;
     background: url(../images/tig_buckaroo_test.png) no-repeat calc(100% - 1.3rem);
+    background-size:16px;
 }
 
 
