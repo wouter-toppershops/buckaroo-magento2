@@ -90,18 +90,31 @@ class RoundingWarning extends \Magento\Backend\Block\Template
     protected function shouldShowWarning()
     {
         $creditmemo = $this->getCreditmemo();
-        if (!$creditmemo->getInvoice()) {
-            return false;
-        }
 
+        /**
+         * The warning should only be shown before the refund has been processed.
+         */
         if (!$creditmemo->canRefund()) {
             return false;
         }
 
+        /**
+         * The warning should only be shown for invoice-based refunds.
+         */
+        if (!$creditmemo->getInvoice()) {
+            return false;
+        }
+
+        /**
+         * The warning should only be shown when the order's currency is different from the store's base currency.
+         */
         if ($creditmemo->getBaseCurrencyCode() == $creditmemo->getOrderCurrencyCode()) {
             return false;
         }
 
+        /**
+         * The warning should only be shown for Buckaroo payment methods.
+         */
         $payment = $creditmemo->getOrder()->getPayment();
         $paymentMethod = $payment->getMethod();
         if (strpos($paymentMethod, 'tig_buckaroo') === false) {
@@ -111,10 +124,16 @@ class RoundingWarning extends \Magento\Backend\Block\Template
         /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethodInstance */
         $paymentMethodInstance = $payment->getMethodInstance();
 
+        /**
+         * Check if a config provider exists for the pament method used.
+         */
         if (!$this->configProviderFactory->has($paymentMethodInstance->buckarooPaymentMethodCode)) {
             return false;
         }
 
+        /**
+         * The warning should only be shown if the order's currency is supported by the payment method used.
+         */
         $configProvider = $this->configProviderFactory->get($paymentMethodInstance->buckarooPaymentMethodCode);
         if (!in_array($creditmemo->getOrderCurrencyCode(), $configProvider->getAllowedCurrencies())) {
             return false;
