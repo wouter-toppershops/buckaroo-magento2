@@ -46,7 +46,9 @@ class XWwwFormUrlencoded implements \Magento\Framework\Webapi\Rest\Request\Deser
      * Parse Request body into array of params.
      *
      * @param string $encodedBody Posted content from request.
-     * @return array|null Return NULL if content is invalid.
+     *
+     * @return array
+     *
      * @throws \InvalidArgumentException
      */
     public function deserialize($encodedBody)
