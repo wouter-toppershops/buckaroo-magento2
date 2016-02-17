@@ -34,7 +34,7 @@ class AddItemToCartTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testAddToCart()
     {
-        $this->driver->get('http://buckaroo-selenium.tig.nl/test-product.html');
+        $this->driver->get('http://buckaroo.jenkins/test-product.html');
 
         sleep(10);
 
