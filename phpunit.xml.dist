@@ -30,5 +30,6 @@
     <logging>
         <log type="coverage-html" target="Build/Coverage" charset="UTF-8" yui="true" highlight="true"/>
         <log type="coverage-clover" target="Build/Logs/clover.xml"/>
+        <log type="junit" target="Build/Logs/JUnit.xml" logIncompleteSkipped="false"/>
     </logging>
 </phpunit>
