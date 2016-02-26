@@ -47,28 +47,28 @@
     </groups>
     <methods>
         <method name="tig_buckaroo_ideal">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_sepadirectdebit">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_paypal">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_creditcard">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_transfer">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_giropay">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_mrcash">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
         <method name="tig_buckaroo_sofortbanking">
-            <allow_multiple_address>1</allow_multiple_address>
+            <allow_multiple_address>0</allow_multiple_address>
         </method>
     </methods>
 </payment>
