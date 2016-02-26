@@ -12,6 +12,7 @@
         >
     <testsuite name="Magento Unit Tests">
         <directory suffix="Test.php">Build/Magento 2/vendor/tig/buckaroo/Test/Unit</directory>
+        <directory suffix="Test.php">Build/Magento 2/vendor/tig/buckaroo/Test/Functional</directory>
     </testsuite>
     <php>
         <ini name="date.timezone" value="America/Los_Angeles"/>
@@ -29,5 +30,6 @@
     <logging>
         <log type="coverage-html" target="Build/Coverage" charset="UTF-8" yui="true" highlight="true"/>
         <log type="coverage-clover" target="Build/Logs/clover.xml"/>
+        <log type="junit" target="Build/Logs/JUnit.xml" logIncompleteSkipped="false"/>
     </logging>
 </phpunit>
