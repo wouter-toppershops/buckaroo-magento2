@@ -57,7 +57,7 @@
         </tax>
         <payment>
             <tig_buckaroo_ideal>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Ideal</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo iDEAL</title>
@@ -71,7 +71,7 @@
             </tig_buckaroo_ideal>
 
             <tig_buckaroo_sepadirectdebit>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\SepaDirectDebit</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo SEPA Direct Debit</title>
@@ -87,7 +87,7 @@
             </tig_buckaroo_sepadirectdebit>
 
             <tig_buckaroo_paypal>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Paypal</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo PayPal</title>
@@ -101,7 +101,7 @@
             </tig_buckaroo_paypal>
 
             <tig_buckaroo_creditcard>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Creditcard</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Creditcard and Debit Card</title>
@@ -117,7 +117,7 @@
             </tig_buckaroo_creditcard>
 
             <tig_buckaroo_transfer>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Transfer</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Transfer</title>
@@ -135,7 +135,7 @@
             </tig_buckaroo_transfer>
 
             <tig_buckaroo_giropay>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Giropay</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Giropay</title>
@@ -148,7 +148,7 @@
             </tig_buckaroo_giropay>
 
             <tig_buckaroo_mrcash>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Mrcash</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Bancontact/Mister Cash</title>
@@ -163,7 +163,7 @@
             </tig_buckaroo_mrcash>
 
             <tig_buckaroo_sofortbanking>
-                <active>1</active>
+                <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Sofortbanking</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Sofortbanking</title>

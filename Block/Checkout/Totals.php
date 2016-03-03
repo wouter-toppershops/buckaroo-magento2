@@ -39,7 +39,7 @@
 
 namespace TIG\Buckaroo\Block\Checkout;
 
-class Total extends \Magento\Checkout\Block\Total\DefaultTotal
+class Totals extends \Magento\Checkout\Block\Total\DefaultTotal
 {
     // @codingStandardsIgnoreStart
     /**
