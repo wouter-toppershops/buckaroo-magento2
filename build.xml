@@ -42,7 +42,7 @@
 composer config repositories.tig composer https://packages.tig.nl
 -->
 <project name="Buckaroo" default="build" basedir=".">
-    <target name="build" depends="clone,composer.require-repo,phpunit"/>
+    <target name="build" depends="clone,composer.require-repo,setup-static-content-deploy,phpunit"/>
 
     <target name="build-dir.check">
         <condition property="build-dir.exist">
@@ -64,6 +64,14 @@ composer config repositories.tig composer https://packages.tig.nl
         </exec>
     </target>
 
+    <target name="copy-env-files">
+        <echo>Copy the env file</echo>
+        <copy
+            file="${basedir}/Test/Fixtures/env.php"
+            tofile="${basedir}/Build/Magento 2/app/etc/env.php"
+            />
+    </target>
+
     <target name="composer.is-installed">
         <echo>Check if composer is already installed</echo>
         <condition property="composer.exist">
@@ -71,7 +79,7 @@ composer config repositories.tig composer https://packages.tig.nl
         </condition>
     </target>
 
-    <target name="composer.install">
+    <target name="composer.install" depends="copy-env-files">
         <echo>Execute the composer install</echo>
         <exec executable="/usr/local/bin/composer" dir="Build/Magento 2/">
             <arg value="install" />
@@ -94,6 +102,47 @@ composer config repositories.tig composer https://packages.tig.nl
             <arg value="require" />
             <arg value="tig/buckaroo" />
             <arg value="dev-develop" />
+        </exec>
+    </target>
+
+    <target name="database">
+        <echo>Set the database to a fixed state</echo>
+        <exec executable="mysql" dir="Build/Magento 2/" failonerror="true" input="Test/Fixtures/tig-buckaroo-fixture.sql">
+            <arg value="--user=buckaroo" />
+            <arg value="--password=12345" />
+            <arg value="--database=buckaroo" />
+        </exec>
+    </target>
+
+    <target name="set-permissions">
+        <echo>Set the permissions on the var and pub folders.</echo>
+        <exec executable="chmod">
+            <arg value="777" />
+            <arg value="${basedir}/Build/Magento 2/var/" />
+            <arg value="-R" />
+        </exec>
+
+        <exec executable="chmod">
+            <arg value="777" />
+            <arg value="${basedir}/Build/Magento 2/pub/" />
+            <arg value="-R" />
+        </exec>
+    </target>
+
+    <target name="setup-upgrade" depends="database,set-permissions">
+        <echo>Run the bin/magento setup:upgrade command</echo>
+        <exec executable="php" failonerror="true">
+            <arg value="${basedir}/Build/Magento 2/bin/magento" />
+            <arg value="setup:upgrade" />
+        </exec>
+    </target>
+
+    <target name="setup-static-content-deploy" depends="database,set-permissions,setup-upgrade">
+        <echo>Run the bin/magento setup:static-content:deploy command</echo>
+        <exec executable="php" failonerror="true">
+            <arg value="${basedir}/Build/Magento 2/bin/magento" />
+            <arg value="setup:static-content:deploy" />
+            <arg value="nl_NL" />
         </exec>
     </target>
 
