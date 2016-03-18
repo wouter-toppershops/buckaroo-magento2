@@ -136,6 +136,7 @@ class Process extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $this->response = $this->getRequest()->getParams();
+        $this->response = array_change_key_case($this->response, CASE_LOWER);
 
         /**
          * Check if there is a valid response. If not, redirect to home.
