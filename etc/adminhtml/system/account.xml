@@ -125,7 +125,7 @@
 
             <field id="order_confirmation_email" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Send order confirmation email</label>
-                <comment><![CDATA[Send a mail after successful payment.]]></comment>
+                <comment><![CDATA[Send a mail after successful creating the order.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>tig_buckaroo/account/order_confirmation_email</config_path>
             </field>
