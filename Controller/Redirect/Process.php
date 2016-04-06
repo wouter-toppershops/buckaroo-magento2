@@ -136,6 +136,7 @@ class Process extends \Magento\Framework\App\Action\Action
     public function execute()
     {
         $this->response = $this->getRequest()->getParams();
+        $this->response = array_change_key_case($this->response, CASE_LOWER);
 
         /**
          * Check if there is a valid response. If not, redirect to home.
@@ -170,7 +171,7 @@ class Process extends \Magento\Framework\App\Action\Action
 
                 // Send order confirmation mail if we're supposed to
                 /** @noinspection PhpUndefinedMethodInspection */
-                if ($this->accountConfig->getOrderConfirmationEmail() === "1") {
+                if (!$order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
                     $this->orderSender->send($this->order, true);
                 }
 
