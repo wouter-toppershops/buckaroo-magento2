@@ -167,6 +167,10 @@
     list-style-type: none;
 }
 
+#tig_buckaroo_tig_buckaroo_account_section_tig_buckaroo_advanced .comment {
+	color: red;
+}
+
 
 
 /* ==================================== SupportTab - Legend ==================================== */

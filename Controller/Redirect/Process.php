@@ -171,7 +171,7 @@ class Process extends \Magento\Framework\App\Action\Action
 
                 // Send order confirmation mail if we're supposed to
                 /** @noinspection PhpUndefinedMethodInspection */
-                if (!$order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
+                if (!$this->order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
                     $this->orderSender->send($this->order, true);
                 }
 
