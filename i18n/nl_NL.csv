@@ -291,3 +291,8 @@
 "http://servicedesk.tig.nl/hc/nl/articles/218518187","http://servicedesk.tig.nl/hc/nl/articles/215574038"
 "http://servicedesk.tig.nl/hc/nl/articles/218003338","http://servicedesk.tig.nl/hc/nl/articles/214843478-Buckaroo-Magento-2-extensie-release-notes"
 "Cannot Refund via Magento Backend. Partial refunds combined with a payment fee can only be refunded via the Buckaroo Payment Plaza, see also the <a href="http://servicedesk.tig.nl/hc/nl/articles/218518167" target="_blank">KB article</a>.<br><a href="https://payment.buckaroo.nl" target="_blank">Open a new window to the Buckaroo Payment Plaza</a>.","Deze refund is niet mogelijk. Gedeeltelijke refunds gecombineerd met de payment fee kunnen alleen worden teruggestort via de Buckaroo Payment Plaza, zie ook het <a href="http://servicedesk.tig.nl/hc/nl/articles/217984838" target="_blank">KB artikel</a>.<br><a href="https://payment.buckaroo.nl" target="_blank">Open een nieuw venster om naar de Buckaroo Payment Plaza</a>."
+"Website","Website"
+"https://www.buckaroo-payments.com/","http://www.buckaroo.nl"
+"www.buckaroo-payments.com","www.buckaroo.nl"
+"TIG Request Form","TIG Aanvraagformulier"
+"TIG Knowledge Base","TIG Kennisbank"

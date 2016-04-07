@@ -78,7 +78,7 @@
     box-sizing:border-box;
     padding-left: 10px;
 }
-
+/*
 .payment_method_payment_method_inactive > .entry-edit-head {
     box-sizing: border-box;
     background: url(../images/tig_buckaroo_disabled.png) no-repeat calc(100% - 1.3rem);
@@ -96,17 +96,18 @@
     background: url(../images/tig_buckaroo_test.png) no-repeat calc(100% - 1.3rem);
     background-size:16px !important;
 }
+*/
 
 .section-config.payment_method_payment_method_active.payment_method_live{
-    border-left:2px solid #49AB43;
+    border-left:5px solid #49AB43;
 }
 
 .section-config.payment_method_payment_method_active.payment_method_test{
-    border-left:2px solid #FFC107;
+    border-left:5px solid #FFC107;
 }
 
 .section-config.payment_method_payment_method_inactive{
-    border-left:2px solid #CCCCCC;
+    border-left:5px solid #CCCCCC;
 }
 
 /* ==================================== SupportTab - Default styling ==================================== */
@@ -165,6 +166,7 @@
 #supporttab ul li {
     line-height: 2em;
     list-style-type: none;
+    margin-bottom: 10px;
 }
 
 #tig_buckaroo_tig_buckaroo_account_section_tig_buckaroo_advanced .comment {
@@ -204,7 +206,7 @@
     margin-right: 15px;
     font-weight: 600;
 }
-
+/*
 .disabled span.img {
     display:block;
     float:left;
@@ -233,6 +235,21 @@
     height:16px;
     background-image: url(../images/tig_buckaroo_test.png);
     background-size:16px;
+}*/
+
+.disabled{
+    border-left: 5px solid #CCCCCC;
+    padding-left: 10px;
+}
+
+.live {
+    border-left: 5px solid #49AB43;
+    padding-left: 10px;
+}
+
+.test {
+    border-left: 5px solid #FFC107;
+    padding-left: 10px;
 }
 
 .advanced span.img {
@@ -362,6 +379,11 @@
 }
 
 /* ==================================== SupportTab - Documentation ==================================== */
+
+.external_link {
+    margin-left: 5px;
+    vertical-align: middle;
+}
 
 /**
 * Space Reservation
