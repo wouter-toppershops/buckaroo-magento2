@@ -64,7 +64,7 @@
                 <p><?php echo $block->escapeHtml(__('Before contacting Buckaroo technical support, please retrieve your (Merchant) key, Secret key, certificate and certificate thumbprint.'));?></p>
             </ul>
             <ul>
-                <li class="buckaroo_logo" ><a href="http://www.buckaroo.nl" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/buckaroo_config_logo_black.png'); ?> " alt="" /></a></li>
+                <li class="buckaroo_logo" ><a href="<?php echo $block->escapeHtml(__('https://www.buckaroo-payments.com/'));?>" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/buckaroo_config_logo_black.png'); ?> " alt="" /></a></li>
                 <li class="first"><?php echo $block->escapeHtml(__('Buckaroo Payment Plaza:'));?></li>
                 <li class="last"><a target="_blank" href="https://payment.buckaroo.nl/">payment.buckaroo.nl</a></li>
             </ul>
@@ -77,19 +77,29 @@
                 <li class="last"><a href="mailto:support@buckaroo.nl">support@buckaroo.nl</a></li>
             </ul>
             <ul>
+                <li class="first"><?php echo $block->escapeHtml(__('Website:'));?></li>
+                <li class="last"><a href="<?php echo $block->escapeHtml(__('https://www.buckaroo-payments.com/'));?>"  target="_blank"><?php echo $block->escapeHtml(__('www.buckaroo-payments.com'));?></a></li>
+            </ul>
+
+
+            <ul>
                 <h4><?php echo $block->escapeHtml(__('Extension support and advanced configuration'));?></h4>
 
-                <li class="tig_logo"><a href="http://www.tig.nl" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/logo_tig.png'); ?>" alt="" /></a></li>
+                <li class="tig_logo"><a href="http://www.tig.nl/" target="_blank"><img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/logo_tig.png'); ?>" alt="" /></a></li>
                 <li class="first"><?php echo $block->escapeHtml(__('Online documentation and FAQ:'));?></li>
-                <li class="last"><a target="_blank" href="http://servicedesk.tig.nl/hc/nl/sections/203522128/">TIG Knowledge Base</a></li>
+                <li class="last"><a target="_blank" href="http://servicedesk.tig.nl/hc/nl/sections/203522128/"><?php echo $block->escapeHtml(__('TIG Knowledge Base'));?></a></li>
             </ul>
             <ul>
                 <li class="first"><?php echo $block->escapeHtml(__('Request support:'));?></li>
-                <li class="last"><a target="_blank" href="http://servicedesk.tig.nl/hc/nl/requests/new">TIG Request Form</a></li>
+                <li class="last"><a target="_blank" href="http://servicedesk.tig.nl/hc/nl/requests/new"><?php echo $block->escapeHtml(__('TIG Request Form'));?></a></li>
             </ul>
             <ul>
                 <li class="first"><?php echo $block->escapeHtml(__('Misc. questions by email:'));?></li>
                 <li class="last"><a href="mailto:servicedesk@tig.nl">servicedesk@tig.nl</a></li>
+            </ul>
+            <ul>
+                <li class="first"><?php echo $block->escapeHtml(__('Website'));?></li>
+                <li class="last"><a href="https://www.tig.nl/" target="_blank">www.tig.nl</a></li>
             </ul>
         </div>
     </div>
