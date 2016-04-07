@@ -244,7 +244,7 @@ class Push
             $data['shipping_amount']     = '0';
             $data['adjustment_negative'] = '0';
             $data['adjustment_positive'] = $adjustment;
-            $data['items']               = '0';
+            $data['items']               = $this->getCreditmemoDataItems();
             $data['qtys']                = '0';
         } else {
             $this->debugger->addToMessage(
