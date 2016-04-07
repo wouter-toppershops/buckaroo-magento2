@@ -102,8 +102,14 @@
         <div class="collapse-content" data-role="content" style="display:none;">
             <ul>
                 <p><?php echo $block->escapeHtml(__('A list of documents regarding the extension.'));?></p>
-                <li><a class="pdf" target="_blank" href="<?php echo $block->escapeHtml(__("http://servicedesk.tig.nl/hc/nl/articles/218518187"));?>" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Installation and Configuration Manual Buckaroo.pdf'));?></a></li>
-                <li><a target="_blank" href="<?php echo $block->escapeHtml(__("http://servicedesk.tig.nl/hc/nl/articles/218003338"));?>" title="<?php echo $block->escapeHtml(__('View the complete release notes of the extension. Currently the release notes is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Full Release Notes'));?></a></li>
+                <li><a class="pdf" target="_blank" href="<?php echo $block->escapeHtml(__("http://servicedesk.tig.nl/hc/nl/articles/218518187"));?>" title="<?php echo $block->escapeHtml(__('Download a PDF format of the manual. Currently the manual is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Installation and Configuration Manual Buckaroo.pdf'));?>
+                        <img class="external_link" src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/external_link_32.png')?>" alt="<?php echo $block->escapeHtml(__('Installation and Configuration Manual Buckaroo.pdf'));?>" width="16" height="16"/>
+                    </a>
+                </li>
+                <li><a target="_blank" href="<?php echo $block->escapeHtml(__("http://servicedesk.tig.nl/hc/nl/articles/218003338"));?>" title="<?php echo $block->escapeHtml(__('View the complete release notes of the extension. Currently the release notes is only available in Dutch.'));?>"><?php echo $block->escapeHtml(__('Full Release Notes'));?>
+                        <img class="external_link" src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/external_link_32.png')?>" alt="<?php echo $block->escapeHtml(__('Full Release Notes'));?>" width="16" height="16"/>
+                    </a>
+                </li>
             </ul>
         </div>
     </div>
