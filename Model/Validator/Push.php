@@ -180,7 +180,7 @@ class Push implements ValidatorInterface
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
 
-        $digitalSignature = $accountConfig->getDigitalSignature();
+        $digitalSignature = $accountConfig->getSecretKey();
 
         $signatureString .= $digitalSignature;
 
