@@ -39,66 +39,72 @@
 /*global define*/
 define(
     [
+        'jquery',
+        'Magento_Checkout/js/view/payment/default',
+        'Magento_Checkout/js/model/payment/additional-validators',
+        'TIG_Buckaroo/js/action/place-order',
         'ko',
-        'uiComponent',
-        'Magento_Checkout/js/model/payment/renderer-list'
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/action/select-payment-method'
     ],
     function (
-        ko,
+        $,
         Component,
-        rendererList
+        additionalValidators,
+        placeOrderAction,
+        ko,
+        checkoutData,
+        selectPaymentMethodAction
     ) {
         'use strict';
 
-        ko.extenders.uppercase = function(target) {
-            target.subscribe(function(newValue) {
-                target(newValue.toUpperCase());
-            });
-            return target;
-        };
+        return Component.extend({
+            defaults: {
+                template: 'TIG_Buckaroo/payment/tig_buckaroo_afterpay'
+            },
+            //paymentFeeLabel : window.checkoutConfig.payment.buckaroo.transfer.paymentFeeLabel,
+            //currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+            //baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
-        rendererList.push(
-            {
-                type: 'tig_buckaroo_ideal',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/ideal'
+            /**
+             * @override
+             */
+            initialize : function (options) {
+                if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                }
+
+                return this._super(options);
             },
-            {
-                type: 'tig_buckaroo_sepadirectdebit',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/sepadirectdebit'
+
+            selectPaymentMethod: function() {
+                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+                return true;
             },
-            {
-                type: 'tig_buckaroo_paypal',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/paypal'
+
+            payWithBaseCurrency: function() {
+                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.transfer.allowedCurrencies;
+
+                return allowedCurrencies.indexOf(this.currencyCode) < 0;
             },
-            {
-                type: 'tig_buckaroo_creditcard',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/creditcard'
-            },
-            {
-                type: 'tig_buckaroo_transfer',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/transfer'
-            },
-            {
-                type: 'tig_buckaroo_giropay',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/giropay'
-            },
-            {
-                type: 'tig_buckaroo_mrcash',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/mrcash'
-            },
-            {
-                type: 'tig_buckaroo_sofortbanking',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/sofortbanking'
-            },
-            {
-                type: 'tig_buckaroo_afterpay',
-                component: 'TIG_Buckaroo/js/view/payment/method-renderer/afterpay'
+
+            getPayWithBaseCurrencyText: function() {
+                var text = $.mage.__('The transaction will be processed using %s.');
+
+                return text.replace('%s', this.baseCurrencyCode);
             }
 
-
-
-        );
-        /** Add view logic here if needed */
-        return Component.extend({});
+        });
     }
 );
+
+
+
+
+
+
+
+

@@ -52,6 +52,7 @@
                 <item name="buckaroo_config_provider_mrcash" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Mrcash</item>
                 <item name="buckaroo_config_provider_sofort" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Sofortbanking</item>
                 <item name="buckaroo_config_provider_giropay" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Giropay</item>
+                <item name="buckaroo_config_provider_giropay" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay</item>
             </argument>
         </arguments>
     </type>
