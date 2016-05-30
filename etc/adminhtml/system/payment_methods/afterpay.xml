@@ -178,6 +178,21 @@
                 <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
             </field>
 
+            <field id="allowspecific" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment from applicable countries</label>
+                <source_model>TIG\Buckaroo\Model\Config\Source\AllOrSpecificCountries</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/allowspecific</config_path>
+            </field>
+
+            <field id="specificcountry" translate="label" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="0">
+                <label>Payment from Specific Country</label>
+                <comment><![CDATA[Only available when set to 'specific countries'.]]></comment>
+                <source_model>Magento\Directory\Model\Config\Source\Country</source_model>
+                <can_be_empty>1</can_be_empty>
+                <depends>
+                    <field id="allowspecific">1</field>
+                </depends>
+            </field>
         </group>
     </group>
 </include>
