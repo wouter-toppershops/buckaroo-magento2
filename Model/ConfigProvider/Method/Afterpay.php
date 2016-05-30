@@ -68,6 +68,7 @@ class Afterpay extends AbstractConfigProvider
 
         $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Afterpay::PAYMENT_METHOD_CODE);
 
+        // @TODO: get business method from config
         return [
             'payment' => [
                 'buckaroo' => [
@@ -75,11 +76,23 @@ class Afterpay extends AbstractConfigProvider
                         'sendEmail' => (bool) $this->getSendEmail(),
                         'paymentFeeLabel' => $paymentFeeLabel,
                         'allowedCurrencies' => $this->getAllowedCurrencies(),
-                    ]
-                ]
-            ]
+                        'businessMethod' => 1,
+                        'paymentMethod' => 1
+                    ],
+                    'response' => [],
+                ],
+            ],
         ];
     }
+
+    /** Configuration settings
+     * paymentMethod 1 = Acceptgiro
+     * paymentMethod 2 = DigiAccept
+     *
+     * businessMethod 1 = B2C
+     * businessMethod 2 = B2B
+     * businessMethod 3 = Both
+     */
 
     /**
      * @return float
