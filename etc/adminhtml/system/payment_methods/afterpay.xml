@@ -63,8 +63,8 @@
             <config_path>payment/tig_buckaroo_afterpay/sort_order</config_path>
         </field>
 
-        <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Advanced Configuration</label>
+        <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Default Configuration</label>
 
             <field id="order_email" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Send order confirmation email</label>
@@ -73,14 +73,74 @@
                 <config_path>payment/tig_buckaroo_afterpay/order_email</config_path>
             </field>
 
-            <field id="payment_fee" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="payment_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Afterpay payment method</label>
+                <comment><![CDATA[Select which paymethod must be used at Afterpay]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\AfterpayPaymentMethods</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/payment_method</config_path>
+            </field>
+
+            <field id="business" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Afterpay payment method</label>
+                <comment><![CDATA[Select which paymethod must be used at Afterpay]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\business</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/business</config_path>
+            </field>
+
+            <field id="high_tax" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label> High VAT tax classes</label>
+                <comment><![CDATA[Select which tax classes count as 'high' VAT]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/high_tax</config_path>
+            </field>
+
+            <field id="middle_tax" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label> Middle VAT tax classes</label>
+                <comment><![CDATA[Select which tax classes count as 'middle' VAT]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/middle_tax</config_path>
+            </field>
+
+            <field id="low_tax" translate="label comment" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label> Low VAT tax classes</label>
+                <comment><![CDATA[Select which tax classes count as 'low' VAT]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/low_tax</config_path>
+            </field>
+
+            <field id="zero_tax" translate="label comment" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label> Low VAT tax classes</label>
+                <comment><![CDATA[Select which tax classes count as 'zero' VAT]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/zero_tax</config_path>
+            </field>
+
+            <field id="no_tax" translate="label comment" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label> Low VAT tax classes</label>
+                <comment><![CDATA[Select which tax classes count as 'no' VAT]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/no_tax</config_path>
+            </field>
+
+            <field id="payment_email" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Send payment email</label>
+                <comment><![CDATA[Buckaroo sends an email to the customer with the payment procedures.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>payment/tig_buckaroo_afterpay/payment_email</config_path>
+            </field>
+        </group>
+
+        <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Advanced Configuration</label>
+
+            <field id="payment_fee" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Payment fee</label>
                 <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>
                 <config_path>payment/tig_buckaroo_afterpay/payment_fee</config_path>
                 <backend_model>TIG\Buckaroo\Model\Config\Backend\PaymentFee</backend_model>
             </field>
 
-            <field id="payment_fee_label" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="payment_fee_label" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Payment fee frontend label</label>
                 <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
                 <config_path>payment/tig_buckaroo_afterpay/payment_fee_label</config_path>
@@ -109,28 +169,6 @@
                 <config_path>payment/tig_buckaroo_afterpay/active_status</config_path>
             </field>
 
-            <field id="order_status_success" translate="label comment tooltip" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Method specific success status</label>
-                <comment><![CDATA[Leave empty to use default 'success' status.]]></comment>
-                <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
-                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
-                <config_path>payment/tig_buckaroo_afterpay/order_status_success</config_path>
-                <depends>
-                    <field id="active_status">1</field>
-                </depends>
-            </field>
-
-            <field id="order_status_failed" translate="label comment tooltip" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Method specific failed status</label>
-                <comment><![CDATA[Leave empty to use default 'failed' status.]]></comment>
-                <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
-                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
-                <config_path>payment/tig_buckaroo_afterpay/order_status_failed</config_path>
-                <depends>
-                    <field id="active_status">1</field>
-                </depends>
-            </field>
-
             <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Allowed currencies</label>
                 <comment><![CDATA[Select payment method specific currencies.]]></comment>
@@ -140,29 +178,6 @@
                 <backend_model>TIG\Buckaroo\Model\Config\Backend\AllowedCurrencies</backend_model>
             </field>
 
-            <field id="allowspecific" translate="label" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Payment from applicable countries</label>
-                <source_model>TIG\Buckaroo\Model\Config\Source\AllOrSpecificCountries</source_model>
-                <config_path>payment/tig_buckaroo_afterpay/allowspecific</config_path>
-            </field>
-
-            <field id="specificcountry" translate="label comment" type="multiselect" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Payment from Specific Country</label>
-                <comment><![CDATA[Only available when set to 'specific countries'.]]></comment>
-                <source_model>Magento\Config\Model\Config\Source\Locale\Country</source_model>
-                <config_path>payment/tig_buckaroo_afterpay/specificcountry</config_path>
-                <depends>
-                    <field id="allowspecific">1</field>
-                </depends>
-            </field>
-
-            <field id="limit_by_ip" translate="label comment tooltip" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Display only for selected IPs</label>
-                <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
-                <tooltip>Magento developer client restrictions.</tooltip>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>payment/tig_buckaroo_afterpay/limit_by_ip</config_path>
-            </field>
         </group>
     </group>
 </include>
