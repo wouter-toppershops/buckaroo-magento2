@@ -59,5 +59,7 @@
         <include path="TIG_Buckaroo::system/payment_methods/sofort_banking.xml"/>
 
         <include path="TIG_Buckaroo::system/payment_methods/giropay.xml"/>
+
+        <include path="TIG_Buckaroo::system/payment_methods/afterpay.xml"/>
     </group>
 </include>
