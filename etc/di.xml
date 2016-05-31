@@ -179,6 +179,10 @@
                     <item name="type" xsi:type="string">transfer</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Transfer</item>
                 </item>
+                <item name="eps" xsi:type="array">
+                    <item name="type" xsi:type="string">eps</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Eps</item>
+                </item>
             </argument>
         </arguments>
     </type>
