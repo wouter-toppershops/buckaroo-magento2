@@ -249,6 +249,34 @@
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>payment/tig_buckaroo_creditcard/maestro_unsecure_hold</config_path>
             </field>
+
+
+
+            <!-- Dankort specific -->
+            <field id="heading_dankort" translate="label" sortOrder="210" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Dankort Specific</label>
+                <frontend_model>Magento\Config\Block\System\Config\Form\Field\Heading</frontend_model>
+            </field>
+
+            <!-- Disabled until specific on hold statuses are implemented -->
+            <!--<field id="dankort_unsecure_status_processing" translate="label comment tooltip" type="select" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">-->
+            <!--<label>No 3D Secure order status</label>-->
+            <!--<comment><![CDATA[Leave empty to use default 'success' status.]]></comment>-->
+            <!--<tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>-->
+            <!--<source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>-->
+            <!--<config_path>payment/tig_buckaroo_creditcard/dankort_unsecure_status_processing</config_path>-->
+            <!--</field>-->
+
+            <field id="dankort_unsecure_hold" translate="label comment" type="select" sortOrder="230" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Set unsecure orders onhold</label>
+                <comment><![CDATA[Hold orders which are secure.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>payment/tig_buckaroo_creditcard/dankort_unsecure_hold</config_path>
+            </field>
+
+
+
+
         </group>
     </group>
 </include>
