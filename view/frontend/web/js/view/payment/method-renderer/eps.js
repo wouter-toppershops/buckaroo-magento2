@@ -32,7 +32,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 /*browser:true*/
@@ -43,14 +43,18 @@ define(
         'Magento_Checkout/js/view/payment/default',
         'Magento_Checkout/js/model/payment/additional-validators',
         'TIG_Buckaroo/js/action/place-order',
-        'ko'
+        'ko',
+        'Magento_Checkout/js/checkout-data',
+        'Magento_Checkout/js/action/select-payment-method'
     ],
     function (
         $,
         Component,
         additionalValidators,
         placeOrderAction,
-        ko
+        ko,
+        checkoutData,
+        selectPaymentMethodAction
     ) {
         'use strict';
 
@@ -58,16 +62,26 @@ define(
             defaults: {
                 template: 'TIG_Buckaroo/payment/tig_buckaroo_eps'
             },
-            redirectAfterPlaceOrder: false,
+            paymentFeeLabel : window.checkoutConfig.payment.buckaroo.eps.paymentFeeLabel,
+            currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+            baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
+
+            /**
+             * @override
+             */
+            initialize : function (options) {
+                if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                }
+
+                return this._super(options);
+            },
 
             /**
              * Place order.
              *
-             * @todo    To override the script used for placeOrderAction, we need to override the placeOrder method
-             *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
-             *
-             *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
-             *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
+             * placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own version
+             * (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
              */
             placeOrder: function (data, event) {
                 var self = this,
@@ -81,7 +95,7 @@ define(
                     this.isPlaceOrderActionAllowed(false);
                     placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
 
-                    $.when(placeOrder).fail(function() {
+                    $.when(placeOrder).fail(function () {
                         self.isPlaceOrderActionAllowed(true);
                     }).done(this.afterPlaceOrder.bind(this));
                     return true;
@@ -95,8 +109,36 @@ define(
                 if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
                     window.location.replace(response.RequiredAction.RedirectURL);
                 }
+            },
+
+            selectPaymentMethod: function() {
+                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                selectPaymentMethodAction(this.getData());
+                checkoutData.setSelectedPaymentMethod(this.item.method);
+                return true;
+            },
+
+            payWithBaseCurrency: function() {
+                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.eps.allowedCurrencies;
+
+                return allowedCurrencies.indexOf(this.currencyCode) < 0;
+            },
+
+            getPayWithBaseCurrencyText: function() {
+                var text = $.mage.__('The transaction will be processed using %s.');
+
+                return text.replace('%s', this.baseCurrencyCode);
             }
 
         });
     }
 );
+
+
+
+
+
+
+
+

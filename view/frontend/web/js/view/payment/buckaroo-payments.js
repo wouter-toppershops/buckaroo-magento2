@@ -91,7 +91,7 @@ define(
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/sofortbanking'
             },
             {
-                type: 'tig_buckaroo_sofortbanking',
+                type: 'tig_buckaroo_eps',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/eps'
             }
 
