@@ -54,8 +54,9 @@ class Afterpay extends AbstractConfigProvider
     const XPATH_AFTERPAY_ORDER_STATUS_FAILED    = 'payment/tig_buckaroo_afterpay/order_status_failed';
     const XPATH_AFTERPAY_AVAILABLE_IN_BACKEND   = 'payment/tig_buckaroo_afterpay/available_in_backend';
     const XPATH_AFTERPAY_DUE_DATE               = 'payment/tig_buckaroo_afterpay/due_date';
-
-    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_transfer/allowed_currencies';
+    const XPATH_AFTERPAY_ALLOWED_CURRENCIES     = 'payment/tig_buckaroo_afterpay/allowed_currencies';
+    const XPATH_AFTERPAY_BUSINESS               = 'payment/tig_buckaroo_afterpay/business';
+    const XPATH_AFTERPAY_PAYMENT_METHODS        = 'payment/tig_buckaroo_afterpay/payment_method';
 
     /**
      * @return array
@@ -68,16 +69,15 @@ class Afterpay extends AbstractConfigProvider
 
         $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Afterpay::PAYMENT_METHOD_CODE);
 
-        // @TODO: get business method from config
         return [
             'payment' => [
                 'buckaroo' => [
                     'afterpay' => [
-                        'sendEmail' => (bool) $this->getSendEmail(),
-                        'paymentFeeLabel' => $paymentFeeLabel,
+                        'sendEmail'         => (bool) $this->getSendEmail(),
+                        'paymentFeeLabel'   => $paymentFeeLabel,
                         'allowedCurrencies' => $this->getAllowedCurrencies(),
-                        'businessMethod' => 1,
-                        'paymentMethod' => 1
+                        'businessMethod'    => $this->getBusiness(),
+                        'paymentMethod'     => $this->getPaymentMethod(),
                     ],
                     'response' => [],
                 ],
@@ -85,14 +85,58 @@ class Afterpay extends AbstractConfigProvider
         ];
     }
 
-    /** Configuration settings
-     * paymentMethod 1 = Acceptgiro
-     * paymentMethod 2 = DigiAccept
-     *
+    /**
      * businessMethod 1 = B2C
      * businessMethod 2 = B2B
      * businessMethod 3 = Both
+     *
+     * @return bool|int
      */
+    public function getBusiness()
+    {
+        $business = (int) $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_BUSINESS,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $business ? $business : false;
+    }
+
+    /**
+     * paymentMethod 1 = afterpayacceptgiro
+     * paymentMethod 2 = afterpaydigiaccept
+     * @return bool|int
+     */
+    public function getPaymentMethod()
+    {
+        $paymentMethod = (int) $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_PAYMENT_METHODS,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $paymentMethod ? $paymentMethod : false;
+    }
+
+    /**
+     * Get the methods name
+     * @return bool|string
+     */
+    public function getPaymentMethodName()
+    {
+        $paymentMethodName = false;
+
+        if ($this->getPaymentMethod()) {
+            switch ($this->getPaymentMethod()) {
+                case '1':
+                    $paymentMethodName = 'afterpayacceptgiro';
+                    break;
+                case '2':
+                    $paymentMethodName = 'afterpaydigiaccept';
+            }
+        }
+
+        return $paymentMethodName;
+    }
 
     /**
      * @return float

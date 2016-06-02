@@ -56,8 +56,8 @@ class AfterpayPaymentMethods implements \Magento\Framework\Option\ArrayInterface
         $options = [];
 
         // These are the paymethods available at Afterpay
-        $options[] = ['value' => 'afterpayacceptgiro', 'label' => __('Acceptgiro')];
-        $options[] = ['value' => 'afterpaydigiaccept', 'label' => __('Digiaccept')];
+        $options[] = ['value' => '1', 'label' => __('Acceptgiro')];
+        $options[] = ['value' => '2', 'label' => __('Digiaccept')];
 
         return $options;
     }

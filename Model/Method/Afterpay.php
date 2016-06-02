@@ -124,35 +124,14 @@ class Afterpay extends AbstractMethod
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
         $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
-
-        $dueDays = abs($afterpayConfig->getDueDate());
-
-        $now = new \DateTime();
-        $now->modify('+' . $dueDays . ' day');
-
         /** @noinspection PhpUndefinedMethodInspection */
         $services = [
-            'Name'             => 'afterpay',
+            'Name'             => $afterpayConfig->getPaymentMethodName(),
             'Action'           => 'Pay',
             'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => $payment->getOrder()->getCustomerFirstname(),
-                    'Name' => 'CustomerFirstName',
-                ],
-                [
-                    '_'    => $payment->getOrder()->getCustomerLastName(),
-                    'Name' => 'CustomerLastName',
-                ],
-                [
-                    '_'    => $payment->getOrder()->getCustomerEmail(),
-                    'Name' => 'CustomerEmail',
-                ],
-                [
-                    '_'    => $now->format('Y-m-d'),
-                    'Name' => 'DateDue'
-                ]
-            ],
+            'RequestParameter' =>
+                $this->getAfterPayRequestParameters($payment)
+            ,
         ];
 
         /** @noinspection PhpUndefinedMethodInspection */
@@ -161,6 +140,32 @@ class Afterpay extends AbstractMethod
             ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getAfterPayRequestParameters($payment)
+    {
+        $array = [
+                    [
+                        '_'    => $payment->getOrder()->getCustomerFirstname(),
+                        'Name' => 'BillingTitle',
+                    ],
+                    [
+                        '_'    => $payment->getOrder()->getCustomerLastName(),
+                        'Name' => 'CustomerLastName',
+                    ],
+                    [
+                        '_'    => $payment->getOrder()->getCustomerEmail(),
+                        'Name' => 'CustomerEmail',
+                    ]
+        ];
+
+        return $array;
     }
 
     /**
