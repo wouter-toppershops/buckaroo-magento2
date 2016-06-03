@@ -345,7 +345,11 @@ define(
                     "method": this.item.method,
                     "po_number": null,
                     "additional_data": {
-                        "customer_iban": this.bankaccountnumber()
+                        "customer_gender" : this.genderValidate(),
+                        "customer_billingName" : this.BillingName(),
+                        "customer_DoB" : this.dateValidate(),
+                        "customer_iban": this.bankaccountnumber(),
+                        "termsCondition" : this.termsValidate()
                     }
                 };
             }

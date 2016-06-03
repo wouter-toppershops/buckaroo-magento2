@@ -24,25 +24,27 @@
                         <div class="control">
                             <ul id="Saluation">
                                 <li>
-                                    <input type="radio" name="gender" id="tig_buckaroo_afterpay_genderSelectMan"
+                                    <input type="radio" id="tig_buckaroo_afterpay_genderSelectMan"
                                            data-bind="
                                            value: '1',
                                            click: setSelectedGender.bind($data, '1'),
                                            attr: { 'data-validate': JSON.stringify({ 'required': true }) },
                                            checked: genderValidate
                                            "
-                                           class="field">
+                                           class="field"
+                                           name="payment[tig_buckaroo_afterpay][customer_gender]">
                                     <label for="tig_buckaroo_afterpay_genderSelectMan"> <span data-bind="i18n: 'Mr.' "> </span> </label>
                                 </li>
                                 <li>
-                                    <input type="radio" name="gender" id="tig_buckaroo_afterpay_genderSelectWoman"
+                                    <input type="radio" id="tig_buckaroo_afterpay_genderSelectWoman"
                                            data-bind="
                                            value: '2',
                                            click: setSelectedGender.bind($data, '2'),
                                            attr: { 'data-validate': JSON.stringify({ 'required': true }) },
                                            checked: genderValidate
                                             "
-                                           class="field">
+                                           class="field"
+                                           name="payment[tig_buckaroo_afterpay][customer_gender]">
                                     <label for="tig_buckaroo_afterpay_genderSelectWoman"> <span data-bind="i18n: 'Mrs.' "> </span> </label>
                                 </li>
                             </ul>
@@ -60,8 +62,8 @@
                                    valueUpdate: 'keyup',
                                    attr: { 'data-validate': JSON.stringify({ 'required': true, 'min-words': 2 }) },
                                    value: BillingName,
-                                   textInput: CustomerName()
-                                   ">
+                                   textInput: CustomerName()"
+                                   name="payment[tig_buckaroo_afterpay][customer_billingName]">
                         </div>
                     </div>
 
@@ -76,8 +78,8 @@
                                    class="input-text field"
                                    data-bind="
                                    valueUpdate: 'keyup',
-                                   attr: { 'data-validate': JSON.stringify({ 'required': true, validate-date: true })
-                                   }">
+                                   attr: { 'data-validate': JSON.stringify({ 'required': true, validate-date: true })}"
+                                   name="payment[tig_buckaroo_afterpay][customer_telephone]">
                         </div>
                     </div>
                     <!-- /ko -->
@@ -92,8 +94,8 @@
                                    data-bind="
                                    valueUpdate: 'blur',
                                    value: dateValidate,
-                                   attr: { 'data-validate': JSON.stringify({ 'required': true })
-                                   }">
+                                   attr: { 'data-validate': JSON.stringify({ 'required': true })}"
+                                   name="payment[tig_buckaroo_afterpay][customer_DoB]">
                         </div>
                     </div>
 
@@ -206,13 +208,12 @@
                         <label class="label" for="tig_buckaroo_afterpay_TermsCondition"> <span data-bind="i18n: 'Terms and Conditions:'"> </span> </label>
                         <div class="control">
                             <input id="tig_buckaroo_afterpay_TermsCondition"
-                                   name="tig_buckaroo_afterpay_TermsCondition"
                                    class="field"
                                    type="checkbox"
                                    data-bind="
                                    checked: termsValidate,
-                                   attr: { 'data-validate': JSON.stringify({ 'required': true})}
-                                   ">
+                                   attr: { 'data-validate': JSON.stringify({ 'required': true})}"
+                                   name="payment[tig_buckaroo_afterpay][termsCondition]">
                             <span>
                                 <a target="_blank" href="https://www.afterpay.nl/nl/klantenservice/betalingsvoorwaarden/"
                                    data-bind="i18n: 'Yes, I accept the terms and condition for the use of Afterpay.'">
