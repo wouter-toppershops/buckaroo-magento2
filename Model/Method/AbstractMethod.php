@@ -79,6 +79,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $helper;
 
     /**
+     * @var \TIG\Buckaroo\Helper\PaymentFee
+     */
+    public $feeHelper;
+
+    /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
@@ -103,10 +108,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public $refundFieldsFactory;
 
-    /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
-     */
-    public $remoteAddress;
     /**
      * @var bool
      */
@@ -164,6 +165,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected $developmentHelper;
 
+
     /**
      * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
@@ -180,12 +182,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
      * @param \Magento\Framework\Message\ManagerInterface             $messageManager
      * @param \TIG\Buckaroo\Helper\Data                               $helper
+     * @param \TIG\Buckaroo\Helper\PaymentFee                         $feeHelper
      * @param \Magento\Framework\App\RequestInterface                 $request
      * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress    $remoteAddress,
      * @param array                                                   $data
      */
     public function __construct(
@@ -204,12 +206,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
+        \TIG\Buckaroo\Helper\PaymentFee $feeHelper = null,
         \Magento\Framework\App\RequestInterface $request = null,
         \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
+
         array $data = []
     ) {
         parent::__construct(
@@ -231,12 +234,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->validatorFactory             = $validatorFactory;
         $this->messageManager               = $messageManager;
         $this->helper                       = $helper;
+        $this->feeHelper                    = $feeHelper;
         $this->request                      = $request;
         $this->refundFieldsFactory          = $refundFieldsFactory;
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
-        $this->remoteAddress                = $remoteAddress;
 
         $this->gateway->setMode(
             $this->helper->getMode($this->buckarooPaymentMethodCode)

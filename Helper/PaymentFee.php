@@ -53,6 +53,10 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
      */
     protected $configProviderMethodFactory;
 
+    public $buckarooFee = false;
+
+    public $buckarooFeeTax = false;
+
     /**
      * @param \Magento\Framework\App\Helper\Context             $context
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
@@ -127,7 +131,29 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
             );
         }
 
+        //Set public object data
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->buckarooFee    = $dataObject->getBuckarooFee();
+        /** @noinspection PhpUndefinedMethodInspection */
+        $this->buckarooFeeTax = $dataObject->getBuckarooFeeTaxAmount();
+
         return $totals;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBuckarooFee()
+    {
+        return $this->buckarooFee;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBuckarooFeeTax()
+    {
+        return $this->buckarooFeeTax;
     }
 
     /**

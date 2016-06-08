@@ -109,14 +109,14 @@
             </field>
 
             <field id="zero_tax" translate="label comment" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> Low VAT tax classes</label>
+                <label> Zero VAT tax classes</label>
                 <comment><![CDATA[Select which tax classes count as 'zero' VAT]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay/zero_tax</config_path>
             </field>
 
             <field id="no_tax" translate="label comment" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> Low VAT tax classes</label>
+                <label> No VAT tax classes</label>
                 <comment><![CDATA[Select which tax classes count as 'no' VAT]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay/no_tax</config_path>

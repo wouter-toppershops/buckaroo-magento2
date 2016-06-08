@@ -121,6 +121,11 @@ class Afterpay extends AbstractMethod
     public $usesRedirect                = false;
 
     /**
+     * @var null
+     */
+    public $remoteAddress               = null;
+
+    /**
      * {@inheritdoc}
      */
     public function assignData(\Magento\Framework\DataObject $data)
@@ -130,14 +135,15 @@ class Afterpay extends AbstractMethod
         if (!is_array($data)) {
             $data = $data->convertToArray();
         }
-        /**
-         * @todo: Isset validation also needs addition information about the b2b.
-         */
-        $this->getInfoInstance()->setAdditionalInformation('termsCondition', $data['termsCondition']);
-        $this->getInfoInstance()->setAdditionalInformation('customer_gender', $data['customer_gender']);
-        $this->getInfoInstance()->setAdditionalInformation('customer_billingName', $data['customer_billingName']);
-        $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $data['customer_DoB']);
-        $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data['customer_iban']);
+
+        if (isset($data['additional_data'])) {
+            $additionalData = $data['additional_data'];
+            $this->getInfoInstance()->setAdditionalInformation('termsCondition', $additionalData['termsCondition']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_gender', $additionalData['customer_gender']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_billingName', $additionalData['customer_billingName']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
+            $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
+        }
 
         return $this;
     }
@@ -147,7 +153,6 @@ class Afterpay extends AbstractMethod
      */
     public function getOrderTransactionBuilder($payment)
     {
-        $this->getRequestArticlesData($payment);
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
@@ -195,39 +200,201 @@ class Afterpay extends AbstractMethod
 
         // Merge the customer data; ip, iban and terms condition.
         $requestData = array_merge($requestData, $this->getRequestCustomerData($payment));
+        // Merge the article data; products and fee's
+        $requestData = array_merge($requestData, $this->getRequestArticlesData());
+        // Merge the business data
+        $requestData = array_merge($requestData, $this->getRequestBusinessData());
 
         return $requestData;
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * Get request Business data
+     *
+     * @return array
+     * @throws \TIG\Buckaroo\Exception
      */
-    public function getRequestArticlesData($payment)
+    public function getRequestBusinessData()
     {
-        /** @var \Magento\Sales\Model\Order $order */
-        $order    = $payment->getOrder();
-        $products = $order->getAllItems();
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterPayConfig */
+        $afterPayConfig = $this->configProviderMethodFactory
+            ->get(\TIG\Buckaroo\Model\Method\Afterpay::PAYMENT_METHOD_CODE);
+
+
+        if ($afterPayConfig->getBusiness() == 2 || $afterPayConfig->getBusiness() == 3) {
+            $requestData = [];
+            /** @todo, need to setAdditionalInformation about:
+             *  - CompanyCOCRegistration (KVK)
+             *  - CompanyName
+             *  - CostCentre
+             *  - VatNumber (BTW)
+             */
+        } else {
+            $requestData = [
+                [
+                    '_'    => false,
+                    'Name' => 'B2B'
+                ]
+            ];
+        }
+
+        return $requestData;
+    }
+
+    /**
+     * Get Article lines
+     *
+     * @return array
+     */
+    public function getRequestArticlesData()
+    {
+        /** @var \Magento\Eav\Model\Entity\Collection\AbstractCollection|array $cartData */
+        $cartData = $this->objectManager->create('Magento\Checkout\Model\Cart')->getItems();
 
         // Set loop variables
         $articles = [];
         $count    = 1;
 
-        foreach ($products as $item) {
-            /** @var \Magento\Sales\Model\Order\Item[] $item */
+        foreach ($cartData as $item) {
             if (empty($item)) {
                 continue;
             }
+            $article = [
+                [
+                    '_'    => $item->getQty() . ' x ' . $item->getName(),
+                    'Name' => 'ArticleDescription'
+                ],
+                [
+                    '_'    => $item->getProductId(),
+                    'Name' => 'ArticleId'
+                ],
+                [
+                    '_'    => 1, //Always 1 since the qty is parsed inside the description
+                    'Name' => 'ArticleQuantitye'
+                ],
+                [
+                    '_'    => $this->calculateProductPrice($item),
+                    'Name' => 'ArticleUnitPrice'
+                ],
+                [
+                    '_'    => $this->getTaxCategory($item->getTaxClassId()),
+                    'Name' => 'ArticleVatcategory'
+                ]
+            ];
 
+            $articles[$count] = $article;
+
+            if ($count < self::AFTERPAY_MAX_ARTICLE_COUNT) {
+                $count++;
+                continue;
+            }
+
+            break;
+        }
+        // Some dirty logic to get the latest key and add +1 to it.
+        $latestKey = (int)key(end($articlesa)) + 1;
+
+        $serviceLine = $this->getServiceCostLine();
+
+        if (!empty($serviceLine)) {
+            $articles[$latestKey] = $serviceLine;
         }
 
+        return ['Articles' => $articles];
     }
 
     /**
-     * @param \Magento\Sales\Model\Order\Item[] $productItem
+     * @param $productItem
+     *
+     * @return mixed
      */
     public function calculateProductPrice($productItem)
     {
-        $productPrice = ($productItem->getBasePrice());
+        $productPrice = ($productItem->getBasePrice() * $productItem->getQty())
+            + $productItem->getBaseTaxAmount();
+
+        return $productPrice;
+    }
+
+    /**
+     * Get the service cost lines (buckfee)
+     *
+     * @return array
+     */
+    public function getServiceCostLine()
+    {
+        $buckfee    = $this->feeHelper->getBuckarooFee();
+        $buckfeeTax = $this->feeHelper->getBuckarooFeeTax();
+
+        $article = [];
+        if (false !== $buckfee && (double)$buckfee > 0) {
+
+            $article = [
+                [
+                    '_'    => 'Servicekosten',
+                    'Name' => 'ArticleDescription'
+                ],
+                [
+                    '_'    => 1,
+                    'Name' => 'ArticleId'
+                ],
+                [
+                    '_'    => 1,
+                    'Name' => 'ArticleQuantity'
+                ],
+                [
+                    '_'    => round($buckfee + $buckfeeTax, 2),
+                    'Name' => 'ArticleUnitPrice'
+                ],
+                [
+                    '_'    => $this->getTaxCategory(
+                        $this->feeHelper->getBuckarooFeeTaxClass(\Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                    ),
+                    'Name' => 'ArticleUnitPrice'
+                ]
+            ];
+
+        }
+
+        return $article;
+    }
+
+    /**
+     * @param $taxClassId
+     *
+     * @return int
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getTaxCategory($taxClassId)
+    {
+        $taxCategory = 4;
+
+        if (!$taxClassId) {
+            return $taxCategory;
+        }
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterPayConfig */
+        $afterPayConfig = $this->configProviderMethodFactory
+            ->get(\TIG\Buckaroo\Model\Method\Afterpay::PAYMENT_METHOD_CODE);
+
+        $highClasses   = explode(',', $afterPayConfig->getHighTaxClasses());
+        $middleClasses = explode(',', $afterPayConfig->getMiddleTaxClasses());
+        $lowClasses    = explode(',', $afterPayConfig->getLowTaxClasses());
+        $zeroClasses   = explode(',', $afterPayConfig->getZeroTaxClasses());
+
+        if (in_array($taxClassId, $highClasses)) {
+            $taxCategory = 1;
+        } else if (in_array($taxClassId, $middleClasses)) {
+            $taxCategory = 5;
+        } else if (in_array($taxClassId, $lowClasses)) {
+            $taxCategory = 2;
+        } else if (in_array($taxClassId, $zeroClasses)) {
+            $taxCategory = 3;
+        } else {
+            // No classes == 4
+            $taxCategory = 4;
+        }
+
+        return $taxCategory;
     }
 
     /**
@@ -390,7 +557,7 @@ class Afterpay extends AbstractMethod
                 'Name' => 'CustomerAccountNumber',
             ],
             [
-                '_'    => $this->remoteAddress->getRemoteAddress(),
+                '_'    => $this->getRemoteAddress(),
                 'Name' => 'CustomerIPAddress',
             ],
             [
@@ -433,7 +600,9 @@ class Afterpay extends AbstractMethod
         $filteredBillingAddress  = array_diff_key($billingAddress, array_flip($keysToExclude));
         $filteredShippingAddress = array_diff_key($shippingAddress, array_flip($keysToExclude));
 
-        if (empty(array_diff($filteredBillingAddress, $filteredShippingAddress))) {
+        $arrayDiff = array_diff($filteredBillingAddress, $filteredShippingAddress);
+
+        if (empty($arrayDiff)) {
             return true;
         }
 
@@ -523,5 +692,33 @@ class Afterpay extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return true;
+    }
+
+    /**
+     * @param bool $ipToLong
+     * @param array $alternativeHeaders
+     *
+     * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface
+     */
+    public function getRemoteAddress($ipToLong = false, $alternativeHeaders = [])
+    {
+        if ($this->remoteAddress === null) {
+            foreach ($alternativeHeaders as $var) {
+                if ($this->request->getServer($var, false)) {
+                    $this->remoteAddress = $this->request->getServer($var);
+                    break;
+                }
+            }
+
+            if (!$this->remoteAddress) {
+                $this->remoteAddress = $this->request->getServer('REMOTE_ADDR');
+            }
+        }
+
+        if (!$this->remoteAddress) {
+            return false;
+        }
+
+        return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
 }

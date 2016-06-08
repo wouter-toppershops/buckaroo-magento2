@@ -57,6 +57,11 @@ class Afterpay extends AbstractConfigProvider
     const XPATH_AFTERPAY_ALLOWED_CURRENCIES     = 'payment/tig_buckaroo_afterpay/allowed_currencies';
     const XPATH_AFTERPAY_BUSINESS               = 'payment/tig_buckaroo_afterpay/business';
     const XPATH_AFTERPAY_PAYMENT_METHODS        = 'payment/tig_buckaroo_afterpay/payment_method';
+    const XPATH_AFTERPAY_HIGH_TAX               = 'payment/tig_buckaroo_afterpay/high_tax';
+    const XPATH_AFTERPAY_MIDDLE_TAX             = 'payment/tig_buckaroo_afterpay/middle_tax';
+    const XPATH_AFTERPAY_LOW_TAX                = 'payment/tig_buckaroo_afterpay/low_tax';
+    const XPATH_AFTERPAY_ZERO_TAX               = 'payment/tig_buckaroo_afterpay/zero_tax';
+    const XPATH_AFTERPAY_NO_TAX                 = 'payment/tig_buckaroo_afterpay/no_tax';
 
     /**
      * @return array
@@ -115,6 +120,76 @@ class Afterpay extends AbstractConfigProvider
         );
 
         return $paymentMethod ? $paymentMethod : false;
+    }
+
+    /**
+     * Get the config values for the high tax classes.
+     * @return bool|mixed
+     */
+    public function getHighTaxClasses()
+    {
+        $taxClasses = $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_HIGH_TAX,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $taxClasses ? $taxClasses : false;
+    }
+
+    /**
+     * Get the config values for the middle tax classes
+     * @return bool|mixed
+     */
+    public function getMiddleTaxClasses()
+    {
+        $taxClasses = $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_MIDDLE_TAX,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $taxClasses ? $taxClasses : false;
+    }
+
+    /**
+     * Get the config values for the low tax classes
+     * @return bool|mixed
+     */
+    public function getLowTaxClasses()
+    {
+        $taxClasses = $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_LOW_TAX,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $taxClasses ? $taxClasses : false;
+    }
+
+    /**
+     * Get the config values for the zero tax classes
+     * @return bool|mixed
+     */
+    public function getZeroTaxClasses()
+    {
+        $taxClasses = $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_ZERO_TAX,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $taxClasses ? $taxClasses : false;
+    }
+
+    /**
+     * Get the config values for the no tax classes
+     * @return bool|mixed
+     */
+    public function getNoTaxClasses()
+    {
+        $taxClasses = $this->scopeConfig->getValue(
+            self::XPATH_AFTERPAY_NO_TAX,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $taxClasses ? $taxClasses : false;
     }
 
     /**
