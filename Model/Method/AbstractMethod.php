@@ -79,11 +79,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $helper;
 
     /**
-     * @var \TIG\Buckaroo\Helper\PaymentFee
-     */
-    public $feeHelper;
-
-    /**
      * @var \Magento\Framework\Pricing\Helper\Data
      */
     public $priceHelper;
@@ -182,7 +177,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
      * @param \Magento\Framework\Message\ManagerInterface             $messageManager
      * @param \TIG\Buckaroo\Helper\Data                               $helper
-     * @param \TIG\Buckaroo\Helper\PaymentFee                         $feeHelper
      * @param \Magento\Framework\App\RequestInterface                 $request
      * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
@@ -206,7 +200,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
         \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
-        \TIG\Buckaroo\Helper\PaymentFee $feeHelper = null,
         \Magento\Framework\App\RequestInterface $request = null,
         \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
@@ -234,7 +227,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->validatorFactory             = $validatorFactory;
         $this->messageManager               = $messageManager;
         $this->helper                       = $helper;
-        $this->feeHelper                    = $feeHelper;
         $this->request                      = $request;
         $this->refundFieldsFactory          = $refundFieldsFactory;
         $this->configProviderFactory        = $configProviderFactory;

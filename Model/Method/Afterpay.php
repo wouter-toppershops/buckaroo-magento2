@@ -136,7 +136,8 @@ class Afterpay extends AbstractMethod
             $data = $data->convertToArray();
         }
 
-        if (isset($data['additional_data'])) {
+        /** @todo check the request if its set-payment-information, the data is unknown */
+        if (isset($data['additional_data']['termsCondition'])) {
             $additionalData = $data['additional_data'];
             $this->getInfoInstance()->setAdditionalInformation('termsCondition', $additionalData['termsCondition']);
             $this->getInfoInstance()->setAdditionalInformation('customer_gender', $additionalData['customer_gender']);
@@ -163,8 +164,7 @@ class Afterpay extends AbstractMethod
             'Action'           => 'Pay',
             'Version'          => 2,
             'RequestParameter' =>
-                $this->getAfterPayRequestParameters($payment)
-            ,
+                $this->getAfterPayRequestParameters($payment),
         ];
 
         /** @noinspection PhpUndefinedMethodInspection */
@@ -188,13 +188,13 @@ class Afterpay extends AbstractMethod
             $this->getRequestBillingData($payment),
             // Data variable to let afterpay know if the addresses are the same.
             [
-                '_'    => $this->isAddressDataTheSame($payment),
+                '_'    => $this->isAddressDataDifferent($payment),
                 'Name' => 'AddressesDiffer'
             ],
         ];
 
         // If the shipping address is not the same as the billing it will be merged inside the data array.
-        if (!$this->isAddressDataTheSame($payment)) {
+        if ($this->isAddressDataDifferent($payment)) {
             $requestData = array_merge($requestData, $this->getRequestShippingData($payment));
         }
 
@@ -292,7 +292,7 @@ class Afterpay extends AbstractMethod
             break;
         }
         // Some dirty logic to get the latest key and add +1 to it.
-        $latestKey = (int)key(end($articlesa)) + 1;
+        $latestKey = (int)key(end($articles)) + 1;
 
         $serviceLine = $this->getServiceCostLine();
 
@@ -323,8 +323,11 @@ class Afterpay extends AbstractMethod
      */
     public function getServiceCostLine()
     {
-        $buckfee    = $this->feeHelper->getBuckarooFee();
-        $buckfeeTax = $this->feeHelper->getBuckarooFeeTax();
+        /** @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper */
+        $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
+
+        $buckfee    = $feeHelper->getBuckarooFee();
+        $buckfeeTax = $feeHelper->getBuckarooFeeTax();
 
         $article = [];
         if (false !== $buckfee && (double)$buckfee > 0) {
@@ -348,7 +351,7 @@ class Afterpay extends AbstractMethod
                 ],
                 [
                     '_'    => $this->getTaxCategory(
-                        $this->feeHelper->getBuckarooFeeTaxClass(\Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                        $feeHelper->getBuckarooFeeTaxClass(\Magento\Store\Model\ScopeInterface::SCOPE_STORE)
                     ),
                     'Name' => 'ArticleUnitPrice'
                 ]
@@ -577,7 +580,7 @@ class Afterpay extends AbstractMethod
      *
      * @return boolean
      */
-    public function isAddressDataTheSame($payment)
+    public function isAddressDataDifferent($payment)
     {
         $billingAddress  = $payment->getOrder()->getBillingAddress()->getData();
         $shippingAddress = $payment->getOrder()->getShippingAddress()->getData();
@@ -603,10 +606,10 @@ class Afterpay extends AbstractMethod
         $arrayDiff = array_diff($filteredBillingAddress, $filteredShippingAddress);
 
         if (empty($arrayDiff)) {
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     /**
