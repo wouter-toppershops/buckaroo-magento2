@@ -133,6 +133,13 @@
         <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Advanced Configuration</label>
 
+            <field id="payment_flow" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment flow</label>
+                <comment><![CDATA[Whether to use separate authorize and capture calls or to use a combined 'pay' call.]]></comment>
+                <config_path>payment/tig_buckaroo_afterpay/payment_action</config_path>
+                <source_model>TIG\Buckaroo\Model\Config\Source\PaymentFlow</source_model>
+            </field>
+
             <field id="payment_fee" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Payment fee</label>
                 <comment><![CDATA[The above amount is calculated based on de Tax settings in Stores > Configuration > Sales > Tax.]]></comment>

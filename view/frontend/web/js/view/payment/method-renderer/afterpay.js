@@ -120,7 +120,7 @@ define(
                 termsValidate: false,
                 genderValidate: null
             },
-            redirectAfterPlaceOrder : false,
+            redirectAfterPlaceOrder : true,
             paymentFeeLabel : window.checkoutConfig.payment.buckaroo.afterpay.paymentFeeLabel,
             currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
             baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,

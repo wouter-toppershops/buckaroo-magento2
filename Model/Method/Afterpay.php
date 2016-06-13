@@ -77,12 +77,12 @@ class Afterpay extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = false;
+    protected $_canAuthorize            = true;
 
     /**
      * @var bool
      */
-    protected $_canCapture              = false;
+    protected $_canCapture              = true;
 
     /**
      * @var bool
@@ -136,7 +136,6 @@ class Afterpay extends AbstractMethod
             $data = $data->convertToArray();
         }
 
-        /** @todo check the request if its set-payment-information, the data is unknown */
         if (isset($data['additional_data']['termsCondition'])) {
             $additionalData = $data['additional_data'];
             $this->getInfoInstance()->setAdditionalInformation('termsCondition', $additionalData['termsCondition']);
@@ -147,6 +146,20 @@ class Afterpay extends AbstractMethod
         }
 
         return $this;
+    }
+
+    /**
+     * Check capture availability
+     *
+     * @return bool
+     * @api
+     */
+    public function canCapture()
+    {
+        if ($this->getConfigData('payment_action') == 'order') {
+            return false;
+        }
+        return $this->_canCapture;
     }
 
     /**
@@ -162,7 +175,7 @@ class Afterpay extends AbstractMethod
         $services = [
             'Name'             => $afterpayConfig->getPaymentMethodName(),
             'Action'           => 'Pay',
-            'Version'          => 2,
+            'Version'          => 1,
             'RequestParameter' =>
                 $this->getAfterPayRequestParameters($payment),
         ];
@@ -184,26 +197,30 @@ class Afterpay extends AbstractMethod
     public function getAfterPayRequestParameters($payment)
     {
         // First data to set is the billing address data.
-        $requestData = [
-            $this->getRequestBillingData($payment),
-            // Data variable to let afterpay know if the addresses are the same.
-            [
-                '_'    => $this->isAddressDataDifferent($payment),
-                'Name' => 'AddressesDiffer'
-            ],
-        ];
+        $requestData = $this->getRequestBillingData($payment);
 
+        $isDifferent = 'false';
         // If the shipping address is not the same as the billing it will be merged inside the data array.
         if ($this->isAddressDataDifferent($payment)) {
+            $isDifferent = 'true';
             $requestData = array_merge($requestData, $this->getRequestShippingData($payment));
         }
 
+        $requestData = array_merge($requestData, [
+                // Data variable to let afterpay know if the addresses are the same.
+                [
+                    '_'    => $isDifferent,
+                    'Name' => 'AddressesDiffer'
+                ]
+            ]
+        );
+
         // Merge the customer data; ip, iban and terms condition.
         $requestData = array_merge($requestData, $this->getRequestCustomerData($payment));
-        // Merge the article data; products and fee's
-        $requestData = array_merge($requestData, $this->getRequestArticlesData());
         // Merge the business data
         $requestData = array_merge($requestData, $this->getRequestBusinessData());
+        // Merge the article data; products and fee's
+        $requestData = $this->getRequestArticlesData($requestData, $payment);
 
         return $requestData;
     }
@@ -230,9 +247,10 @@ class Afterpay extends AbstractMethod
              *  - VatNumber (BTW)
              */
         } else {
+
             $requestData = [
                 [
-                    '_'    => false,
+                    '_'    => 'false',
                     'Name' => 'B2B'
                 ]
             ];
@@ -242,47 +260,54 @@ class Afterpay extends AbstractMethod
     }
 
     /**
-     * Get Article lines
+     * @param $requestData
+     * @param $payment
      *
      * @return array
      */
-    public function getRequestArticlesData()
+    public function getRequestArticlesData($requestData, $payment)
     {
         /** @var \Magento\Eav\Model\Entity\Collection\AbstractCollection|array $cartData */
         $cartData = $this->objectManager->create('Magento\Checkout\Model\Cart')->getItems();
 
         // Set loop variables
-        $articles = [];
+        $articles = $requestData;
         $count    = 1;
 
         foreach ($cartData as $item) {
             if (empty($item)) {
                 continue;
             }
+
             $article = [
                 [
                     '_'    => $item->getQty() . ' x ' . $item->getName(),
-                    'Name' => 'ArticleDescription'
+                    'Name' => 'ArticleDescription',
+                    'GroupID' => $count
                 ],
                 [
                     '_'    => $item->getProductId(),
-                    'Name' => 'ArticleId'
+                    'Name' => 'ArticleId',
+                    'GroupID' => $count
                 ],
                 [
                     '_'    => 1, //Always 1 since the qty is parsed inside the description
-                    'Name' => 'ArticleQuantitye'
+                    'Name' => 'ArticleQuantity',
+                    'GroupID' => $count
                 ],
                 [
                     '_'    => $this->calculateProductPrice($item),
-                    'Name' => 'ArticleUnitPrice'
+                    'Name' => 'ArticleUnitPrice',
+                    'GroupID' => $count
                 ],
                 [
                     '_'    => $this->getTaxCategory($item->getTaxClassId()),
-                    'Name' => 'ArticleVatcategory'
+                    'Name' => 'ArticleVatcategory',
+                    'GroupID' => $count
                 ]
             ];
 
-            $articles[$count] = $article;
+            $articles = array_merge($articles, $article);
 
             if ($count < self::AFTERPAY_MAX_ARTICLE_COUNT) {
                 $count++;
@@ -291,16 +316,18 @@ class Afterpay extends AbstractMethod
 
             break;
         }
-        // Some dirty logic to get the latest key and add +1 to it.
-        $latestKey = (int)key(end($articles)) + 1;
 
-        $serviceLine = $this->getServiceCostLine();
+        $latestKey = $count + 1;
+
+        $serviceLine = $this->getServiceCostLine($latestKey, $payment);
 
         if (!empty($serviceLine)) {
-            $articles[$latestKey] = $serviceLine;
+            $requestData = array_merge($articles, $serviceLine);
+        } else {
+            $requestData = $articles;
         }
 
-        return ['Articles' => $articles];
+        return $requestData;
     }
 
     /**
@@ -319,45 +346,67 @@ class Afterpay extends AbstractMethod
     /**
      * Get the service cost lines (buckfee)
      *
+     * @param (int) $latestKey
+     *
      * @return array
      */
-    public function getServiceCostLine()
+    public function getServiceCostLine($latestKey, $payment)
     {
+        $order      = $payment->getOrder();
+        $buckfee    = $order->getBuckarooFee();
+        $buckfeeTax = $order->getBuckarooFeeTax();
+
         /** @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper */
         $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
 
-        $buckfee    = $feeHelper->getBuckarooFee();
-        $buckfeeTax = $feeHelper->getBuckarooFeeTax();
-
         $article = [];
+
         if (false !== $buckfee && (double)$buckfee > 0) {
 
             $article = [
                 [
-                    '_'    => 'Servicekosten',
-                    'Name' => 'ArticleDescription'
+                    '_'       => 'Servicekosten',
+                    'Name'    => 'ArticleDescription',
+                    'GroupID' => $latestKey
                 ],
                 [
-                    '_'    => 1,
-                    'Name' => 'ArticleId'
+                    '_'       => 1,
+                    'Name'    => 'ArticleId',
+                    'GroupID' => $latestKey
                 ],
                 [
-                    '_'    => 1,
-                    'Name' => 'ArticleQuantity'
+                    '_'       => 1,
+                    'Name'    => 'ArticleQuantity',
+                    'GroupID' => $latestKey
                 ],
                 [
-                    '_'    => round($buckfee + $buckfeeTax, 2),
-                    'Name' => 'ArticleUnitPrice'
+                    '_'       => round($buckfee + $buckfeeTax, 2),
+                    'Name'    => 'ArticleUnitPrice',
+                    'GroupID' => $latestKey
                 ],
                 [
-                    '_'    => $this->getTaxCategory(
-                        $feeHelper->getBuckarooFeeTaxClass(\Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+                    '_'       => $this->getTaxCategory(
+                        $feeHelper->getBuckarooFeeTaxClass($order->getStoreId())
                     ),
-                    'Name' => 'ArticleUnitPrice'
+                    'Name'    => 'ArticleVatCategory',
+                    'GroupID' => $latestKey
                 ]
             ];
 
         }
+        // Add aditional shippin costs.
+        $shippingCost = [];
+
+        if ($order->getShippingAmount() > 0) {
+            $shippingCost = [
+                [
+                    '_'       => $order->getShippingAmount(),
+                    'Name'    => 'ShippingCosts',
+                ]
+            ];
+        }
+
+        $article = array_merge($article, $shippingCost);
 
         return $article;
     }
@@ -411,6 +460,7 @@ class Afterpay extends AbstractMethod
         $billingAddress = $payment->getOrder()->getBillingAddress();
         $streetFormat   = $this->formatStreet($billingAddress->getStreet());
 
+
         $billingData = [
             [
                 '_'    => $billingAddress->getFirstname(),
@@ -441,10 +491,6 @@ class Afterpay extends AbstractMethod
                 'Name' => 'BillingHouseNumber',
             ],
             [
-                '_'    => $streetFormat['number_addition'],
-                'Name' => 'BillingHouseNumberSuffix',
-            ],
-            [
                 '_'    => $billingAddress->getPostcode(),
                 'Name' => 'BillingPostalCode',
             ],
@@ -470,6 +516,13 @@ class Afterpay extends AbstractMethod
             ],
         ];
 
+        if (!empty($streetFormat['number_addition'])) {
+            $billingData[] = [
+                '_'    => $streetFormat['number_addition'],
+                'Name' => 'BillingHouseNumberSuffix',
+            ];
+        }
+
         return $billingData;
     }
 
@@ -487,61 +540,64 @@ class Afterpay extends AbstractMethod
         $shippingData = [
             [
                 '_'    => $shippingAddress->getFirstname(),
-                'Name' => 'BillingTitle',
+                'Name' => 'ShippingTitle',
             ],
             [
                 '_'    => $payment->getAdditionalInformation('customer_gender'),
-                'Name' => 'BillingGender',
+                'Name' => 'ShippingGender',
             ],
             [
                 '_'    => strtoupper(substr($shippingAddress->getFirstname(), 0, 1)),
-                'Name' => 'BillingInitials',
+                'Name' => 'ShippingInitials',
             ],
             [
                 '_'    => $shippingAddress->getLastName(),
-                'Name' => 'BillingLastName',
+                'Name' => 'ShippingLastName',
             ],
             [
                 '_'    => $payment->getAdditionalInformation('customer_DoB'),
-                'Name' => 'BillingBirthDate',
+                'Name' => 'ShippingBirthDate',
             ],
             [
                 '_'    => $streetFormat['street'],
-                'Name' => 'BillingStreet',
+                'Name' => 'ShippingStreet',
             ],
             [
                 '_'    => $streetFormat['house_number'],
-                'Name' => 'BillingHouseNumber',
-            ],
-            [
-                '_'    => $streetFormat['number_addition'],
-                'Name' => 'BillingHouseNumberSuffix',
+                'Name' => 'ShippingHouseNumber',
             ],
             [
                 '_'    => $shippingAddress->getPostcode(),
-                'Name' => 'BillingPostalCode',
+                'Name' => 'ShippingPostalCode',
             ],
             [
                 '_'    => $shippingAddress->getCity(),
-                'Name' => 'BillingCity',
+                'Name' => 'ShippingCity',
             ],
             [
                 '_'    => $shippingAddress->getCountryId(),
-                'Name' => 'BillingCountry',
+                'Name' => 'ShippingCountry',
             ],
             [
                 '_'    => $shippingAddress->getEmail(),
-                'Name' => 'BillingEmail',
+                'Name' => 'ShippingEmail',
             ],
             [
                 '_'    => $shippingAddress->getTelephone(),
-                'Name' => 'BillingPhoneNumber',
+                'Name' => 'ShippingPhoneNumber',
             ],
             [
                 '_'    => $shippingAddress->getCountryId(),
-                'Name' => 'BillingLanguage',
+                'Name' => 'ShippingLanguage',
             ],
         ];
+
+        if (!empty($streetFormat['number_addition'])) {
+            $shippingData[] = [
+                '_'    => $streetFormat['number_addition'],
+                'Name' => 'ShippingHouseNumberSuffix',
+            ];
+        }
 
         return $shippingData;
     }
@@ -553,6 +609,11 @@ class Afterpay extends AbstractMethod
      */
     public function getRequestCustomerData($payment)
     {
+        $accept = 'false';
+        if ($payment->getAdditionalInformation('termsCondition')) {
+            $accept = 'true';
+        }
+
         $customerData = [
             [
                 // Only required if afterpay paymentmethod is acceptgiro.
@@ -564,7 +625,7 @@ class Afterpay extends AbstractMethod
                 'Name' => 'CustomerIPAddress',
             ],
             [
-                '_'    => $payment->getAdditionalInformation('termsCondition'),
+                '_'    => $accept,
                 'Name' => 'Accept',
             ]
         ];
@@ -633,7 +694,7 @@ class Afterpay extends AbstractMethod
           'street'          => $street
         ];
 
-        if (preg_match('#^(.*?)([0-9]+)(.*)#s', $street[0], $matches)) {
+        if (preg_match('#^(.*?)([0-9]+)(.*)#s', $street, $matches)) {
             // Check if the number is at the beginning of streetname
             if ('' == $matches[1]) {
                 $format['house_number'] = trim($matches[2]);
@@ -653,7 +714,29 @@ class Afterpay extends AbstractMethod
      */
     public function getCaptureTransactionBuilder($payment)
     {
-        return false;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
+        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
+
+        $services = [
+            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Action'           => 'Capture',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setChannel('CallCenter')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        return $transactionBuilder;
     }
 
     /**
@@ -661,7 +744,23 @@ class Afterpay extends AbstractMethod
      */
     public function getAuthorizeTransactionBuilder($payment)
     {
-        return false;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
+        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
+
+        $services = [
+            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Action'           => 'Authorize',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
     }
 
     /**
