@@ -349,7 +349,12 @@ define(
                         "customer_billingName" : this.BillingName(),
                         "customer_DoB" : this.dateValidate(),
                         "customer_iban": this.bankaccountnumber(),
-                        "termsCondition" : this.termsValidate()
+                        "termsCondition" : this.termsValidate(),
+                        "VATNumber" : this.VATNumber(),
+                        "CostCenter" : this.CostCenter(),
+                        "CompanyName" : this.CompanyName(),
+                        "COCNumber" : this.COCNumber(),
+                        "selectedBusiness" : this.selectedBusiness()
                     }
                 };
             }

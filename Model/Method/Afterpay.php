@@ -52,6 +52,12 @@ class Afterpay extends AbstractMethod
     const AFTERPAY_MAX_ARTICLE_COUNT = 99;
 
     /**
+     * Business methods that will be used in afterpay.
+     */
+    const BUSINESS_METHOD_B2C = 1;
+    const BUSINESS_METHOD_B2B = 2;
+
+    /**
      * @var string
      */
     public $buckarooPaymentMethodCode = 'afterpay';
@@ -143,6 +149,15 @@ class Afterpay extends AbstractMethod
             $this->getInfoInstance()->setAdditionalInformation('customer_billingName', $additionalData['customer_billingName']);
             $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
+            if (isset($additionalData['selectedBusiness'])
+                && $additionalData['selectedBusiness'] == self::BUSINESS_METHOD_B2B
+            ) {
+                $this->getInfoInstance()->setAdditionalInformation('COCNumber', $additionalData['COCNumber']);
+                $this->getInfoInstance()->setAdditionalInformation('CompanyName', $additionalData['CompanyName']);
+                $this->getInfoInstance()->setAdditionalInformation('CostCenter', $additionalData['CostCenter']);
+                $this->getInfoInstance()->setAdditionalInformation('VATNumber', $additionalData['VATNumber']);
+                $this->getInfoInstance()->setAdditionalInformation('selectedBusiness', $additionalData['selectedBusiness']);
+            }
         }
 
         return $this;
@@ -218,7 +233,7 @@ class Afterpay extends AbstractMethod
         // Merge the customer data; ip, iban and terms condition.
         $requestData = array_merge($requestData, $this->getRequestCustomerData($payment));
         // Merge the business data
-        $requestData = array_merge($requestData, $this->getRequestBusinessData());
+        $requestData = array_merge($requestData, $this->getRequestBusinessData($payment));
         // Merge the article data; products and fee's
         $requestData = $this->getRequestArticlesData($requestData, $payment);
 
@@ -228,26 +243,37 @@ class Afterpay extends AbstractMethod
     /**
      * Get request Business data
      *
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
      * @return array
      * @throws \TIG\Buckaroo\Exception
      */
-    public function getRequestBusinessData()
+    public function getRequestBusinessData($payment)
     {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterPayConfig */
-        $afterPayConfig = $this->configProviderMethodFactory
-            ->get(\TIG\Buckaroo\Model\Method\Afterpay::PAYMENT_METHOD_CODE);
-
-
-        if ($afterPayConfig->getBusiness() == 2 || $afterPayConfig->getBusiness() == 3) {
-            $requestData = [];
-            /** @todo, need to setAdditionalInformation about:
-             *  - CompanyCOCRegistration (KVK)
-             *  - CompanyName
-             *  - CostCentre
-             *  - VatNumber (BTW)
-             */
+        if ($payment->getAdditionalInformation('selectedBusiness') == self::BUSINESS_METHOD_B2B) {
+            $requestData = [
+                [
+                    '_'    => 'true',
+                    'Name' => 'B2B'
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('COCNumber'),
+                    'Name' => 'CompanyCOCRegistration'
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('CompanyName'),
+                    'Name' => 'CompanyName'
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('CostCenter'),
+                    'Name' => 'CostCentre'
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('VATNumber'),
+                    'Name' => 'VatNumber'
+                ],
+            ];
         } else {
-
             $requestData = [
                 [
                     '_'    => 'false',

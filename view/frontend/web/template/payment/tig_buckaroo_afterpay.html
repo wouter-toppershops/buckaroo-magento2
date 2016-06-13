@@ -125,7 +125,9 @@
                     <div class="field">
                         <label class="label" for="tig_buckaroo_afterpay_BusinessModel"> <span data-bind="i18n: 'Business Model:'"> </span> </label>
                         <div class="control">
-                            <select id="tig_buckaroo_afterpay_BusinessModel" data-bind="value: selectedBusiness">
+                            <select id="tig_buckaroo_afterpay_BusinessModel"
+                                    data-bind="value: selectedBusiness"
+                                    name="payment[tig_buckaroo_afterpay][selectedBusiness]">
                                 <option data-bind="i18n: 'B2C - Business to Consumer'" value="1"></option>
                                 <option data-bind="i18n: 'B2B - Business to Business'" value="2"></option>
                             </select>
@@ -145,6 +147,7 @@
                         <label class="label" for="tig_buckaroo_afterpay_COCNumber"> <span data-bind="i18n: 'COC Number:'"> </span> </label>
                         <div class="control">
                             <input id="tig_buckaroo_afterpay_COCNumber"
+                                   name="payment[tig_buckaroo_afterpay][COCNumber]"
                                    class="input-text field"
                                    type="text"
                                    data-bind="
@@ -163,6 +166,7 @@
                         <label class="label" for="tig_buckaroo_afterpay_CompanyName"> <span data-bind="i18n: 'Company Name:'"> </span> </label>
                         <div class="control">
                             <input id="tig_buckaroo_afterpay_CompanyName"
+                                   name="payment[tig_buckaroo_afterpay][CompanyName]"
                                    class="input-text field"
                                    type="text"
                                    data-bind="
@@ -177,6 +181,7 @@
                         <label class="label" for="tig_buckaroo_afterpay_CostCenter"> <span data-bind="i18n: 'Cost Center:'"> </span> </label>
                         <div class="control">
                             <input id="tig_buckaroo_afterpay_CostCenter"
+                                   name="payment[tig_buckaroo_afterpay][CostCenter]"
                                    class="input-text field"
                                    type="text"
                                    data-bind="
@@ -191,6 +196,7 @@
                         <label class="label" for="tig_buckaroo_afterpay_VATNumber"> <span data-bind="i18n: 'VAT Number:'"> </span> </label>
                         <div class="control">
                             <input id="tig_buckaroo_afterpay_VATNumber"
+                                   name="payment[tig_buckaroo_afterpay][VATNumber]"
                                    class="input-text field"
                                    type="text"
                                    data-bind="
