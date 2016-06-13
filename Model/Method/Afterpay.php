@@ -202,6 +202,88 @@ class Afterpay extends AbstractMethod
 
         return $transactionBuilder;
     }
+    /**
+     * {@inheritdoc}
+     */
+    public function getCaptureTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
+        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
+
+        $services = [
+            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Action'           => 'Capture',
+            'Version'          => 1,
+            'RequestParameter' =>
+                $this->getAfterPayRequestParameters($payment),
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setChannel('CallCenter')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getAuthorizeTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
+        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
+
+        $services = [
+            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Action'           => 'Authorize',
+            'Version'          => 1,
+            'RequestParameter' =>
+                $this->getAfterPayRequestParameters($payment),
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getRefundTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
+
+        $services = [
+            'Name'    => 'afterpay',
+            'Action'  => 'Refund',
+            'Version' => 1,
+        ];
+
+        $requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
+
+        return $transactionBuilder;
+    }
 
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
@@ -733,85 +815,6 @@ class Afterpay extends AbstractMethod
         }
 
         return $format;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getCaptureTransactionBuilder($payment)
-    {
-        $transactionBuilder = $this->transactionBuilderFactory->get('order');
-
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
-        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
-
-        $services = [
-            'Name'             => $afterpayConfig->getPaymentMethodName(),
-            'Action'           => 'Capture',
-            'Version'          => 1,
-        ];
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest')
-            ->setChannel('CallCenter')
-            ->setOriginalTransactionKey(
-                $payment->getAdditionalInformation(
-                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
-                )
-            );
-
-        return $transactionBuilder;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthorizeTransactionBuilder($payment)
-    {
-        $transactionBuilder = $this->transactionBuilderFactory->get('order');
-
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
-        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
-
-        $services = [
-            'Name'             => $afterpayConfig->getPaymentMethodName(),
-            'Action'           => 'Authorize',
-            'Version'          => 1,
-        ];
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
-
-        return $transactionBuilder;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getRefundTransactionBuilder($payment)
-    {
-        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
-
-        $services = [
-            'Name'    => 'afterpay',
-            'Action'  => 'Refund',
-            'Version' => 1,
-        ];
-
-        $requestParams = $this->addExtraFields($this->_code);
-        $services = array_merge($services, $requestParams);
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
-
-        return $transactionBuilder;
     }
 
     /**
