@@ -194,14 +194,21 @@ class Afterpay extends AbstractConfigProvider
 
     /**
      * Get the methods name
+     *
+     * @param int $method
+     *
      * @return bool|string
      */
-    public function getPaymentMethodName()
+    public function getPaymentMethodName($method = null)
     {
         $paymentMethodName = false;
 
-        if ($this->getPaymentMethod()) {
-            switch ($this->getPaymentMethod()) {
+        if (!$method) {
+            $method = $this->getPaymentMethod();
+        }
+
+        if ($method) {
+            switch ($method) {
                 case '1':
                     $paymentMethodName = 'afterpayacceptgiro';
                     break;

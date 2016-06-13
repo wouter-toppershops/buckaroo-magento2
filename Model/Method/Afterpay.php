@@ -178,17 +178,35 @@ class Afterpay extends AbstractMethod
     }
 
     /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return bool|string
+     * @throws \TIG\Buckaroo\Exception
+     */
+    public function getPaymentMethodName($payment)
+    {
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
+        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
+
+        $methodName = $afterpayConfig->getPaymentMethodName();
+
+        if ($payment->getAdditionalInformation('selectedBusiness')) {
+            $methodName = $afterpayConfig->getPaymentMethodName($payment->getAdditionalInformation('selectedBusiness'));
+        }
+
+        return $methodName;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOrderTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
-        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
         /** @noinspection PhpUndefinedMethodInspection */
         $services = [
-            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Name'             => $this->getPaymentMethodName($payment),
             'Action'           => 'Pay',
             'Version'          => 1,
             'RequestParameter' =>
@@ -209,15 +227,10 @@ class Afterpay extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
-        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
-
         $services = [
-            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Name'             => $this->getPaymentMethodName($payment),
             'Action'           => 'Capture',
             'Version'          => 1,
-            'RequestParameter' =>
-                $this->getAfterPayRequestParameters($payment),
         ];
 
         /** @noinspection PhpUndefinedMethodInspection */
@@ -241,11 +254,8 @@ class Afterpay extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
-        $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
-
         $services = [
-            'Name'             => $afterpayConfig->getPaymentMethodName(),
+            'Name'             => $this->getPaymentMethodName($payment),
             'Action'           => 'Authorize',
             'Version'          => 1,
             'RequestParameter' =>
@@ -268,7 +278,7 @@ class Afterpay extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
-            'Name'    => 'afterpay',
+            'Name'    => $this->getPaymentMethodName($payment),
             'Action'  => 'Refund',
             'Version' => 1,
         ];
@@ -455,13 +465,17 @@ class Afterpay extends AbstractMethod
      * Get the service cost lines (buckfee)
      *
      * @param (int) $latestKey
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return array
      */
     public function getServiceCostLine($latestKey, $payment)
     {
+        /** @var \Magento\Sales\Model\Order' $order */
         $order      = $payment->getOrder();
+        /** @noinspection PhpUndefinedMethodInspection */
         $buckfee    = $order->getBuckarooFee();
+        /** @noinspection PhpUndefinedMethodInspection */
         $buckfeeTax = $order->getBuckarooFeeTax();
 
         /** @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper */
@@ -724,11 +738,6 @@ class Afterpay extends AbstractMethod
 
         $customerData = [
             [
-                // Only required if afterpay paymentmethod is acceptgiro.
-                '_'    => $payment->getAdditionalInformation('customer_iban'),
-                'Name' => 'CustomerAccountNumber',
-            ],
-            [
                 '_'    => $this->getRemoteAddress(),
                 'Name' => 'CustomerIPAddress',
             ],
@@ -737,6 +746,19 @@ class Afterpay extends AbstractMethod
                 'Name' => 'Accept',
             ]
         ];
+
+        // Only required if afterpay paymentmethod is acceptgiro.
+        if ($payment->getAdditionalInformation('customer_iban')) {
+
+            $accountNumber = [
+                [
+                    '_'    => $payment->getAdditionalInformation('customer_iban'),
+                    'Name' => 'CustomerAccountNumber',
+                ]
+            ];
+
+            $customerData = array_merge($customerData, $accountNumber);
+        }
 
         return $customerData;
     }

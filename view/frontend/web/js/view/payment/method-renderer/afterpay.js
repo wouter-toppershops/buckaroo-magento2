@@ -353,7 +353,7 @@ define(
                         "VATNumber" : this.VATNumber(),
                         "CostCenter" : this.CostCenter(),
                         "CompanyName" : this.CompanyName(),
-                        "COCNumber" : this.COCNumber(),
+                        "COCNumber" : this.CocNumber(),
                         "selectedBusiness" : this.selectedBusiness()
                     }
                 };
