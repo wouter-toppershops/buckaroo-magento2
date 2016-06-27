@@ -143,8 +143,8 @@ define(
                     'telephoneNumber',
                     'selectedGender',
                     'selectedBusiness',
-                    'firstName',
-                    'lastName',
+                    'firstname',
+                    'lastname',
                     'CustomerName',
                     'BillingName',
                     'dateValidate',
@@ -158,9 +158,9 @@ define(
                 ]);
 
                 this.businessMethod = window.checkoutConfig.payment.buckaroo.afterpay.businessMethod;
-                this.paymentMethod = window.checkoutConfig.payment.buckaroo.afterpay.paymentMethod;
-                this.firstName = window.customerData.firstname;
-                this.lastName = window.customerData.lastname;
+                this.paymentMethod  = window.checkoutConfig.payment.buckaroo.afterpay.paymentMethod;
+                this.firstName      = quote.billingAddress().firstname;
+                this.lastName       = quote.billingAddress().lastname;
 
                 /**
                  * Observe customer first & lastname
