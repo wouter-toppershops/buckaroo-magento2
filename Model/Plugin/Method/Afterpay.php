@@ -1,5 +1,4 @@
 <?php
-
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -26,68 +25,59 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Gateway;
+namespace TIG\Buckaroo\Model\Plugin\Method;
 
-interface GatewayInterface
+/**
+ * Class Afterpay
+ *
+ * @package TIG\Buckaroo\Model\Plugin\Method
+ */
+class Afterpay
 {
-    /**
-     * @param int $mode
-     *
-     * @return $this
-     */
-    public function setMode($mode);
+    const AFTERPAY_METHOD_NAME = 'tig_buckaroo_afterpay';
 
     /**
-     * @param Http\Transaction $transaction
-     *
-     * @return mixed
+     * \TIG\Buckaroo\Model\Method\Afterpay
+     * @var bool
      */
-    public function order(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+    public $afterpayMethod = false;
 
     /**
-     * @param Http\Transaction $transaction
-     *
-     * @return mixed
+     * @param \TIG\Buckaroo\Model\Method\Afterpay $afterpay
      */
-    public function capture(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+    public function __construct(\TIG\Buckaroo\Model\Method\Afterpay $afterpay)
+    {
+        $this->afterpayMethod = $afterpay;
+    }
 
     /**
-     * @param Http\Transaction $transaction
+     * @param \Magento\Sales\Model\Order $subject
      *
-     * @return mixed
+     * @return \Magento\Sales\Model\Order
      */
-    public function authorize(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+    public function afterCancel(
+        \Magento\Sales\Model\Order $subject
+    ) {
+        $payment = $subject->getPayment();
 
-    /**
-     * @param Http\Transaction $transaction
-     *
-     * @return mixed
-     */
-    public function refund(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+        if ($payment->getMethod() !== self::AFTERPAY_METHOD_NAME) {
+            return $subject;
+        }
 
-    /**
-     * @param Http\Transaction $transaction
-     *
-     * @return mixed
-     */
-    public function cancel(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+        $this->afterpayMethod->cancel($payment);
 
-    /**
-     * @param Http\Transaction $transaction
-     *
-     * @return mixed
-     */
-    public function void(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+        return $this;
+    }
 }

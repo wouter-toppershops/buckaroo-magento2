@@ -754,6 +754,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment)
     {
+        parent::cancel($payment);
         return $this->void($payment);
     }
 
@@ -775,6 +776,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        $this->_canVoid = true;
         parent::void($payment);
 
         $this->payment = $payment;
@@ -793,7 +795,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->voidTransaction($transaction);
 
-        $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, false);
+        $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, true);
+
+
+        // SET REGISTRY BUCKAROO REDIRECT
+        $this->_registry->register('buckaroo_response', $response);
 
         $this->afterVoid($payment, $response);
 
@@ -873,6 +879,16 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         return $this->dispatchAfterEvent('tig_buckaroo_method_refund_after', $payment, $response);
     }
 
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param array|\StdCLass                                                                    $response
+     *
+     * @return $this
+     */
+    protected function afterCancel($payment, $response)
+    {
+        return $this->afterVoid($payment, $response);
+    }
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      * @param array|\StdCLass                                                                    $response

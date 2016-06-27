@@ -126,6 +126,18 @@ interface TransactionBuilderInterface
     public function setCurrency($currency);
 
     /**
+     * @param string $type
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setType($type);
+
+    /**
+     * @return TransactionBuilderInterface
+     */
+    public function getType();
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

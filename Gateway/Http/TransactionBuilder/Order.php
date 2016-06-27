@@ -76,6 +76,12 @@ class Order extends AbstractTransactionBuilder
             $this->setOrderCurrencyAndAmount();
         }
 
+        $creditAmount = 0;
+        if ($this->getType() == 'void') {
+            $creditAmount = $this->amount;
+            $this->amount = 0;
+        }
+
         $order = $this->getOrder();
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
@@ -91,7 +97,7 @@ class Order extends AbstractTransactionBuilder
         $body = [
             'Currency' => $this->currency,
             'AmountDebit' => $this->amount,
-            'AmountCredit' => 0,
+            'AmountCredit' => $creditAmount,
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),

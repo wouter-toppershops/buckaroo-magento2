@@ -39,6 +39,7 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+
 class Afterpay extends AbstractMethod
 {
     /**
@@ -273,6 +274,34 @@ class Afterpay extends AbstractMethod
     /**
      * {@inheritdoc}
      */
+    public function getVoidTransactionBuilder($payment)
+    {
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => $this->getPaymentMethodName($payment),
+            'Action'           => 'CancelAuthorize',
+            'Version'          => 1,
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setAmount(0)
+            ->setType('void')
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getRefundTransactionBuilder($payment)
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
@@ -395,7 +424,8 @@ class Afterpay extends AbstractMethod
         $count    = 1;
 
         foreach ($cartData as $item) {
-            if (empty($item)) {
+            // Child objects of configurable products should not be requested because afterpay will fail on unit prices.
+            if (empty($item) || $this->calculateProductPrice($item) == 0) {
                 continue;
             }
 
@@ -437,9 +467,7 @@ class Afterpay extends AbstractMethod
             break;
         }
 
-        $latestKey = $count + 1;
-
-        $serviceLine = $this->getServiceCostLine($latestKey, $payment);
+        $serviceLine = $this->getServiceCostLine($count, $payment);
 
         if (!empty($serviceLine)) {
             $requestData = array_merge($articles, $serviceLine);
@@ -839,14 +867,6 @@ class Afterpay extends AbstractMethod
         }
 
         return $format;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getVoidTransactionBuilder($payment)
-    {
-        return true;
     }
 
     /**
