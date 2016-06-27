@@ -254,6 +254,8 @@ class Push implements PushInterface
             $this->debugger->addToMessage($e->getLogMessage());
         }
 
+        $this->debugger->log();
+
         return true;
     }
 
