@@ -119,12 +119,20 @@ class Ideal extends AbstractMethod
     {
         parent::assignData($data);
 
-        if (is_array($data)) {
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['issuer']);
-        } elseif ($data instanceof \Magento\Framework\DataObject) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data->getIssuer());
+        if (!is_array($data)) {
+            $data->convertToArray();
         }
+
+        if (isset($data['additional_data']['buckaroo_skip_validation'])) {
+            $this->getInfoInstance()->setAdditionalInformation('buckaroo_skip_validation',
+                $data['additional_data']['buckaroo_skip_validation']
+            );
+        }
+
+        if (isset($data['additional_data']['issuer'])) {
+            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['additional_data']['issuer']);
+        }
+
         return $this;
     }
 
