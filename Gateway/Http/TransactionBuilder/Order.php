@@ -101,7 +101,7 @@ class Order extends AbstractTransactionBuilder
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
-            'ClientIP' => [
+            'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
             ],
@@ -112,7 +112,7 @@ class Order extends AbstractTransactionBuilder
             'OriginalTransactionKey' => $this->originalTransactionKey,
             'StartRecurrent' => $this->startRecurrent,
             'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => [
+            'Services' => (object)[
                 'Service' => $this->getServices()
             ],
         ];
