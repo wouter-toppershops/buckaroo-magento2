@@ -83,7 +83,7 @@
             <field id="business" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Afterpay payment method</label>
                 <comment><![CDATA[Select which paymethod must be used at Afterpay]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\business</source_model>
+                <source_model>TIG\Buckaroo\Model\Config\Source\Business</source_model>
                 <config_path>payment/tig_buckaroo_afterpay/business</config_path>
             </field>
 
