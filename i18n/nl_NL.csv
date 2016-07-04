@@ -296,3 +296,5 @@
 "www.buckaroo-payments.com","www.buckaroo.nl"
 "TIG Request Form","TIG Aanvraagformulier"
 "TIG Knowledge Base","TIG Kennisbank"
+"Dankort Specific","Dankort Specifiek"
+"Hold orders which are not 3D Secure.","Orders zonder 3D Secure by Dankort worden 'onhold' gezet."

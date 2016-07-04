@@ -111,6 +111,9 @@
                 <maestro_payment_fee_label>Fee</maestro_payment_fee_label>
                 <mastercard_payment_fee_label>Fee</mastercard_payment_fee_label>
                 <visa_payment_fee_label>Fee</visa_payment_fee_label>
+
+                <dankort_payment_fee_label>Fee</dankort_payment_fee_label>
+
                 <group>tig_buckaroo</group>
                 <payment_action>order</payment_action>
                 <available_in_backend>0</available_in_backend>
