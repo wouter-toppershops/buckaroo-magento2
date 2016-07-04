@@ -138,10 +138,7 @@ class Afterpay extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
-
-        if (!is_array($data)) {
-            $data = $data->convertToArray();
-        }
+        $data = $this->assignDataConvertAllVersionsArray($data);
 
         if (isset($data['additional_data']['termsCondition'])) {
             $additionalData = $data['additional_data'];

@@ -274,6 +274,51 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
         return $this;
     }
+    
+        /**
+     * Older version expect different formatted $data
+     *
+     * @param \Magento\Framework\DataObject $data
+     * @todo Think of a nicer way to implement the version differences in one codebase
+     * @return array
+     */
+     public function assignDataConvertAllVersionsArray(\Magento\Framework\DataObject $data)
+     {        
+        if (!is_array($data)) {
+            $data->convertToArray();
+        }
+         
+        $magentoVersion = $this->getMagentoVersion();
+         
+        switch ($magentoVersion) {
+            case '2.0.0':
+            case '2.0.1':
+            case '2.0.2':
+            case '2.0.3':
+            case '2.0.4':
+                    $data['additional_data'] = $data;
+                break;  
+            default:
+                    // 2.0.5, 2.0.6, 2.0.7
+                    // 2.1.0 etc.
+                    // do noting 
+                break;                     
+         }
+
+        return $data;
+     }
+    
+    /**
+     * Determine Magento 2 Version used for changing assignData output data on differences
+     * between 2.0.4 and 2.0.7+ 
+     *
+     * @return string
+     */
+    public function getMagentoVersion()
+    {
+        $productMetadata = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        return $productMetadata->getVersion();
+    }
 
     /**
      * Check whether payment method can be used
