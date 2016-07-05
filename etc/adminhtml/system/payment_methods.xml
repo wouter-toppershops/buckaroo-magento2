@@ -61,5 +61,8 @@
         <include path="TIG_Buckaroo::system/payment_methods/giropay.xml"/>
 
         <include path="TIG_Buckaroo::system/payment_methods/afterpay.xml"/>
+        
+        <include path="TIG_Buckaroo::system/payment_methods/eps.xml"/>
+
     </group>
 </include>
