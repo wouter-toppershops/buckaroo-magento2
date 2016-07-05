@@ -126,21 +126,7 @@ class Eps extends AbstractMethod
         $services = [
             'Name'             => 'eps',
             'Action'           => 'Pay',
-            'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => $payment->getOrder()->getCustomerFirstname(),
-                    'Name' => 'CustomerFirstName',
-                ],
-                [
-                    '_'    => $payment->getOrder()->getCustomerLastName(),
-                    'Name' => 'CustomerLastName',
-                ],
-                [
-                    '_'    => $payment->getOrder()->getCustomerEmail(),
-                    'Name' => 'CustomerEmail',
-                ],
-            ],
+            'Version'          => 1,
         ];
 
         /** @noinspection PhpUndefinedMethodInspection */
