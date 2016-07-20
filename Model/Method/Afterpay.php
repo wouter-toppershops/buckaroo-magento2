@@ -321,7 +321,8 @@ class Afterpay extends AbstractMethod
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-            );
+            )
+            ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }
