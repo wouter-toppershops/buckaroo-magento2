@@ -119,13 +119,14 @@ class Giropay extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
-
-        if (is_array($data)) {
-            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
-        } elseif ($data instanceof \Magento\Framework\DataObject) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data->getCustomerBic());
+        $data = $this->assignDataConvertAllVersionsArray($data);
+        
+        if (isset($data['additional_data']['customer_bic'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_bic', $data['additional_data']['customer_bic']
+            );
         }
+
         return $this;
     }
 

@@ -25,33 +25,31 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
 
-use TIG\Buckaroo\Model\ConfigProvider\Method\Ideal as IdealConfig;
-
-class Ideal extends AbstractMethod
+class Eps extends AbstractMethod
 {
     /**
      * Payment Code
      */
-    const PAYMENT_METHOD_CODE = 'tig_buckaroo_ideal';
+    const PAYMENT_METHOD_CODE = 'tig_buckaroo_eps';
 
     /**
      * @var string
      */
-    public $buckarooPaymentMethodCode = 'ideal';
+    public $buckarooPaymentMethodCode = 'eps';
 
     // @codingStandardsIgnoreStart
     /**
@@ -59,7 +57,7 @@ class Ideal extends AbstractMethod
      *
      * @var string
      */
-    protected $_code                    = self::PAYMENT_METHOD_CODE;
+    protected $_code = self::PAYMENT_METHOD_CODE;
 
     /**
      * @var bool
@@ -113,25 +111,9 @@ class Ideal extends AbstractMethod
     // @codingStandardsIgnoreEnd
 
     /**
-     * {@inheritdoc}
+     * @var bool
      */
-    public function assignData(\Magento\Framework\DataObject $data)
-    {
-        parent::assignData($data);
-        $data = $this->assignDataConvertAllVersionsArray($data);
-
-        if (isset($data['additional_data']['buckaroo_skip_validation'])) {
-            $this->getInfoInstance()->setAdditionalInformation('buckaroo_skip_validation',
-                $data['additional_data']['buckaroo_skip_validation']
-            );
-        }
-
-        if (isset($data['additional_data']['issuer'])) {
-            $this->getInfoInstance()->setAdditionalInformation('issuer', $data['additional_data']['issuer']);
-        }
-
-        return $this;
-    }
+    public $usesRedirect                = false;
 
     /**
      * {@inheritdoc}
@@ -140,22 +122,17 @@ class Ideal extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        /** @noinspection PhpUndefinedMethodInspection */
         $services = [
-            'Name'             => 'ideal',
+            'Name'             => 'eps',
             'Action'           => 'Pay',
-            'Version'          => 2,
-            'RequestParameter' => [
-                [
-                    '_'    => $payment->getAdditionalInformation('issuer'),
-                    'Name' => 'issuer',
-                ],
-            ],
+            'Version'          => 1,
         ];
 
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
     }
@@ -184,7 +161,7 @@ class Ideal extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
-            'Name'    => 'ideal',
+            'Name'    => 'eps',
             'Action'  => 'Refund',
             'Version' => 1,
         ];
@@ -194,12 +171,9 @@ class Ideal extends AbstractMethod
 
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest')
-                           ->setOriginalTransactionKey(
-                               $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-                           )
-                           ->setChannel('CallCenter');
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
 
         return $transactionBuilder;
     }
@@ -210,42 +184,5 @@ class Ideal extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return true;
-    }
-
-    /**
-     * Validate that we received a valid issuer ID.
-     *
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function validate()
-    {
-        parent::validate();
-
-        /** @var IdealConfig $config */
-        $config = $this->objectManager->get(IdealConfig::class);
-
-        $paymentInfo = $this->getInfoInstance();
-
-        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
-        if ($skipValidation) {
-            return $this;
-        }
-
-        $chosenIssuer = $paymentInfo->getAdditionalInformation('issuer');
-
-        $valid = false;
-        foreach ($config->getIssuers() as $issuer) {
-            if ($issuer['code'] == $chosenIssuer) {
-                $valid = true;
-                break;
-            }
-        }
-
-        if (!$valid) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Please select a issuer from the list'));
-        }
-
-        return $this;
     }
 }

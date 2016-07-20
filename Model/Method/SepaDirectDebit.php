@@ -123,10 +123,7 @@ class SepaDirectDebit extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
-
-        if (!is_array($data)) {
-            $data->convertToArray();
-        }
+        $data = $this->assignDataConvertAllVersionsArray($data);
 
         if (isset($data['additional_data']['buckaroo_skip_validation'])) {
             $this->getInfoInstance()->setAdditionalInformation(

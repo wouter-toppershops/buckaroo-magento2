@@ -317,7 +317,7 @@
 .tig_buckaroo_eps .tig_buckaroo_image_title:after {
     background: url(../images/tig_buckaroo_eps_title.png) no-repeat;
     float: right;
-    margin-right: 10px;
+    margin-right: 3px;
     margin-top: -6px;
     background-size: auto 30px;
     width: 45px;
