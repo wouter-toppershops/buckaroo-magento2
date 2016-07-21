@@ -499,7 +499,7 @@ class Afterpay extends AbstractMethod
      */
     public function getServiceCostLine($latestKey, $payment)
     {
-        /** @var \Magento\Sales\Model\Order' $order */
+        /** @var \Magento\Sales\Model\Order $order */
         $order      = $payment->getOrder();
         /** @noinspection PhpUndefinedMethodInspection */
         $buckfee    = $order->getBuckarooFee();
@@ -550,7 +550,7 @@ class Afterpay extends AbstractMethod
         if ($order->getShippingAmount() > 0) {
             $shippingCost = [
                 [
-                    '_'       => $order->getShippingAmount(),
+                    '_'       => $order->getShippingAmount() + $order->getShippingTaxAmount(),
                     'Name'    => 'ShippingCosts',
                 ]
             ];
