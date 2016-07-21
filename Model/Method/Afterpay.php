@@ -119,7 +119,7 @@ class Afterpay extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefundInvoicePartial = true;
+    protected $_canRefundInvoicePartial = false;
     // @codingStandardsIgnoreEnd
 
     /**
