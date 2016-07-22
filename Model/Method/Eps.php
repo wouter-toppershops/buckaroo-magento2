@@ -173,7 +173,9 @@ class Eps extends AbstractMethod
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'));
+            ->setOriginalTransactionKey($payment->getAdditionalInformation('buckaroo_transaction_key'))
+            ->setChannel('CallCenter')
+        ;
 
         return $transactionBuilder;
     }
