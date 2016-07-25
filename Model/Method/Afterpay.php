@@ -610,6 +610,7 @@ class Afterpay extends AbstractMethod
         $billingAddress = $payment->getOrder()->getBillingAddress();
         $streetFormat   = $this->formatStreet($billingAddress->getStreet());
 
+        $birthDayStamp = str_replace('/', '-', $payment->getAdditionalInformation('customer_DoB'));
 
         $billingData = [
             [
@@ -629,7 +630,7 @@ class Afterpay extends AbstractMethod
                 'Name' => 'BillingLastName',
             ],
             [
-                '_'    => $payment->getAdditionalInformation('customer_DoB'),
+                '_'    => $birthDayStamp,
                 'Name' => 'BillingBirthDate',
             ],
             [
@@ -687,6 +688,8 @@ class Afterpay extends AbstractMethod
         $shippingAddress = $payment->getOrder()->getShippingAddress();
         $streetFormat    = $this->formatStreet($shippingAddress->getStreet());
 
+        $birthDayStamp = str_replace('/', '-', $payment->getAdditionalInformation('customer_DoB'));
+
         $shippingData = [
             [
                 '_'    => $shippingAddress->getFirstname(),
@@ -705,7 +708,7 @@ class Afterpay extends AbstractMethod
                 'Name' => 'ShippingLastName',
             ],
             [
-                '_'    => $payment->getAdditionalInformation('customer_DoB'),
+                '_'    => $birthDayStamp,
                 'Name' => 'ShippingBirthDate',
             ],
             [
