@@ -84,8 +84,10 @@
                                                     <item name="children" xsi:type="array">
                                                         <item name="payments-list" xsi:type="array">
                                                             <item name="children" xsi:type="array">
-                                                                <item name="before-place-order" xsi:type="array">
+                                                                <item name="order-buckaroo-payment" xsi:type="array">
                                                                     <item name="component" xsi:type="string">TIG_Buckaroo/js/view/payment/save-payment</item>
+                                                                    <item name="displayArea" xsi:type="string">before-place-order</item>
+                                                                    <item name="provider" xsi:type="string">checkoutProvider</item>
                                                                 </item>
                                                             </item>
                                                         </item>
