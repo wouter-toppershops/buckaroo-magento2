@@ -65,6 +65,8 @@ class Order extends AbstractTransactionBuilder
                 __("The selected payment method does not support the selected currency or the store's base currency.")
             );
         }
+
+        $this->invoiceId = $this->order->getIncrementId();
     }
 
     /**
@@ -84,6 +86,10 @@ class Order extends AbstractTransactionBuilder
 
         $order = $this->getOrder();
 
+        if (!$this->invoiceId) {
+            $this->invoiceId = $order->getIncrementId();
+        }
+
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
 
@@ -98,7 +104,7 @@ class Order extends AbstractTransactionBuilder
             'Currency' => $this->currency,
             'AmountDebit' => $this->amount,
             'AmountCredit' => $creditAmount,
-            'Invoice' => $order->getIncrementId(),
+            'Invoice' => $this->invoiceId,
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
             'ClientIP' => (object)[

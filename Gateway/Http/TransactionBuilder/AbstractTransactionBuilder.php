@@ -133,6 +133,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     public $currency;
 
     /**
+     * @var string
+     */
+    public $invoiceId;
+
+    /**
      * {@inheritdoc}
      */
     public function setOriginalTransactionKey($originalTransactionKey)

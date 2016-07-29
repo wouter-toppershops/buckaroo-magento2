@@ -133,6 +133,11 @@ class Afterpay extends AbstractMethod
     public $remoteAddress               = null;
 
     /**
+     * @var bool
+     */
+    public $closeAuthorizeTransaction   = false;
+
+    /**
      * {@inheritdoc}
      */
     public function assignData(\Magento\Framework\DataObject $data)
@@ -235,7 +240,6 @@ class Afterpay extends AbstractMethod
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
-            ->setChannel('CallCenter')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
@@ -469,8 +473,16 @@ class Afterpay extends AbstractMethod
 
         if (!empty($serviceLine)) {
             $requestData = array_merge($articles, $serviceLine);
+            $count++;
         } else {
             $requestData = $articles;
+        }
+
+        $discountline = $this->getDiscountLine($count, $payment);
+
+        if (!empty($discountline)) {
+            $requestData = array_merge($requestData, $discountline);
+            $count++;
         }
 
         return $requestData;
@@ -557,6 +569,56 @@ class Afterpay extends AbstractMethod
         }
 
         $article = array_merge($article, $shippingCost);
+
+        return $article;
+    }
+
+    /**
+     * Get the discount cost lines
+     *
+     * @param (int) $latestKey
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    public function getDiscountLine($latestKey, $payment)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order      = $payment->getOrder();
+
+        $article = [];
+
+        if ($order->getDiscountAmount() < 0) {
+
+            $article = [
+                [
+                    '_'       => 'Korting', // @todo check why $order->getDiscountDescription() is empty
+                    'Name'    => 'ArticleDescription',
+                    'GroupID' => $latestKey
+                ],
+                [
+                    '_'       => 1,
+                    'Name'    => 'ArticleId',
+                    'GroupID' => $latestKey
+                ],
+                [
+                    '_'       => 1,
+                    'Name'    => 'ArticleQuantity',
+                    'GroupID' => $latestKey
+                ],
+                [
+                    '_'       => number_format($order->getDiscountAmount(),2),
+                    'Name'    => 'ArticleUnitPrice',
+                    'GroupID' => $latestKey
+                ],
+                [
+                    '_'       => 4, //no tax over discount @todo check if there are configuration settings which influence this.
+                    'Name'    => 'ArticleVatCategory',
+                    'GroupID' => $latestKey
+                ]
+            ];
+
+        }
 
         return $article;
     }
