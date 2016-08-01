@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -26,45 +25,59 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@tig.nl so we can send you a copy immediately.
+ * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@tig.nl for more information.
+ * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
-    <!-- Payment section -->
-    <group id="tig_buckaroo_payment_section" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-        <label>Buckaroo payment methods</label>
-        <fieldset_css>tig_buckaroo-section</fieldset_css>
 
-        <include path="TIG_Buckaroo::system/payment_methods/ideal.xml"/>
+namespace TIG\Buckaroo\Model\Plugin\Method;
 
-        <include path="TIG_Buckaroo::system/payment_methods/creditcard.xml"/>
+/**
+ * Class Afterpay2
+ *
+ * @package TIG\Buckaroo\Model\Plugin\Method
+ */
+class Afterpay2
+{
+    const AFTERPAY_METHOD_NAME = 'tig_buckaroo_afterpay2';
 
-        <include path="TIG_Buckaroo::system/payment_methods/paypal.xml"/>
+    /**
+     * \TIG\Buckaroo\Model\Method\Afterpay2
+     * @var bool
+     */
+    public $afterpayMethod = false;
 
-        <include path="TIG_Buckaroo::system/payment_methods/transfer.xml"/>
+    /**
+     * @param \TIG\Buckaroo\Model\Method\Afterpay2 $afterpay
+     */
+    public function __construct(\TIG\Buckaroo\Model\Method\Afterpay2 $afterpay)
+    {
+        $this->afterpayMethod = $afterpay;
+    }
 
-        <include path="TIG_Buckaroo::system/payment_methods/sepa_direct_debit.xml"/>
+    /**
+     * @param \Magento\Sales\Model\Order $subject
+     *
+     * @return \Magento\Sales\Model\Order
+     */
+    public function afterCancel(
+        \Magento\Sales\Model\Order $subject
+    ) {
+        $payment = $subject->getPayment();
 
-        <include path="TIG_Buckaroo::system/payment_methods/mrcash.xml"/>
+        if ($payment->getMethod() !== self::AFTERPAY_METHOD_NAME) {
+            return $subject;
+        }
 
-        <include path="TIG_Buckaroo::system/payment_methods/sofort_banking.xml"/>
+        $this->afterpayMethod->cancel($payment);
 
-        <include path="TIG_Buckaroo::system/payment_methods/giropay.xml"/>
-
-        <include path="TIG_Buckaroo::system/payment_methods/afterpay.xml"/>
-
-        <include path="TIG_Buckaroo::system/payment_methods/afterpay2.xml"/>
-
-        <include path="TIG_Buckaroo::system/payment_methods/eps.xml"/>
-
-    </group>
-</include>
+        return $this;
+    }
+}

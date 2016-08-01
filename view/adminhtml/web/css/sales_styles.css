@@ -47,6 +47,7 @@
 .tig_buckaroo_payment_sofortbanking,
 .tig_buckaroo_payment_giropay,
 .tig_buckaroo_payment_afterpay,
+.tig_buckaroo_payment_afterpay2,
 .tig_buckaroo_payment_payperemail,
 .tig_buckaroo_payment_paymentguarantee,
 .tig_buckaroo_payment_giftcards,
@@ -66,7 +67,8 @@
 }
 
 /* Afterpay */
-.tig_buckaroo_payment_afterpay:before {
+.tig_buckaroo_payment_afterpay:before,
+.tig_buckaroo_payment_afterpay2:before {
     background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
     float: left;
     margin-right: 10px;

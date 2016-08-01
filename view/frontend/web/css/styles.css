@@ -51,6 +51,7 @@
     .tig_buckaroo_creditcard .payment-method-second-col,
     .tig_buckaroo_transfer .payment-method-second-col,
     .tig_buckaroo_afterpay .payment-method-second-col,
+    .tig_buckaroo_afterpay2 .payment-method-second-col,
     .tig_buckaroo_sepadirectdebit .payment-method-second-col,
     .tig_buckaroo_giropay .payment-method-second-col,
     .tig_buckaroo_payperemail .payment-method-second-col,
@@ -66,6 +67,7 @@
     .tig_buckaroo_creditcard .payment-method-billing-address,
     .tig_buckaroo_transfer .payment-method-billing-address,
     .tig_buckaroo_afterpay .payment-method-billing-address,
+    .tig_buckaroo_afterpay2 .payment-method-billing-address,
     .tig_buckaroo_sepadirectdebit .payment-method-billing-address,
     .tig_buckaroo_giropay .payment-method-billing-address,
     .tig_buckaroo_payperemail .payment-method-billing-address,
@@ -84,6 +86,7 @@
     .magento-blank .tig_buckaroo_creditcard .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_transfer .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_afterpay .fieldset > .field:not(.choice) > .label,
+    .magento-blank .tig_buckaroo_afterpay2 .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_sepadirectdebit .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_giropay .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_payperemail .fieldset > .field:not(.choice) > .label,
@@ -100,6 +103,7 @@
     .magento-blank .tig_buckaroo_creditcard .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_transfer .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_afterpay .fieldset > .field:not(.choice) > .control,
+    .magento-blank .tig_buckaroo_afterpay2 .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_sepadirectdebit .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_giropay .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_payperemail .fieldset > .field:not(.choice) > .control,
@@ -114,6 +118,7 @@
     .magento-blank .tig_buckaroo_creditcard .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_transfer .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_afterpay .fieldset > .field.choice:before,
+    .magento-blank .tig_buckaroo_afterpay2 .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_sepadirectdebit .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_giropay .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_payperemail .fieldset > .field.choice:before,
@@ -266,7 +271,8 @@
 }
 
 /* ===================== Afterpay ============================ */
-.tig_buckaroo_afterpay .tig_buckaroo_image_title:after {
+.tig_buckaroo_afterpay .tig_buckaroo_image_title:after,
+.tig_buckaroo_afterpay2 .tig_buckaroo_image_title:after {
     background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
     float: right;
     margin-right: 10px;
@@ -443,7 +449,8 @@
     }
 
     /* Afterpay */
-    .tig_buckaroo_afterpay .tig_buckaroo_image_title:before {
+    .tig_buckaroo_afterpay .tig_buckaroo_image_title:before,
+    .tig_buckaroo_afterpay2 .tig_buckaroo_image_title:before {
         background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
         margin-top: 6px;
         float: left;
