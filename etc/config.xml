@@ -188,6 +188,7 @@
                 <payment_fee_label>Fee</payment_fee_label>
                 <group>tig_buckaroo</group>
                 <payment_action>order</payment_action>
+                <can_capture_partial>1</can_capture_partial>
                 <available_in_backend>0</available_in_backend>
             </tig_buckaroo_afterpay>
 
