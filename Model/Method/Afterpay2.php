@@ -94,7 +94,7 @@ class Afterpay2 extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canCapturePartial       = false;
+    protected $_canCapturePartial       = true;
 
     /**
      * @var bool
@@ -119,7 +119,7 @@ class Afterpay2 extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefundInvoicePartial = true;
+    protected $_canRefundInvoicePartial = false;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -131,6 +131,11 @@ class Afterpay2 extends AbstractMethod
      * @var null
      */
     public $remoteAddress               = null;
+
+    /**
+     * @var bool
+     */
+    public $closeAuthorizeTransaction   = false;
 
     /**
      * {@inheritdoc}
@@ -218,6 +223,7 @@ class Afterpay2 extends AbstractMethod
 
         return $transactionBuilder;
     }
+
     /**
      * {@inheritdoc}
      */
@@ -225,22 +231,81 @@ class Afterpay2 extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        $capturePartial = false;
+
+        $order = $payment->getOrder();
+        $order_id = $order->getId();
+
+        $totalOrder = $order->getBaseGrandTotal();
+        $numberOfInvoices = $order->hasInvoices();
+
+        // loop through invoices to get the last one (=current invoice)
+        if ($numberOfInvoices) {
+            $oInvoiceCollection = $order->getInvoiceCollection();
+
+            $i = 0;
+            foreach ($oInvoiceCollection as $oInvoice) {
+
+                if(++$i !== $numberOfInvoices) {
+                    continue;
+                }
+
+                $currentInvoice = $oInvoice;
+                $currentInvoiceTotal = $oInvoice->getBaseGrandTotal();
+
+            }
+        }
+
+        if ($totalOrder == $currentInvoiceTotal && $numberOfInvoices == 1) {
+            //full capture
+            $capturePartial = false;
+        }
+        else {
+            //partial capture
+            $capturePartial = true;
+        }
+
         $services = [
             'Name'             => $this->getPaymentMethodName($payment),
             'Action'           => 'Capture',
-            'Version'          => 1,
+            'Version'          => 1
         ];
+
+        if ($capturePartial) {
+
+            $articles = $this->getPartialRequestArticalData($currentInvoice);
+
+            // For the first invoice possible add payment fee
+            if (is_array($articles) && $numberOfInvoices == 1) {
+                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment);
+                $articles = array_merge($articles, $serviceLine);
+            }
+
+            $services['RequestParameter'] = $articles;
+        }
 
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
-            ->setChannel('CallCenter')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
                 )
             );
+
+        // Partial Capture Settings
+        if ($capturePartial) {
+
+            /** @noinspection PhpUndefinedMethodInspection */
+            $transactionBuilder->setAmount($currentInvoiceTotal)
+                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices . '-' . substr(md5(date("YMDHis")),0,6) )
+                ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
+                ->setOriginalTransactionKey(
+                    $payment->getParentTransactionId()
+                );
+        }
+
 
         return $transactionBuilder;
     }
@@ -318,7 +383,8 @@ class Afterpay2 extends AbstractMethod
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-            );
+            )
+            ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }
@@ -426,33 +492,13 @@ class Afterpay2 extends AbstractMethod
                 continue;
             }
 
-            $article = [
-                [
-                    '_'    => $item->getQty() . ' x ' . $item->getName(),
-                    'Name' => 'ArticleDescription',
-                    'GroupID' => $count
-                ],
-                [
-                    '_'    => $item->getProductId(),
-                    'Name' => 'ArticleId',
-                    'GroupID' => $count
-                ],
-                [
-                    '_'    => 1, //Always 1 since the qty is parsed inside the description
-                    'Name' => 'ArticleQuantity',
-                    'GroupID' => $count
-                ],
-                [
-                    '_'    => $this->calculateProductPrice($item),
-                    'Name' => 'ArticleUnitPrice',
-                    'GroupID' => $count
-                ],
-                [
-                    '_'    => $this->getTaxCategory($item->getTaxClassId()),
-                    'Name' => 'ArticleVatcategory',
-                    'GroupID' => $count
-                ]
-            ];
+            $article = $this->getArticleArrayLine(  $count,
+                $item->getQty() . ' x ' . $item->getName(),
+                $item->getProductId(),
+                1,
+                $this->calculateProductPrice($item),
+                $this->getTaxCategory($item->getTaxClassId())
+            );
 
             $articles = array_merge($articles, $article);
 
@@ -468,11 +514,92 @@ class Afterpay2 extends AbstractMethod
 
         if (!empty($serviceLine)) {
             $requestData = array_merge($articles, $serviceLine);
+            $count++;
         } else {
             $requestData = $articles;
         }
 
+        $discountline = $this->getDiscountLine($count, $payment);
+
+        if (!empty($discountline)) {
+            $requestData = array_merge($requestData, $discountline);
+            $count++;
+        }
+
         return $requestData;
+    }
+
+    /**
+     * @param \Magento\Payment\Model\Order\Invoice $invoice
+     *
+     * @return array
+     */
+    public function getPartialRequestArticalData($invoice)
+    {
+        // Set loop variables
+        $articles = array();
+        $count    = 1;
+
+        foreach ($invoice->getAllItems() as $item) {
+
+            if (empty($item) || $this->calculateProductPrice($item) == 0) {
+                continue;
+            }
+
+            $article = $this->getArticleArrayLine(  $count,
+                (int) $item->getQty() . ' x ' . $item->getName(),
+                $item->getProductId(),
+                1,
+                $this->calculateProductPrice($item),
+                $this->getTaxCategory($item->getTaxClassId())
+            );
+
+            $articles = array_merge($articles, $article);
+
+            // Capture calculates discount per order line
+            if ($item->getDiscountAmount() > 0) {
+                $count++;
+                $article = $this->getArticleArrayLine(  $count,
+                    'Korting op '. (int) $item->getQty() . ' x ' . $item->getName(),
+                    $item->getProductId(),
+                    1,
+                    number_format(($item->getDiscountAmount()*-1), 2),
+                    $this->getTaxCategory($item->getTaxClassId())
+                );
+                $articles = array_merge($articles, $article);
+            }
+
+            if ($count < self::AFTERPAY_MAX_ARTICLE_COUNT) {
+                $count++;
+                continue;
+            }
+
+            break;
+        }
+
+        $requestData = $articles;
+
+
+        return $requestData;
+    }
+
+    /**
+     * @param \Magento\Payment\Model\Order\Invoice $invoice
+     *
+     * @return array
+     */
+    public function getPartialRequestGrandTotal($lastestKey, $invoice)
+    {
+
+        $article = $this->getArticleArrayLine(  $lastestKey,
+            'Total',
+            '0',
+            1,
+            number_format($invoice->getBaseGrandTotal(),2),
+            4
+        );
+
+        return $article;
     }
 
     /**
@@ -498,12 +625,14 @@ class Afterpay2 extends AbstractMethod
      */
     public function getServiceCostLine($latestKey, $payment)
     {
-        /** @var \Magento\Sales\Model\Order' $order */
+        /** @var \Magento\Sales\Model\Order $order */
         $order      = $payment->getOrder();
         /** @noinspection PhpUndefinedMethodInspection */
         $buckfee    = $order->getBuckarooFee();
         /** @noinspection PhpUndefinedMethodInspection */
         $buckfeeTax = $order->getBuckarooFeeTax();
+
+        $buckfeeInclTax = $order->getBaseBuckarooFeeInclTax();
 
         /** @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper */
         $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
@@ -512,35 +641,15 @@ class Afterpay2 extends AbstractMethod
 
         if (false !== $buckfee && (double)$buckfee > 0) {
 
-            $article = [
-                [
-                    '_'       => 'Servicekosten',
-                    'Name'    => 'ArticleDescription',
-                    'GroupID' => $latestKey
-                ],
-                [
-                    '_'       => 1,
-                    'Name'    => 'ArticleId',
-                    'GroupID' => $latestKey
-                ],
-                [
-                    '_'       => 1,
-                    'Name'    => 'ArticleQuantity',
-                    'GroupID' => $latestKey
-                ],
-                [
-                    '_'       => round($buckfee + $buckfeeTax, 2),
-                    'Name'    => 'ArticleUnitPrice',
-                    'GroupID' => $latestKey
-                ],
-                [
-                    '_'       => $this->getTaxCategory(
-                        $feeHelper->getBuckarooFeeTaxClass($order->getStoreId())
-                    ),
-                    'Name'    => 'ArticleVatCategory',
-                    'GroupID' => $latestKey
-                ]
-            ];
+            $storeId = (int) $order->getStoreId();
+
+            $article = $this->getArticleArrayLine(  $latestKey,
+                'Servicekosten',
+                1,
+                1,
+                round($buckfeeInclTax, 2),
+                $this->getTaxCategory($feeHelper->getBuckarooFeeTaxClass($storeId))
+            );
 
         }
         // Add aditional shippin costs.
@@ -549,13 +658,85 @@ class Afterpay2 extends AbstractMethod
         if ($order->getShippingAmount() > 0) {
             $shippingCost = [
                 [
-                    '_'       => $order->getShippingAmount(),
+                    '_'       => $order->getShippingAmount() + $order->getShippingTaxAmount(),
                     'Name'    => 'ShippingCosts',
                 ]
             ];
         }
 
         $article = array_merge($article, $shippingCost);
+
+        return $article;
+    }
+
+    /**
+     * Get the discount cost lines
+     *
+     * @param (int) $latestKey
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    public function getDiscountLine($latestKey, $payment)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order      = $payment->getOrder();
+
+        $article = [];
+
+        if ($order->getDiscountAmount() < 0) {
+
+            $article = $this->getArticleArrayLine(  $latestKey,
+                'Korting',
+                1,
+                1,
+                number_format($order->getDiscountAmount(),2),
+                4
+            );
+        }
+
+        return $article;
+    }
+
+    /**
+     * @param $latestKey
+     * @param $articleDescription
+     * @param $articleId
+     * @param $articleQuantity
+     * @param $articleUnitPrice
+     * @param $articleVatCategory
+     *
+     * return array
+     */
+    public function getArticleArrayLine($latestKey, $articleDescription, $articleId, $articleQuantity, $articleUnitPrice, $articleVatCategory)
+    {
+        $article = [
+            [
+                '_'       => $articleDescription,
+                'Name'    => 'ArticleDescription',
+                'GroupID' => $latestKey
+            ],
+            [
+                '_'       => $articleId,
+                'Name'    => 'ArticleId',
+                'GroupID' => $latestKey
+            ],
+            [
+                '_'       => $articleQuantity,
+                'Name'    => 'ArticleQuantity',
+                'GroupID' => $latestKey
+            ],
+            [
+                '_'       => $articleUnitPrice,
+                'Name'    => 'ArticleUnitPrice',
+                'GroupID' => $latestKey
+            ],
+            [
+                '_'       => $articleVatCategory,
+                'Name'    => 'ArticleVatCategory',
+                'GroupID' => $latestKey
+            ]
+        ];
 
         return $article;
     }
@@ -609,6 +790,7 @@ class Afterpay2 extends AbstractMethod
         $billingAddress = $payment->getOrder()->getBillingAddress();
         $streetFormat   = $this->formatStreet($billingAddress->getStreet());
 
+        $birthDayStamp = str_replace('/', '-', $payment->getAdditionalInformation('customer_DoB'));
 
         $billingData = [
             [
@@ -628,7 +810,7 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'BillingLastName',
             ],
             [
-                '_'    => $payment->getAdditionalInformation('customer_DoB'),
+                '_'    => $birthDayStamp,
                 'Name' => 'BillingBirthDate',
             ],
             [
@@ -686,6 +868,8 @@ class Afterpay2 extends AbstractMethod
         $shippingAddress = $payment->getOrder()->getShippingAddress();
         $streetFormat    = $this->formatStreet($shippingAddress->getStreet());
 
+        $birthDayStamp = str_replace('/', '-', $payment->getAdditionalInformation('customer_DoB'));
+
         $shippingData = [
             [
                 '_'    => $shippingAddress->getFirstname(),
@@ -704,7 +888,7 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'ShippingLastName',
             ],
             [
-                '_'    => $payment->getAdditionalInformation('customer_DoB'),
+                '_'    => $birthDayStamp,
                 'Name' => 'ShippingBirthDate',
             ],
             [
