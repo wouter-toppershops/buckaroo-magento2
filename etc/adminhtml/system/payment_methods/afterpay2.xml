@@ -66,13 +66,6 @@
         <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Default Configuration</label>
 
-            <field id="order_email" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Send order confirmation email</label>
-                <comment><![CDATA[Enable to send an order confirmation email to the customer when the creating of the order is successful. Specific for this payment method.]]></comment>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>payment/tig_buckaroo_afterpay2/order_email</config_path>
-            </field>
-
             <field id="payment_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Afterpay 2 payment method</label>
                 <comment><![CDATA[Select which paymethod must be used at Afterpay]]></comment>
