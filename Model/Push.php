@@ -42,6 +42,7 @@ namespace TIG\Buckaroo\Model;
 
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Sales\Model\Order;
+use Symfony\Component\Config\Definition\Exception\Exception;
 use TIG\Buckaroo\Api\PushInterface;
 use \TIG\Buckaroo\Model\Method\AbstractMethod;
 
@@ -52,6 +53,8 @@ use \TIG\Buckaroo\Model\Method\AbstractMethod;
  */
 class Push implements PushInterface
 {
+    const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE = 'I014';
+
     /**
      * @var \Magento\Framework\Webapi\Rest\Request $request
      */
@@ -196,9 +199,15 @@ class Push implements PushInterface
 
         $canUpdateOrder = $this->canUpdateOrderStatus();
 
-        //Check if the push is a refund request.
+        //Check if the push is a refund request or cancel authorize
         if (isset($this->postData['brq_amount_credit'])) {
             if ($response['status'] !== 'TIG_BUCKAROO_STATUSCODE_SUCCESS'
+                && $this->order->isCanceled()
+                && $this->postData['brq_transaction_type'] == self::BUCK_PUSH_CANCEL_AUTHORIZE_TYPE
+                && $validSignature
+            ) {
+                return $this->processCancelAuthorize();
+            } elseif ($response['status'] !== 'TIG_BUCKAROO_STATUSCODE_SUCCESS'
                 && !$this->order->hasInvoices()
             ) {
                 throw new \TIG\Buckaroo\Exception(
@@ -224,6 +233,26 @@ class Push implements PushInterface
         $this->setTransactionKey();
         $this->processPush($response);
         $this->order->save();
+
+        $this->debugger->log();
+
+        return true;
+    }
+
+    /**
+     * Cancel authorize processing.
+     *
+     * @return bool
+     */
+    public function processCancelAuthorize()
+    {
+        $this->debugger->addToMessage('Order autorize has been canceld, trying to update payment transactions');
+
+        try {
+            $this->setTransactionKey();
+        } catch (\TIG\Buckaroo\Exception $e) {
+            $this->debugger->addToMessage($e->getLogMessage());
+        }
 
         $this->debugger->log();
 
@@ -395,7 +424,7 @@ class Push implements PushInterface
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
         } else {
             $description = 'Authorization status : <strong>' . $message . "</strong><br/>";
-            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been ' .
+            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue()) . ' has been ' .
                 'authorized. Please create an invoice to capture the authorized amount.';
         }
 

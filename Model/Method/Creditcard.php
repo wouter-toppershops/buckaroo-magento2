@@ -126,13 +126,20 @@ class Creditcard extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
+        $data = $this->assignDataConvertAllVersionsArray($data);
 
-        if (is_array($data)) {
-            $this->getInfoInstance()->setAdditionalInformation('card_type', $data['card_type']);
-        } elseif ($data instanceof \Magento\Framework\DataObject) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->getInfoInstance()->setAdditionalInformation('card_type', $data->getCardType());
+        if (isset($data['additional_data']['buckaroo_skip_validation'])) {
+            $this->getInfoInstance()->setAdditionalInformation('buckaroo_skip_validation',
+                $data['additional_data']['buckaroo_skip_validation']
+            );
         }
+
+        if (isset($data['additional_data']['card_type'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'card_type', $data['additional_data']['card_type']
+            );
+        }
+
         return $this;
     }
 

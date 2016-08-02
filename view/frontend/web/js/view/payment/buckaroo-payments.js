@@ -63,6 +63,14 @@ define(
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/ideal'
             },
             {
+                type: 'tig_buckaroo_afterpay',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/afterpay'
+            },
+            {
+                type: 'tig_buckaroo_afterpay2',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/afterpay2'
+            },
+            {
                 type: 'tig_buckaroo_sepadirectdebit',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/sepadirectdebit'
             },
@@ -89,8 +97,11 @@ define(
             {
                 type: 'tig_buckaroo_sofortbanking',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/sofortbanking'
+            },
+            {
+                type: 'tig_buckaroo_eps',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/eps'
             }
-
 
 
         );

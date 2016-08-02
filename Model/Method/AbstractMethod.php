@@ -160,6 +160,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected $developmentHelper;
 
+
     /**
      * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
@@ -204,6 +205,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+
         array $data = []
     ) {
         parent::__construct(
@@ -274,6 +276,41 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * Older version expect different formatted $data
+     *
+     * @param \Magento\Framework\DataObject $data
+     * @todo Think of a nicer way to implement the version differences in one codebase
+     * @return array
+     */
+    public function assignDataConvertAllVersionsArray(\Magento\Framework\DataObject $data)
+    {
+        if (!is_array($data)) {
+            $data->convertToArray();
+        }
+
+        $magentoVersion = str_replace('.', '', $this->getMagentoVersion());
+
+        // Below 2.0.5 versions do not consists the key additional_data.
+        if ($magentoVersion < '205') {
+            $data['additional_data'] = $data;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Determine Magento 2 Version used for changing assignData output data on differences
+     * between 2.0.4 and 2.0.7+
+     *
+     * @return string
+     */
+    public function getMagentoVersion()
+    {
+        $productMetadata = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface');
+        return $productMetadata->getVersion();
+    }
+
+    /**
      * Check whether payment method can be used
      *
      * @param \Magento\Quote\Api\Data\CartInterface|null $quote
@@ -281,6 +318,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
+        if (null == $quote) {
+            return false;
+        }
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
         if ($accountConfig->getActive() == 0) {
@@ -752,6 +792,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     public function cancel(\Magento\Payment\Model\InfoInterface $payment)
     {
+        parent::cancel($payment);
         return $this->void($payment);
     }
 
@@ -773,6 +814,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             );
         }
 
+        $this->_canVoid = true;
         parent::void($payment);
 
         $this->payment = $payment;
@@ -791,7 +833,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $response = $this->voidTransaction($transaction);
 
-        $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, false);
+        $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, true);
+
+
+        // SET REGISTRY BUCKAROO REDIRECT
+        $this->_registry->register('buckaroo_response', $response);
 
         $this->afterVoid($payment, $response);
 
@@ -871,6 +917,16 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         return $this->dispatchAfterEvent('tig_buckaroo_method_refund_after', $payment, $response);
     }
 
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param array|\StdCLass                                                                    $response
+     *
+     * @return $this
+     */
+    protected function afterCancel($payment, $response)
+    {
+        return $this->afterVoid($payment, $response);
+    }
     /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      * @param array|\StdCLass                                                                    $response

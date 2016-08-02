@@ -68,6 +68,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $method;
 
     /**
+     * @var bool|string
+     */
+    protected $type = false;
+
+    /**
      * @var \Magento\Framework\App\ProductMetadataInterface
      */
     protected $productMetadata;
@@ -126,6 +131,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      * @var string
      */
     public $currency;
+
+    /**
+     * @var string
+     */
+    public $invoiceId;
 
     /**
      * {@inheritdoc}
@@ -191,6 +201,26 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     public function setAmount($amount)
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getInvoiceId()
+    {
+        return $this->invoiceId;
+    }
+
+    /**
+     * @param string $invoiceId
+     *
+     * @return $this
+     */
+    public function setInvoiceId($invoiceId)
+    {
+        $this->invoiceId = $invoiceId;
 
         return $this;
     }
@@ -308,6 +338,24 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         $this->method = $method;
 
         return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getType()
+    {
+        return $this->type;
     }
 
     /**
