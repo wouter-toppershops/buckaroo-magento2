@@ -65,6 +65,8 @@ class Order extends AbstractTransactionBuilder
                 __("The selected payment method does not support the selected currency or the store's base currency.")
             );
         }
+
+        $this->invoiceId = $this->order->getIncrementId();
     }
 
     /**
@@ -76,7 +78,17 @@ class Order extends AbstractTransactionBuilder
             $this->setOrderCurrencyAndAmount();
         }
 
+        $creditAmount = 0;
+        if ($this->getType() == 'void') {
+            $creditAmount = $this->amount;
+            $this->amount = 0;
+        }
+
         $order = $this->getOrder();
+
+        if (!$this->invoiceId) {
+            $this->invoiceId = $order->getIncrementId();
+        }
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
@@ -91,11 +103,11 @@ class Order extends AbstractTransactionBuilder
         $body = [
             'Currency' => $this->currency,
             'AmountDebit' => $this->amount,
-            'AmountCredit' => 0,
-            'Invoice' => $order->getIncrementId(),
+            'AmountCredit' => $creditAmount,
+            'Invoice' => $this->invoiceId,
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
-            'ClientIP' => [
+            'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
             ],
@@ -106,7 +118,7 @@ class Order extends AbstractTransactionBuilder
             'OriginalTransactionKey' => $this->originalTransactionKey,
             'StartRecurrent' => $this->startRecurrent,
             'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
-            'Services' => [
+            'Services' => (object)[
                 'Service' => $this->getServices()
             ],
         ];

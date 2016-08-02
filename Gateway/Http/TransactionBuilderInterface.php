@@ -126,6 +126,30 @@ interface TransactionBuilderInterface
     public function setCurrency($currency);
 
     /**
+     * @return int|null
+     */
+    public function getInvoiceId();
+
+    /**
+     * @param string $invoiceId
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setInvoiceId($invoiceId);
+
+    /**
+     * @param string $type
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setType($type);
+
+    /**
+     * @return TransactionBuilderInterface
+     */
+    public function getType();
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

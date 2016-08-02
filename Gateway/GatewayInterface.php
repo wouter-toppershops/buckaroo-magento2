@@ -82,5 +82,12 @@ interface GatewayInterface
      *
      * @return mixed
      */
+    public function cancel(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
+
+    /**
+     * @param Http\Transaction $transaction
+     *
+     * @return mixed
+     */
     public function void(\TIG\Buckaroo\Gateway\Http\Transaction $transaction);
 }

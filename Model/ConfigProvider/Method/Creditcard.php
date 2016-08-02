@@ -59,6 +59,7 @@ class Creditcard extends AbstractConfigProvider
     const CREDITCARD_SERVICE_CODE_VISAELECTRON  = 'visaelectron';
     const CREDITCARD_SERVICE_CODE_CARTEBLEUE    = 'cartebleuevisa';
     const CREDITCARD_SERVICE_CODE_CARTEBANCAIRE = 'cartebancaire';
+    const CREDITCARD_SERVICE_CODE_DANKORT       = 'dankort';
     /**#@-*/
 
     const XPATH_CREDITCARD_PAYMENT_FEE          = 'payment/tig_buckaroo_creditcard/payment_fee';
@@ -107,6 +108,10 @@ class Creditcard extends AbstractConfigProvider
         [
             'name' => 'VPay',
             'code' => self::CREDITCARD_SERVICE_CODE_VPAY,
+        ],
+        [
+            'name' => 'Dankort',
+            'code' => self::CREDITCARD_SERVICE_CODE_DANKORT,
         ],
     ];
 

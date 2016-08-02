@@ -111,6 +111,9 @@
                 <maestro_payment_fee_label>Fee</maestro_payment_fee_label>
                 <mastercard_payment_fee_label>Fee</mastercard_payment_fee_label>
                 <visa_payment_fee_label>Fee</visa_payment_fee_label>
+
+                <dankort_payment_fee_label>Fee</dankort_payment_fee_label>
+
                 <group>tig_buckaroo</group>
                 <payment_action>order</payment_action>
                 <available_in_backend>0</available_in_backend>
@@ -174,6 +177,47 @@
                 <payment_action>order</payment_action>
                 <available_in_backend>0</available_in_backend>
             </tig_buckaroo_sofortbanking>
+
+            <tig_buckaroo_afterpay>
+                <active>0</active>
+                <model>TIG\Buckaroo\Model\Method\Afterpay</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Afterpay</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>150</sort_order>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <can_capture_partial>1</can_capture_partial>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_afterpay>
+
+            <tig_buckaroo_afterpay2>
+                <active>0</active>
+                <model>TIG\Buckaroo\Model\Method\Afterpay2</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Afterpay 2</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>160</sort_order>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <can_capture_partial>1</can_capture_partial>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_afterpay2>
+
+            <tig_buckaroo_eps>
+                <active>0</active>
+                <model>TIG\Buckaroo\Model\Method\Eps</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo EPS</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>170</sort_order>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_eps>
         </payment>
 
         <tig_buckaroo>

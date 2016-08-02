@@ -123,22 +123,33 @@ class SepaDirectDebit extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
+        $data = $this->assignDataConvertAllVersionsArray($data);
 
-        if (is_array($data)) {
-            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data['customer_bic']);
-            $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data['customer_iban']);
-            $this->getInfoInstance()->setAdditionalInformation('customer_account_name', $data['customer_account_name']);
-        } elseif ($data instanceof \Magento\Framework\DataObject) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->getInfoInstance()->setAdditionalInformation('customer_bic', $data->getCustomerBic());
-            /** @noinspection PhpUndefinedMethodInspection */
-            $this->getInfoInstance()->setAdditionalInformation('customer_iban', $data->getCustomerIban());
-            /** @noinspection PhpUndefinedMethodInspection */
+        if (isset($data['additional_data']['buckaroo_skip_validation'])) {
             $this->getInfoInstance()->setAdditionalInformation(
-                'customer_account_name',
-                $data->getCustomerAccountName()
+                'buckaroo_skip_validation',
+                $data['additional_data']['buckaroo_skip_validation']
             );
         }
+
+        if (isset($data['additional_data']['customer_bic'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_bic', $data['additional_data']['customer_bic']
+            );
+        }
+
+        if (isset($data['additional_data']['customer_iban'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_iban', $data['additional_data']['customer_iban']
+            );
+        }
+
+        if (isset($data['additional_data']['customer_account_name'])) {
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_account_name', $data['additional_data']['customer_account_name']
+            );
+        }
+
         return $this;
     }
 

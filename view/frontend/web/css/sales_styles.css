@@ -47,6 +47,7 @@
 .tig_buckaroo_payment_sofortbanking,
 .tig_buckaroo_payment_giropay,
 .tig_buckaroo_payment_afterpay,
+.tig_buckaroo_payment_afterpay2,
 .tig_buckaroo_payment_payperemail,
 .tig_buckaroo_payment_paymentguarantee,
 .tig_buckaroo_payment_giftcards,
@@ -64,6 +65,18 @@
     width: 100%;
 }
 
+/* Afterpay */
+.tig_buckaroo_payment_afterpay2:before,
+.tig_buckaroo_payment_afterpay:before {
+    background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
+    float: left;
+    margin-right: 10px;
+    margin-top: -4px;
+    background-size: auto 30px;
+    width: 100px;
+    height: 30px;
+    content: ' ';
+}
 
 /* PayPal */
 .tig_buckaroo_payment_paypal:before {

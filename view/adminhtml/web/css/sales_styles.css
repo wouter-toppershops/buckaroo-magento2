@@ -47,6 +47,7 @@
 .tig_buckaroo_payment_sofortbanking,
 .tig_buckaroo_payment_giropay,
 .tig_buckaroo_payment_afterpay,
+.tig_buckaroo_payment_afterpay2,
 .tig_buckaroo_payment_payperemail,
 .tig_buckaroo_payment_paymentguarantee,
 .tig_buckaroo_payment_giftcards,
@@ -58,12 +59,25 @@
 .tig_buckaroo_payment_card_visaelectron,
 .tig_buckaroo_payment_card_vpay,
 .tig_buckaroo_payment_card_cartebleuevisa,
-.tig_buckaroo_payment_card_cartebancaire
+.tig_buckaroo_payment_card_cartebancaire,
+.tig_buckaroo_payment_card_dankort
 {
     float:left;
     width: 100%;
 }
 
+/* Afterpay */
+.tig_buckaroo_payment_afterpay:before,
+.tig_buckaroo_payment_afterpay2:before {
+    background: url(../images/tig_buckaroo_afterpay_title.png) no-repeat;
+    float: left;
+    margin-right: 10px;
+    margin-top: -4px;
+    background-size: auto 30px;
+    width: 100px;
+    height: 30px;
+    content: ' ';
+}
 
 /* PayPal */
 .tig_buckaroo_payment_paypal:before {
@@ -162,6 +176,18 @@
     content           :' ';
 }
 
+/* EPS */
+.tig_buckaroo_payment_eps:before {
+    background: url(../images/tig_buckaroo_eps_title.png) no-repeat;
+    margin-top        :-1px;
+    float             :left;
+    margin-right      :10px;
+    background-size   :auto 23px;
+    width             :35px;
+    height            :30px;
+    content           :' ';
+}
+
 /* ===================== Order Overview -  Credit Card / Debit Card Method Styling ======================= */
 
 .tig_buckaroo_payment_card_mastercard:before {
@@ -253,6 +279,17 @@
     /*height            :30px;*/
     /*content           :' ';*/
 /*}*/
+
+.tig_buckaroo_payment_card_dankort:before {
+    background: url(../images/creditcard/ico-da.png) no-repeat;
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
+}
 
 /* ===================== Creditmemo create -  Warning message regarding rounding errors ======================= */
 .tig-buckaroo-warning-message {
