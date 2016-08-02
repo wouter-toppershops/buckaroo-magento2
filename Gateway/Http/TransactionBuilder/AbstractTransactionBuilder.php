@@ -206,6 +206,26 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
+     * @return int
+     */
+    public function getInvoiceId()
+    {
+        return $this->invoiceId;
+    }
+
+    /**
+     * @param string $invoiceId
+     *
+     * @return $this
+     */
+    public function setInvoiceId($invoiceId)
+    {
+        $this->invoiceId = $invoiceId;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getCurrency()
