@@ -245,8 +245,7 @@ class Afterpay extends AbstractMethod
 
             $i = 0;
             foreach ($oInvoiceCollection as $oInvoice) {
-
-                if(++$i !== $numberOfInvoices) {
+                if (++$i !== $numberOfInvoices) {
                     continue;
                 }
 
@@ -259,8 +258,7 @@ class Afterpay extends AbstractMethod
         if ($totalOrder == $currentInvoiceTotal && $numberOfInvoices == 1) {
             //full capture
             $capturePartial = false;
-        }
-        else {
+        } else {
             //partial capture
             $capturePartial = true;
         }
@@ -272,7 +270,6 @@ class Afterpay extends AbstractMethod
         ];
 
         if ($capturePartial) {
-
             $articles = $this->getPartialRequestArticalData($currentInvoice);
 
             // For the first invoice possible add payment fee
@@ -299,7 +296,7 @@ class Afterpay extends AbstractMethod
 
             /** @noinspection PhpUndefinedMethodInspection */
             $transactionBuilder->setAmount($currentInvoiceTotal)
-                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices . '-' . substr(md5(date("YMDHis")),0,6) )
+                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6))
                 ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
                 ->setOriginalTransactionKey(
                     $payment->getParentTransactionId()
@@ -407,7 +404,9 @@ class Afterpay extends AbstractMethod
             $requestData = array_merge($requestData, $this->getRequestShippingData($payment));
         }
 
-        $requestData = array_merge($requestData, [
+        $requestData = array_merge(
+            $requestData,
+            [
                 // Data variable to let afterpay know if the addresses are the same.
                 [
                     '_'    => $isDifferent,
@@ -492,7 +491,8 @@ class Afterpay extends AbstractMethod
                 continue;
             }
 
-            $article = $this->getArticleArrayLine(  $count,
+            $article = $this->getArticleArrayLine(
+                $count,
                 $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
@@ -541,12 +541,12 @@ class Afterpay extends AbstractMethod
         $count    = 1;
 
         foreach ($invoice->getAllItems() as $item) {
-
             if (empty($item) || $this->calculateProductPrice($item) == 0) {
                 continue;
             }
 
-            $article = $this->getArticleArrayLine(  $count,
+            $article = $this->getArticleArrayLine(
+                $count,
                 (int) $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
@@ -559,7 +559,8 @@ class Afterpay extends AbstractMethod
             // Capture calculates discount per order line
             if ($item->getDiscountAmount() > 0) {
                 $count++;
-                $article = $this->getArticleArrayLine(  $count,
+                $article = $this->getArticleArrayLine(
+                    $count,
                     'Korting op '. (int) $item->getQty() . ' x ' . $item->getName(),
                     $item->getProductId(),
                     1,
@@ -584,6 +585,7 @@ class Afterpay extends AbstractMethod
     }
 
     /**
+     * @param                                      $lastestKey
      * @param \Magento\Payment\Model\Order\Invoice $invoice
      *
      * @return array
@@ -591,11 +593,12 @@ class Afterpay extends AbstractMethod
     public function getPartialRequestGrandTotal($lastestKey, $invoice)
     {
 
-        $article = $this->getArticleArrayLine(  $lastestKey,
+        $article = $this->getArticleArrayLine(
+            $lastestKey,
             'Total',
             '0',
             1,
-            number_format($invoice->getBaseGrandTotal(),2),
+            number_format($invoice->getBaseGrandTotal(), 2),
             4
         );
 
@@ -640,10 +643,10 @@ class Afterpay extends AbstractMethod
         $article = [];
 
         if (false !== $buckfee && (double)$buckfee > 0) {
-
             $storeId = (int) $order->getStoreId();
 
-            $article = $this->getArticleArrayLine(  $latestKey,
+            $article = $this->getArticleArrayLine(
+                $latestKey,
                 'Servicekosten',
                 1,
                 1,
@@ -685,12 +688,12 @@ class Afterpay extends AbstractMethod
         $article = [];
 
         if ($order->getDiscountAmount() < 0) {
-
-            $article = $this->getArticleArrayLine(  $latestKey,
+            $article = $this->getArticleArrayLine(
+                $latestKey,
                 'Korting',
                 1,
                 1,
-                number_format($order->getDiscountAmount(),2),
+                number_format($order->getDiscountAmount(), 2),
                 4
             );
         }
@@ -706,7 +709,7 @@ class Afterpay extends AbstractMethod
      * @param $articleUnitPrice
      * @param $articleVatCategory
      *
-     * return array
+     * @return array
      */
     public function getArticleArrayLine($latestKey, $articleDescription, $articleId, $articleQuantity, $articleUnitPrice, $articleVatCategory)
     {
@@ -960,7 +963,6 @@ class Afterpay extends AbstractMethod
 
         // Only required if afterpay paymentmethod is acceptgiro.
         if ($payment->getAdditionalInformation('customer_iban')) {
-
             $accountNumber = [
                 [
                     '_'    => $payment->getAdditionalInformation('customer_iban'),
