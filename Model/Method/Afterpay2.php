@@ -39,7 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-
 class Afterpay2 extends AbstractMethod
 {
     /**
@@ -149,7 +148,10 @@ class Afterpay2 extends AbstractMethod
             $additionalData = $data['additional_data'];
             $this->getInfoInstance()->setAdditionalInformation('termsCondition', $additionalData['termsCondition']);
             $this->getInfoInstance()->setAdditionalInformation('customer_gender', $additionalData['customer_gender']);
-            $this->getInfoInstance()->setAdditionalInformation('customer_billingName', $additionalData['customer_billingName']);
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_billingName',
+                $additionalData['customer_billingName']
+            );
             $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
             if (isset($additionalData['selectedBusiness'])
@@ -159,7 +161,10 @@ class Afterpay2 extends AbstractMethod
                 $this->getInfoInstance()->setAdditionalInformation('CompanyName', $additionalData['CompanyName']);
                 $this->getInfoInstance()->setAdditionalInformation('CostCenter', $additionalData['CostCenter']);
                 $this->getInfoInstance()->setAdditionalInformation('VATNumber', $additionalData['VATNumber']);
-                $this->getInfoInstance()->setAdditionalInformation('selectedBusiness', $additionalData['selectedBusiness']);
+                $this->getInfoInstance()->setAdditionalInformation(
+                    'selectedBusiness',
+                    $additionalData['selectedBusiness']
+                );
             }
         }
 
@@ -293,16 +298,17 @@ class Afterpay2 extends AbstractMethod
 
         // Partial Capture Settings
         if ($capturePartial) {
-
             /** @noinspection PhpUndefinedMethodInspection */
             $transactionBuilder->setAmount($currentInvoiceTotal)
-                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6))
+                ->setInvoiceId(
+                    $payment->getOrder()->getIncrementId(). '-' .
+                    $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
+                )
                 ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
                 ->setOriginalTransactionKey(
                     $payment->getParentTransactionId()
                 );
         }
-
 
         return $transactionBuilder;
     }
@@ -580,7 +586,6 @@ class Afterpay2 extends AbstractMethod
 
         $requestData = $articles;
 
-
         return $requestData;
     }
 
@@ -653,7 +658,6 @@ class Afterpay2 extends AbstractMethod
                 round($buckfeeInclTax, 2),
                 $this->getTaxCategory($feeHelper->getBuckarooFeeTaxClass($storeId))
             );
-
         }
         // Add aditional shippin costs.
         $shippingCost = [];
@@ -711,8 +715,14 @@ class Afterpay2 extends AbstractMethod
      *
      * @return array
      */
-    public function getArticleArrayLine($latestKey, $articleDescription, $articleId, $articleQuantity, $articleUnitPrice, $articleVatCategory)
-    {
+    public function getArticleArrayLine(
+        $latestKey,
+        $articleDescription,
+        $articleId,
+        $articleQuantity,
+        $articleUnitPrice,
+        $articleVatCategory
+    ) {
         $article = [
             [
                 '_'       => $articleDescription,
@@ -768,11 +778,11 @@ class Afterpay2 extends AbstractMethod
 
         if (in_array($taxClassId, $highClasses)) {
             $taxCategory = 1;
-        } else if (in_array($taxClassId, $middleClasses)) {
+        } elseif (in_array($taxClassId, $middleClasses)) {
             $taxCategory = 5;
-        } else if (in_array($taxClassId, $lowClasses)) {
+        } elseif (in_array($taxClassId, $lowClasses)) {
             $taxCategory = 2;
-        } else if (in_array($taxClassId, $zeroClasses)) {
+        } elseif (in_array($taxClassId, $zeroClasses)) {
             $taxCategory = 3;
         } else {
             // No classes == 4

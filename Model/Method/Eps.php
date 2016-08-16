@@ -176,8 +176,7 @@ class Eps extends AbstractMethod
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
-            ->setChannel('CallCenter')
-        ;
+            ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }

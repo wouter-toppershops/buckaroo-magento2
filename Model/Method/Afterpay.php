@@ -149,7 +149,10 @@ class Afterpay extends AbstractMethod
             $additionalData = $data['additional_data'];
             $this->getInfoInstance()->setAdditionalInformation('termsCondition', $additionalData['termsCondition']);
             $this->getInfoInstance()->setAdditionalInformation('customer_gender', $additionalData['customer_gender']);
-            $this->getInfoInstance()->setAdditionalInformation('customer_billingName', $additionalData['customer_billingName']);
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_billingName',
+                $additionalData['customer_billingName']
+            );
             $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
             if (isset($additionalData['selectedBusiness'])
@@ -251,7 +254,6 @@ class Afterpay extends AbstractMethod
 
                 $currentInvoice = $oInvoice;
                 $currentInvoiceTotal = $oInvoice->getBaseGrandTotal();
-
             }
         }
 
@@ -711,8 +713,14 @@ class Afterpay extends AbstractMethod
      *
      * @return array
      */
-    public function getArticleArrayLine($latestKey, $articleDescription, $articleId, $articleQuantity, $articleUnitPrice, $articleVatCategory)
-    {
+    public function getArticleArrayLine(
+        $latestKey,
+        $articleDescription,
+        $articleId,
+        $articleQuantity,
+        $articleUnitPrice,
+        $articleVatCategory
+    ) {
         $article = [
             [
                 '_'       => $articleDescription,
@@ -768,11 +776,11 @@ class Afterpay extends AbstractMethod
 
         if (in_array($taxClassId, $highClasses)) {
             $taxCategory = 1;
-        } else if (in_array($taxClassId, $middleClasses)) {
+        } elseif (in_array($taxClassId, $middleClasses)) {
             $taxCategory = 5;
-        } else if (in_array($taxClassId, $lowClasses)) {
+        } elseif (in_array($taxClassId, $lowClasses)) {
             $taxCategory = 2;
-        } else if (in_array($taxClassId, $zeroClasses)) {
+        } elseif (in_array($taxClassId, $zeroClasses)) {
             $taxCategory = 3;
         } else {
             // No classes == 4
