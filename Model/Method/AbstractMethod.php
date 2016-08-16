@@ -160,7 +160,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      */
     protected $developmentHelper;
 
-
     /**
      * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
@@ -833,7 +832,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $response = $this->voidTransaction($transaction);
 
         $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, true);
-
 
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);

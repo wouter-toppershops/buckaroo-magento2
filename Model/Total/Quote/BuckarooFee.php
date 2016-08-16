@@ -229,7 +229,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      */
     public function getFeePrice($price, $priceIncl = null, \Magento\Framework\DataObject $pseudoProduct = null)
     {
-        if (is_null($pseudoProduct)) {
+        if ($pseudoProduct === null) {
             $pseudoProduct = new \Magento\Framework\DataObject();
         }
 

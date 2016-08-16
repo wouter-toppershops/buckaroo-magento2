@@ -39,7 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-
 class Afterpay extends AbstractMethod
 {
     /**
@@ -162,7 +161,10 @@ class Afterpay extends AbstractMethod
                 $this->getInfoInstance()->setAdditionalInformation('CompanyName', $additionalData['CompanyName']);
                 $this->getInfoInstance()->setAdditionalInformation('CostCenter', $additionalData['CostCenter']);
                 $this->getInfoInstance()->setAdditionalInformation('VATNumber', $additionalData['VATNumber']);
-                $this->getInfoInstance()->setAdditionalInformation('selectedBusiness', $additionalData['selectedBusiness']);
+                $this->getInfoInstance()->setAdditionalInformation(
+                    'selectedBusiness',
+                    $additionalData['selectedBusiness']
+                );
             }
         }
 
@@ -298,13 +300,15 @@ class Afterpay extends AbstractMethod
 
             /** @noinspection PhpUndefinedMethodInspection */
             $transactionBuilder->setAmount($currentInvoiceTotal)
-                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6))
+                ->setInvoiceId(
+                    $payment->getOrder()->getIncrementId(). '-' .
+                    $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
+                )
                 ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
                 ->setOriginalTransactionKey(
                     $payment->getParentTransactionId()
                 );
         }
-
 
         return $transactionBuilder;
     }
@@ -581,7 +585,6 @@ class Afterpay extends AbstractMethod
         }
 
         $requestData = $articles;
-
 
         return $requestData;
     }

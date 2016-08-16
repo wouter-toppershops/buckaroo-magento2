@@ -4,7 +4,9 @@
 <div class="refund-fields">
     <?php foreach ($extraFields as $name => $field) : ?>
         <div class="admin__field" >
-            <label for="tig_buckaroo_<?php echo $block->escapeHtml($field); ?>" class="label normal admin__field-label"><?php echo $name; ?></label>
+            <label for="tig_buckaroo_<?php echo $block->escapeHtml($field); ?>" class="label normal admin__field-label">
+                <?php echo $name; ?>
+            </label>
             <input type="text"
                    name="creditmemo[<?php echo $block->escapeHtml($field); ?>]"
                    class="input-text input-text admin__control-text"
