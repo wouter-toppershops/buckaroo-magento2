@@ -100,7 +100,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
         $payment->shouldReceive('getAdditionalInformation')->with('customer_bic')->andReturn($fixture['customer_bic']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
@@ -120,7 +120,6 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
     }
-
 
     /**
      * Test the getCaptureTransactionBuilder method.

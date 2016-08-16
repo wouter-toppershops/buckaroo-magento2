@@ -134,7 +134,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('card_type')
             ->andReturn($fixture['card_type']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
@@ -174,7 +174,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             \TIG\Buckaroo\Model\Method\Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn($fixture['transaction_key']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
         $order->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
@@ -213,7 +213,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('card_type')
             ->andReturn($fixture['card_type']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
