@@ -121,7 +121,8 @@ class Ideal extends AbstractMethod
         $data = $this->assignDataConvertAllVersionsArray($data);
 
         if (isset($data['additional_data']['buckaroo_skip_validation'])) {
-            $this->getInfoInstance()->setAdditionalInformation('buckaroo_skip_validation',
+            $this->getInfoInstance()->setAdditionalInformation(
+                'buckaroo_skip_validation',
                 $data['additional_data']['buckaroo_skip_validation']
             );
         }

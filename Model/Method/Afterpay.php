@@ -39,7 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-
 class Afterpay extends AbstractMethod
 {
     /**
@@ -149,7 +148,10 @@ class Afterpay extends AbstractMethod
             $additionalData = $data['additional_data'];
             $this->getInfoInstance()->setAdditionalInformation('termsCondition', $additionalData['termsCondition']);
             $this->getInfoInstance()->setAdditionalInformation('customer_gender', $additionalData['customer_gender']);
-            $this->getInfoInstance()->setAdditionalInformation('customer_billingName', $additionalData['customer_billingName']);
+            $this->getInfoInstance()->setAdditionalInformation(
+                'customer_billingName',
+                $additionalData['customer_billingName']
+            );
             $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
             if (isset($additionalData['selectedBusiness'])
@@ -159,7 +161,10 @@ class Afterpay extends AbstractMethod
                 $this->getInfoInstance()->setAdditionalInformation('CompanyName', $additionalData['CompanyName']);
                 $this->getInfoInstance()->setAdditionalInformation('CostCenter', $additionalData['CostCenter']);
                 $this->getInfoInstance()->setAdditionalInformation('VATNumber', $additionalData['VATNumber']);
-                $this->getInfoInstance()->setAdditionalInformation('selectedBusiness', $additionalData['selectedBusiness']);
+                $this->getInfoInstance()->setAdditionalInformation(
+                    'selectedBusiness',
+                    $additionalData['selectedBusiness']
+                );
             }
         }
 
@@ -245,22 +250,19 @@ class Afterpay extends AbstractMethod
 
             $i = 0;
             foreach ($oInvoiceCollection as $oInvoice) {
-
-                if(++$i !== $numberOfInvoices) {
+                if (++$i !== $numberOfInvoices) {
                     continue;
                 }
 
                 $currentInvoice = $oInvoice;
                 $currentInvoiceTotal = $oInvoice->getBaseGrandTotal();
-
             }
         }
 
         if ($totalOrder == $currentInvoiceTotal && $numberOfInvoices == 1) {
             //full capture
             $capturePartial = false;
-        }
-        else {
+        } else {
             //partial capture
             $capturePartial = true;
         }
@@ -272,7 +274,6 @@ class Afterpay extends AbstractMethod
         ];
 
         if ($capturePartial) {
-
             $articles = $this->getPartialRequestArticalData($currentInvoice);
 
             // For the first invoice possible add payment fee
@@ -299,13 +300,15 @@ class Afterpay extends AbstractMethod
 
             /** @noinspection PhpUndefinedMethodInspection */
             $transactionBuilder->setAmount($currentInvoiceTotal)
-                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices . '-' . substr(md5(date("YMDHis")),0,6) )
+                ->setInvoiceId(
+                    $payment->getOrder()->getIncrementId(). '-' .
+                    $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
+                )
                 ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
                 ->setOriginalTransactionKey(
                     $payment->getParentTransactionId()
                 );
         }
-
 
         return $transactionBuilder;
     }
@@ -407,7 +410,9 @@ class Afterpay extends AbstractMethod
             $requestData = array_merge($requestData, $this->getRequestShippingData($payment));
         }
 
-        $requestData = array_merge($requestData, [
+        $requestData = array_merge(
+            $requestData,
+            [
                 // Data variable to let afterpay know if the addresses are the same.
                 [
                     '_'    => $isDifferent,
@@ -492,7 +497,8 @@ class Afterpay extends AbstractMethod
                 continue;
             }
 
-            $article = $this->getArticleArrayLine(  $count,
+            $article = $this->getArticleArrayLine(
+                $count,
                 $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
@@ -541,12 +547,12 @@ class Afterpay extends AbstractMethod
         $count    = 1;
 
         foreach ($invoice->getAllItems() as $item) {
-
             if (empty($item) || $this->calculateProductPrice($item) == 0) {
                 continue;
             }
 
-            $article = $this->getArticleArrayLine(  $count,
+            $article = $this->getArticleArrayLine(
+                $count,
                 (int) $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
@@ -559,7 +565,8 @@ class Afterpay extends AbstractMethod
             // Capture calculates discount per order line
             if ($item->getDiscountAmount() > 0) {
                 $count++;
-                $article = $this->getArticleArrayLine(  $count,
+                $article = $this->getArticleArrayLine(
+                    $count,
                     'Korting op '. (int) $item->getQty() . ' x ' . $item->getName(),
                     $item->getProductId(),
                     1,
@@ -579,11 +586,11 @@ class Afterpay extends AbstractMethod
 
         $requestData = $articles;
 
-
         return $requestData;
     }
 
     /**
+     * @param                                      $lastestKey
      * @param \Magento\Payment\Model\Order\Invoice $invoice
      *
      * @return array
@@ -591,11 +598,12 @@ class Afterpay extends AbstractMethod
     public function getPartialRequestGrandTotal($lastestKey, $invoice)
     {
 
-        $article = $this->getArticleArrayLine(  $lastestKey,
+        $article = $this->getArticleArrayLine(
+            $lastestKey,
             'Total',
             '0',
             1,
-            number_format($invoice->getBaseGrandTotal(),2),
+            number_format($invoice->getBaseGrandTotal(), 2),
             4
         );
 
@@ -640,10 +648,10 @@ class Afterpay extends AbstractMethod
         $article = [];
 
         if (false !== $buckfee && (double)$buckfee > 0) {
-
             $storeId = (int) $order->getStoreId();
 
-            $article = $this->getArticleArrayLine(  $latestKey,
+            $article = $this->getArticleArrayLine(
+                $latestKey,
                 'Servicekosten',
                 1,
                 1,
@@ -685,12 +693,12 @@ class Afterpay extends AbstractMethod
         $article = [];
 
         if ($order->getDiscountAmount() < 0) {
-
-            $article = $this->getArticleArrayLine(  $latestKey,
+            $article = $this->getArticleArrayLine(
+                $latestKey,
                 'Korting',
                 1,
                 1,
-                number_format($order->getDiscountAmount(),2),
+                number_format($order->getDiscountAmount(), 2),
                 4
             );
         }
@@ -706,10 +714,16 @@ class Afterpay extends AbstractMethod
      * @param $articleUnitPrice
      * @param $articleVatCategory
      *
-     * return array
+     * @return array
      */
-    public function getArticleArrayLine($latestKey, $articleDescription, $articleId, $articleQuantity, $articleUnitPrice, $articleVatCategory)
-    {
+    public function getArticleArrayLine(
+        $latestKey,
+        $articleDescription,
+        $articleId,
+        $articleQuantity,
+        $articleUnitPrice,
+        $articleVatCategory
+    ) {
         $article = [
             [
                 '_'       => $articleDescription,
@@ -765,11 +779,11 @@ class Afterpay extends AbstractMethod
 
         if (in_array($taxClassId, $highClasses)) {
             $taxCategory = 1;
-        } else if (in_array($taxClassId, $middleClasses)) {
+        } elseif (in_array($taxClassId, $middleClasses)) {
             $taxCategory = 5;
-        } else if (in_array($taxClassId, $lowClasses)) {
+        } elseif (in_array($taxClassId, $lowClasses)) {
             $taxCategory = 2;
-        } else if (in_array($taxClassId, $zeroClasses)) {
+        } elseif (in_array($taxClassId, $zeroClasses)) {
             $taxCategory = 3;
         } else {
             // No classes == 4
@@ -960,7 +974,6 @@ class Afterpay extends AbstractMethod
 
         // Only required if afterpay paymentmethod is acceptgiro.
         if ($payment->getAdditionalInformation('customer_iban')) {
-
             $accountNumber = [
                 [
                     '_'    => $payment->getAdditionalInformation('customer_iban'),

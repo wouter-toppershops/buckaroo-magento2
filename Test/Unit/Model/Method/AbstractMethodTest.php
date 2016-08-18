@@ -650,7 +650,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
          */
         $partialMock->buckarooPaymentMethodCode = $method;
 
-
         $this->assertEquals($expectedTitle, $partialMock->getTitle());
     }
 
@@ -1195,7 +1194,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
         /** @var \Magento\Payment\Model\InfoInterface $payment */
-
 
         $this->object->saveTransactionData($response, $payment, true, false);
     }

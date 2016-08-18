@@ -167,14 +167,14 @@ class Account extends AbstractConfigProvider
         /**
          * If a Payment Method is set, get the payment method status
          */
-        if (!is_null($paymentMethod)) {
+        if ($paymentMethod !== null) {
             /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
             $methodOrderStatus = $methodConfigProvider->getOrderStatusSuccess();
 
-            if ($activeStatus && !is_null($methodOrderStatus)) {
+            if ($activeStatus && $methodOrderStatus !== null) {
                 $orderStatusSuccess = $methodConfigProvider->getOrderStatusSuccess();
             }
         }
@@ -197,17 +197,16 @@ class Account extends AbstractConfigProvider
         /**
          * If a Payment Method is set, get the payment method status
          */
-        if (!is_null($paymentMethod)) {
+        if ($paymentMethod !== null) {
             /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
             $methodOrderStatus = $methodConfigProvider->getOrderStatusFailed();
 
-            if ($activeStatus && !is_null($methodOrderStatus)) {
+            if ($activeStatus && $methodOrderStatus !== null) {
                 $orderStatusFailed = $methodConfigProvider->getOrderStatusFailed();
             }
-
         }
         return $orderStatusFailed;
     }

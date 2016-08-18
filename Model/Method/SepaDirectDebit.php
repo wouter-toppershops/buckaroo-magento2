@@ -134,19 +134,22 @@ class SepaDirectDebit extends AbstractMethod
 
         if (isset($data['additional_data']['customer_bic'])) {
             $this->getInfoInstance()->setAdditionalInformation(
-                'customer_bic', $data['additional_data']['customer_bic']
+                'customer_bic',
+                $data['additional_data']['customer_bic']
             );
         }
 
         if (isset($data['additional_data']['customer_iban'])) {
             $this->getInfoInstance()->setAdditionalInformation(
-                'customer_iban', $data['additional_data']['customer_iban']
+                'customer_iban',
+                $data['additional_data']['customer_iban']
             );
         }
 
         if (isset($data['additional_data']['customer_account_name'])) {
             $this->getInfoInstance()->setAdditionalInformation(
-                'customer_account_name', $data['additional_data']['customer_account_name']
+                'customer_account_name',
+                $data['additional_data']['customer_account_name']
             );
         }
 

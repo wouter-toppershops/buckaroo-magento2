@@ -366,7 +366,6 @@ class Push
                 }
 
                 $items[$orderItem->getId()] = ['qty' => (int)$qty];
-
             }
         }
 

@@ -213,11 +213,10 @@ class Debugger
      * @param      $message
      * @param int  $level
      * @param null $filename
-     * @param bool $force
      *
      * @return $this
      */
-    public function log($message = null, $level = 100, $filename = null, $force = false)
+    public function log($message = null, $level = 100, $filename = null)
     {
         /**
          * If message not given, see if $this->message is filled
@@ -273,7 +272,6 @@ class Debugger
             foreach ($this->getMailTo() as $mailTo) {
                 mail($mailTo, $this->getMailSubject(), $message, $headers);
             }
-
         }
 
         /**

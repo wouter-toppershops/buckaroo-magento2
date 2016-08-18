@@ -129,14 +129,16 @@ class Creditcard extends AbstractMethod
         $data = $this->assignDataConvertAllVersionsArray($data);
 
         if (isset($data['additional_data']['buckaroo_skip_validation'])) {
-            $this->getInfoInstance()->setAdditionalInformation('buckaroo_skip_validation',
+            $this->getInfoInstance()->setAdditionalInformation(
+                'buckaroo_skip_validation',
                 $data['additional_data']['buckaroo_skip_validation']
             );
         }
 
         if (isset($data['additional_data']['card_type'])) {
             $this->getInfoInstance()->setAdditionalInformation(
-                'card_type', $data['additional_data']['card_type']
+                'card_type',
+                $data['additional_data']['card_type']
             );
         }
 

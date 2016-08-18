@@ -424,8 +424,8 @@ class Push implements PushInterface
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
         } else {
             $description = 'Authorization status : <strong>' . $message . "</strong><br/>";
-            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue()) . ' has been ' .
-                'authorized. Please create an invoice to capture the authorized amount.';
+            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue())
+                . ' has been authorized. Please create an invoice to capture the authorized amount.';
         }
 
         if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $accountConfig->getAutoInvoice()) {

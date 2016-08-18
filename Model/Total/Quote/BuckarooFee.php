@@ -229,7 +229,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
      */
     public function getFeePrice($price, $priceIncl = null, \Magento\Framework\DataObject $pseudoProduct = null)
     {
-        if (is_null($pseudoProduct)) {
+        if ($pseudoProduct === null) {
             $pseudoProduct = new \Magento\Framework\DataObject();
         }
 
@@ -238,7 +238,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         $pseudoProduct->setTaxClassId($feeConfig->getTaxClass());
 
         /** @noinspection PhpUndefinedMethodInspection */
-        if (is_null($priceIncl)
+        if ($priceIncl === null
             && $feeConfig->getPaymentFeeTax()
                 == \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX
         ) {

@@ -90,7 +90,7 @@ class MrcashTest extends \TIG\Buckaroo\Test\BaseTest
         $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
         $payment->shouldReceive('getAdditionalInformation')->with('issuer')->andReturn($fixture['issuer']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
@@ -110,7 +110,6 @@ class MrcashTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
     }
-
 
     /**
      * Test the getCaptureTransactionBuilder method.

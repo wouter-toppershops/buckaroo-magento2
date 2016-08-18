@@ -120,10 +120,11 @@ class Giropay extends AbstractMethod
     {
         parent::assignData($data);
         $data = $this->assignDataConvertAllVersionsArray($data);
-        
+
         if (isset($data['additional_data']['customer_bic'])) {
             $this->getInfoInstance()->setAdditionalInformation(
-                'customer_bic', $data['additional_data']['customer_bic']
+                'customer_bic',
+                $data['additional_data']['customer_bic']
             );
         }
 
