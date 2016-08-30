@@ -60,9 +60,110 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     protected $certificateCollection;
 
     /**
+     * @var \TIG\Buckaroo\Model\ResourceModel\Giftcard\Collection
+     */
+    protected $giftcardCollection;
+
+    /**
      * @var \Magento\Framework\Encryption\Encryptor
      */
     protected $encryptor;
+
+    /** @var array */
+    protected $giftcardArray = array(
+        array(
+            'value' => 'babygiftcard',
+            'label' => 'babygiftcard'
+        ),
+        array(
+            'value' => 'babyparkgiftcard',
+            'label' => 'Babypark Giftcard'
+        ),
+        array(
+            'value' => 'beautywellness',
+            'label' => 'Beauty Wellness'
+        ),
+        array(
+            'value' => 'boekenbon',
+            'label' => 'Boekenbon'
+        ),
+        array(
+            'value' => 'boekenvoordeel',
+            'label' => 'Boekenvoordeel'
+        ),
+        array(
+            'value' => 'designshopsgiftcard',
+            'label' => 'Designshops Giftcard'
+        ),
+        array(
+            'value' => 'fijncadeau',
+            'label' => 'Fijn Cadeau'
+        ),
+        array(
+            'value' => 'koffiecadeau',
+            'label' => 'Koffie Cadeau'
+        ),
+        array(
+            'value' => 'kokenzo',
+            'label' => 'Koken En Zo'
+        ),
+        array(
+            'value' => 'kookcadeau',
+            'label' => 'kook-cadeau'
+        ),
+        array(
+            'value' => 'nationaleentertainmentcard',
+            'label' => 'Nationale EntertainmentCard'
+        ),
+        array(
+            'value' => 'naturesgift',
+            'label' => 'Natures Gift'
+        ),
+        array(
+            'value' => 'podiumcadeaukaart',
+            'label' => 'PODIUM Cadeaukaart'
+        ),
+        array(
+            'value' => 'shoesaccessories',
+            'label' => 'Shoes Accessories'
+        ),
+        array(
+            'value' => 'webshopgiftcard',
+            'label' => 'Webshop Giftcard'
+        ),
+        array(
+            'value' => 'wijncadeau',
+            'label' => 'Wijn Cadeau'
+        ),
+        array(
+            'value' => 'wonenzo',
+            'label' => 'Wonen En Zo'
+        ),
+        array(
+            'value' => 'yourgift',
+            'label' => 'YourGift Card'
+        ),
+        array(
+            'value' => 'fashioncheque',
+            'label' => 'fashioncheque'
+        ),
+        array(
+            'value' => 'sieradenhorlogescadeaukaart',
+            'label' => 'sieradenhorlogescadeaukaart'
+        ),
+        array(
+            'value' => 'jewellerygiftcard',
+            'label' => 'JewelleryGiftcard'
+        ),
+        array(
+            'value' => 'ebon',
+            'label' => 'e-bon'
+        ),
+        array(
+            'value' => 'voetbalshopcadeau',
+            'label' => 'Voetbalshop cadeaucard'
+        )
+    );
 
     /**
      * @param \Magento\Sales\Setup\SalesSetupFactory                   $salesSetupFactory
@@ -73,11 +174,13 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     public function __construct(
         \Magento\Sales\Setup\SalesSetupFactory $salesSetupFactory,
         \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory,
+        \TIG\Buckaroo\Model\ResourceModel\Giftcard\Collection $giftcardCollection,
         \TIG\Buckaroo\Model\ResourceModel\Certificate\Collection $certificateCollection,
         \Magento\Framework\Encryption\Encryptor $encryptor
     ) {
         $this->salesSetupFactory = $salesSetupFactory;
         $this->quoteSetupFactory = $quoteSetupFactory;
+        $this->giftcardCollection = $giftcardCollection;
         $this->certificateCollection = $certificateCollection;
         $this->encryptor = $encryptor;
     }
@@ -111,6 +214,10 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '0.9.4', '<')) {
             $this->encryptCertificates();
+        }
+
+        if (version_compare($context->getVersion(), '1.3.0', '<')) {
+//            $this->installBaseGiftcards($setup);
         }
     }
 
@@ -483,6 +590,32 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             )->setSkipEncryptionOnSave(true);
 
             $certificate->save();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Install giftcards which can be used with the Giftcards payment method
+     *
+     * @param ModuleDataSetupInterface $setup
+     *
+     * @return $this
+     */
+    protected function installBaseGiftcards(ModuleDataSetupInterface $setup)
+    {
+        foreach ($this->giftcardArray as $giftcard) {
+            $foundGiftcards = $this->giftcardCollection->getItemsByColumnValue('servicecode', $giftcard['value']);
+
+            if (count($foundGiftcards) <= 0) {
+                $setup->getConnection()->insert(
+                    $setup->getTable('tig_buckaroo_giftcard'),
+                    [
+                        'servicecode' => $giftcard['value'],
+                        'label'  => $giftcard['label'],
+                    ]
+                );
+            }
         }
 
         return $this;
