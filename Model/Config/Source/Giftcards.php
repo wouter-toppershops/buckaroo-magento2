@@ -51,7 +51,7 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
     public function __construct(
         \TIG\Buckaroo\Model\GiftcardFactory $modelGiftcardFactory
     ) {
-        $this->$giftcardModel = $modelGiftcardFactory;
+        $this->giftcardModel = $modelGiftcardFactory;
     }
 
     /**
@@ -61,25 +61,23 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $certificateData = $this->getGiftcardData();
+        $giftcardData = $this->getGiftcardData();
 
         $options = [];
 
-        if (count($certificateData) <= 0) {
+        if (count($giftcardData) <= 0) {
             $options[] = [
                 'value' => '',
-                'label' => __('You have not yet uploaded any certificate files')
+                'label' => __('You have not yet added any giftcards')
             ];
 
             return $options;
         }
 
-        $options[] = ['value' => '', 'label' => __('No certificate selected')];
-
-        foreach ($certificateData as $index => $data) {
+        foreach ($giftcardData as $index => $data) {
             $options[] = [
-                'value' => $data['entity_id'],
-                'label' => $data['name'] . ' (' . $data['created_at'] . ')'
+                'value' => $data['servicecode'],
+                'label' => $data['label']
             ];
         }
 
@@ -91,11 +89,14 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
      *
      * @return array
      */
-    protected function getCertificateData()
+    protected function getGiftcardData()
     {
         /** @var \TIG\Buckaroo\Model\Giftcard $giftcardModel */
         $giftcardModel = $this->giftcardModel->create();
-        $giftcardCollection = $giftcardModel->getCollection();
+        $giftcardCollection = $giftcardModel->getCollection()->setOrder(
+            'label',
+            \Magento\Framework\Data\Collection::SORT_ORDER_ASC
+        );
 
         return $giftcardCollection->getData();
     }
