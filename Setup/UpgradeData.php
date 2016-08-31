@@ -217,7 +217,7 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '1.3.0', '<')) {
-//            $this->installBaseGiftcards($setup);
+            $this->installBaseGiftcards($setup);
         }
     }
 
