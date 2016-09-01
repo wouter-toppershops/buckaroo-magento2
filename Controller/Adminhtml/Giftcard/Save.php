@@ -61,7 +61,7 @@ class Save extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
                 $this->messageManager->addSuccess(__('The giftcard has been saved.'));
 
                 if ($this->getRequest()->getParam('back')) {
-                    $this->_redirect('*/*/edit', ['id' => $giftcardModel->getId(), '_current' => true]);
+                    $this->_redirect('*/*/edit', ['entity_id' => $giftcardModel->getId(), '_current' => true]);
                     return;
                 }
 
