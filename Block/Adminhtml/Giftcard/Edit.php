@@ -39,15 +39,69 @@
 
 namespace TIG\Buckaroo\Block\Adminhtml\Giftcard;
 
-class Grid extends \Magento\Backend\Block\Widget\Grid\Container
+use Magento\Backend\Block\Widget\Context;
+use Magento\Framework\Registry;
+
+class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
+    /** @var Registry */
+    protected $_coreRegistry = null;
+
+    /**
+     * @param Context  $context
+     * @param Registry $registry
+     * @param array    $data
+     */
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        array $data = []
+    ) {
+        $this->_coreRegistry = $registry;
+        parent::__construct($context, $data);
+    }
+
     protected function _construct()
     {
+        $this->_objectId = 'entity_id';
         $this->_blockGroup = 'TIG_Buckaroo';
         $this->_controller = 'adminhtml_giftcard';
-        $this->_headerText = __('Buckaroo Giftcards');
-        $this->_addButtonLabel = __('Add New Giftcard');
 
         parent::_construct();
+
+        $this->buttonList->update('save', 'label', __('Save'));
+        $this->buttonList->update('delete', 'label', __('Delete'));
+
+        $this->buttonList->add(
+            'saveandcontinue',
+            [
+                'label' => __('Save and Continue'),
+                'class' => 'save',
+                'data_attribute' => [
+                    'mage-init' => [
+                        'button' => [
+                            'event' => 'saveAndContinueEdit',
+                            'target' => '#edit_form'
+                        ]
+                    ]
+                ]
+            ],
+            -100
+        );
+    }
+
+    /**
+     * @return \Magento\Framework\Phrase
+     */
+    public function getHeaderText()
+    {
+        $registry = $this->_coreRegistry->registry('buckaroo_giftcard');
+
+        if ($registry->getId()) {
+            $giftcardTitle = $this->escapeHtml($registry->getLabel());
+            return __("Edit Giftcard '%s'", $giftcardTitle);
+        } else {
+            return __('Add Giftcard');
+        }
     }
 }

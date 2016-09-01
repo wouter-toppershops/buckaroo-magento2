@@ -37,17 +37,42 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Block\Adminhtml\Giftcard;
+namespace TIG\Buckaroo\Controller\Adminhtml\Giftcard;
 
-class Grid extends \Magento\Backend\Block\Widget\Grid\Container
+class Save extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
 {
-    protected function _construct()
+    public function execute()
     {
-        $this->_blockGroup = 'TIG_Buckaroo';
-        $this->_controller = 'adminhtml_giftcard';
-        $this->_headerText = __('Buckaroo Giftcards');
-        $this->_addButtonLabel = __('Add New Giftcard');
+        $isPost = $this->getRequest()->getPost();
 
-        parent::_construct();
+        if ($isPost) {
+            $giftcardModel = $this->giftcardFactory->create();
+            $giftcardId = $this->getRequest()->getParam('entity_id');
+
+            if ($giftcardId) {
+                $giftcardModel->load($giftcardId);
+            }
+
+            $formData = $this->getRequest()->getParam('giftcard');
+            $giftcardModel->setData($formData);
+
+            try {
+                $giftcardModel->save();
+                $this->messageManager->addSuccess(__('The giftcard has been saved.'));
+
+                if ($this->getRequest()->getParam('back')) {
+                    $this->_redirect('*/*/edit', ['id' => $giftcardModel->getId(), '_current' => true]);
+                    return;
+                }
+
+                $this->_redirect('*/*/');
+                return;
+            } catch (\Exception $e) {
+                $this->messageManager->addError($e->getMessage());
+            }
+
+            $this->_getSession()->setFormData($formData);
+            $this->_redirect('*/*/edit', ['id' => $giftcardId]);
+        }
     }
 }

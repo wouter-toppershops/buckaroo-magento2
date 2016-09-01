@@ -37,17 +37,73 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Block\Adminhtml\Giftcard;
+namespace TIG\Buckaroo\Block\Adminhtml\Giftcard\Edit;
 
-class Grid extends \Magento\Backend\Block\Widget\Grid\Container
+class Form extends \Magento\Backend\Block\Widget\Form\Generic
 {
-    protected function _construct()
+    /**
+     * @return $this
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    protected function _prepareForm()
     {
-        $this->_blockGroup = 'TIG_Buckaroo';
-        $this->_controller = 'adminhtml_giftcard';
-        $this->_headerText = __('Buckaroo Giftcards');
-        $this->_addButtonLabel = __('Add New Giftcard');
+        /** @var \TIG\Buckaroo\Model\Giftcard $model */
+        $model = $this->_coreRegistry->registry('buckaroo_giftcard');
 
-        parent::_construct();
+        /** @var \Magento\Framework\Data\Form $form */
+        $form = $this->_formFactory->create(
+            [
+                'data' => [
+                    'id'    => 'edit_form',
+                    'action' => $this->getData('action'),
+                    'method' => 'post'
+                ]
+            ]
+        );
+
+        $form->setHtmlIdPrefix('giftcard_');
+        $form->setFieldNameSuffix('giftcard');
+
+
+        $fieldset = $form->addFieldset(
+            'base_fieldset',
+            ['legend' => __('Giftcard')]
+        );
+
+        if ($model->getId()) {
+            $fieldset->addField(
+                'entity_id',
+                'hidden',
+                ['name' => 'entity_id']
+            );
+        }
+
+        $fieldset->addField(
+            'servicecode',
+            'text',
+            [
+                'name'     => 'servicecode',
+                'label'    => __('Service Code'),
+                'required' => true,
+                'value'    => $model->getServicecode()
+            ]
+        );
+
+        $fieldset->addField(
+            'label',
+            'text',
+            [
+                'name'     => 'label',
+                'label'    => __('Label'),
+                'required' => true,
+                'value'    => $model->getLabel()
+            ]
+        );
+
+        $form->setValues($model->getData());
+        $form->setUseContainer(true);
+        $this->setForm($form);
+
+        return parent::_prepareForm();
     }
 }

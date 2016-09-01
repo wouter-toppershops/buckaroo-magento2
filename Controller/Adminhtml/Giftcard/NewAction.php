@@ -37,17 +37,12 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Block\Adminhtml\Giftcard;
+namespace TIG\Buckaroo\Controller\Adminhtml\Giftcard;
 
-class Grid extends \Magento\Backend\Block\Widget\Grid\Container
+class NewAction extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
 {
-    protected function _construct()
+    public function execute()
     {
-        $this->_blockGroup = 'TIG_Buckaroo';
-        $this->_controller = 'adminhtml_giftcard';
-        $this->_headerText = __('Buckaroo Giftcards');
-        $this->_addButtonLabel = __('Add New Giftcard');
-
-        parent::_construct();
+        $this->_forward('edit');
     }
 }

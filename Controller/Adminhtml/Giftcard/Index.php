@@ -39,33 +39,38 @@
 namespace TIG\Buckaroo\Controller\Adminhtml\Giftcard;
 
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
-use TIG\Buckaroo\Model\ResourceModel\Giftcard\Collection;
+use TIG\Buckaroo\Model\GiftcardFactory;
 
 class Index extends \Magento\Backend\App\Action
 {
     /** @var  PageFactory */
     protected $resultPageFactory;
 
-    /**
-     * @var Collection
-     */
-    protected $giftcardCollection;
+    /** @var  Registry */
+    protected $_coreRegistry;
+
+    /** @var  GiftcardFactory */
+    protected $giftcardFactory;
 
     /**
      * @param Context              $context
+     * @param Registry             $coreRegistry
      * @param PageFactory          $resultPageFactory
-     * @param Collection $giftcardCollection
+     * @param GiftcardFactory      $giftcardFactory
      */
     public function __construct(
         Context $context,
+        Registry $coreRegistry,
         PageFactory $resultPageFactory,
-        Collection $giftcardCollection
+        GiftcardFactory $giftcardFactory
     ) {
         parent::__construct($context);
 
         $this->resultPageFactory = $resultPageFactory;
-        $this->giftcardCollection = $giftcardCollection;
+        $this->_coreRegistry = $coreRegistry;
+        $this->giftcardFactory = $giftcardFactory;
     }
 
     /**

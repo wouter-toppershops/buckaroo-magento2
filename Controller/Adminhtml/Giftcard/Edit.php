@@ -37,17 +37,37 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Block\Adminhtml\Giftcard;
+namespace TIG\Buckaroo\Controller\Adminhtml\Giftcard;
 
-class Grid extends \Magento\Backend\Block\Widget\Grid\Container
+class Edit extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
 {
-    protected function _construct()
+    public function execute()
     {
-        $this->_blockGroup = 'TIG_Buckaroo';
-        $this->_controller = 'adminhtml_giftcard';
-        $this->_headerText = __('Buckaroo Giftcards');
-        $this->_addButtonLabel = __('Add New Giftcard');
+        $giftcardId = $this->getRequest()->getParam('entity_id');
 
-        parent::_construct();
+        /** @var \TIG\Buckaroo\Model\Giftcard $model */
+        $model = $this->giftcardFactory->create();
+
+        if ($giftcardId) {
+            $model->load($giftcardId);
+            if (!$model->getId()) {
+                $this->messageManager->addError(__('This giftcard no longer exists.'));
+                $this->_redirect('*/*/');
+                return;
+            }
+        }
+
+        $data = $this->_session->getFormData(true);
+        if (!empty($data)) {
+            $model->setData($data);
+        }
+        $this->_coreRegistry->register('buckaroo_giftcard', $model);
+
+        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+        $resultPage = $this->resultPageFactory->create();
+        $resultPage->setActiveMenu('TIG_Buckaroo::buckaroo_giftcards');
+        $resultPage->getConfig()->getTitle()->prepend(__('Buckaroo Giftcards'));
+
+        return $resultPage;
     }
 }
