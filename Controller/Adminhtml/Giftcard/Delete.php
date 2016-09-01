@@ -39,38 +39,30 @@
 
 namespace TIG\Buckaroo\Controller\Adminhtml\Giftcard;
 
-class Edit extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
+class Delete extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
 {
-    /**
-     * @return \Magento\Backend\Model\View\Result\Page|void
-     */
     public function execute()
     {
         $giftcardId = $this->getRequest()->getParam('entity_id');
 
-        /** @var \TIG\Buckaroo\Model\Giftcard $model */
-        $model = $this->giftcardFactory->create();
-
         if ($giftcardId) {
-            $model->load($giftcardId);
-            if (!$model->getId()) {
+            $giftcardModel = $this->giftcardFactory->create();
+            $giftcardModel->load($giftcardId);
+
+            if (!$giftcardModel->getId()) {
                 $this->messageManager->addError(__('This giftcard no longer exists.'));
-                $this->_redirect('*/*/');
-                return;
+            } else {
+                try {
+                    $giftcardModel->delete();
+                    $this->messageManager->addSuccess(__('The giftcard has been deleted.'));
+
+                    $this->_redirect('*/*/');
+                    return;
+                } catch (\Exception $e) {
+                    $this->messageManager->addError($e->getMessage());
+                    $this->_redirect('*/*/edit', ['id' => $giftcardModel->getId()]);
+                }
             }
         }
-
-        $data = $this->_session->getFormData(true);
-        if (!empty($data)) {
-            $model->setData($data);
-        }
-        $this->_coreRegistry->register('buckaroo_giftcard', $model);
-
-        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
-        $resultPage = $this->resultPageFactory->create();
-        $resultPage->setActiveMenu('TIG_Buckaroo::buckaroo_giftcards');
-        $resultPage->getConfig()->getTitle()->prepend(__('Buckaroo Giftcards'));
-
-        return $resultPage;
     }
 }

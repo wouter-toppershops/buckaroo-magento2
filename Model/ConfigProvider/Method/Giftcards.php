@@ -59,7 +59,7 @@ class Giftcards extends AbstractConfigProvider
     ];
 
     /**
-     * @return array|void
+     * @return array
      */
     public function getConfig()
     {
@@ -82,7 +82,7 @@ class Giftcards extends AbstractConfigProvider
     }
 
     /**
-     * @return float
+     * @return bool|float
      */
     public function getPaymentFee()
     {
