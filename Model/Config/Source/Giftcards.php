@@ -36,61 +36,68 @@
  * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-namespace TIG\Buckaroo\Model\ConfigProvider\Method;
+namespace TIG\Buckaroo\Model\Config\Source;
 
-class Giftcards extends AbstractConfigProvider
+class Giftcards implements \Magento\Framework\Option\ArrayInterface
 {
-    const XPATH_GIFTCARDS_PAYMENT_FEE           = 'payment/tig_buckaroo_giftcards/payment_fee';
-    const XPATH_GIFTCARDS_PAYMENT_FEE_LABEL     = 'payment/tig_buckaroo_giftcards/payment_fee_label';
-    const XPATH_GIFTCARDS_ACTIVE                = 'payment/tig_buckaroo_giftcards/active';
-    const XPATH_GIFTCARDS_ACTIVE_STATUS         = 'payment/tig_buckaroo_giftcards/active_status';
-    const XPATH_GIFTCARDS_ORDER_STATUS_SUCCESS  = 'payment/tig_buckaroo_giftcards/order_status_success';
-    const XPATH_GIFTCARDS_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_giftcards/order_status_failed';
-    const XPATH_GIFTCARDS_ORDER_EMAIL           = 'payment/tig_buckaroo_giftcards/order_email';
-    const XPATH_GIFTCARDS_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_giftcards/available_in_backend';
-
-    const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_giftcards/allowed_currencies';
+    /**
+     * @var \TIG\Buckaroo\Model\GiftcardFactory $giftcardModel
+     */
+    protected $giftcardModel;
 
     /**
-     * @var array
+     * @param \TIG\Buckaroo\Model\GiftcardFactory $modelGiftcardFactory
      */
-    protected $allowedCurrencies = [
-        'EUR'
-    ];
-
-    /**
-     * @return array
-     */
-    public function getConfig()
-    {
-        if (!$this->scopeConfig->getValue(static::XPATH_GIFTCARDS_ACTIVE)) {
-            return [];
-        }
-
-        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\Ideal::PAYMENT_METHOD_CODE);
-
-        return [
-            'payment' => [
-                'buckaroo' => [
-                    'giftcards' => [
-                        'paymentFeeLabel' => $paymentFeeLabel,
-                        'allowedCurrencies' => $this->getAllowedCurrencies(),
-                    ],
-                ],
-            ],
-        ];
+    public function __construct(
+        \TIG\Buckaroo\Model\GiftcardFactory $modelGiftcardFactory
+    ) {
+        $this->giftcardModel = $modelGiftcardFactory;
     }
 
     /**
-     * @return bool|float
+     * Options getter
+     *
+     * @return array
      */
-    public function getPaymentFee()
+    public function toOptionArray()
     {
-        $paymentFee = $this->scopeConfig->getValue(
-            self::XPATH_GIFTCARDS_PAYMENT_FEE,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        $giftcardData = $this->getGiftcardData();
+
+        $options = [];
+
+        if (count($giftcardData) <= 0) {
+            $options[] = [
+                'value' => '',
+                'label' => __('You have not yet added any giftcards')
+            ];
+
+            return $options;
+        }
+
+        foreach ($giftcardData as $index => $data) {
+            $options[] = [
+                'value' => $data['servicecode'],
+                'label' => $data['label']
+            ];
+        }
+
+        return $options;
+    }
+
+    /**
+     * Get a list of all stored certificates
+     *
+     * @return array
+     */
+    protected function getGiftcardData()
+    {
+        /** @var \TIG\Buckaroo\Model\Giftcard $giftcardModel */
+        $giftcardModel = $this->giftcardModel->create();
+        $giftcardCollection = $giftcardModel->getCollection()->setOrder(
+            'label',
+            \Magento\Framework\Data\Collection::SORT_ORDER_ASC
         );
 
-        return $paymentFee ? $paymentFee : false;
+        return $giftcardCollection->getData();
     }
 }
