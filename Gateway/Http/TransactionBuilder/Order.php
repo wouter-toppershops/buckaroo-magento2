@@ -123,6 +123,13 @@ class Order extends AbstractTransactionBuilder
             ],
         ];
 
+        $customVars = $this->getCustomVars();
+        if (count($customVars) > 0) {
+            foreach ($customVars as $key => $val) {
+                $body[$key] = $val;
+            }
+        }
+
         return $body;
     }
 }
