@@ -48,6 +48,7 @@ class Giftcards extends AbstractConfigProvider
     const XPATH_GIFTCARDS_ORDER_STATUS_FAILED   = 'payment/tig_buckaroo_giftcards/order_status_failed';
     const XPATH_GIFTCARDS_ORDER_EMAIL           = 'payment/tig_buckaroo_giftcards/order_email';
     const XPATH_GIFTCARDS_AVAILABLE_IN_BACKEND  = 'payment/tig_buckaroo_giftcards/available_in_backend';
+    const XPATH_GIFTCARDS_ALLOWED_GIFTCARDS     = 'payment/tig_buckaroo_giftcards/allowed_giftcards';
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_giftcards/allowed_currencies';
 

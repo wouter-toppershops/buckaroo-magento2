@@ -55,6 +55,7 @@
                 <item name="buckaroo_config_provider_afterpay" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay</item>
                 <item name="buckaroo_config_provider_afterpay2" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay2</item>
                 <item name="buckaroo_config_provider_eps" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Eps</item>
+                <item name="buckaroo_config_provider_giftcards" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards</item>
             </argument>
         </arguments>
     </type>
