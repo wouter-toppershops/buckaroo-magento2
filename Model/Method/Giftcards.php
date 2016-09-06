@@ -124,24 +124,13 @@ class Giftcards extends AbstractMethod
         );
         $availableCards .= ',ideal';
 
-        $services = [
-            'Name'             => 'giftcards',
-            'Action'           => 'Pay',
-            'Version'          => 1,
-            'RequestParameter' => [
-                [
-                    '_'    => $availableCards,
-                    'Name' => 'servicesSelectableByClient',
-                ],
-                [
-                    '_'    => 'RedirectToHTML',
-                    'Name' => 'continueOnImcomplete',
-                ],
-            ],
+        $customVars = [
+            'ServicesSelectableByClient' => $availableCards,
+            'ContinueOnIncomplete' => 'RedirectToHTML',
         ];
 
         $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
+            ->setCustomVars($customVars)
             ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
