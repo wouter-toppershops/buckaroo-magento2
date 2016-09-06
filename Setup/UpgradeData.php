@@ -72,96 +72,52 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     /** @var array */
     protected $giftcardArray = array(
         array(
-            'value' => 'babygiftcard',
-            'label' => 'babygiftcard'
-        ),
-        array(
-            'value' => 'babyparkgiftcard',
-            'label' => 'Babypark Giftcard'
-        ),
-        array(
-            'value' => 'beautywellness',
-            'label' => 'Beauty Wellness'
-        ),
-        array(
             'value' => 'boekenbon',
             'label' => 'Boekenbon'
         ),
         array(
-            'value' => 'boekenvoordeel',
-            'label' => 'Boekenvoordeel'
+            'value' => 'boekencadeau',
+            'label' => 'Boekencadeau'
         ),
         array(
-            'value' => 'designshopsgiftcard',
-            'label' => 'Designshops Giftcard'
+            'value' => 'cadeaukaartgiftcard',
+            'label' => 'Cadeaukaart / Giftcard'
+        ),
+        array(
+            'value' => 'nationalekadobon',
+            'label' => 'De nationale kadobon'
+        ),
+        array(
+            'value' => 'fashionucadeaukaart',
+            'label' => 'Fashion Giftcard'
+        ),
+        array(
+            'value' => 'fietsbon',
+            'label' => 'Fietsbon'
         ),
         array(
             'value' => 'fijncadeau',
             'label' => 'Fijn Cadeau'
         ),
         array(
-            'value' => 'koffiecadeau',
-            'label' => 'Koffie Cadeau'
+            'value' => 'gezondheidsbon',
+            'label' => 'Gezondheidsbon'
         ),
         array(
-            'value' => 'kokenzo',
-            'label' => 'Koken En Zo'
+            'value' => 'golfbon',
+            'label' => 'Golfbon'
         ),
         array(
-            'value' => 'kookcadeau',
-            'label' => 'kook-cadeau'
+            'value' => 'nationaletuinbon',
+            'label' => 'Nationale Tuinbon'
         ),
         array(
-            'value' => 'nationaleentertainmentcard',
-            'label' => 'Nationale EntertainmentCard'
-        ),
-        array(
-            'value' => 'naturesgift',
-            'label' => 'Natures Gift'
-        ),
-        array(
-            'value' => 'podiumcadeaukaart',
-            'label' => 'PODIUM Cadeaukaart'
-        ),
-        array(
-            'value' => 'shoesaccessories',
-            'label' => 'Shoes Accessories'
+            'value' => 'vvvgiftcard',
+            'label' => 'VVV Giftcard'
         ),
         array(
             'value' => 'webshopgiftcard',
             'label' => 'Webshop Giftcard'
-        ),
-        array(
-            'value' => 'wijncadeau',
-            'label' => 'Wijn Cadeau'
-        ),
-        array(
-            'value' => 'wonenzo',
-            'label' => 'Wonen En Zo'
-        ),
-        array(
-            'value' => 'yourgift',
-            'label' => 'YourGift Card'
-        ),
-        array(
-            'value' => 'fashioncheque',
-            'label' => 'fashioncheque'
-        ),
-        array(
-            'value' => 'sieradenhorlogescadeaukaart',
-            'label' => 'sieradenhorlogescadeaukaart'
-        ),
-        array(
-            'value' => 'jewellerygiftcard',
-            'label' => 'JewelleryGiftcard'
-        ),
-        array(
-            'value' => 'ebon',
-            'label' => 'e-bon'
-        ),
-        array(
-            'value' => 'voetbalshopcadeau',
-            'label' => 'Voetbalshop cadeaucard'
         )
     );
 
