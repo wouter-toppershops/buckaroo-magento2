@@ -112,6 +112,36 @@ class Giftcards extends AbstractMethod
     protected $_canRefundInvoicePartial = false;
 
     /**
+     * Check capture availability
+     *
+     * @return bool
+     * @api
+     */
+    public function canCapture()
+    {
+        if ($this->getConfigData('payment_action') == 'order') {
+            return false;
+        }
+
+        return $this->_canCapture;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        /** If there are no giftcards chosen, we can't be available */
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards $ccConfig */
+        $gcConfig = $this->configProviderMethodFactory->get('giftcards');
+        if (null === $gcConfig->getAllowedGiftcards()) {
+            return false;
+        }
+        /** Return the regular isAvailable result */
+        return parent::isAvailable($quote);
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOrderTransactionBuilder($payment)
@@ -178,7 +208,6 @@ class Giftcards extends AbstractMethod
                     continue;
                 }
 
-                $currentInvoice = $oInvoice;
                 $currentInvoiceTotal = $oInvoice->getBaseGrandTotal();
             }
         }
@@ -196,18 +225,6 @@ class Giftcards extends AbstractMethod
             'Action'           => 'Capture',
             'Version'          => 1,
         ];
-
-        if ($capturePartial) {
-            $articles = $this->getPartialRequestArticalData($currentInvoice);
-
-            // For the first invoice possible add payment fee
-            if (is_array($articles) && $numberOfInvoices == 1) {
-                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment);
-                $articles = array_merge($articles, $serviceLine);
-            }
-
-            $services['RequestParameter'] = $articles;
-        }
 
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
