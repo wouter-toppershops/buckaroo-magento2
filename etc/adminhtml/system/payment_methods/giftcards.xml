@@ -64,7 +64,7 @@
 
         <field id="allowed_giftcards" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Allowed giftcards</label>
-            <comment><![CDATA[Select which giftcards are available to the customer. You can add new cards in System > Buckaroo giftcards.]]></comment>
+            <comment><![CDATA[Select which giftcards are available to the customer. You can add new cards in Stores > Buckaroo giftcards.]]></comment>
             <tooltip>These options will be presented to the customer after Buckaroo has received the order. If left blank, the available options will be based on which Buckaroo payment options you have enabled.</tooltip>
             <config_path>payment/tig_buckaroo_giftcards/allowed_giftcards</config_path>
             <source_model>TIG\Buckaroo\Model\Config\Source\Giftcards</source_model>
