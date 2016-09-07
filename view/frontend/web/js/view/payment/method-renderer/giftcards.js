@@ -79,32 +79,6 @@ define(
                 return this._super(options);
             },
 
-            initObservable: function () {
-                this._super().observe(['selectedCard', 'giftcards']);
-
-                this.giftcards = ko.observableArray(window.checkoutConfig.payment.buckaroo.giftcards.cards);
-
-                /**
-                 * observe radio buttons
-                 * check if selected
-                 */
-                var self = this;
-                this.setSelectedCard= function (value)
-                {
-                    self.selectedCard(value);
-                    return true;
-                };
-
-                /**
-                 * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
-                 */
-                this.buttoncheck = ko.computed(function(){
-                    return this.selectedCard();
-                }, this);
-
-                return this;
-            },
-
             /**
              * Place order.
              *
@@ -145,21 +119,6 @@ define(
                 selectPaymentMethodAction(this.getData());
                 checkoutData.setSelectedPaymentMethod(this.item.method);
                 return true;
-            },
-
-            getData: function() {
-                var selectedCardCode = null;
-                if (this.selectedCard()) {
-                    selectedCardCode = this.selectedCard().code;
-                }
-
-                return {
-                    "method": this.item.method,
-                    "po_number": null,
-                    "additional_data": {
-                        "card_type" : selectedCardCode
-                    }
-                };
             },
 
             payWithBaseCurrency: function() {
