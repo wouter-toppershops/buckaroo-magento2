@@ -831,10 +831,6 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'BillingStreet',
             ],
             [
-                '_'    => $streetFormat['house_number'],
-                'Name' => 'BillingHouseNumber',
-            ],
-            [
                 '_'    => $billingAddress->getPostcode(),
                 'Name' => 'BillingPostalCode',
             ],
@@ -859,6 +855,14 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'BillingLanguage',
             ],
         ];
+
+        if (!empty($streetFormat['house_number'])) {
+            $billingData[] = [
+                '_'    => $streetFormat['house_number'],
+                'Name' => 'BillingHouseNumber',
+            ];
+        }
+
 
         if (!empty($streetFormat['number_addition'])) {
             $billingData[] = [
@@ -909,10 +913,6 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'ShippingStreet',
             ],
             [
-                '_'    => $streetFormat['house_number'],
-                'Name' => 'ShippingHouseNumber',
-            ],
-            [
                 '_'    => $shippingAddress->getPostcode(),
                 'Name' => 'ShippingPostalCode',
             ],
@@ -937,6 +937,13 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'ShippingLanguage',
             ],
         ];
+
+        if (!empty($streetFormat['house_number'])) {
+            $shippingData[] = [
+                '_'    => $streetFormat['house_number'],
+                'Name' => 'ShippingHouseNumber',
+            ];
+        }
 
         if (!empty($streetFormat['number_addition'])) {
             $shippingData[] = [
