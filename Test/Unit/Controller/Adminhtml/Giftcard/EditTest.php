@@ -38,12 +38,13 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Controller\Adminhtml\Giftcard;
 
-use \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index;
+use \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Edit;
+use TIG\Buckaroo\Test\BaseTest;
 
-class IndexTest extends \TIG\Buckaroo\Test\BaseTest
+class EditTest extends BaseTest
 {
     /**
-     * @var Index
+     * @var Edit
      */
     protected $controller;
 
@@ -52,7 +53,10 @@ class IndexTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $context = $this->objectManagerHelper->getObject(\Magento\Backend\App\Action\Context::class);
+        $giftcardModel = \Mockery::mock(\TIG\Buckaroo\Model\Giftcard::class)->makePartial();
+
         $registry = $registryMock = \Mockery::mock(\Magento\Framework\Registry::class);
+        $registry->shouldReceive('register')->with('buckaroo_giftcard', $giftcardModel);
 
         $resultPageConfig = $this->objectManagerHelper->getObject(\Magento\Framework\View\Page\Config::class);
 
@@ -63,13 +67,11 @@ class IndexTest extends \TIG\Buckaroo\Test\BaseTest
         $resultPageFactory = \Mockery::mock(\Magento\Framework\View\Result\PageFactory::class);
         $resultPageFactory->shouldReceive('create')->andReturn($resultPageModel);
 
-        $giftcardModel = \Mockery::mock(\TIG\Buckaroo\Model\Giftcard::class)->makePartial();
-
         $giftcardFactory = \Mockery::mock(\TIG\Buckaroo\Model\GiftcardFactory::class);
         $giftcardFactory->shouldReceive('create')->andReturn($giftcardModel);
 
         $this->controller = $this->objectManagerHelper->getObject(
-            Index::class,
+            Edit::class,
             [
                 'context' => $context,
                 'coreRegistry' => $registry,
