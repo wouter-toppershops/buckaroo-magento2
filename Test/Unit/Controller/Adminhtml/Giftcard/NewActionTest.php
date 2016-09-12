@@ -60,7 +60,7 @@ class NewActionTest extends BaseTest
                 'request' => $httpRequest
             ]
         );
-        
+
         $registry = $registryMock = \Mockery::mock(\Magento\Framework\Registry::class);
         $resultPageFactory = \Mockery::mock(\Magento\Framework\View\Result\PageFactory::class);
         $giftcardFactory = \Mockery::mock(\TIG\Buckaroo\Model\GiftcardFactory::class);

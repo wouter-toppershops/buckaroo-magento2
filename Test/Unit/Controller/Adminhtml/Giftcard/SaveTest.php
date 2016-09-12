@@ -38,30 +38,39 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Controller\Adminhtml\Giftcard;
 
-use \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index;
+use Magento\Framework\App\Response\RedirectInterface;
+use TIG\Buckaroo\Controller\Adminhtml\Giftcard\Save;
+use TIG\Buckaroo\Test\BaseTest;
 
-class IndexTest extends \TIG\Buckaroo\Test\BaseTest
+class SaveTest extends BaseTest
 {
     /**
-     * @var Index
+     * @var Save
      */
     protected $controller;
+
+    /**
+     * @var \Mockery\MockInterface
+     */
+    protected $redirect;
 
     public function setUp()
     {
         parent::setUp();
 
-        $context = $this->objectManagerHelper->getObject(\Magento\Backend\App\Action\Context::class);
+        $httpRequest = \Mockery::mock(\Magento\Framework\App\Request\Http::class)->makePartial();
+        $httpResponse = \Mockery::mock(\Magento\Framework\App\Response\Http::class)->makePartial();
+        $this->redirect = \Mockery::mock(RedirectInterface::class)->makePartial();
+
+        $context = $this->objectManagerHelper->getObject(\Magento\Backend\App\Action\Context::class, [
+            'request' => $httpRequest,
+            'response' => $httpResponse,
+            'redirect' => $this->redirect
+        ]);
+
         $registry = \Mockery::mock(\Magento\Framework\Registry::class);
 
-        $resultPageConfig = $this->objectManagerHelper->getObject(\Magento\Framework\View\Page\Config::class);
-
-        $resultPageModel = \Mockery::mock(\Magento\Backend\Model\View\Result\Page::class)->makePartial();
-        $resultPageModel->shouldReceive('setActiveMenu')->andReturnSelf();
-        $resultPageModel->shouldReceive('getConfig')->andReturn($resultPageConfig);
-
         $resultPageFactory = \Mockery::mock(\Magento\Framework\View\Result\PageFactory::class);
-        $resultPageFactory->shouldReceive('create')->andReturn($resultPageModel);
 
         $giftcardModel = \Mockery::mock(\TIG\Buckaroo\Model\Giftcard::class)->makePartial();
 
@@ -69,7 +78,7 @@ class IndexTest extends \TIG\Buckaroo\Test\BaseTest
         $giftcardFactory->shouldReceive('create')->andReturn($giftcardModel);
 
         $this->controller = $this->objectManagerHelper->getObject(
-            Index::class,
+            Save::class,
             [
                 'context' => $context,
                 'coreRegistry' => $registry,
