@@ -126,7 +126,13 @@ class AllTest extends BaseTest
 
         $result = $this->object->getBody();
         foreach ($expected as $key => $value) {
-            $this->assertEquals($value, $result[$key]);
+            $valueToTest = $value;
+
+            if (is_array($valueToTest)) {
+                $valueToTest = (object)$value;
+            }
+
+            $this->assertEquals($valueToTest, $result[$key]);
         }
     }
 
@@ -162,7 +168,13 @@ class AllTest extends BaseTest
 
         $result = $this->object->getBody();
         foreach ($expected as $key => $value) {
-            $this->assertEquals($value, $result[$key]);
+            $valueToTest = $value;
+
+            if (is_array($valueToTest)) {
+                $valueToTest = (object)$value;
+            }
+
+            $this->assertEquals($valueToTest, $result[$key]);
         }
     }
 
