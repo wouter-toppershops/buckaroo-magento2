@@ -59,10 +59,13 @@ composer config repositories.tig composer https://packages.tig.nl
         <echo>Clone the Magento 2 repository</echo>
         <exec executable="git">
             <arg value="clone" />
-            <arg value="--branch" />
-            <arg value="2.0" />
             <arg value="https://github.com/magento/magento2.git" />
             <arg value="Build/Magento 2" />
+        </exec>
+
+        <exec executable="git">
+            <arg value="checkout" />
+            <arg value="tags/2.0.2" />
         </exec>
     </target>
 
