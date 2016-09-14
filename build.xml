@@ -57,15 +57,11 @@ composer config repositories.tig composer https://packages.tig.nl
 
     <target name="clone" depends="build-dir.check,mkdir" unless="build-dir.exist">
         <echo>Clone the Magento 2 repository</echo>
-        <exec executable="git">
-            <arg value="clone" />
-            <arg value="https://github.com/magento/magento2.git" />
-            <arg value="Build/Magento 2" />
-        </exec>
-
-        <exec executable="git">
-            <arg value="checkout" />
-            <arg value="tags/2.0.2" />
+        <exec executable="/usr/local/bin/composer">
+            <arg value="create-project" />
+            <arg value="--repository-url=https://repo.magento.com/" />
+            <arg value="magento/project-community-edition=2.1.0" />
+            <arg value="Build/Magento 2/" />
         </exec>
     </target>
 
@@ -74,6 +70,11 @@ composer config repositories.tig composer https://packages.tig.nl
         <copy
             file="${basedir}/Test/Fixtures/env.php"
             tofile="${basedir}/Build/Magento 2/app/etc/env.php"
+            />
+
+        <copy
+            file="${basedir}/Test/Fixtures/config.php"
+            tofile="${basedir}/Build/Magento 2/app/etc/config.php"
             />
     </target>
 
