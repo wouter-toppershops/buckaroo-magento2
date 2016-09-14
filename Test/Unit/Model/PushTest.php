@@ -278,6 +278,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getEmailSent')->andReturn($orderEmailSent);
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
+        $orderMock->shouldReceive('getTotalDue')->andReturn($amount);
 
         /** The order state has to be checked at least once */
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
