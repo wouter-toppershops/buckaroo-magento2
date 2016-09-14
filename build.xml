@@ -105,10 +105,18 @@ composer config repositories.tig composer https://packages.tig.nl
 
     <target name="composer.require-repo" depends="composer.is-installed,composer.install,composer.add-repo">
         <echo>Install the Buckaroo module via Composer</echo>
+
+        <exec executable="/bin/sh" outputProperty="gitBranch">
+            <arg value="-c" />
+            <arg value="echo ${GIT_BRANCH#*/}" />
+        </exec>
+
+        <echo>composer require tig/buckaroo dev-${gitBranch}#${env.GIT_COMMIT}</echo>
+
         <exec executable="/usr/local/bin/composer" dir="Build/Magento 2/" failonerror="true">
             <arg value="require" />
             <arg value="tig/buckaroo" />
-            <arg value="dev-${env.GIT_BRANCH}#${env.GIT_COMMIT}" />
+            <arg value="dev-${gitBranch}#${env.GIT_COMMIT}" />
         </exec>
     </target>
 
