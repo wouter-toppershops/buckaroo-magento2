@@ -61,7 +61,7 @@ composer config repositories.tig composer https://packages.tig.nl
         <exec executable="/usr/local/bin/composer">
             <arg value="create-project" />
             <arg value="--repository-url=https://repo.magento.com/" />
-            <arg value="magento/project-community-edition=2.1.0" />
+            <arg value="magento/project-community-edition=2.0.8" />
             <arg value="Build/Magento 2/" />
         </exec>
     </target>
