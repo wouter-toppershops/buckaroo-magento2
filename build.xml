@@ -43,6 +43,7 @@ composer config repositories.tig composer https://packages.tig.nl
 -->
 <project name="Buckaroo" default="build" basedir=".">
     <target name="build" depends="clone,composer.require-repo,setup-static-content-deploy,phpunit"/>
+    <property environment="env"/>
 
     <target name="build-dir.check">
         <condition property="build-dir.exist">
@@ -107,7 +108,7 @@ composer config repositories.tig composer https://packages.tig.nl
         <exec executable="/usr/local/bin/composer" dir="Build/Magento 2/" failonerror="true">
             <arg value="require" />
             <arg value="tig/buckaroo" />
-            <arg value="dev-develop" />
+            <arg value="dev-${env.GIT_BRANCH}#${env.GIT_COMMIT}" />
         </exec>
     </target>
 
