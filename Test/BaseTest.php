@@ -75,7 +75,7 @@ class BaseTest extends \PHPUnit_Framework_TestCase
             $fixture['buckaroo_skip_validation'] = false;
         }
 
-        $data = \Mockery::mock(\Magento\Framework\DataObject::class);
+        $data = \Mockery::mock(\Magento\Framework\DataObject::class)->makePartial();
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
 
         foreach ($fixture as $key => $value) {
