@@ -96,8 +96,9 @@ define(
             'IBAN', function (value) {
                 var patternIBAN = new RegExp('^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$');
                 return (patternIBAN.test(value) && isValidIBAN(value));
-            },$.mage.__('Enter Valid IBAN'));
-
+            },
+            $.mage.__('Enter Valid IBAN')
+        );
 
         return Component.extend({
             defaults                : {
@@ -154,7 +155,8 @@ define(
                     'VATNumber',
                     'bankaccountnumber',
                     'termsValidate',
-                    'genderValidate'
+                    'genderValidate',
+                    'dummy'
                 ]);
 
                 this.businessMethod = window.checkoutConfig.payment.buckaroo.afterpay.businessMethod;
@@ -199,8 +201,10 @@ define(
                  */
 
                 var runValidation = function () {
-                    $('.' + this.getCode() + ' [data-validate]').valid();
+                    $('.' + this.getCode() + ' [data-validate]').filter(':not([name*="agreement"])').valid();
+                    additionalValidators.validate();
                 };
+
                 this.BillingName.subscribe(runValidation,this);
                 this.dateValidate.subscribe(runValidation,this);
                 this.CocNumber.subscribe(runValidation,this);
@@ -220,35 +224,35 @@ define(
                 var checkB2C = function()
                 {
                     return (
-                    this.selectedGender() !== null &&
-                    this.BillingName() !== null &&
-                    this.dateValidate() !== null &&
-                    this.termsValidate() !== false &&
-                    this.genderValidate() !== null &&
-                    (
-                    (
-                    this.paymentMethod == PAYMENT_METHOD_ACCEPTGIRO &&
-                    this.bankaccountnumber().length > 0
-                    ) ||
-                    this.paymentMethod == PAYMENT_METHOD_DIGIACCEPT
-                    ) &&
-                    this.validate()
+                        this.selectedGender() !== null &&
+                        this.BillingName() !== null &&
+                        this.dateValidate() !== null &&
+                        this.termsValidate() !== false &&
+                        this.genderValidate() !== null &&
+                        (
+                            (
+                                this.paymentMethod == PAYMENT_METHOD_ACCEPTGIRO &&
+                                this.bankaccountnumber().length > 0
+                            ) ||
+                            this.paymentMethod == PAYMENT_METHOD_DIGIACCEPT
+                        ) &&
+                        this.validate()
                     );
                 };
 
                 var checkB2B = function ()
                 {
                     return (
-                    this.selectedGender() !== null &&
-                    this.BillingName() !== null &&
-                    this.dateValidate() !== null &&
-                    this.CocNumber() !== null &&
-                    this.CompanyName() !== null &&
-                    this.CostCenter() !== null &&
-                    this.VATNumber() !== null &&
-                    this.termsValidate() !== false &&
-                    this.genderValidate() !== null &&
-                    this.validate()
+                        this.selectedGender() !== null &&
+                        this.BillingName() !== null &&
+                        this.dateValidate() !== null &&
+                        this.CocNumber() !== null &&
+                        this.CompanyName() !== null &&
+                        this.CostCenter() !== null &&
+                        this.VATNumber() !== null &&
+                        this.termsValidate() !== false &&
+                        this.genderValidate() !== null &&
+                        this.validate()
                     );
                 };
 
@@ -266,6 +270,8 @@ define(
                     this.CostCenter();
                     this.VATNumber();
                     this.genderValidate();
+                    this.dummy();
+                    additionalValidators.validate();
 
                     /**
                      * Run If Else function to select the right fields to validate.
@@ -283,6 +289,15 @@ define(
                         return checkB2B.bind(this)();
                     }
                 }, this);
+
+                /**
+                 * The agreement checkbox won't force an update of our bindings. So check for changes manually and notify
+                 * the bindings if something happend. Use $.proxy() to access the local this object. The dummy property is
+                 * used to notify the bindings.
+                 */
+                $('.payment-methods').on('click', '.' + this.getCode() + ' [name*="agreement"]', $.proxy( function () {
+                    this.dummy.notifySubscribers();
+                }, this));
 
                 return this;
             },
@@ -337,7 +352,10 @@ define(
              */
 
             validate: function () {
-                return $('.' + this.getCode() + ' [data-validate]').valid();
+                return (
+                    $('.' + this.getCode() + ' [data-validate]:not([name*="agreement"])').valid() &&
+                    additionalValidators.validate()
+                );
             },
 
             getData: function() {
@@ -362,12 +380,4 @@ define(
         });
     }
 );
-
-
-
-
-
-
-
-
 
