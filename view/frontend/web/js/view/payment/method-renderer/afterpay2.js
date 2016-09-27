@@ -66,12 +66,12 @@ define(
         /**
          *  constants for backend settings
          */
-        const BUSINESS_METHOD_B2C = 1;
-        const BUSINESS_METHOD_B2B = 2;
-        const BUSINESS_METHOD_BOTH = 3;
+        var BUSINESS_METHOD_B2C = 1;
+        var BUSINESS_METHOD_B2B = 2;
+        var BUSINESS_METHOD_BOTH = 3;
 
-        const PAYMENT_METHOD_ACCEPTGIRO = 1;
-        const PAYMENT_METHOD_DIGIACCEPT = 2;
+        var PAYMENT_METHOD_ACCEPTGIRO = 1;
+        var PAYMENT_METHOD_DIGIACCEPT = 2;
 
 
         /**
