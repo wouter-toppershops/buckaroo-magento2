@@ -922,7 +922,7 @@ class Afterpay2 extends AbstractMethod
             ],
             [
                 '_'    => $shippingAddress->getCountryId(),
-                'Name' => 'ShippingCountry',
+                'Name' => 'ShippingCountryCode',
             ],
             [
                 '_'    => $shippingAddress->getEmail(),

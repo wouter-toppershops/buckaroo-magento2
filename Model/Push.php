@@ -178,6 +178,11 @@ class Push implements PushInterface
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
 
+        //Skip informational messages for processing
+        if ($this->postData['brq_mutationtype'] == 'Informational') {
+            return;
+        }
+
         //Start debug mailing/logging with the postdata.
         $this->debugger->addToMessage($this->originalPostData);
 
@@ -360,14 +365,15 @@ class Push implements PushInterface
          * Get current state and status of order
          */
         $currentStateAndStatus = [$this->order->getState(), $this->order->getStatus()];
+
         /**
          * If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
          */
         if ($completedStateAndStatus   != $currentStateAndStatus
-           && $cancelledStateAndStatus != $currentStateAndStatus
-           && $holdedStateAndStatus    != $currentStateAndStatus
-           && $closedStateAndStatus    != $currentStateAndStatus
-           && $this->order->canInvoice()
+            && $cancelledStateAndStatus != $currentStateAndStatus
+            && $holdedStateAndStatus    != $currentStateAndStatus
+            && $closedStateAndStatus    != $currentStateAndStatus
+            && $this->order->canInvoice()
         ) {
             return true;
         }
@@ -408,7 +414,8 @@ class Push implements PushInterface
      */
     public function processSucceededPush($newStatus, $message)
     {
-        $amount = $this->order->getBaseGrandTotal();
+        $amountBGT = $this->order->getBaseGrandTotal();
+        $amount = $this->originalPostData['brq_amount'];
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
@@ -506,8 +513,30 @@ class Push implements PushInterface
 
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = $this->order->getPayment();
-        $payment->registerCaptureNotification($this->order->getGrandTotal());
-        $payment->save();
+
+        if ($payment->getMethod() == 'tig_buckaroo_giftcards') {
+            $invoiceAmount = $this->postData['brq_amount'];
+            $payment->registerCaptureNotification($invoiceAmount, true);
+            $payment->save();
+
+            if ($payment->getBaseAmountPaidOnline() != $payment->getBaseAmountOrdered()) {
+                return;
+            }
+
+            /* when a giftcard is paid in partially, create invoice manually */
+            if ($this->postData['brq_transactions'] !=
+                $payment->getAdditionalInformation(
+                    \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )) {
+                $payment->capture(); //creates invoice
+                $payment->save();
+            }
+
+        }
+        else {
+            $payment->registerCaptureNotification($this->order->getGrandTotal());
+            $payment->save();
+        }
 
         $this->order->save();
 
@@ -522,6 +551,14 @@ class Push implements PushInterface
         }
 
         return true;
+    }
+
+    /**
+     * Get Transactions
+     */
+    public function getTransactionsByOrder()
+    {
+        $this->order->getPayment();
     }
 
     /**
@@ -545,6 +582,7 @@ class Push implements PushInterface
             \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
             $rawInfo
         );
+
 
         /**
          * Save the payment's transaction key.
