@@ -414,8 +414,7 @@ class Push implements PushInterface
      */
     public function processSucceededPush($newStatus, $message)
     {
-        $amountBGT = $this->order->getBaseGrandTotal();
-        $amount = $this->originalPostData['brq_amount'];
+        $amount = floatval($this->originalPostData['brq_amount']);
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
@@ -515,7 +514,7 @@ class Push implements PushInterface
         $payment = $this->order->getPayment();
 
         if ($payment->getMethod() == 'tig_buckaroo_giftcards') {
-            $invoiceAmount = $this->postData['brq_amount'];
+            $invoiceAmount = floatval($this->postData['brq_amount']);
             $payment->registerCaptureNotification($invoiceAmount, true);
             $payment->save();
 
