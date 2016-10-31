@@ -283,7 +283,8 @@ class Afterpay extends AbstractMethod
 
             // For the first invoice possible add payment fee
             if (is_array($articles) && $numberOfInvoices == 1) {
-                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment);
+                $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment, $includesTax);
                 $articles = array_merge($articles, $serviceLine);
             }
 
@@ -302,7 +303,6 @@ class Afterpay extends AbstractMethod
 
         // Partial Capture Settings
         if ($capturePartial) {
-
             /** @noinspection PhpUndefinedMethodInspection */
             $transactionBuilder->setAmount($currentInvoiceTotal)
                 ->setInvoiceId(
@@ -563,12 +563,7 @@ class Afterpay extends AbstractMethod
         $count    = 1;
 
         foreach ($invoice->getAllItems() as $item) {
-<<<<<<< Updated upstream
-            if (empty($item) || $this->calculateProductPrice($item) == 0) {
-=======
-
             if (empty($item) || $this->calculateProductPrice($item, $includesTax) == 0) {
->>>>>>> Stashed changes
                 continue;
             }
 
@@ -633,7 +628,6 @@ class Afterpay extends AbstractMethod
 
     /**
      * @param \Magento\Quote\Model\Quote\Item $productItem
-     *
      * @param                                 $includesTax
      *
      * @return mixed
@@ -646,14 +640,13 @@ class Afterpay extends AbstractMethod
             $productPrice = $productItem->getRowTotal();
         }
 
-
         return $productPrice;
     }
 
     /**
      * Get the service cost lines (buckfee)
      *
-     * @param                                                                                    $latestKey
+     * @param (int) $latestKey
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      * @param                                                                                    $includesTax
      *
@@ -680,12 +673,7 @@ class Afterpay extends AbstractMethod
 
         $article = [];
 
-<<<<<<< Updated upstream
-        if (false !== $buckfee && (double)$buckfee > 0) {
-=======
         if (false !== $buckarooFee && (double)$buckarooFee > 0) {
-
->>>>>>> Stashed changes
             $storeId = (int) $order->getStoreId();
 
             $article = $this->getArticleArrayLine(
@@ -696,7 +684,6 @@ class Afterpay extends AbstractMethod
                 round($buckarooFeeLine, 2),
                 $this->getTaxCategory($feeHelper->getBuckarooFeeTaxClass($storeId))
             );
-
         }
         // Add aditional shippin costs.
         $shippingCost = [];
