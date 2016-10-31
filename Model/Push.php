@@ -513,7 +513,7 @@ class Push implements PushInterface
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = $this->order->getPayment();
 
-        if ($payment->getMethod() == 'tig_buckaroo_giftcards') {
+        if ($payment->getMethod() == \TIG\Buckaroo\Model\Method\Giftcards::PAYMENT_METHOD_CODE) {
             $invoiceAmount = floatval($this->postData['brq_amount']);
             $payment->registerCaptureNotification($invoiceAmount, true);
             $payment->save();

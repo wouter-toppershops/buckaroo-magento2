@@ -343,6 +343,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
         $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
         $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('ABC');
+        $quote->shouldReceive('getQuoteCurrencyCode')->once()->andReturn('ABC');
 
         $this->scopeConfig->shouldReceive('getValue')->andReturn(1);
 
