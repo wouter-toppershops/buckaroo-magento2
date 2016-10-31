@@ -36,13 +36,13 @@
                         <span class="text">
                             <?php echo $block->escapeHtml(__('Magento Community Edition version'));?>:
                         </span>
-                        <span class="version"> 2.0.6 - 2.1 RC </span>
+                        <span class="version"> 2.0.8 - 2.1 </span>
                     </li>
                     <li>
                         <span class="text">
                             <?php echo $block->escapeHtml(__('Magento Enterprise Edition version'));?>:
                         </span>
-                        <span class="version"> 2.0.6 - 2.1 RC </span>
+                        <span class="version"> 2.0.8 - 2.1 </span>
                     </li>
                     <li>
                         <span class="text"><?php echo $block->escapeHtml(__('Buckaroo version'));?>:</span>
@@ -53,7 +53,6 @@
         </div>
     </div>
 
-    <?php // section 1 ?>
     <div id="section">
         <div class="collapse-title" data-role="title">
             <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Support'));?></h3>
@@ -75,7 +74,7 @@
             </ul>
             <ul>
                 <li class="buckaroo_logo" >
-                    <a href="<?php echo $block->escapeHtml(__('https://www.buckaroo-payments.com/'));?>"
+                    <a href="https://<?php echo $block->escapeHtml(__('www.buckaroo-payments.com'));?>"
                        target="_blank">
                         <img src="<?php echo $this->getViewFileUrl(
                             'TIG_Buckaroo::images/buckaroo_config_logo_black.png'
@@ -97,7 +96,7 @@
             <ul>
                 <li class="first"><?php echo $block->escapeHtml(__('Website:'));?></li>
                 <li class="last">
-                    <a href="<?php echo $block->escapeHtml(__('https://www.buckaroo-payments.com/'));?>"
+                    <a href="https://<?php echo $block->escapeHtml(__('www.buckaroo-payments.com'));?>"
                        target="_blank">
                         <?php echo $block->escapeHtml(__('www.buckaroo-payments.com'));?>
                     </a>
@@ -139,7 +138,6 @@
         </div>
     </div>
 
-    <?php // section 2 ?>
     <div id="section">
         <div class="collapse-title" data-role="title">
             <h3 data-role="trigger"><?php echo $block->escapeHtml(__('Documentation'));?></h3>
@@ -149,8 +147,8 @@
                 <p><?php echo $block->escapeHtml(__('A list of documents regarding the extension.'));?></p>
                 <li>
                     <a class="pdf" target="_blank"
-                       href="<?php echo $block->escapeHtml(
-                           __("http://servicedesk.tig.nl/hc/nl/articles/218518187")
+                       href="http://<?php echo $block->escapeHtml(
+                           __("servicedesk.tig.nl/hc/nl/articles/218518187")
                        );?>"
                        title="<?php echo $block->escapeHtml(
                            __('Download a PDF format of the manual. Currently the manual is only available in Dutch.')
@@ -166,8 +164,8 @@
                 </li>
                 <li>
                     <a target="_blank"
-                       href="<?php echo $block->escapeHtml(
-                           __("http://servicedesk.tig.nl/hc/nl/articles/218003338")
+                       href="http://<?php echo $block->escapeHtml(
+                           __("servicedesk.tig.nl/hc/nl/articles/218003338")
                        );?>"
                        title="<?php echo $block->escapeHtml(
                            __('View the complete release notes of the extension. Currently the release notes is only available in Dutch.')

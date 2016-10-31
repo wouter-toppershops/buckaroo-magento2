@@ -124,10 +124,6 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     /** @var array */
     protected $giftcardAdditionalArray = array(
         array(
-            'label' => 'Naam Giftcard',
-            'value' => 'giftcard servicecode',
-        ),
-        array(
             'label' => 'Ajax Giftcard',
             'value' => 'ajaxgiftcard',
         ),
