@@ -159,6 +159,7 @@ class ProcessTest extends BaseTest
     {
         $this->request->shouldReceive('getParams')->andReturn([
             'brq_ordernumber' => null,
+            'brq_invoicenumber' => null,
             'brq_statuscode' => null
         ]);
 
@@ -197,6 +198,7 @@ class ProcessTest extends BaseTest
     {
         $this->request->shouldReceive('getParams')->andReturn([
             'brq_ordernumber' => null,
+            'brq_invoicenumber' => null,
             'brq_statuscode' => null
         ]);
 
@@ -228,6 +230,7 @@ class ProcessTest extends BaseTest
     {
         $this->request->shouldReceive('getParams')->andReturn([
             'brq_ordernumber' => null,
+            'brq_invoicenumber' => null,
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
         ]);
 
@@ -247,6 +250,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('getQuoteId')->andReturn(1);
         $this->order->shouldReceive('setStatus')->once()->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
+        $this->order->shouldReceive('getEmailSent')->once()->andReturn(1);
 
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 

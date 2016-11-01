@@ -43,6 +43,7 @@ composer config repositories.tig composer https://packages.tig.nl
 -->
 <project name="Buckaroo" default="build" basedir=".">
     <target name="build" depends="clone,composer.require-repo,setup-static-content-deploy,phpunit"/>
+    <property environment="env"/>
 
     <target name="build-dir.check">
         <condition property="build-dir.exist">
@@ -57,10 +58,11 @@ composer config repositories.tig composer https://packages.tig.nl
 
     <target name="clone" depends="build-dir.check,mkdir" unless="build-dir.exist">
         <echo>Clone the Magento 2 repository</echo>
-        <exec executable="git">
-            <arg value="clone" />
-            <arg value="https://github.com/magento/magento2.git" />
-            <arg value="Build/Magento 2" />
+        <exec executable="/usr/local/bin/composer">
+            <arg value="create-project" />
+            <arg value="--repository-url=https://repo.magento.com/" />
+            <arg value="magento/project-community-edition=2.0.8" />
+            <arg value="Build/Magento 2/" />
         </exec>
     </target>
 
@@ -69,6 +71,11 @@ composer config repositories.tig composer https://packages.tig.nl
         <copy
             file="${basedir}/Test/Fixtures/env.php"
             tofile="${basedir}/Build/Magento 2/app/etc/env.php"
+            />
+
+        <copy
+            file="${basedir}/Test/Fixtures/config.php"
+            tofile="${basedir}/Build/Magento 2/app/etc/config.php"
             />
     </target>
 
@@ -98,10 +105,18 @@ composer config repositories.tig composer https://packages.tig.nl
 
     <target name="composer.require-repo" depends="composer.is-installed,composer.install,composer.add-repo">
         <echo>Install the Buckaroo module via Composer</echo>
+
+        <exec executable="/bin/sh" outputProperty="gitBranch">
+            <arg value="-c" />
+            <arg value="echo ${GIT_BRANCH#*/}" />
+        </exec>
+
+        <echo>composer require tig/buckaroo dev-${gitBranch}#${env.GIT_COMMIT}</echo>
+
         <exec executable="/usr/local/bin/composer" dir="Build/Magento 2/" failonerror="true">
             <arg value="require" />
             <arg value="tig/buckaroo" />
-            <arg value="dev-develop" />
+            <arg value="dev-${gitBranch}#${env.GIT_COMMIT}" />
         </exec>
     </target>
 

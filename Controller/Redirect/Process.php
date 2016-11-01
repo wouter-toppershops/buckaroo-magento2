@@ -147,7 +147,13 @@ class Process extends \Magento\Framework\App\Action\Action
 
         $statusCode = (int)$this->response['brq_statuscode'];
 
-        $this->order->loadByIncrementId($this->response['brq_ordernumber']);
+        if (isset($this->response['brq_ordernumber']) && !empty($this->response['brq_ordernumber'])) {
+            $brqOrderId = $this->response['brq_ordernumber'];
+        } else {
+            $brqOrderId = $this->response['brq_invoicenumber'];
+        }
+
+        $this->order->loadByIncrementId($brqOrderId);
         if (!$this->order->getId()) {
             $statusCode = $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED');
         } else {

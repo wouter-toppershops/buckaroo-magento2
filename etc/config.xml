@@ -218,6 +218,19 @@
                 <payment_action>order</payment_action>
                 <available_in_backend>0</available_in_backend>
             </tig_buckaroo_eps>
+
+            <tig_buckaroo_giftcards>
+                <active>0</active>
+                <model>TIG\Buckaroo\Model\Method\Giftcards</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Giftcards</title>
+                <sort_order>180</sort_order>
+                <order_email>1</order_email>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_giftcards>
         </payment>
 
         <tig_buckaroo>

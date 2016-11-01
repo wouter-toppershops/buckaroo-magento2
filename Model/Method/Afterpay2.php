@@ -58,6 +58,11 @@ class Afterpay2 extends AbstractMethod
     const BUSINESS_METHOD_B2B = 2;
 
     /**
+     * Check if the tax calculation includes tax.
+     */
+    const TAX_CALCULATION_INCLUDES_TAX = 'tax/calculation/price_includes_tax';
+
+    /**
      * @var string
      */
     public $buckarooPaymentMethodCode = 'afterpay2';
@@ -256,7 +261,6 @@ class Afterpay2 extends AbstractMethod
 
                 $currentInvoice = $oInvoice;
                 $currentInvoiceTotal = $oInvoice->getBaseGrandTotal();
-
             }
         }
 
@@ -279,7 +283,8 @@ class Afterpay2 extends AbstractMethod
 
             // For the first invoice possible add payment fee
             if (is_array($articles) && $numberOfInvoices == 1) {
-                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment);
+                $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment, $includesTax);
                 $articles = array_merge($articles, $serviceLine);
             }
 
@@ -484,6 +489,8 @@ class Afterpay2 extends AbstractMethod
      */
     public function getRequestArticlesData($requestData, $payment)
     {
+        $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+
         /** @var \Magento\Eav\Model\Entity\Collection\AbstractCollection|array $cartData */
         $cartData = $this->objectManager->create('Magento\Checkout\Model\Cart')->getItems();
 
@@ -493,7 +500,7 @@ class Afterpay2 extends AbstractMethod
 
         foreach ($cartData as $item) {
             // Child objects of configurable products should not be requested because afterpay will fail on unit prices.
-            if (empty($item) || $this->calculateProductPrice($item) == 0) {
+            if (empty($item) || $this->calculateProductPrice($item, $includesTax) == 0) {
                 continue;
             }
 
@@ -502,7 +509,7 @@ class Afterpay2 extends AbstractMethod
                 $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
-                $this->calculateProductPrice($item),
+                $this->calculateProductPrice($item, $includesTax),
                 $this->getTaxCategory($item->getTaxClassId())
             );
 
@@ -516,7 +523,7 @@ class Afterpay2 extends AbstractMethod
             break;
         }
 
-        $serviceLine = $this->getServiceCostLine($count, $payment);
+        $serviceLine = $this->getServiceCostLine($count, $payment, $includesTax);
 
         if (!empty($serviceLine)) {
             $requestData = array_merge($articles, $serviceLine);
@@ -532,6 +539,13 @@ class Afterpay2 extends AbstractMethod
             $count++;
         }
 
+
+        if (!$includesTax) {
+            $taxLine = $this->getTaxLine($count, $payment);
+            $requestData = array_merge($requestData, $taxLine);
+            $count++;
+        }
+
         return $requestData;
     }
 
@@ -542,12 +556,14 @@ class Afterpay2 extends AbstractMethod
      */
     public function getPartialRequestArticalData($invoice)
     {
+        $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+
         // Set loop variables
         $articles = array();
         $count    = 1;
 
         foreach ($invoice->getAllItems() as $item) {
-            if (empty($item) || $this->calculateProductPrice($item) == 0) {
+            if (empty($item) || $this->calculateProductPrice($item, $includesTax) == 0) {
                 continue;
             }
 
@@ -556,7 +572,7 @@ class Afterpay2 extends AbstractMethod
                 (int) $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
-                $this->calculateProductPrice($item),
+                $this->calculateProductPrice($item, $includesTax),
                 $this->getTaxCategory($item->getTaxClassId())
             );
 
@@ -611,14 +627,18 @@ class Afterpay2 extends AbstractMethod
     }
 
     /**
-     * @param $productItem
+     * @param \Magento\Quote\Model\Quote\Item $productItem
+     * @param                                 $includesTax
      *
      * @return mixed
      */
-    public function calculateProductPrice($productItem)
+    public function calculateProductPrice($productItem, $includesTax)
     {
-        $productPrice = ($productItem->getBasePrice() * $productItem->getQty())
-            + $productItem->getBaseTaxAmount();
+        if ($includesTax) {
+            $productPrice = $productItem->getRowTotalInclTax();
+        } else {
+            $productPrice = $productItem->getRowTotal();
+        }
 
         return $productPrice;
     }
@@ -628,26 +648,32 @@ class Afterpay2 extends AbstractMethod
      *
      * @param (int) $latestKey
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param                                                                                    $includesTax
      *
      * @return array
+     * @internal param $ (int) $latestKey
      */
-    public function getServiceCostLine($latestKey, $payment)
+    public function getServiceCostLine($latestKey, $payment, $includesTax)
     {
         /** @var \Magento\Sales\Model\Order $order */
-        $order      = $payment->getOrder();
+        $order = $payment->getOrder();
         /** @noinspection PhpUndefinedMethodInspection */
-        $buckfee    = $order->getBuckarooFee();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $buckfeeTax = $order->getBuckarooFeeTax();
+        $buckarooFee = $order->getBuckarooFee();
 
-        $buckfeeInclTax = $order->getBaseBuckarooFeeInclTax();
+        if ($includesTax) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $buckarooFeeLine = $order->getBaseBuckarooFeeInclTax();
+        } else {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $buckarooFeeLine = $order->getBaseBuckarooFee();
+        }
 
         /** @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper */
         $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
 
         $article = [];
 
-        if (false !== $buckfee && (double)$buckfee > 0) {
+        if (false !== $buckarooFee && (double)$buckarooFee > 0) {
             $storeId = (int) $order->getStoreId();
 
             $article = $this->getArticleArrayLine(
@@ -655,7 +681,7 @@ class Afterpay2 extends AbstractMethod
                 'Servicekosten',
                 1,
                 1,
-                round($buckfeeInclTax, 2),
+                round($buckarooFeeLine, 2),
                 $this->getTaxCategory($feeHelper->getBuckarooFeeTaxClass($storeId))
             );
         }
@@ -701,6 +727,31 @@ class Afterpay2 extends AbstractMethod
                 4
             );
         }
+
+        return $article;
+    }
+
+    /**
+     * Get the tax line
+     *
+     * @param (int) $latestKey
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    public function getTaxLine($latestKey, $payment)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order      = $payment->getOrder();
+
+        $article = $this->getArticleArrayLine(
+            $latestKey,
+            'BTW',
+            2,
+            1,
+            number_format($order->getTaxAmount(),2),
+            4
+        );
 
         return $article;
     }
@@ -863,7 +914,6 @@ class Afterpay2 extends AbstractMethod
             ];
         }
 
-
         if (!empty($streetFormat['number_addition'])) {
             $billingData[] = [
                 '_'    => $streetFormat['number_addition'],
@@ -922,7 +972,7 @@ class Afterpay2 extends AbstractMethod
             ],
             [
                 '_'    => $shippingAddress->getCountryId(),
-                'Name' => 'ShippingCountry',
+                'Name' => 'ShippingCountryCode',
             ],
             [
                 '_'    => $shippingAddress->getEmail(),

@@ -411,7 +411,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $allowedCurrenciesRaw = $this->getConfigData('allowed_currencies');
         $allowedCurrencies = explode(',', $allowedCurrenciesRaw);
 
-        $currentCurrency = $quote->getCurrency()->getStoreCurrencyCode();
+        $currentCurrency = $quote->getCurrency()->getQuoteCurrencyCode();
 
         return $allowedCurrenciesRaw === null || in_array($currentCurrency, $allowedCurrencies);
     }

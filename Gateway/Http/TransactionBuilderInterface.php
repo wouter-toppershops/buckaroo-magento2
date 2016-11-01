@@ -66,6 +66,18 @@ interface TransactionBuilderInterface
     public function getServices();
 
     /**
+     * @param array $customVars
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setCustomVars($customVars);
+
+    /**
+     * @return array
+     */
+    public function getCustomVars();
+
+    /**
      * @param string $method
      *
      * @return TransactionBuilderInterface
