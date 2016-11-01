@@ -54,6 +54,8 @@ use \TIG\Buckaroo\Model\Method\AbstractMethod;
 class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE = 'I014';
+    
+    const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
 
     /**
      * @var \Magento\Framework\Webapi\Rest\Request $request
@@ -324,6 +326,33 @@ class Push implements PushInterface
             $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
         }
     }
+    
+    /**
+     * Store additional transaction information to track multiple payments manually
+     * Multiple Buckaroo pushes can resolve into incorrect 
+     */
+    protected function setReceivedPaymentFromBuckaroo()
+    {
+        if (empty($this->postData['brq_transactions'])) {
+            return;
+        }
+        
+        $payment     = $this->order->getPayment();
+        
+        if (!$payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS)) {
+            $payment->setAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS, 
+                                               array($this->postData['brq_transactions'] => floatval($this->postData['brq_amount']))
+                                               );  
+        }
+        else {
+            $buckarooTransactionKeysArray = $payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS);
+            
+            $buckarooTransactionKeysArray[$this->postData['brq_transactions']] = floatval($this->postData['brq_amount']);
+            
+            $payment->setAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS, $buckarooTransactionKeysArray);
+        }
+        
+    }
 
     /**
      * Sometimes the push does not contain the order id, when thats the case try to get the order by his payment,
@@ -514,19 +543,26 @@ class Push implements PushInterface
         $payment = $this->order->getPayment();
 
         if ($payment->getMethod() == \TIG\Buckaroo\Model\Method\Giftcards::PAYMENT_METHOD_CODE) {
+            
+            $this->setReceivedPaymentFromBuckaroo();
+            
             $invoiceAmount = floatval($this->postData['brq_amount']);
             $payment->registerCaptureNotification($invoiceAmount, true);
             $payment->save();
-
-            if ($payment->getBaseAmountPaidOnline() != $payment->getBaseAmountOrdered()) {
+            
+            $receivedPaymentsArray = $payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS);
+            
+            if (!is_array($receivedPaymentsArray)) {
                 return;
             }
 
-            /* when a giftcard is paid in partially, create invoice manually */
-            if ($this->postData['brq_transactions'] !=
-                $payment->getAdditionalInformation(
-                    \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
-                )) {
+            /* partial payment, do not create invoice yet */
+            if ($this->order->getGrandTotal() != array_sum($receivedPaymentsArray)) {
+                return;
+            }
+
+            /* partially paid giftcard, create invoice */
+            if (count($receivedPaymentsArray) > 1) {
                 $payment->capture(); //creates invoice
                 $payment->save();
             }
