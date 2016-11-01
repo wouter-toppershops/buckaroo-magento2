@@ -63,7 +63,12 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
+        $productMetadata = \Mockery::mock(\Magento\Framework\App\ProductMetadata::class)->makePartial();
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->objectManager->shouldReceive('get')
+            ->with('Magento\Framework\App\ProductMetadataInterface')
+            ->andReturn($productMetadata);
+
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
 
         $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Giropay::class, [
@@ -100,7 +105,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
         $payment->shouldReceive('getAdditionalInformation')->with('customer_bic')->andReturn($fixture['customer_bic']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
@@ -120,7 +125,6 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
     }
-
 
     /**
      * Test the getCaptureTransactionBuilder method.

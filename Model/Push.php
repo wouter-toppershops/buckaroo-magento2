@@ -54,6 +54,8 @@ use \TIG\Buckaroo\Model\Method\AbstractMethod;
 class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE = 'I014';
+    
+    const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
 
     /**
      * @var \Magento\Framework\Webapi\Rest\Request $request
@@ -177,6 +179,11 @@ class Push implements PushInterface
 
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
+
+        //Skip informational messages for processing
+        if ($this->postData['brq_mutationtype'] == 'Informational') {
+            return;
+        }
 
         //Start debug mailing/logging with the postdata.
         $this->debugger->addToMessage($this->originalPostData);
@@ -319,6 +326,33 @@ class Push implements PushInterface
             $payment->setAdditionalInformation($originalKey, $this->postData['brq_transactions']);
         }
     }
+    
+    /**
+     * Store additional transaction information to track multiple payments manually
+     * Multiple Buckaroo pushes can resolve into incorrect 
+     */
+    protected function setReceivedPaymentFromBuckaroo()
+    {
+        if (empty($this->postData['brq_transactions'])) {
+            return;
+        }
+        
+        $payment     = $this->order->getPayment();
+        
+        if (!$payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS)) {
+            $payment->setAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS, 
+                                               array($this->postData['brq_transactions'] => floatval($this->postData['brq_amount']))
+                                               );  
+        }
+        else {
+            $buckarooTransactionKeysArray = $payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS);
+            
+            $buckarooTransactionKeysArray[$this->postData['brq_transactions']] = floatval($this->postData['brq_amount']);
+            
+            $payment->setAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS, $buckarooTransactionKeysArray);
+        }
+        
+    }
 
     /**
      * Sometimes the push does not contain the order id, when thats the case try to get the order by his payment,
@@ -360,14 +394,15 @@ class Push implements PushInterface
          * Get current state and status of order
          */
         $currentStateAndStatus = [$this->order->getState(), $this->order->getStatus()];
+
         /**
          * If the types are not the same and the order can receive an invoice the order can be udpated by BPE.
          */
         if ($completedStateAndStatus   != $currentStateAndStatus
-           && $cancelledStateAndStatus != $currentStateAndStatus
-           && $holdedStateAndStatus    != $currentStateAndStatus
-           && $closedStateAndStatus    != $currentStateAndStatus
-           && $this->order->canInvoice()
+            && $cancelledStateAndStatus != $currentStateAndStatus
+            && $holdedStateAndStatus    != $currentStateAndStatus
+            && $closedStateAndStatus    != $currentStateAndStatus
+            && $this->order->canInvoice()
         ) {
             return true;
         }
@@ -408,7 +443,7 @@ class Push implements PushInterface
      */
     public function processSucceededPush($newStatus, $message)
     {
-        $amount = $this->order->getBaseGrandTotal();
+        $amount = floatval($this->originalPostData['brq_amount']);
 
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
         $accountConfig = $this->configProviderFactory->get('account');
@@ -424,8 +459,8 @@ class Push implements PushInterface
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
         } else {
             $description = 'Authorization status : <strong>' . $message . "</strong><br/>";
-            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue()) . ' has been ' .
-                'authorized. Please create an invoice to capture the authorized amount.';
+            $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue())
+                . ' has been authorized. Please create an invoice to capture the authorized amount.';
         }
 
         if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $accountConfig->getAutoInvoice()) {
@@ -506,8 +541,37 @@ class Push implements PushInterface
 
         /** @var \Magento\Sales\Model\Order\Payment $payment */
         $payment = $this->order->getPayment();
-        $payment->registerCaptureNotification($this->order->getGrandTotal());
-        $payment->save();
+
+        if ($payment->getMethod() == \TIG\Buckaroo\Model\Method\Giftcards::PAYMENT_METHOD_CODE) {
+            
+            $this->setReceivedPaymentFromBuckaroo();
+            
+            $invoiceAmount = floatval($this->postData['brq_amount']);
+            $payment->registerCaptureNotification($invoiceAmount, true);
+            $payment->save();
+            
+            $receivedPaymentsArray = $payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS);
+            
+            if (!is_array($receivedPaymentsArray)) {
+                return;
+            }
+
+            /* partial payment, do not create invoice yet */
+            if ($this->order->getGrandTotal() != array_sum($receivedPaymentsArray)) {
+                return;
+            }
+
+            /* partially paid giftcard, create invoice */
+            if (count($receivedPaymentsArray) > 1) {
+                $payment->capture(); //creates invoice
+                $payment->save();
+            }
+
+        }
+        else {
+            $payment->registerCaptureNotification($this->order->getGrandTotal());
+            $payment->save();
+        }
 
         $this->order->save();
 
@@ -522,6 +586,14 @@ class Push implements PushInterface
         }
 
         return true;
+    }
+
+    /**
+     * Get Transactions
+     */
+    public function getTransactionsByOrder()
+    {
+        $this->order->getPayment();
     }
 
     /**
@@ -545,6 +617,7 @@ class Push implements PushInterface
             \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
             $rawInfo
         );
+
 
         /**
          * Save the payment's transaction key.

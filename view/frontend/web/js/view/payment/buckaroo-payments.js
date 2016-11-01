@@ -101,6 +101,10 @@ define(
             {
                 type: 'tig_buckaroo_eps',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/eps'
+            },
+            {
+                type: 'tig_buckaroo_giftcards',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/giftcards'
             }
 
 

@@ -196,6 +196,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->order->shouldReceive('getBaseGrandTotal')->andReturn(999);
         $this->order->shouldReceive('getBaseTotalRefunded')->andReturn('0');
         $this->order->shouldReceive('getBaseToOrderRate')->andReturn('1');
+        $this->order->shouldReceive('getAllItems')->andReturn(array());
 
         $this->object->postData = [
             'brq_currency' => 'EUR',
@@ -205,7 +206,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->assertEquals(0, $result['shipping_amount']);
         $this->assertEquals(0, $result['adjustment_negative']);
-        $this->assertEquals(0, $result['items']);
+        $this->assertEquals(array(), $result['items']);
         $this->assertEquals(0, $result['qtys']);
         $this->assertEquals('100', $result['adjustment_positive']);
     }

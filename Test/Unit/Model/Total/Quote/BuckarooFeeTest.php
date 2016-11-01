@@ -432,7 +432,6 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
         $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($fee);
 
-
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod */
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;

@@ -60,9 +60,362 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     protected $certificateCollection;
 
     /**
+     * @var \TIG\Buckaroo\Model\ResourceModel\Giftcard\Collection
+     */
+    protected $giftcardCollection;
+
+    /**
      * @var \Magento\Framework\Encryption\Encryptor
      */
     protected $encryptor;
+
+    /** @var array */
+    protected $giftcardArray = array(
+        array(
+            'value' => 'boekenbon',
+            'label' => 'Boekenbon'
+        ),
+        array(
+            'value' => 'boekencadeau',
+            'label' => 'Boekencadeau'
+        ),
+        array(
+            'value' => 'cadeaukaartgiftcard',
+            'label' => 'Cadeaukaart / Giftcard'
+        ),
+        array(
+            'value' => 'nationalekadobon',
+            'label' => 'De nationale kadobon'
+        ),
+        array(
+            'value' => 'fashionucadeaukaart',
+            'label' => 'Fashion Giftcard'
+        ),
+        array(
+            'value' => 'fietsbon',
+            'label' => 'Fietsbon'
+        ),
+        array(
+            'value' => 'fijncadeau',
+            'label' => 'Fijn Cadeau'
+        ),
+        array(
+            'value' => 'gezondheidsbon',
+            'label' => 'Gezondheidsbon'
+        ),
+        array(
+            'value' => 'golfbon',
+            'label' => 'Golfbon'
+        ),
+        array(
+            'value' => 'nationaletuinbon',
+            'label' => 'Nationale Tuinbon'
+        ),
+        array(
+            'value' => 'vvvgiftcard',
+            'label' => 'VVV Giftcard'
+        ),
+        array(
+            'value' => 'webshopgiftcard',
+            'label' => 'Webshop Giftcard'
+        )
+    );
+
+    /** @var array */
+    protected $giftcardAdditionalArray = array(
+        array(
+            'label' => 'Ajax Giftcard',
+            'value' => 'ajaxgiftcard',
+        ),
+        array(
+            'label' => 'Baby Giftcard',
+            'value' => 'babygiftcard',
+        ),
+        array(
+            'label' => 'Babypark Giftcard',
+            'value' => 'babyparkgiftcard',
+        ),
+        array(
+            'label' => 'Babypark Kesteren Giftcard',
+            'value' => 'babyparkkesterengiftcard',
+        ),
+        array(
+            'label' => 'Beauty Wellness',
+            'value' => 'beautywellness',
+        ),
+        array(
+            'label' => 'Boekencadeau Retail',
+            'value' => 'boekencadeauretail',
+        ),
+        array(
+            'label' => 'Boeken Voordeel',
+            'value' => 'boekenvoordeel',
+        ),
+        array(
+            'label' => 'CampingLife Giftcard',
+            'value' => 'campinglifekaart',
+        ),
+        array(
+            'label' => 'CJP betalen',
+            'value' => 'cjpbetalen',
+        ),
+        array(
+            'label' => 'Coccinelle Giftcard',
+            'value' => 'coccinellegiftcard',
+        ),
+        array(
+            'label' => 'Dan card',
+            'value' => 'dancard',
+        ),
+        array(
+            'label' => 'De Beren Cadeaukaart',
+            'value' => 'deberencadeaukaart',
+        ),
+        array(
+            'label' => 'DEEN Cadeaukaart',
+            'value' => 'deencadeau',
+        ),
+        array(
+            'label' => 'Designshops Giftcard',
+            'value' => 'designshopsgiftcard',
+        ),
+        array(
+            'label' => 'Nationale Bioscoopbon',
+            'value' => 'digitalebioscoopbon',
+        ),
+        array(
+            'label' => 'Dinner Jaarkaart',
+            'value' => 'dinnerjaarkaart',
+        ),
+        array(
+            'label' => 'D.I.O. Cadeaucard',
+            'value' => 'diocadeaucard',
+        ),
+        array(
+            'label' => 'Doe Cadeaukaart',
+            'value' => 'doecadeaukaart',
+        ),
+        array(
+            'label' => 'Doen en Co',
+            'value' => 'doenenco',
+        ),
+        array(
+            'label' => 'E-Bon',
+            'value' => 'ebon',
+        ),
+        array(
+            'label' => 'Fashion cheque',
+            'value' => 'fashioncheque',
+        ),
+        array(
+            'label' => 'Girav Giftcard',
+            'value' => 'giravgiftcard',
+        ),
+        array(
+            'label' => 'Golfbon',
+            'value' => 'golfbon',
+        ),
+        array(
+            'label' => 'Good card',
+            'value' => 'goodcard',
+        ),
+        array(
+            'label' => 'GWS',
+            'value' => 'gswspeelgoedwinkel',
+        ),
+        array(
+            'label' => 'Jewellery Giftcard',
+            'value' => 'JewelleryGiftcard',
+        ),
+        array(
+            'label' => 'Kijkshop Kado',
+            'value' => 'kijkshopkado',
+        ),
+        array(
+            'label' => 'Kijkshop Tegoed',
+            'value' => 'kijkshoptegoed',
+        ),
+        array(
+            'label' => 'Koffie Cadeau',
+            'value' => 'koffiecadeau',
+        ),
+        array(
+            'label' => 'Koken en Zo',
+            'value' => 'kokenzo',
+        ),
+        array(
+            'label' => 'Kook Cadeau',
+            'value' => 'kookcadeau',
+        ),
+        array(
+            'label' => 'Nationale Kunst & Cultuur cadeaukaart',
+            'value' => 'kunstcultuurkaart',
+        ),
+        array(
+            'label' => 'Lotto Cadeaukaart',
+            'value' => 'lottocadeaukaart',
+        ),
+        array(
+            'label' => 'Nationale Entertainment Card',
+            'value' => 'nationaleentertainmentcard',
+        ),
+        array(
+            'label' => 'Nationale Erotiekbon',
+            'value' => 'nationaleerotiekbon',
+        ),
+        array(
+            'label' => 'Nationale Juweliers Cadeaukaart',
+            'value' => 'nationalejuweliers',
+        ),
+        array(
+            'label' => 'Natures Gift',
+            'value' => 'naturesgift',
+        ),
+        array(
+            'label' => 'Natures Gift Voucher',
+            'value' => 'naturesgiftvoucher',
+        ),
+        array(
+            'label' => 'Nationale Verwen Cadeaubon',
+            'value' => 'natverwencadeaubon',
+        ),
+        array(
+            'label' => 'Nlziet',
+            'value' => 'nlziet',
+        ),
+        array(
+            'label' => 'Opladen Cadeaukaart',
+            'value' => 'opladencadeau',
+        ),
+        array(
+            'label' => 'Parfumcadeaukaart',
+            'value' => 'parfumcadeaukaart',
+        ),
+        array(
+            'label' => 'Pathé Giftcard',
+            'value' => 'pathegiftcard',
+        ),
+        array(
+            'label' => 'Pepper Cadeau',
+            'value' => 'peppercadeau',
+        ),
+        array(
+            'label' => 'Planet Crowd',
+            'value' => 'planetcrowd',
+        ),
+        array(
+            'label' => 'Podium Cadeaukaart',
+            'value' => 'podiumcadeaukaart',
+        ),
+        array(
+            'label' => 'Polare',
+            'value' => 'Polare',
+        ),
+        array(
+            'label' => 'Riem Cadeaukaart',
+            'value' => 'riemercadeaukaart',
+        ),
+        array(
+            'label' => 'Scheltema Cadeaukaart',
+            'value' => 'ScheltemaCadeauKaart',
+        ),
+        array(
+            'label' => 'Shoeclub Cadeaukaart',
+            'value' => 'shoeclub',
+        ),
+        array(
+            'label' => 'Shoes Accessories',
+            'value' => 'shoesaccessories',
+        ),
+        array(
+            'label' => 'Siebel Juweliers Cadeaukaart',
+            'value' => 'siebelcadeaukaart',
+        ),
+        array(
+            'label' => 'Siebel Juweliers Voucher',
+            'value' => 'siebelvoucher',
+        ),
+        array(
+            'label' => 'Sieraden Horloges',
+            'value' => 'sieradenhorlogescadeaukaart',
+        ),
+        array(
+            'label' => 'Simon Lévelt Cadeaukaart',
+            'value' => 'simonlevelt',
+        ),
+        array(
+            'label' => 'Sport & Fit Cadeaukaart',
+            'value' => 'sportfitcadeau',
+        ),
+        array(
+            'label' => 'Thuisbioscoop Cadeaukaart',
+            'value' => 'thuisbioscoop',
+        ),
+        array(
+            'label' => 'Tijdschriften Cadeaukaart',
+            'value' => 'tijdschriftencadeau',
+        ),
+        array(
+            'label' => 'Toto Cadeaukaart',
+            'value' => 'totocadeaukaart',
+        ),
+        array(
+            'label' => 'Van den Assem Cadeaubon',
+            'value' => 'vandenassem',
+        ),
+        array(
+            'label' => 'VDC Giftcard',
+            'value' => 'vdcgiftcard',
+        ),
+        array(
+            'label' => 'Videoland Card',
+            'value' => 'videolandcard',
+        ),
+        array(
+            'label' => 'Videoland cadeaukaart',
+            'value' => 'videolandkaart',
+        ),
+        array(
+            'label' => 'Vitaminboost cadeaukaart',
+            'value' => 'vitaminboost',
+        ),
+        array(
+            'label' => 'Vitaminstore Giftcard',
+            'value' => 'vitaminstoregiftcard',
+        ),
+        array(
+            'label' => 'Voetbalshop.nl CadeauCard',
+            'value' => 'voetbalshopcadeau',
+        ),
+        array(
+            'label' => 'Wijn Cadeau',
+            'value' => 'wijncadeau',
+        ),
+        array(
+            'label' => 'WinkelCheque',
+            'value' => 'winkelcheque',
+        ),
+        array(
+            'label' => 'Wonen en Zo',
+            'value' => 'wonenzo',
+        ),
+        array(
+            'label' => 'YinX Cadeaukaart',
+            'value' => 'yinx',
+        ),
+        array(
+            'label' => 'Yourgift Card',
+            'value' => 'yourgift',
+        ),
+        array(
+            'label' => 'YourPhotoMag',
+            'value' => 'yourphotomag',
+        ),
+        array(
+            'label' => 'Zwerfkei Cadeaukaart',
+            'value' => 'zwerfkeicadeaukaart',
+        ),
+    );
 
     /**
      * @param \Magento\Sales\Setup\SalesSetupFactory                   $salesSetupFactory
@@ -73,11 +426,13 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
     public function __construct(
         \Magento\Sales\Setup\SalesSetupFactory $salesSetupFactory,
         \Magento\Quote\Setup\QuoteSetupFactory $quoteSetupFactory,
+        \TIG\Buckaroo\Model\ResourceModel\Giftcard\Collection $giftcardCollection,
         \TIG\Buckaroo\Model\ResourceModel\Certificate\Collection $certificateCollection,
         \Magento\Framework\Encryption\Encryptor $encryptor
     ) {
         $this->salesSetupFactory = $salesSetupFactory;
         $this->quoteSetupFactory = $quoteSetupFactory;
+        $this->giftcardCollection = $giftcardCollection;
         $this->certificateCollection = $certificateCollection;
         $this->encryptor = $encryptor;
     }
@@ -111,6 +466,14 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '0.9.4', '<')) {
             $this->encryptCertificates();
+        }
+
+        if (version_compare($context->getVersion(), '1.3.0', '<')) {
+            $this->installBaseGiftcards($setup, $this->giftcardArray);
+        }
+
+        if (version_compare($context->getVersion(), '1.3.0', '<')) {
+            $this->installBaseGiftcards($setup,  $this->giftcardAdditionalArray);
         }
     }
 
@@ -483,6 +846,33 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
             )->setSkipEncryptionOnSave(true);
 
             $certificate->save();
+        }
+
+        return $this;
+    }
+
+    /**
+     * Install giftcards which can be used with the Giftcards payment method
+     *
+     * @param ModuleDataSetupInterface $setup
+     * @param array $giftcardArray
+     *
+     * @return $this
+     */
+    protected function installBaseGiftcards(ModuleDataSetupInterface $setup, $giftcardArray = array())
+    {
+        foreach ($giftcardArray as $giftcard) {
+            $foundGiftcards = $this->giftcardCollection->getItemsByColumnValue('servicecode', $giftcard['value']);
+
+            if (count($foundGiftcards) <= 0) {
+                $setup->getConnection()->insert(
+                    $setup->getTable('tig_buckaroo_giftcard'),
+                    [
+                        'servicecode' => $giftcard['value'],
+                        'label'  => $giftcard['label'],
+                    ]
+                );
+            }
         }
 
         return $this;

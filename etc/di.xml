@@ -200,6 +200,10 @@
                     <item name="type" xsi:type="string">eps</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Eps</item>
                 </item>
+                <item name="giftcards" xsi:type="array">
+                    <item name="type" xsi:type="string">giftcards</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards</item>
+                </item>
             </argument>
         </arguments>
     </type>

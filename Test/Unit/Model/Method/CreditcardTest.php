@@ -73,7 +73,12 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
+        $productMetadata = \Mockery::mock(\Magento\Framework\App\ProductMetadata::class)->makePartial();
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->objectManager->shouldReceive('get')
+            ->with('Magento\Framework\App\ProductMetadataInterface')
+            ->andReturn($productMetadata);
+
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
@@ -134,7 +139,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('card_type')
             ->andReturn($fixture['card_type']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 
@@ -174,7 +179,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             \TIG\Buckaroo\Model\Method\Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn($fixture['transaction_key']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
         $order->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
@@ -213,7 +218,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('card_type')
             ->andReturn($fixture['card_type']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 

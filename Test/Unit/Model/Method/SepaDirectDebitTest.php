@@ -63,7 +63,12 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->objectManager             = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $productMetadata = \Mockery::mock(\Magento\Framework\App\ProductMetadata::class)->makePartial();
+        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->objectManager->shouldReceive('get')
+            ->with('Magento\Framework\App\ProductMetadataInterface')
+            ->andReturn($productMetadata);
+
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class)
                                                    ->makePartial();
 
@@ -129,7 +134,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 
         $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
 
-        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class); // ->makePartial();
+        $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
 

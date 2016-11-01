@@ -39,15 +39,71 @@
 
 namespace TIG\Buckaroo\Setup;
 
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\SchemaSetupInterface;
+use Mockery\CountValidator\Exception;
+
 class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
 {
     /**
      * {@inheritdoc}
      */
-    public function upgrade(
-        \Magento\Framework\Setup\SchemaSetupInterface $setup,
-        \Magento\Framework\Setup\ModuleContextInterface $context
-    ) {
-        // Placeholder for future upgrade scripts.
+    public function upgrade(SchemaSetupInterface $setup, ModuleContextInterface $context)
+    {
+        $installer = $setup;
+        $installer->startSetup();
+
+        if (!$installer->tableExists('tig_buckaroo_giftcard')) {
+            $this->createGiftcardTable($installer);
+        }
+
+        $installer->endSetup();
+    }
+
+    /**
+     * @param SchemaSetupInterface $installer
+     *
+     * @throws \Zend_Db_Exception
+     */
+    protected function createGiftcardTable(SchemaSetupInterface $installer)
+    {
+        $table = $installer->getConnection()->newTable($installer->getTable('tig_buckaroo_giftcard'));
+
+        $table->addColumn(
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false,
+                'primary'  => true,
+            ],
+            'Entity ID'
+        );
+
+        $table->addColumn(
+            'servicecode',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            null,
+            [
+                'nullable' => false,
+            ],
+            'Servicecode'
+        );
+
+        $table->addColumn(
+            'label',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
+            null,
+            [
+                'nullable' => false,
+            ],
+            'Label'
+        );
+
+        $table->setComment('TIG Buckaroo Giftcard');
+
+        $installer->getConnection()->createTable($table);
     }
 }

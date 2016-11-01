@@ -278,6 +278,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getEmailSent')->andReturn($orderEmailSent);
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
+        $orderMock->shouldReceive('getTotalDue')->andReturn($amount);
 
         /** The order state has to be checked at least once */
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
@@ -472,10 +473,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 /** $postData */
                 false,
             ],
-
-
             /** CANCELED && NOT AUTHORIZE */
-
             4 => [
                 /** $state */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
@@ -564,10 +562,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 /** $postData */
                 false,
             ],
-
-
             /** CANCELED && NOT AUTHORIZE && AUTO INVOICE*/
-
             8 => [
                 /** $state */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
@@ -678,8 +673,6 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 /** $postData */
                 false,
             ],
-
-
             /** PROCESSING && AUTHORIZE */
             13 => [
                 /** $state */
@@ -769,10 +762,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 /** $postData */
                 false,
             ],
-
-
             /** PROCESSING && NOT AUTHORIZE */
-
             17 => [
                 /** $state */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
@@ -861,10 +851,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 /** $postData */
                 false,
             ],
-
-
             /** PROCESSING && NOT AUTHORIZE && AUTO INVOICE*/
-
             21 => [
                 /** $state */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,

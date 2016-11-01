@@ -159,8 +159,7 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager
             ->shouldReceive('get')
             ->with('\Magento\Framework\App\Config\Storage\WriterInterface')
-            ->andReturnSelf()
-        ;
+            ->andReturnSelf();
 
         $this->objectManager->shouldReceive('save')->once();
 

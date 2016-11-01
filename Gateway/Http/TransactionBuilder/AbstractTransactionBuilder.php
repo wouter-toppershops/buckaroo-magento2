@@ -63,6 +63,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $services;
 
     /**
+     * @var array
+     */
+    protected $customVars;
+
+    /**
      * @var string
      */
     protected $method;
@@ -318,6 +323,24 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     public function setServices($services)
     {
         $this->services = $services;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getCustomVars()
+    {
+        return $this->customVars;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setCustomVars($customVars)
+    {
+        $this->customVars = $customVars;
 
         return $this;
     }

@@ -36,7 +36,7 @@
  * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- 
+
 
 namespace TIG\Buckaroo\Block\Widget\Button;
 
@@ -62,18 +62,21 @@ class Toolbar
         }
 
         $orderPayment = $context->getInvoice()->getOrder();
-    
+
         if ($orderPayment->getBaseBuckarooFee() > 0) {
-    
             $message = __(
-                'Cannot Refund via Magento Backend. Partial refunds combined with a payment fee can only be refunded via the Buckaroo Payment Plaza, see also the <a href="http://servicedesk.tig.nl/hc/nl/articles/217984838" target="_blank">KB article</a>.' .
-                '<br><a href="https://payment.buckaroo.nl" target="_blank">Open a new window to the Buckaroo Payment Plaza</a>.'
+                'Cannot Refund via Magento Backend. ' .
+                'Partial refunds combined with a payment fee can only be refunded via the Buckaroo Payment Plaza, ' .
+                'see also the ' .
+                '<a href="http://servicedesk.tig.nl/hc/nl/articles/217984838" target="_blank">KB article</a>.<br>' .
+                '<a href="https://payment.buckaroo.nl" target="_blank">' .
+                'Open a new window to the Buckaroo Payment Plaza</a>.'
             );
             $onClick = "confirmSetLocation('{$message}', '#')";
-    
+
             $buttonList->update('capture', 'onclick', $onClick);
         }
-    
+
         return [$context, $buttonList];
     }
 }
