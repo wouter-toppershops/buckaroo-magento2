@@ -32,11 +32,8 @@ sed -i -e "s/MAGENTO_DB_NAME/${MAGENTO_DB_NAME}/g" "${BUILD_DIR}/app/etc/env.php
 
 ( cd "${BUILD_DIR}/" && composer install )
 
-mkdir -p "${BUILD_DIR}/app/code/TIG"
-
-if [[ ! -L "${BUILD_DIR}/app/code/TIG/Buckaroo" && ! -d "${BUILD_DIR}/app/code/TIG/Buckaroo" ]]; then
-    ln -s `pwd` "${BUILD_DIR}/app/code/TIG/Buckaroo"
-fi
+composer config repositories.buckaroo vcs ${TRAVIS_BUILD_DIR}
+composer require tig/buckaroo
 
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "DROP DATABASE IF EXISTS \`${MAGENTO_DB_NAME}\`; CREATE DATABASE \`${MAGENTO_DB_NAME}\`;"
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} ${MAGENTO_DB_NAME} < Test/Fixtures/tig-buckaroo-fixture.sql
