@@ -18,6 +18,9 @@ MYSQLPASS=""
 if [ ! -z $MAGENTO_DB_PASS ]; then MYSQLPASS="-p${MAGENTO_DB_PASS}"; fi
 
 mkdir -p ${BUILD_DIR}
+
+composer config repo.magento.com ${MAGENTO_USERNAME} ${MAGENTO_PASSWORD}
+
 composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=${MAGENTO_VERSION} ${BUILD_DIR}
 
 cp -v Test/Fixtures/env.php "${BUILD_DIR}/app/etc/env.php"
