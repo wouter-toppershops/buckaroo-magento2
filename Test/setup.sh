@@ -21,7 +21,6 @@ mkdir -p ${BUILD_DIR}
 
 composer create-project --repository-url=https://repo.magento.com/ magento/project-community-edition=${MAGENTO_VERSION} ${BUILD_DIR}
 
-cp -v Test/Fixtures/auth.json "$HOME/.composer/auth.json"
 cp -v Test/Fixtures/env.php "${BUILD_DIR}/app/etc/env.php"
 cp -v Test/Fixtures/config.php "${BUILD_DIR}/app/etc/config.php"
 
@@ -30,9 +29,6 @@ sed -i -e "s/MAGENTO_DB_PORT/${MAGENTO_DB_PORT}/g" "${BUILD_DIR}/app/etc/env.php
 sed -i -e "s/MAGENTO_DB_USER/${MAGENTO_DB_USER}/g" "${BUILD_DIR}/app/etc/env.php"
 sed -i -e "s/MAGENTO_DB_PASS/${MAGENTO_DB_PASS}/g" "${BUILD_DIR}/app/etc/env.php"
 sed -i -e "s/MAGENTO_DB_NAME/${MAGENTO_DB_NAME}/g" "${BUILD_DIR}/app/etc/env.php"
-
-sed -i -e "s/MAGENTO_USERNAME/${MAGENTO_USERNAME}/g" "$HOME/.composer/auth.json"
-sed -i -e "s/MAGENTO_PASSWORD/${MAGENTO_PASSWORD}/g" "$HOME/.composer/auth.json"
 
 ( cd "${BUILD_DIR}/" && composer install )
 
