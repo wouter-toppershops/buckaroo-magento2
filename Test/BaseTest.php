@@ -54,9 +54,9 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     {
         /** Require functions.php to be able to use the translate function */
         if (strpos(__DIR__, 'vendor') === false) {
-            require_once __DIR__ . '/../../../../app/functions.php';
+            require_once __DIR__ . '/../../../../functions.php';
         } else {
-            require_once __DIR__ . '/../../../app/functions.php';
+            require_once __DIR__ . '/../../../../app/functions.php';
         }
 
         ini_set('error_reporting', E_ALL);
