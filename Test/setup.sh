@@ -5,6 +5,9 @@ set -x
 
 BUILD_DIR="/tmp/magento2"
 
+if [ -z $TRAVIS_BUILD_DIR ]; then TRAVIS_BUILD_DIR=`pwd`; fi
+if [ -z $TRAVIS_BRANCH ]; then TRAVIS_BRANCH=`git rev-parse --abbrev-ref HEAD`; fi
+if [ -z $TRAVIS_COMMIT ]; then TRAVIS_COMMIT=`git rev-parse HEAD`; fi
 if [ -z $MAGENTO_VERSION ]; then MAGENTO_VERSION="2.0.8"; fi
 if [ -z $MAGENTO_DB_HOST ]; then MAGENTO_DB_HOST="localhost"; fi
 if [ -z $MAGENTO_DB_PORT ]; then MAGENTO_DB_PORT="3306"; fi
