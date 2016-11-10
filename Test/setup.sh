@@ -33,7 +33,7 @@ sed -i -e "s/MAGENTO_DB_USER/${MAGENTO_DB_USER}/g" "${BUILD_DIR}/app/etc/env.php
 sed -i -e "s/MAGENTO_DB_PASS/${MAGENTO_DB_PASS}/g" "${BUILD_DIR}/app/etc/env.php"
 sed -i -e "s/MAGENTO_DB_NAME/${MAGENTO_DB_NAME}/g" "${BUILD_DIR}/app/etc/env.php"
 
-( cd "${BUILD_DIR}/" && composer install )
+( cd "${BUILD_DIR}/" && composer config minimum-stability dev )
 ( cd "${BUILD_DIR}/" && composer config repositories.buckaroo vcs ${TRAVIS_BUILD_DIR} )
 ( cd "${BUILD_DIR}/" && composer require tig/buckaroo:dev-${TRAVIS_BRANCH} )
 ( cd "${BUILD_DIR}/vendor/tig/buckaroo" && git checkout ${TRAVIS_COMMIT} )
