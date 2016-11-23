@@ -82,6 +82,8 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testAssignData()
     {
+        $this->markTestSkipped('Needs revision');
+
         $this->assignDataTest([
             'customer_bic' => 'bicbic',
         ]);
