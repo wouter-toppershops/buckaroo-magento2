@@ -33,14 +33,19 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright   Copyright (c) 2017 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Block\Order\Creditmemo;
+namespace TIG\Buckaroo\Block\Order;
 
-class totals extends \TIG\Buckaroo\Block\Order\Totals
+class TotalsFee extends \TIG\Buckaroo\Block\Order\Totals
 {
+    /**
+     * @var \TIG\Buckaroo\Helper\PaymentFee
+     */
+    protected $helper = null;
+
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Registry                      $registry
@@ -53,7 +58,25 @@ class totals extends \TIG\Buckaroo\Block\Order\Totals
         \TIG\Buckaroo\Helper\PaymentFee $helper,
         array $data = []
     ) {
-        parent::__construct($context, $registry, $helper);
-        $this->_isScopePrivate = true;
+        $this->helper = $helper;
+        parent::__construct($context, $registry);
+        $this->initTotals();
+    }
+
+    /**
+     * Initialize buckaroo fee totals for order/invoice/creditmemo
+     *
+     * @return $this
+     */
+    public function initTotals()
+    {
+        $this->_initTotals();
+        /** @noinspection PhpUndefinedMethodInspection */
+        $source = $this->getSource();
+        $totals = $this->helper->getBuckarooPaymentFeeTotal($source);
+        if (!empty($totals)) {
+            $this->addTotalBefore(new \Magento\Framework\DataObject($totals[0]), 'grand_total');
+        }
+        return $this->_totals;
     }
 }
