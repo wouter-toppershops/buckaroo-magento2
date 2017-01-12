@@ -46,7 +46,8 @@ define(
         'Magento_Checkout/js/model/quote',
         'ko',
         'Magento_Checkout/js/checkout-data',
-        'Magento_Checkout/js/action/select-payment-method'
+        'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Ui/js/lib/knockout/bindings/datepicker'
         /*,
          'jquery/validate'*/
     ],
