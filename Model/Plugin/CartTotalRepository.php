@@ -49,11 +49,7 @@ class CartTotalRepository
         $quote = $this->quoteRepository->getActive($cartId);
 
         /** @var \Magento\Quote\Api\Data\TotalsExtensionInterface $extensionAttributes */
-       // $extensionAttributes = $totals->getExtensionAttributes() ?? $this->totalsExtensionFactory->create();
-       // $extensionAttributes = $totals->getExtensionAttributes() ?: $this->totalsExtensionFactory->create();
-        $extensionAttributes = $totals->getExtensionAttributes()!== null ?
-            $totals->getExtensionAttributes() :
-            $this->totalsExtensionFactory->create();
+        $extensionAttributes = $totals->getExtensionAttributes() ?: $this->totalsExtensionFactory->create();
 
         /** @noinspection PhpUndefinedMethodInspection */
         $extensionAttributes->setBuckarooFee($quote->getBuckarooFee());
