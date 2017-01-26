@@ -38,72 +38,10 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source\TaxClass;
 
-use Magento\Tax\Api\TaxClassManagementInterface;
-use Magento\Tax\Model\ClassModel;
-
-class Product implements \Magento\Framework\Option\ArrayInterface
+class Product extends \Magento\Tax\Model\TaxClass\Source\Product
 {
-    /**
-     * @var \Magento\Tax\Api\TaxClassRepositoryInterface
-     */
-    protected $taxClassRepository;
-
-    /**
-     * @var \Magento\Framework\Api\SearchCriteriaBuilder
-     */
-    protected $searchCriteriaBuilder;
-
-    /**
-     * @var \Magento\Framework\Api\FilterBuilder
-     */
-    protected $filterBuilder;
-
-    /**
-     * @var array
-     */
-    protected $options;
-
-    /**
-     * @param \Magento\Tax\Api\TaxClassRepositoryInterface $taxClassService
-     * @param \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder
-     * @param \Magento\Framework\Api\FilterBuilder         $filterBuilder
-     */
-    public function __construct(
-        \Magento\Tax\Api\TaxClassRepositoryInterface $taxClassService,
-        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
-        \Magento\Framework\Api\FilterBuilder $filterBuilder
-    ) {
-        $this->taxClassRepository = $taxClassService;
-        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
-        $this->filterBuilder = $filterBuilder;
-    }
-
-    /**
-     * Retrieve list of products
-     *
-     * @return array
-     */
     public function toOptionArray()
     {
-        if (!$this->options) {
-            $this->options = [];
-
-            $filter = $this->filterBuilder->setField(ClassModel::KEY_TYPE)
-                ->setValue(TaxClassManagementInterface::TYPE_PRODUCT)
-                ->setConditionType('=')
-                ->create();
-            $searchCriteria = $this->searchCriteriaBuilder->addFilters([$filter])->create();
-            $taxClasses = $this->taxClassRepository->getList($searchCriteria)->getItems();
-
-            /** @var \Magento\Tax\Api\Data\TaxClassInterface $taxClass */
-            foreach ($taxClasses as $taxClass) {
-                $this->options[] = [
-                    'value' => $taxClass->getClassId(),
-                    'label' => $taxClass->getClassName(),
-                ];
-            }
-            array_unshift($this->options, ['value' => '0', 'label' => __('None')]);
-        }
-        return $this->options;
+        return $this->getAllOptions(false);
     }
 }
