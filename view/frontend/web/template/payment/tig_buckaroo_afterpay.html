@@ -90,8 +90,16 @@
                         <div class="control">
                             <input id="tig_buckaroo_afterpay_DoB"
                                    class="field"
-                                   type="date"
+                                   type="text"
                                    data-bind="
+                                   datepicker: {
+                                        storage: dateValidate,
+                                        options: {
+                                            changeMonth: true,
+                                            changeYear: true,
+                                            dateFormat: 'yy-mm-dd'
+                                        }
+                                   },
                                    valueUpdate: 'blur',
                                    value: dateValidate,
                                    attr: { 'data-validate': JSON.stringify({ 'required': true })}"
