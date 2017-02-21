@@ -113,11 +113,14 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
-        $order->shouldReceive('getCustomerFirstname')->andReturn($fixture['firstname']);
-        $order->shouldReceive('getCustomerLastName')->andReturn($fixture['lastname']);
         $order->shouldReceive('getCustomerEmail')->andReturn($fixture['email']);
         $order->shouldReceive('setOrder')->with($order)->andReturnSelf();
         $order->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
+
+        $billingAddress = \Mockery::mock(\Magento\Sales\Model\Order\Address::class);
+        $billingAddress->shouldReceive('getFirstname')->andReturn($fixture['firstname']);
+        $billingAddress->shouldReceive('getLastname')->andReturn($fixture['lastname']);
+        $order->shouldReceive('getBillingAddress')->andReturn($billingAddress);
 
         $order->shouldReceive('setServices')->andReturnUsing(
             function ($services) use ($fixture, $order) {
