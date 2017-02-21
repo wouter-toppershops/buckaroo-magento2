@@ -39,7 +39,7 @@
 
 namespace TIG\Buckaroo\Block\Order\Invoice;
 
-class Totals extends \TIG\Buckaroo\Block\Order\Totals
+class Totals extends \TIG\Buckaroo\Block\Order\TotalsFee
 {
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context

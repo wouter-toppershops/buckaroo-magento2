@@ -43,46 +43,7 @@ use \Magento\Sales\Model\Order;
 
 class Totals extends \Magento\Sales\Block\Order\Totals
 {
-    /**
-     * @var \TIG\Buckaroo\Helper\PaymentFee
-     */
-    protected $helper = null;
-
-    /**
-     * @param \Magento\Framework\View\Element\Template\Context $context
-     * @param \Magento\Framework\Registry                      $registry
-     * @param \TIG\Buckaroo\Helper\PaymentFee                  $helper
-     * @param array                                            $data
-     */
-    public function __construct(
-        \Magento\Framework\View\Element\Template\Context $context,
-        \Magento\Framework\Registry $registry,
-        \TIG\Buckaroo\Helper\PaymentFee $helper,
-        array $data = []
-    ) {
-        $this->helper = $helper;
-        parent::__construct($context, $registry);
-        $this->initTotals();
-    }
-
-    /**
-     * Initialize buckaroo fee totals for order/invoice/creditmemo
-     *
-     * @return $this
-     */
-    public function initTotals()
-    {
-        $this->_initTotals();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $source = $this->getSource();
-        $totals = $this->helper->getBuckarooPaymentFeeTotal($source);
-        if (!empty($totals)) {
-            $this->addTotalBefore(new \Magento\Framework\DataObject($totals[0]), 'grand_total');
-        }
-        return $this->_totals;
-    }
-
-    /**
+     /**
      * get totals array for visualization
      *
      * @param array|null $area

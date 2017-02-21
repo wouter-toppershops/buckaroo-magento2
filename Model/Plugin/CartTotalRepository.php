@@ -18,17 +18,17 @@ class CartTotalRepository
     protected $quoteRepository;
 
     /**
-     * @var TotalsExtensionFactory
+     * @var \Magento\Quote\Api\Data\TotalsExtensionFactory
      */
     protected $totalsExtensionFactory;
 
     /**
      * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
-     * @param TotalsExtensionFactory $totalsExtensionFactory
+     * @param  \Magento\Quote\Api\Data\TotalsExtensionFactory $totalsExtensionFactory
      */
     public function __construct(
         \Magento\Quote\Api\CartRepositoryInterface $quoteRepository,
-        TotalsExtensionFactory $totalsExtensionFactory
+        \Magento\Quote\Api\Data\TotalsExtensionFactory $totalsExtensionFactory
     ) {
         $this->quoteRepository = $quoteRepository;
         $this->totalsExtensionFactory = $totalsExtensionFactory;
@@ -49,11 +49,7 @@ class CartTotalRepository
         $quote = $this->quoteRepository->getActive($cartId);
 
         /** @var \Magento\Quote\Api\Data\TotalsExtensionInterface $extensionAttributes */
-        $extensionAttributes = $totals->getExtensionAttributes();
-        if ($extensionAttributes === null) {
-            /** @noinspection PhpUndefinedMethodInspection */
-            $extensionAttributes = $this->totalsExtensionFactory->create();
-        }
+        $extensionAttributes = $totals->getExtensionAttributes() ?: $this->totalsExtensionFactory->create();
 
         /** @noinspection PhpUndefinedMethodInspection */
         $extensionAttributes->setBuckarooFee($quote->getBuckarooFee());
@@ -74,4 +70,5 @@ class CartTotalRepository
 
         return $totals;
     }
+
 }

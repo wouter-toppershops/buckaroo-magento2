@@ -39,7 +39,7 @@
 
 namespace TIG\Buckaroo\Block\Order\Creditmemo;
 
-class Totals extends \TIG\Buckaroo\Block\Order\Totals
+class totals extends \TIG\Buckaroo\Block\Order\Totals
 {
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
@@ -56,38 +56,4 @@ class Totals extends \TIG\Buckaroo\Block\Order\Totals
         parent::__construct($context, $registry, $helper);
         $this->_isScopePrivate = true;
     }
-
-    // @codingStandardsIgnoreStart
-    /**
-     * Initialize order totals array
-     *
-     * @return $this
-     */
-    protected function _initTotals()
-    {
-        parent::_initTotals();
-        $this->removeTotal('base_grandtotal');
-        if ((double)$this->getSource()->getAdjustmentPositive()) {
-            $total = new \Magento\Framework\DataObject(
-                [
-                    'code' => 'adjustment_positive',
-                    'value' => $this->getSource()->getAdjustmentPositive(),
-                    'label' => __('Adjustment Refund'),
-                ]
-            );
-            $this->addTotal($total);
-        }
-        if ((double)$this->getSource()->getAdjustmentNegative()) {
-            $total = new \Magento\Framework\DataObject(
-                [
-                    'code' => 'adjustment_negative',
-                    'value' => $this->getSource()->getAdjustmentNegative(),
-                    'label' => __('Adjustment Fee'),
-                ]
-            );
-            $this->addTotal($total);
-        }
-        return $this;
-    }
-    // @codingStandardsIgnoreEnd
 }
