@@ -28,7 +28,7 @@ class SoapClientWSSEC extends \SoapClient
 {
     private $pemdata = null;
 
-    public function __soapCall ($function_name, array $arguments, array $options = null, $input_headers = null, array &$output_headers = null)
+    public function __soapCall ($function_name, $arguments, $options = null, $input_headers = null, &$output_headers = null)
     {
         $result = [parent::__soapCall($function_name,$arguments,$options,$input_headers,$output_headers)];
         $result['request_xml'] = $this->__getLastRequest();

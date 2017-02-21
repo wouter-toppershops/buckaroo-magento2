@@ -57,8 +57,8 @@ class Soap extends \Magento\Payment\Gateway\Http\Client\Soap
     public function __construct(
         Logger $logger,
         ClientFactory $clientFactory,
-        EmptyConverter $converter = null
+        EmptyConverter $converter
     ) {
-        parent::__construct($logger,$clientFactory,$converter);
+        parent::__construct($logger, $clientFactory, $converter);
     }
 }
