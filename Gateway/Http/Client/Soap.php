@@ -39,10 +39,14 @@
 
 namespace TIG\Buckaroo\Gateway\Http\Client;
 
-use EmptyConverter;
 use Magento\Payment\Model\Method\Logger;
 use TIG\Buckaroo\Soap\ClientFactory;
 
+/**
+ * Class Soap
+ *
+ * @package TIG\Buckaroo\Gateway\Http\Client
+ */
 class Soap extends \Magento\Payment\Gateway\Http\Client\Soap
 {
     /**

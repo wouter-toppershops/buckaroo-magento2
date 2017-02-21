@@ -37,9 +37,15 @@
  * otal Internet Group B.V. (http://www.totalinternetgroup.nl)
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
+namespace TIG\Buckaroo\Gateway\Http\Client;
 
 use Magento\Payment\Gateway\Http\ConverterInterface;
 
+/**
+ * Class EmptyConverter
+ *
+ * @package TIG\Buckaroo\Gateway\Http\Client
+ */
 class EmptyConverter implements ConverterInterface
 {
 
