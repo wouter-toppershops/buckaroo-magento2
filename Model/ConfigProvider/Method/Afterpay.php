@@ -45,6 +45,8 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
  */
 class Afterpay extends AbstractConfigProvider
 {
+    const XPATH_ALLOWED_CURRENCIES              = 'buckaroo/tig_buckaroo_afterpay/allowed_currencies';
+
     const XPATH_AFTERPAY_ACTIVE                 = 'payment/tig_buckaroo_afterpay/active';
     const XPATH_AFTERPAY_PAYMENT_FEE            = 'payment/tig_buckaroo_afterpay/payment_fee';
     const XPATH_AFTERPAY_PAYMENT_FEE_LABEL      = 'payment/tig_buckaroo_afterpay/payment_fee_label';
