@@ -21,7 +21,7 @@
 
 .buckaroo-section .admin__page-nav-link:before {
     float:left;
-    width: calc(100% - 30px) ;
+    width: calc(100% - 50px) ;
     height: 18px;
     content: ' ';
 
@@ -41,6 +41,7 @@
     width: 30px;
     height: 30px;
     margin-top:-7px;
+    margin-right: 3px;
 
     background-image: url(../images/logo_tig.png) !important;
     background-size: 30px !important;
