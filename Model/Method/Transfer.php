@@ -130,6 +130,9 @@ class Transfer extends AbstractMethod
         $now = new \DateTime();
         $now->modify('+' . $dueDays . ' day');
 
+        /** @var \Magento\Sales\Model\Order\Address $billingAddress */
+        $billingAddress = $payment->getOrder()->getBillingAddress();
+
         /** @noinspection PhpUndefinedMethodInspection */
         $services = [
             'Name'             => 'transfer',
@@ -137,11 +140,11 @@ class Transfer extends AbstractMethod
             'Version'          => 2,
             'RequestParameter' => [
                 [
-                    '_'    => $payment->getOrder()->getCustomerFirstname(),
+                    '_'    => $billingAddress->getFirstname(),
                     'Name' => 'CustomerFirstName',
                 ],
                 [
-                    '_'    => $payment->getOrder()->getCustomerLastName(),
+                    '_'    => $billingAddress->getLastname(),
                     'Name' => 'CustomerLastName',
                 ],
                 [

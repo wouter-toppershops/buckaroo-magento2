@@ -278,38 +278,39 @@ class Afterpay2 extends AbstractMethod
             'Version'          => 1
         ];
 
-        if ($capturePartial) {
-            $articles = $this->getPartialRequestArticalData($currentInvoice);
+        // always get articles from invoice
+        $articles = $this->getInvoiceArticleData($currentInvoice);
 
-            // For the first invoice possible add payment fee
-            if (is_array($articles) && $numberOfInvoices == 1) {
-                $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
-                $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment, $includesTax);
-                $articles = array_merge($articles, $serviceLine);
-            }
-
-            $services['RequestParameter'] = $articles;
+        // For the first invoice possible add payment fee
+        if (is_array($articles) && $numberOfInvoices == 1) {
+            $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+            $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment, $includesTax);
+            $articles = array_merge($articles, $serviceLine);
         }
+
+        $services['RequestParameter'] = $articles;
+
 
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
+            ->setAmount($currentInvoiceTotal)
             ->setMethod('TransactionRequest')
+            ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
                 )
             );
 
+
         // Partial Capture Settings
         if ($capturePartial) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $transactionBuilder->setAmount($currentInvoiceTotal)
-                ->setInvoiceId(
-                    $payment->getOrder()->getIncrementId(). '-' .
-                    $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
-                )
-                ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
+            $transactionBuilder->setInvoiceId(
+                $payment->getOrder()->getIncrementId(). '-' .
+                $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
+            )
                 ->setOriginalTransactionKey(
                     $payment->getParentTransactionId()
                 );
@@ -554,7 +555,7 @@ class Afterpay2 extends AbstractMethod
      *
      * @return array
      */
-    public function getPartialRequestArticalData($invoice)
+    public function getInvoiceArticleData($invoice)
     {
         $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
 

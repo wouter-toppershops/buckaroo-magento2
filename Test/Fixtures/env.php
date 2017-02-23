@@ -23,10 +23,10 @@ return array (
     array (
       'default' =>
       array (
-        'host' => 'localhost',
-        'dbname' => 'buckaroo',
-        'username' => 'buckaroo',
-        'password' => '12345',
+        'host' => 'MAGENTO_DB_HOST',
+        'dbname' => 'MAGENTO_DB_NAME',
+        'username' => 'MAGENTO_DB_USER',
+        'password' => 'MAGENTO_DB_PASS',
         'active' => '1',
       ),
     ),
