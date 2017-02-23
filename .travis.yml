@@ -23,6 +23,7 @@ env:
 before_script:
   - phpenv config-rm xdebug.ini
   - echo "{\"http-basic\":{\"repo.magento.com\":{\"username\":\"${MAGENTO_USERNAME}\",\"password\":\"${MAGENTO_PASSWORD}\"}}}" > auth.json
+  - npm install -g travis-notify-geckoboard
 
 script:
   - bash Test/setup.sh
@@ -30,3 +31,5 @@ script:
 cache:
   directories:
   - $HOME/.composer/cache
+
+after_script: travis-notify-geckoboard -a $GECKOBOARD_API_KEY -w $GECKOBOARD_WIDGET_KEY
