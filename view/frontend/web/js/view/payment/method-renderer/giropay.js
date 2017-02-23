@@ -32,8 +32,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 /*browser:true*/
 /*global define*/
@@ -62,132 +62,144 @@ define(
          * Add validation methods
          * */
 
-        $.validator.addMethod('BIC', function (value) {
-            var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
-            return patternBIC.test(value);
-        }, $.mage.__('Enter Valid BIC number'));
+        $.validator.addMethod(
+            'BIC', function (value) {
+                var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
+                return patternBIC.test(value);
+            }, $.mage.__('Enter Valid BIC number')
+        );
 
-        return Component.extend({
-            defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay',
-                bicnumber: ''
-            },
-            paymentFeeLabel : window.checkoutConfig.payment.buckaroo.giropay.paymentFeeLabel,
-            currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
-            baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
+        return Component.extend(
+            {
+                defaults: {
+                    template: 'TIG_Buckaroo/payment/tig_buckaroo_giropay',
+                    bicnumber: ''
+                },
+                paymentFeeLabel : window.checkoutConfig.payment.buckaroo.giropay.paymentFeeLabel,
+                currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+                baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
-            /**
+                /**
              * @override
              */
-            initialize : function (options) {
-                if(checkoutData.getSelectedPaymentMethod() == options.index) {
-                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
-                }
+                initialize : function (options) {
+                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                        window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                    }
 
-                return this._super(options);
-            },
+                    return this._super(options);
+                },
 
-            initObservable: function () {
-                this._super().observe(['bicnumber']);
+                initObservable: function () {
+                    this._super().observe(['bicnumber']);
 
-                /**
+                    /**
                  * Bind this values to the input field.
                  */
-                this.bicnumber.subscribe( function () {
-                    $('.' + this.getCode() + ' [data-validate]').valid();
-                }, this);
+                    this.bicnumber.subscribe(
+                        function () {
+                            $('.' + this.getCode() + ' [data-validate]').valid();
+                        }, this
+                    );
 
 
-                /**
+                    /**
                  * Run validation on the inputfield
                  */
-                this.bicnumber.subscribe(function () {
-                    $('.' + this.getCode() + ' [data-validate]').valid();
-                }, this);
+                    this.bicnumber.subscribe(
+                        function () {
+                            $('.' + this.getCode() + ' [data-validate]').valid();
+                        }, this
+                    );
 
 
-                /**
+                    /**
                  * Check if the required fields are filled. If so: enable place order button | if not: disable place order button
                  */
 
-                this.buttoncheck = ko.computed( function () {
-                    return this.bicnumber().length > 0 && this.validate();
-                }, this);
+                    this.buttoncheck = ko.computed(
+                        function () {
+                            return this.bicnumber().length > 0 && this.validate();
+                        }, this
+                    );
 
-                return this;
-            },
+                    return this;
+                },
 
-            /**
+                /**
              * Run function
              */
 
-            validate: function () {
-                return $('.' + this.getCode() + ' [data-validate]').valid();
-            },
+                validate: function () {
+                    return $('.' + this.getCode() + ' [data-validate]').valid();
+                },
 
-            /**
+                /**
              * Place order.
              *
              * placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own version
              * (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
              */
-            placeOrder: function (data, event) {
-                var self = this,
+                placeOrder: function (data, event) {
+                    var self = this,
                     placeOrder;
 
-                if (event) {
-                    event.preventDefault();
-                }
-
-                if (this.validate() && additionalValidators.validate()) {
-                    this.isPlaceOrderActionAllowed(false);
-                    placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
-
-                    $.when(placeOrder).fail(function () {
-                        self.isPlaceOrderActionAllowed(true);
-                    }).done(this.afterPlaceOrder.bind(this));
-                    return true;
-                }
-                return false;
-            },
-
-            afterPlaceOrder: function () {
-                var response = window.checkoutConfig.payment.buckaroo.response;
-                response = $.parseJSON(response);
-                if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
-                    window.location.replace(response.RequiredAction.RedirectURL);
-                }
-            },
-
-            selectPaymentMethod: function() {
-                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
-
-                selectPaymentMethodAction(this.getData());
-                checkoutData.setSelectedPaymentMethod(this.item.method);
-                return true;
-            },
-
-            getData: function() {
-                return {
-                    "method": this.item.method,
-                    "po_number": null,
-                    "additional_data": {
-                        "customer_bic": this.bicnumber()
+                    if (event) {
+                        event.preventDefault();
                     }
-                };
-            },
 
-            payWithBaseCurrency: function() {
-                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.giropay.allowedCurrencies;
+                    if (this.validate() && additionalValidators.validate()) {
+                        this.isPlaceOrderActionAllowed(false);
+                        placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
 
-                return allowedCurrencies.indexOf(this.currencyCode) < 0;
-            },
+                        $.when(placeOrder).fail(
+                            function () {
+                                self.isPlaceOrderActionAllowed(true);
+                            }
+                        ).done(this.afterPlaceOrder.bind(this));
+                        return true;
+                    }
+                    return false;
+                },
 
-            getPayWithBaseCurrencyText: function() {
-                var text = $.mage.__('The transaction will be processed using %s.');
+                afterPlaceOrder: function () {
+                    var response = window.checkoutConfig.payment.buckaroo.response;
+                    response = $.parseJSON(response);
+                    if (response.RequiredAction !== undefined && response.RequiredAction.RedirectURL !== undefined) {
+                        window.location.replace(response.RequiredAction.RedirectURL);
+                    }
+                },
 
-                return text.replace('%s', this.baseCurrencyCode);
+                selectPaymentMethod: function() {
+                    window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                    selectPaymentMethodAction(this.getData());
+                    checkoutData.setSelectedPaymentMethod(this.item.method);
+                    return true;
+                },
+
+                getData: function() {
+                    return {
+                        "method": this.item.method,
+                        "po_number": null,
+                        "additional_data": {
+                            "customer_bic": this.bicnumber()
+                        }
+                    };
+                },
+
+                payWithBaseCurrency: function() {
+                    var allowedCurrencies = window.checkoutConfig.payment.buckaroo.giropay.allowedCurrencies;
+
+                    return allowedCurrencies.indexOf(this.currencyCode) < 0;
+                },
+
+                getPayWithBaseCurrencyText: function() {
+                    var text = $.mage.__('The transaction will be processed using %s.');
+
+                    return text.replace('%s', this.baseCurrencyCode);
+                }
             }
-        });
+        );
     }
 );

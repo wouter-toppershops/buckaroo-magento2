@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Observer;
 
@@ -43,30 +43,42 @@ class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
     /**
      * Set invoiced buckaroo fee to order after invoice register
      *
-     * @param \Magento\Framework\Event\Observer $observer
+     * @param  \Magento\Framework\Event\Observer $observer
      * @return $this
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         /* @var $invoice \Magento\Sales\Model\Order\Invoice */
         $invoice = $observer->getEvent()->getInvoice();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         if ($invoice->getBaseBuckarooFee()) {
             $order = $invoice->getOrder();
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $order->setBuckarooFeeInvoiced(
                 $order->getBuckarooFeeInvoiced() + $invoice->getBuckarooFee()
             );
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $order->setBaseBuckarooFeeInvoiced(
                 $order->getBaseBuckarooFeeInvoiced() + $invoice->getBaseBuckarooFee()
             );
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $order->setBuckarooFeeTaxAmountInvoiced(
                 $order->getBuckarooFeeTaxAmountInvoiced() + $invoice->getBuckarooFeeTaxAmount()
             );
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $order->setBuckarooFeeBaseTaxAmountInvoiced(
                 $order->getBuckarooFeeBaseTaxAmountInvoiced() + $invoice->getBuckarooFeeBaseTaxAmount()
             );

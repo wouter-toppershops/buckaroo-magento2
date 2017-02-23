@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Controller\Adminhtml\Giftcard;
 
@@ -45,20 +45,26 @@ use TIG\Buckaroo\Model\GiftcardFactory;
 
 class Index extends \Magento\Backend\App\Action
 {
-    /** @var  PageFactory */
+    /**
+ * @var  PageFactory 
+*/
     protected $resultPageFactory;
 
-    /** @var  Registry */
+    /**
+ * @var  Registry 
+*/
     protected $_coreRegistry;
 
-    /** @var  GiftcardFactory */
+    /**
+ * @var  GiftcardFactory 
+*/
     protected $giftcardFactory;
 
     /**
-     * @param Context              $context
-     * @param Registry             $coreRegistry
-     * @param PageFactory          $resultPageFactory
-     * @param GiftcardFactory      $giftcardFactory
+     * @param Context         $context
+     * @param Registry        $coreRegistry
+     * @param PageFactory     $resultPageFactory
+     * @param GiftcardFactory $giftcardFactory
      */
     public function __construct(
         Context $context,
@@ -78,7 +84,9 @@ class Index extends \Magento\Backend\App\Action
      */
     public function execute()
     {
-        /** @var \Magento\Backend\Model\View\Result\Page $resultPage */
+        /**
+ * @var \Magento\Backend\Model\View\Result\Page $resultPage 
+*/
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('TIG_Buckaroo::buckaroo_giftcards');
         $resultPage->getConfig()->getTitle()->prepend(__('Buckaroo Giftcards'));

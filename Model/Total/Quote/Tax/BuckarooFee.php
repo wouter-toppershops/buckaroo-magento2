@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Total\Quote\Tax;
@@ -95,9 +95,9 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
     /**
      * Collect buckaroo fee related items and add them to tax calculation
      *
-     * @param \Magento\Quote\Model\Quote $quote
-     * @param \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
-     * @param \Magento\Quote\Model\Quote\Address\Total $total
+     * @param  \Magento\Quote\Model\Quote                          $quote
+     * @param  \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment
+     * @param  \Magento\Quote\Model\Quote\Address\Total            $total
      * @return $this
      */
     public function collect(
@@ -130,7 +130,9 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
         $productTaxClassId = $this->helper->getBuckarooFeeTaxClass($quote->getStore());
 
         $address = $shippingAssignment->getShipping()->getAddress();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $associatedTaxables = $address->getAssociatedTaxables();
         if (!$associatedTaxables) {
             $associatedTaxables = [];
@@ -148,7 +150,9 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
             => CommonTaxCollector::ASSOCIATION_ITEM_CODE_FOR_QUOTE,
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $address->setAssociatedTaxables($associatedTaxables);
 
         return $this;

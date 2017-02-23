@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection;
@@ -47,7 +47,7 @@ class Order
     protected $configProviderMethodFactory;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory  $configProviderMethodFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      */
     public function __construct(
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
@@ -66,7 +66,9 @@ class Order
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $result
     ) {
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $sellersProtectionActive = (bool) $this->configProviderMethodFactory
             ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE)
             ->getSellersProtection();
@@ -75,8 +77,12 @@ class Order
         }
 
         $payment = $paymentMethod->payment;
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var \Magento\Sales\Model\Order $order */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
+        /**
+ * @var \Magento\Sales\Model\Order $order 
+*/
         $order = $payment->getOrder();
         $shippingAddress = $order->getShippingAddress();
 

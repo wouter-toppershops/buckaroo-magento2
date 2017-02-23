@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Block\Order;
@@ -46,7 +46,7 @@ class Totals extends \Magento\Sales\Block\Order\Totals
      /**
      * get totals array for visualization
      *
-     * @param array|null $area
+     * @param  array|null $area
      * @return array
      */
     public function getTotals($area = null)
@@ -57,7 +57,9 @@ class Totals extends \Magento\Sales\Block\Order\Totals
         } else {
             $area = (string) $area;
             foreach ($this->_totals as $total) {
-                /** @noinspection PhpUndefinedMethodInspection */
+                /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
                 $totalArea = (string) $total->getArea();
                 if ($totalArea == $area) {
                     $totals[] = $total;

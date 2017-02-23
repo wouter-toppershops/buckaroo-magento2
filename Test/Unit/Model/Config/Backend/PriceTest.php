@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Backend;
 
@@ -60,9 +60,11 @@ class PriceTest extends \TIG\Buckaroo\Test\BaseTest
         $this->resource = \Mockery::mock(\Magento\Framework\Model\ResourceModel\AbstractResource::class);
         $this->resource->shouldReceive('save');
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Backend\Price::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Config\Backend\Price::class, [
             'resource' => $this->resource,
-        ]);
+            ]
+        );
     }
 
     /**

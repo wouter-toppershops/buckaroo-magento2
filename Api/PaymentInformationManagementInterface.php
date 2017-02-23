@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Api;
 
@@ -44,9 +44,9 @@ interface PaymentInformationManagementInterface
     /**
      * Set payment information and place order for a specified cart.
      *
-     * @param int $cartId
-     * @param \Magento\Quote\Api\Data\PaymentInterface $paymentMethod
-     * @param \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
+     * @param  int                                           $cartId
+     * @param  \Magento\Quote\Api\Data\PaymentInterface      $paymentMethod
+     * @param  \Magento\Quote\Api\Data\AddressInterface|null $billingAddress
      * @throws \Magento\Framework\Exception\CouldNotSaveException
      * @return string
      */

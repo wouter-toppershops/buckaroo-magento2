@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http;
 
@@ -66,10 +66,12 @@ class TransactionBuilderFactoryTest extends BaseTest
 
     public function getTransactionBuilder($transactionBuilders = [])
     {
-        $object = $this->objectManagerHelper->getObject(TransactionBuilderFactory::class, [
+        $object = $this->objectManagerHelper->getObject(
+            TransactionBuilderFactory::class, [
             'objectManager' => $this->objectManager,
             'transactionBuilders' => $transactionBuilders,
-        ]);
+            ]
+        );
 
         return $object;
     }
@@ -82,12 +84,14 @@ class TransactionBuilderFactoryTest extends BaseTest
         $model = m::mock(TransactionBuilderInterface::class);
         $this->objectManager->shouldReceive('get')->with('model1')->andReturn($model);
 
-        $object = $this->getTransactionBuilder([
+        $object = $this->getTransactionBuilder(
+            [
             [
                 'type' => 'model1',
                 'model' => 'model1',
             ]
-        ]);
+            ]
+        );
         $result = $object->get('model1');
 
         $this->assertInstanceOf(TransactionBuilderInterface::class, $result);
@@ -98,12 +102,14 @@ class TransactionBuilderFactoryTest extends BaseTest
      */
     public function testGetInvalidClass()
     {
-        $object = $this->getTransactionBuilder([
+        $object = $this->getTransactionBuilder(
+            [
             [
                 'type' => '',
                 'model' => '',
             ]
-        ]);
+            ]
+        );
 
         try {
             $object->get('model1');
@@ -121,12 +127,14 @@ class TransactionBuilderFactoryTest extends BaseTest
         $model = m::mock();
         $this->objectManager->shouldReceive('get')->with('model1')->andReturn($model);
 
-        $object = $this->getTransactionBuilder([
+        $object = $this->getTransactionBuilder(
+            [
             [
                 'type' => 'model1',
                 'model' => 'model1',
             ]
-        ]);
+            ]
+        );
 
         try {
             $object->get('model1');

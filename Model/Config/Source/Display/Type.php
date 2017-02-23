@@ -7,7 +7,7 @@
 /**
  * Price display type source model
  *
- * @author Magento Core Team <core@magentocommerce.com>
+ * @author             Magento Core Team <core@magentocommerce.com>
  * @codeCoverageIgnore
  */
 namespace TIG\Buckaroo\Model\Config\Source\Display;

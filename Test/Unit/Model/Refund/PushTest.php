@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Refund;
 
@@ -84,12 +84,14 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->creditmemoFactory = \Mockery::mock(\Magento\Sales\Model\Order\CreditmemoFactory::class);
         $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Refund\Push::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Refund\Push::class, [
             'debugger' => $this->debugger,
             'objectManager' => $this->objectManager,
             'creditmemoFactory' => $this->creditmemoFactory,
             'configProviderFactor' => $this->configProviderFactory
-        ]);
+            ]
+        );
 
         $this->object->order = $this->order;
     }

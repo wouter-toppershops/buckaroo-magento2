@@ -15,71 +15,72 @@ define(
     function (Component, $, getTotals, storage, totals, resourceUrlManager, quote) {
         'use strict';
 
-        return Component.extend({
+        return Component.extend(
+            {
 
-            initialize: function () {
-                this._super();
+                initialize: function () {
+                    this._super();
 
-                /**
+                    /**
                  * Observe the onclick event on all payment methods.
                  */
-                $('body').on(
-                    'click',
-                    '.payment-methods input[type="radio"][name="payment[method]"]',
-                    this.savePaymentMethod
-                );
-            },
+                    $('body').on(
+                        'click',
+                        '.payment-methods input[type="radio"][name="payment[method]"]',
+                        this.savePaymentMethod
+                    );
+                },
 
-            /**
+                /**
              * Save the selected payment method.
              */
-            savePaymentMethod: function() {
-                /**
+                savePaymentMethod: function() {
+                    /**
                  * Build the URL for saving the selected payment method.
                  */
-                var params = {};
-                var payload = {};
+                    var params = {};
+                    var payload = {};
 
-                /**
+                    /**
                  * If we're checking out as guest, we're going to need a cartId and a guest email
                  */
-                if (resourceUrlManager.getCheckoutMethod() == 'guest') {
-                    params = {
-                        cartId: quote.getQuoteId()
+                    if (resourceUrlManager.getCheckoutMethod() == 'guest') {
+                        params = {
+                            cartId: quote.getQuoteId()
+                        };
+                        payload.email = quote.guestEmail;
+                    }
+
+                    var urls = {
+                        'guest': '/guest-carts/:cartId/set-payment-information',
+                        'customer': '/carts/mine/set-payment-information'
                     };
-                    payload.email = quote.guestEmail;
-                }
+                    var url = resourceUrlManager.getUrl(urls, params);
 
-                var urls = {
-                    'guest': '/guest-carts/:cartId/set-payment-information',
-                    'customer': '/carts/mine/set-payment-information'
-                };
-                var url = resourceUrlManager.getUrl(urls, params);
-
-                /**
+                    /**
                  * The API expects a JSON object with the selected payment method and the selected billing address
                  */
-                payload.paymentMethod = {
-                    method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
+                    payload.paymentMethod = {
+                        method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
                         additional_data: {
-                        buckaroo_skip_validation: true
-                    }
-                };
-                payload.billingAddress = quote.billingAddress();
+                            buckaroo_skip_validation: true
+                        }
+                    };
+                    payload.billingAddress = quote.billingAddress();
 
-                /**
+                    /**
                  * Send the selected payment method, along with a cart identifier, the billing address and a 'skip
                  * validation' flag to the save payment method API.
                  */
-                storage.post(
-                    url,
-                    /**
-                     * The APi expects a JSON object with the selected payment method and the selected billing address.
-                     */
-                    JSON.stringify(payload)
-                ).done(
-                    function () {
+                    storage.post(
+                        url,
                         /**
+                        * The APi expects a JSON object with the selected payment method and the selected billing address.
+                        */
+                        JSON.stringify(payload)
+                    ).done(
+                        function () {
+                            /**
                          * Update the totals in the summary block.
                          *
                          * While the method is called 'getTotals', it will actually fetch the latest totals from
@@ -89,14 +90,15 @@ define(
                          * however these MUST return true for the function to work as expected. otherwise it will
                          * silently crash.
                          */
-                        getTotals([]);
-                    }
-                ).error(
-                    function () {
-                        totals.isLoading(false);
-                    }
-                );
+                            getTotals([]);
+                        }
+                    ).error(
+                        function () {
+                            totals.isLoading(false);
+                        }
+                    );
+                }
             }
-        });
+        );
     }
 );

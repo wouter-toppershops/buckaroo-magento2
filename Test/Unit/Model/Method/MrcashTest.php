@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
@@ -66,10 +66,12 @@ class MrcashTest extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Method\Mrcash::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Method\Mrcash::class, [
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
-        ]);
+            ]
+        );
     }
 
     /**

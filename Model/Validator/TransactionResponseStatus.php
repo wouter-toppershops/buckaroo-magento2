@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Validator;
@@ -78,29 +78,29 @@ class TransactionResponseStatus implements \TIG\Buckaroo\Model\ValidatorInterfac
         $statusCode = $this->transaction->Status->Code->Code;
 
         switch ($statusCode) {
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD'):
-                $success = true;
-                break;
-            case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
-            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT'):
-                $success = false;
-                break;
-            default:
-                throw new \TIG\Buckaroo\Exception(
-                    new \Magento\Framework\Phrase(
-                        "Invalid Buckaroo status code received: %1.",
-                        [$statusCode]
-                    )
-                );
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD'):
+            $success = true;
+            break;
+        case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
+        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT'):
+            $success = false;
+            break;
+        default:
+            throw new \TIG\Buckaroo\Exception(
+                new \Magento\Framework\Phrase(
+                    "Invalid Buckaroo status code received: %1.",
+                    [$statusCode]
+                )
+            );
                 break;
         }
 

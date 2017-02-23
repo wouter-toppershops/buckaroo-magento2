@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Block\Adminhtml\Sales\Order\Creditmemo\Create;
@@ -79,7 +79,9 @@ class BankFields extends \Magento\Backend\Block\Template
         $extraFields = [];
         $paymentMethod = $this->getPaymentMethod();
 
-        /** If no payment method is found, return the empty array. */
+        /**
+ * If no payment method is found, return the empty array. 
+*/
         if (!$paymentMethod) {
             return $extraFields;
         }
@@ -90,7 +92,9 @@ class BankFields extends \Magento\Backend\Block\Template
          */
         $fields = $this->refundFieldsFactory->get($paymentMethod);
 
-        /** Parse the code and label in the same array, to keep the data paired. */
+        /**
+ * Parse the code and label in the same array, to keep the data paired. 
+*/
         if ($fields) {
             foreach ($fields as $field) {
                 $extraFields[$field['label']] = $field['code'];
@@ -111,11 +115,15 @@ class BankFields extends \Magento\Backend\Block\Template
         $paymentMethod = false;
 
         $layout = $this->getLayout();
-        /** @var \Magento\Sales\Block\Adminhtml\Order\Payment $paymentBlock */
+        /**
+ * @var \Magento\Sales\Block\Adminhtml\Order\Payment $paymentBlock 
+*/
         $paymentBlock = $layout->getBlock($this->orderPaymentBlock);
 
         if ($paymentBlock) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $paymentMethod = $paymentBlock->getPayment()->getMethod();
         }
 

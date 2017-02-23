@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
@@ -410,7 +410,9 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     {
         $module = $this->moduleList->getOne(self::MODULE_CODE);
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
+*/
         $accountConfig = $this->configProviderFactory->get('account');
 
         $headers[] = new \SoapHeader(

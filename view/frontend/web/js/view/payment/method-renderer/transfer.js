@@ -32,8 +32,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 /*browser:true*/
 /*global define*/
@@ -58,46 +58,48 @@ define(
     ) {
         'use strict';
 
-        return Component.extend({
-            defaults: {
-                template: 'TIG_Buckaroo/payment/tig_buckaroo_transfer'
-            },
-            paymentFeeLabel : window.checkoutConfig.payment.buckaroo.transfer.paymentFeeLabel,
-            currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
-            baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
+        return Component.extend(
+            {
+                defaults: {
+                    template: 'TIG_Buckaroo/payment/tig_buckaroo_transfer'
+                },
+                paymentFeeLabel : window.checkoutConfig.payment.buckaroo.transfer.paymentFeeLabel,
+                currencyCode : window.checkoutConfig.quoteData.quote_currency_code,
+                baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
-            /**
+                /**
              * @override
              */
-            initialize : function (options) {
-                if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                initialize : function (options) {
+                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                        window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+                    }
+
+                    return this._super(options);
+                },
+
+                selectPaymentMethod: function() {
                     window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
+
+                    selectPaymentMethodAction(this.getData());
+                    checkoutData.setSelectedPaymentMethod(this.item.method);
+                    return true;
+                },
+
+                payWithBaseCurrency: function() {
+                    var allowedCurrencies = window.checkoutConfig.payment.buckaroo.transfer.allowedCurrencies;
+
+                    return allowedCurrencies.indexOf(this.currencyCode) < 0;
+                },
+
+                getPayWithBaseCurrencyText: function() {
+                    var text = $.mage.__('The transaction will be processed using %s.');
+
+                    return text.replace('%s', this.baseCurrencyCode);
                 }
 
-                return this._super(options);
-            },
-
-            selectPaymentMethod: function() {
-                window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
-
-                selectPaymentMethodAction(this.getData());
-                checkoutData.setSelectedPaymentMethod(this.item.method);
-                return true;
-            },
-
-            payWithBaseCurrency: function() {
-                var allowedCurrencies = window.checkoutConfig.payment.buckaroo.transfer.allowedCurrencies;
-
-                return allowedCurrencies.indexOf(this.currencyCode) < 0;
-            },
-
-            getPayWithBaseCurrencyText: function() {
-                var text = $.mage.__('The transaction will be processed using %s.');
-
-                return text.replace('%s', this.baseCurrencyCode);
             }
-
-        });
+        );
     }
 );
 

@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Refund;
 
@@ -51,22 +51,34 @@ class Push
 
     public $creditAmount;
 
-    /** @var \Magento\Sales\Model\Order $order  */
+    /**
+ * @var \Magento\Sales\Model\Order $order  
+*/
     public $order;
 
-    /** @var  \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory */
+    /**
+ * @var  \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory 
+*/
     public $creditmemoFactory;
 
-    /** @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender */
+    /**
+ * @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender 
+*/
     public $creditEmailSender;
 
-    /** @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader */
+    /**
+ * @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader 
+*/
     public $creditmemoLoader;
 
-    /** @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory */
+    /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory 
+*/
     public $configProviderFactory;
 
-    /** @var \TIG\Buckaroo\Debug\Debugger $debugger */
+    /**
+ * @var \TIG\Buckaroo\Debug\Debugger $debugger 
+*/
     public $debugger;
 
     /**
@@ -111,7 +123,9 @@ class Push
 
         $this->debugger->addToMessage('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza. ');
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig 
+*/
         $refundConfig = $this->configProviderFactory->get('refund');
         if (!$refundConfig->getAllowPush()) {
             $this->debugger->addToMessage(
@@ -124,10 +138,12 @@ class Push
 
         if (!$signatureValidation && !$this->order->canCreditmemo()) {
             $this->debugger->addToMessage('Validation incorrect :');
-            $this->debugger->addToMessage([
-               'signature'      => $signatureValidation,
-               'canOrderCredit' => $this->order->canCreditmemo()
-            ]);
+            $this->debugger->addToMessage(
+                [
+                'signature'      => $signatureValidation,
+                'canOrderCredit' => $this->order->canCreditmemo()
+                ]
+            );
             $this->debugger->log();
             throw new Exception(
                 __('Buckaroo refund push validation failed')
@@ -183,8 +199,8 @@ class Push
      * Save creditmemo and related order, invoice in one transaction
      *
      * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
-     * @param bool $do_offline
-     * @param bool $send_email
+     * @param bool                                  $do_offline
+     * @param bool                                  $send_email
      */
     public function saveCreditmemo($creditmemo, $do_offline, $send_email)
     {
@@ -204,12 +220,18 @@ class Push
     public function initCreditmemo($creditData)
     {
         try {
-            /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+            /**
+ * @var \Magento\Sales\Model\Order\Creditmemo $creditmemo 
+*/
             $creditmemo = $this->creditmemoFactory->createByOrder($this->order, $creditData);
 
-            /** @var \Magento\Sales\Model\Order\Creditmemo\Item $creditmemoItem */
+            /**
+ * @var \Magento\Sales\Model\Order\Creditmemo\Item $creditmemoItem 
+*/
             foreach ($creditmemo->getAllItems() as $creditmemoItem) {
-                /** @noinspection PhpUndefinedMethodInspection */
+                /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
                 $creditmemoItem->setBackToStock(false);
             }
 
@@ -265,6 +287,7 @@ class Push
 
     /**
      * Get total of adjustments made by previous credits.
+     *
      * @return int
      */
     public function getTotalCreditAdjustments()
@@ -272,7 +295,9 @@ class Push
         $totalAdjustments = 0;
 
         foreach ($this->order->getCreditmemosCollection() as $creditmemo) {
-            /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+            /**
+ * @var \Magento\Sales\Model\Order\Creditmemo $creditmemo 
+*/
             $adjustment = $creditmemo->getBaseAdjustmentPositive() - $creditmemo->getBaseAdjustmentNegative();
             $totalAdjustments += $adjustment;
         }
@@ -290,7 +315,9 @@ class Push
         $totalAmount = $this->totalAmountToRefund();
 
         if ($this->order->getBaseTotalRefunded() == null) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced();
         }
 
@@ -359,7 +386,9 @@ class Push
         $qty   = 0;
 
         foreach ($this->order->getAllItems() as $orderItem) {
-            /** @var \Magento\Sales\Model\Order\Item $orderItem */
+            /**
+ * @var \Magento\Sales\Model\Order\Item $orderItem 
+*/
             if (!array_key_exists($orderItem->getId(), $items)) {
                 if ((float)$this->creditAmount == (float)$this->order->getBaseGrandTotal()) {
                     $qty = $orderItem->getQtyInvoiced() - $orderItem->getQtyRefunded();
