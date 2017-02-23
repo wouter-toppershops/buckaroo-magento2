@@ -40,26 +40,10 @@ namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
 use TIG\Buckaroo\Test\BaseTest;
 
-/**
- * Class AbstractTransactionBuilder. Temporary for testing only.
- *
- * @package TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder
- */
-class AbstractTransactionBuilder extends \TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilder
-{
-    /**
-     * @return array
-     */
-    public function getBody()
-    {
-        return array('body item');
-    }
-}
-
 class AbstractTransactionBuilderTest extends BaseTest
 {
     /**
-     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilder
+     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilderMock
      */
     protected $object;
 
@@ -75,7 +59,7 @@ class AbstractTransactionBuilderTest extends BaseTest
         $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
 
         $this->object = $this->objectManagerHelper
-            ->getObject(AbstractTransactionBuilder::class, ['configProviderFactory' => $this->configProvider]);
+            ->getObject(AbstractTransactionBuilderMock::class, ['configProviderFactory' => $this->configProvider]);
     }
 
     public function testOriginalTransactionKey()
