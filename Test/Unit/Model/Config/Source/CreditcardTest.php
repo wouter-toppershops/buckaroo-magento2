@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Source;
 
@@ -43,7 +43,8 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
     public function testToOptionArray()
     {
         $configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::class)->makePartial();
-        $configProvider->shouldReceive('getIssuers')->andReturn([
+        $configProvider->shouldReceive('getIssuers')->andReturn(
+            [
             [
                 'name' => 'Test 1',
                 'code' => 'code1',
@@ -56,11 +57,14 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
                 'name' => 'Test 3',
                 'code' => 'code3',
             ],
-        ]);
+            ]
+        );
 
-        $object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Source\Creditcard::class, [
+        $object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Config\Source\Creditcard::class, [
             'configProvider' => $configProvider,
-        ]);
+            ]
+        );
 
         $expected = [
             [

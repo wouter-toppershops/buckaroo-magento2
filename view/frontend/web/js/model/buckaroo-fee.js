@@ -35,6 +35,7 @@ define(
 
                 /**
                  * Get buckaroo fee price display mode.
+                 *
                  * @returns {Boolean}
                  */
                 displayBothPrices: function () {
@@ -43,6 +44,7 @@ define(
 
                 /**
                  * Get buckaroo fee price display mode.
+                 *
                  * @returns {Boolean}
                  */
                 displayInclTaxPrice: function () {

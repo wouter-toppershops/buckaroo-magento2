@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
@@ -83,12 +83,14 @@ class GiftcardsTest extends BaseTest
         $this->scopeConfig = \Mockery::mock(ScopeConfigInterface::class);
         $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
 
-        $this->object = $this->objectManagerHelper->getObject(Giftcards::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            Giftcards::class, [
             'objectManager' => $this->objectManager,
             'scopeConfig' => $this->scopeConfig,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
             'configProviderMethodFactory' => $this->configProviderMethodFactory,
-        ]);
+            ]
+        );
     }
 
     public function testCanCaptureShouldReturnTrue()

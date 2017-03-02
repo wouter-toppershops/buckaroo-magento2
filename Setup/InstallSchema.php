@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Setup;
@@ -59,7 +59,7 @@ class InstallSchema implements \Magento\Framework\Setup\InstallSchemaInterface
 
         if (!$installer->tableExists('tig_buckaroo_certificate')) {
             $table = $installer->getConnection()
-                               ->newTable($installer->getTable('tig_buckaroo_certificate'));
+                ->newTable($installer->getTable('tig_buckaroo_certificate'));
             $table->addColumn(
                 'entity_id',
                 \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,

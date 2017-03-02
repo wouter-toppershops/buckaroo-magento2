@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -164,13 +164,19 @@ class Creditcard extends AbstractMethod
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
-        /** If there are no credit cards chosen, we can't be available */
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $ccConfig */
+        /**
+ * If there are no credit cards chosen, we can't be available 
+*/
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $ccConfig 
+*/
         $ccConfig = $this->configProviderMethodFactory->get('creditcard');
         if (null === $ccConfig->getAllowedCreditcards()) {
             return false;
         }
-        /** Return the regular isAvailable result */
+        /**
+ * Return the regular isAvailable result 
+*/
         return parent::isAvailable($quote);
     }
 
@@ -187,10 +193,12 @@ class Creditcard extends AbstractMethod
             'Version'          => 1,
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
     }
@@ -208,7 +216,9 @@ class Creditcard extends AbstractMethod
             'Version'          => 1,
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -235,10 +245,12 @@ class Creditcard extends AbstractMethod
             'Version'          => 1,
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
     }
@@ -259,7 +271,9 @@ class Creditcard extends AbstractMethod
         $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')

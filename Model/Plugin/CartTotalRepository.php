@@ -23,7 +23,7 @@ class CartTotalRepository
     protected $totalsExtensionFactory;
 
     /**
-     * @param \Magento\Quote\Api\CartRepositoryInterface $quoteRepository
+     * @param \Magento\Quote\Api\CartRepositoryInterface     $quoteRepository
      * @param  \Magento\Quote\Api\Data\TotalsExtensionFactory $totalsExtensionFactory
      */
     public function __construct(
@@ -36,34 +36,52 @@ class CartTotalRepository
 
     /**
      * @param TotalRepository $subject
-     * @param \Closure $proceed
-     * @param int $cartId
+     * @param \Closure        $proceed
+     * @param int             $cartId
      * @return TotalsInterface
      */
     public function aroundGet(TotalRepository $subject, \Closure $proceed, $cartId)
     {
-        /** @var TotalsInterface $totals */
+        /**
+ * @var TotalsInterface $totals 
+*/
         $totals = $proceed($cartId);
 
-        /** @var Quote  $quote */
+        /**
+ * @var Quote  $quote 
+*/
         $quote = $this->quoteRepository->getActive($cartId);
 
-        /** @var \Magento\Quote\Api\Data\TotalsExtensionInterface $extensionAttributes */
+        /**
+ * @var \Magento\Quote\Api\Data\TotalsExtensionInterface $extensionAttributes 
+*/
         $extensionAttributes = $totals->getExtensionAttributes() ?: $this->totalsExtensionFactory->create();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $extensionAttributes->setBuckarooFee($quote->getBuckarooFee());
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $extensionAttributes->setBaseBuckarooFee($quote->getBaseBuckarooFee());
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $extensionAttributes->setBuckarooFeeTaxAmount($quote->getBuckarooFeeTaxAmount());
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $extensionAttributes->setBuckarooFeeBaseTaxAmount($quote->getBuckarooFeeBaseTaxAmount());
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $extensionAttributes->setBuckarooFeeInclTax($quote->getBuckarooFeeInclTax());
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $extensionAttributes->setBaseBuckarooFeeInclTax($quote->getBaseBuckarooFeeInclTax());
 
         $totals->setExtensionAttributes($extensionAttributes);

@@ -39,76 +39,9 @@
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
 /**
- * Class AbstractMethod. Temporary for testing only.
+ * Class AbstractMethodTest
  *
- * @package TIG\Buckaroo\Test\Unit\Model\Method
  */
-class AbstractMethod extends \TIG\Buckaroo\Model\Method\AbstractMethod
-{
-    // @codingStandardsIgnoreStart
-    protected $_code = 'tig_buckaroo_test';
-    // @codingStandardsIgnoreEnd
-
-    public function getOrderTransactionBuilder($payment)
-    {
-
-    }
-
-    public function getAuthorizeTransactionBuilder($payment)
-    {
-
-    }
-
-    public function getCaptureTransactionBuilder($payment)
-    {
-
-    }
-
-    public function getRefundTransactionBuilder($payment)
-    {
-
-    }
-
-    public function getVoidTransactionBuilder($payment)
-    {
-
-    }
-
-    public function setCanRefund($value)
-    {
-        $this->_canRefund = $value;
-    }
-
-    public function setCanVoid($value)
-    {
-        $this->_canVoid = $value;
-    }
-
-    public function setCanOrder($value)
-    {
-        $this->_canOrder = $value;
-    }
-
-    public function setCanAuthorize($value)
-    {
-        $this->_canAuthorize = $value;
-    }
-
-    public function setCanCapture($value)
-    {
-        $this->_canCapture = $value;
-    }
-
-    public function setEventManager($eventManager)
-    {
-        $this->_eventManager = $eventManager;
-    }
-
-    public function getCode()
-    {
-        return $this->_code;
-    }
-}
 
 // @codingStandardsIgnoreStart
 class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
@@ -135,7 +68,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $configMethodProvider;
 
     /**
-     * @var \TIG\Buckaroo\Model\Method\AbstractMethod
+     * @var \TIG\Buckaroo\Model\Method\AbstractMethodMock
      */
     protected $object;
 
@@ -196,7 +129,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
          * class.
          */
-        $this->object = $this->objectManagerHelper->getObject(AbstractMethod::class, [
+        $this->object = $this->objectManagerHelper->getObject(AbstractMethodMock::class, [
             'objectManager' => $this->objectManager,
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,

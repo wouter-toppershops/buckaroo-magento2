@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Total\Creditmemo\Tax;
 
@@ -43,24 +43,34 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
     /**
      * Collect totals for credit memo
      *
-     * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
+     * @param  \Magento\Sales\Model\Order\Creditmemo $creditmemo
      * @return $this
      */
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $order = $creditmemo->getOrder();
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        if ($order->getBuckarooFeeBaseTaxAmountInvoiced() &&
-            $order->getBuckarooFeeBaseTaxAmountInvoiced() != $order->getBuckarooFeeBaseTaxAmountRefunded()
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
+        if ($order->getBuckarooFeeBaseTaxAmountInvoiced() 
+            && $order->getBuckarooFeeBaseTaxAmountInvoiced() != $order->getBuckarooFeeBaseTaxAmountRefunded()
         ) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $order->setBuckarooFeeBaseTaxAmountRefunded($order->getBuckarooFeeBaseTaxAmountInvoiced());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $order->setBuckarooFeeTaxAmountRefunded($order->getBuckarooFeeTaxAmountInvoiced());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $creditmemo->setBuckarooFeeBaseTaxAmount($order->getBuckarooFeeBaseTaxAmountInvoiced());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
             $creditmemo->setBuckarooFeeTaxAmount($order->getBuckarooFeeTaxAmountInvoiced());
         }
 

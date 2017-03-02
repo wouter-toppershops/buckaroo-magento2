@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Controller\Redirect;
 
@@ -121,20 +121,24 @@ class ProcessTest extends BaseTest
 
         $this->orderStatusFactory = m::mock(\TIG\Buckaroo\Model\OrderStatusFactory::class)->makePartial();
 
-        $this->context = $this->objectManagerHelper->getObject(Context::class, [
+        $this->context = $this->objectManagerHelper->getObject(
+            Context::class, [
             'request' => $this->request,
             'redirect' => $this->redirect,
             'messageManager' => $this->messageManager,
-        ]);
+            ]
+        );
 
-        $this->controller = $this->objectManagerHelper->getObject(Process::class, [
+        $this->controller = $this->objectManagerHelper->getObject(
+            Process::class, [
             'context' => $this->context,
             'helper' => $this->helper,
             'order' => $this->order,
             'cart' => $this->cart,
             'configProviderFactory' => $this->configProviderFactory,
             'orderStatusFactory' => $this->orderStatusFactory,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -157,11 +161,13 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteUnableToCreateQuote()
     {
-        $this->request->shouldReceive('getParams')->andReturn([
+        $this->request->shouldReceive('getParams')->andReturn(
+            [
             'brq_ordernumber' => null,
             'brq_invoicenumber' => null,
             'brq_statuscode' => null
-        ]);
+            ]
+        );
 
         $failureStatus = 'failure';
 
@@ -196,11 +202,13 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteUnableToCancelOrder()
     {
-        $this->request->shouldReceive('getParams')->andReturn([
+        $this->request->shouldReceive('getParams')->andReturn(
+            [
             'brq_ordernumber' => null,
             'brq_invoicenumber' => null,
             'brq_statuscode' => null
-        ]);
+            ]
+        );
 
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
         $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn(true);
@@ -228,11 +236,13 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteSuccessStatus()
     {
-        $this->request->shouldReceive('getParams')->andReturn([
+        $this->request->shouldReceive('getParams')->andReturn(
+            [
             'brq_ordernumber' => null,
             'brq_invoicenumber' => null,
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
-        ]);
+            ]
+        );
 
         $successStatus = 'success';
 

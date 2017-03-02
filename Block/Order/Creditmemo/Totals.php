@@ -39,7 +39,7 @@
 
 namespace TIG\Buckaroo\Block\Order\Creditmemo;
 
-class totals extends \TIG\Buckaroo\Block\Order\Totals
+class Totals extends \TIG\Buckaroo\Block\Order\Totals
 {
     /**
      * @param \Magento\Framework\View\Element\Template\Context $context
@@ -53,7 +53,7 @@ class totals extends \TIG\Buckaroo\Block\Order\Totals
         \TIG\Buckaroo\Helper\PaymentFee $helper,
         array $data = []
     ) {
-        parent::__construct($context, $registry, $helper);
+        parent::__construct($context, $registry, $data);
         $this->_isScopePrivate = true;
     }
 }

@@ -9,25 +9,27 @@ define(
     ],
     function (Component) {
         "use strict";
-        return Component.extend({
-            defaults: {
-                template: 'TIG_Buckaroo/cart/totals/buckaroo_fee'
-            },
-            /**
+        return Component.extend(
+            {
+                defaults: {
+                    template: 'TIG_Buckaroo/cart/totals/buckaroo_fee'
+                },
+                /**
              * @override
              *
              * @returns {boolean}
              */
-            isDisplayed: function () {
-                return true;
-            },
+                isDisplayed: function () {
+                    return true;
+                },
 
-            /**
+                /**
              * @override
              */
-            isFullMode: function () {
-                return true;
+                isFullMode: function () {
+                    return true;
+                }
             }
-        });
+        );
     }
 );

@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
@@ -91,7 +91,9 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
      */
     protected function getGiftcardData()
     {
-        /** @var \TIG\Buckaroo\Model\Giftcard $giftcardModel */
+        /**
+ * @var \TIG\Buckaroo\Model\Giftcard $giftcardModel 
+*/
         $giftcardModel = $this->giftcardModel->create();
         $giftcardCollection = $giftcardModel->getCollection()->setOrder(
             'label',

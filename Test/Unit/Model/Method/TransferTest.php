@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
@@ -135,9 +135,13 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
             }
         );
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->configProviderMethodFactory->shouldReceive('get')->once()->with('transfer')->andReturnSelf();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->configProviderMethodFactory->shouldReceive('getDueDate')->once()->andReturn('7');
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($order);
@@ -145,9 +149,13 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->object->setData('info_instance', $infoInterface);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($this->paymentInterface));
     }
 
@@ -156,7 +164,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetCaptureTransactionBuilder()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->assertFalse($this->object->getCaptureTransactionBuilder($this->paymentInterface));
     }
 
@@ -165,7 +175,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetAuthorizeTransactionBuilder()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->assertFalse($this->object->getAuthorizeTransactionBuilder($this->paymentInterface));
     }
 
@@ -195,11 +207,13 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         );
         $this->transactionBuilderFactory->shouldReceive('setMethod')->with('TransactionRequest')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOriginalTransactionKey')
-                                        ->with('getAdditionalInformation')
-                                        ->andReturnSelf();
+            ->with('getAdditionalInformation')
+            ->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setChannel')->with('CallCenter')->andReturnSelf();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->assertEquals(
             $this->transactionBuilderFactory,
             $this->object->getRefundTransactionBuilder($this->paymentInterface)
@@ -211,7 +225,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetVoidTransactionBuilder()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $this->assertTrue($this->object->getVoidTransactionBuilder(''));
     }
 }

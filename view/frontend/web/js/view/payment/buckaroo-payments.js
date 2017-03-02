@@ -32,8 +32,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 /*browser:true*/
 /*global define*/
@@ -51,9 +51,11 @@ define(
         'use strict';
 
         ko.extenders.uppercase = function(target) {
-            target.subscribe(function(newValue) {
-                target(newValue.toUpperCase());
-            });
+            target.subscribe(
+                function(newValue) {
+                    target(newValue.toUpperCase());
+                }
+            );
             return target;
         };
 
@@ -106,10 +108,10 @@ define(
                 type: 'tig_buckaroo_giftcards',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/giftcards'
             }
-
-
         );
-        /** Add view logic here if needed */
+        /**
+    * Add view logic here if needed 
+    */
         return Component.extend({});
     }
 );

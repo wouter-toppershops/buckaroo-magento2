@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model;
@@ -280,36 +280,38 @@ class Push implements PushInterface
         $newStatus = $this->orderStatusFactory->get($this->postData['brq_statuscode'], $this->order);
 
         switch ($response['status']) {
-            case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
-            case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
-            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
-            case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
-            case 'TIG_BUCKAROO_STATUSCODE_FAILED':
-            case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
-                $this->processFailedPush($newStatus, $response['message']);
-                break;
-            case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
-                if ($this->order->getPayment()->getMethod() == \TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE) {
-                    $paypalConfig = $this->configProviderMethodFactory
-                        ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE);
+        case 'TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR':
+        case 'TIG_BUCKAROO_STATUSCODE_VALIDATION_FAILURE':
+        case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT':
+        case 'TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER':
+        case 'TIG_BUCKAROO_STATUSCODE_FAILED':
+        case 'TIG_BUCKAROO_STATUSCODE_REJECTED':
+            $this->processFailedPush($newStatus, $response['message']);
+            break;
+        case 'TIG_BUCKAROO_STATUSCODE_SUCCESS':
+            if ($this->order->getPayment()->getMethod() == \TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE) {
+                $paypalConfig = $this->configProviderMethodFactory
+                    ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE);
 
-                    /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Paypal $paypalConfig */
-                    $newSellersProtectionStatus = $paypalConfig->getSellersProtectionIneligible();
-                    if (!empty($newSellersProtectionStatus)) {
-                        $newStatus = $newSellersProtectionStatus;
-                    }
+                /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Paypal $paypalConfig 
+*/
+                $newSellersProtectionStatus = $paypalConfig->getSellersProtectionIneligible();
+                if (!empty($newSellersProtectionStatus)) {
+                    $newStatus = $newSellersProtectionStatus;
                 }
-                $this->processSucceededPush($newStatus, $response['message']);
-                break;
-            case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
-                $this->setOrderNotificationNote($response['message']);
-                break;
-            case 'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD':
-            case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
-            case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
-            case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
-                $this->processPendingPaymentPush($newStatus, $response['message']);
-                break;
+            }
+            $this->processSucceededPush($newStatus, $response['message']);
+            break;
+        case 'TIG_BUCKAROO_STATUSCODE_NEUTRAL':
+            $this->setOrderNotificationNote($response['message']);
+            break;
+        case 'TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD':
+        case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER':
+        case 'TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING':
+        case 'TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT':
+            $this->processPendingPaymentPush($newStatus, $response['message']);
+            break;
         }
     }
 
@@ -340,9 +342,10 @@ class Push implements PushInterface
         $payment     = $this->order->getPayment();
         
         if (!$payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS)) {
-            $payment->setAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS, 
-                                               array($this->postData['brq_transactions'] => floatval($this->postData['brq_amount']))
-                                               );  
+            $payment->setAdditionalInformation(
+                self::BUCKAROO_RECEIVED_TRANSACTIONS, 
+                array($this->postData['brq_transactions'] => floatval($this->postData['brq_amount']))
+            );  
         }
         else {
             $buckarooTransactionKeysArray = $payment->getAdditionalInformation(self::BUCKAROO_RECEIVED_TRANSACTIONS);
@@ -358,14 +361,16 @@ class Push implements PushInterface
      * Sometimes the push does not contain the order id, when thats the case try to get the order by his payment,
      * by using its own transactionkey.
      *
-     * @param $transactionId
+     * @param  $transactionId
      * @return Order
      * @throws \TIG\Buckaroo\Exception
      */
     protected function getOrderByTransactionKey($transactionId)
     {
         if ($transactionId) {
-            /** @var \Magento\Sales\Model\Order\Payment\Transaction $transaction */
+            /**
+ * @var \Magento\Sales\Model\Order\Payment\Transaction $transaction 
+*/
             $transaction = $this->objectManager->create('Magento\Sales\Model\Order\Payment\Transaction');
             $transaction->load($transactionId, 'txn_id');
             $order = $transaction->getOrder();
@@ -420,7 +425,9 @@ class Push implements PushInterface
     {
         $description = 'Payment status : '.$message;
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
+*/
         $accountConfig = $this->configProviderFactory->get('account');
 
         $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
@@ -445,14 +452,18 @@ class Push implements PushInterface
     {
         $amount = floatval($this->originalPostData['brq_amount']);
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
+*/
         $accountConfig = $this->configProviderFactory->get('account');
 
         if (!$this->order->getEmailSent() && $accountConfig->getOrderConfirmationEmail()) {
             $this->orderSender->send($this->order);
         }
 
-        /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
+        /**
+ * @var \Magento\Payment\Model\MethodInterface $paymentMethod 
+*/
         $paymentMethod = $this->order->getPayment()->getMethodInstance();
         if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
             $description = 'Payment status : <strong>' . $message . "</strong><br/>";
@@ -539,7 +550,9 @@ class Push implements PushInterface
 
         $this->addTransactionData();
 
-        /** @var \Magento\Sales\Model\Order\Payment $payment */
+        /**
+ * @var \Magento\Sales\Model\Order\Payment $payment 
+*/
         $payment = $this->order->getPayment();
 
         if ($payment->getMethod() == \TIG\Buckaroo\Model\Method\Giftcards::PAYMENT_METHOD_CODE) {
@@ -580,7 +593,9 @@ class Push implements PushInterface
                 continue;
             }
 
-            /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+            /**
+ * @var \Magento\Sales\Model\Order\Invoice $invoice 
+*/
             $invoice->setTransactionId($this->postData['brq_transactions'])
                 ->save();
         }
@@ -602,7 +617,9 @@ class Push implements PushInterface
      */
     public function addTransactionData()
     {
-        /** @var \Magento\Sales\Model\Order\Payment $payment */
+        /**
+ * @var \Magento\Sales\Model\Order\Payment $payment 
+*/
         $payment = $this->order->getPayment();
 
         $transactionKey = $this->postData['brq_transactions'];
@@ -612,7 +629,9 @@ class Push implements PushInterface
          */
         $rawInfo = $this->helper->getTransactionAdditionalInfo($this->postData);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $payment->setTransactionAdditionalInfo(
             \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
             $rawInfo
@@ -622,9 +641,13 @@ class Push implements PushInterface
         /**
          * Save the payment's transaction key.
          */
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $payment->setTransactionId($transactionKey . '-capture');
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
         $payment->setParentTransactionId($transactionKey);
         $payment->setAdditionalInformation(
             \TIG\Buckaroo\Model\Method\AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY,
@@ -636,6 +659,7 @@ class Push implements PushInterface
 
     /**
      * Get Correct order amount
+     *
      * @return int $orderAmount
      */
     protected function getCorrectOrderAmount()

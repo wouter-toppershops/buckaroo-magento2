@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Source;
 
@@ -74,7 +74,9 @@ class EnableModeTest extends BaseTest
         foreach ($this->shouldHaveOptions as $key => $shouldHaveOptionValue) {
             foreach ($options as $option) {
                 if ($option['value'] == $key) {
-                    /** @noinspection PhpUndefinedMethodInspection */
+                    /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
                     $this->assertEquals($option['label']->getText(), $shouldHaveOptionValue->getText());
                     break;
                 }
@@ -88,7 +90,9 @@ class EnableModeTest extends BaseTest
 
         foreach ($options as $key => $option) {
             if (array_key_exists($key, $this->shouldHaveOptions)) {
-                /** @noinspection PhpUndefinedMethodInspection */
+                /**
+ * @noinspection PhpUndefinedMethodInspection 
+*/
                 $this->assertEquals($option->getText(), $this->shouldHaveOptions[$key]->getText());
             }
         }

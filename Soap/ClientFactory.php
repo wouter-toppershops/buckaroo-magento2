@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Soap;
@@ -67,7 +67,9 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
     {
         $client = new Client\SoapClientWSSEC($wsdl, $options);
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig */
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig 
+*/
         $privateKeyConfig = $this->configProviderFactory->get('private_key');
 
         $client->loadPem($privateKeyConfig->getPrivateKey());

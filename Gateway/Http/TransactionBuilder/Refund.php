@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
@@ -47,7 +47,9 @@ class Refund extends AbstractTransactionBuilder
      */
     protected function setRefundCurrencyAndAmount()
     {
-        /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance */
+        /**
+ * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance 
+*/
         $methodInstance = $this->order->getPayment()->getMethodInstance();
         $method = $methodInstance->buckarooPaymentMethodCode;
 
@@ -82,7 +84,9 @@ class Refund extends AbstractTransactionBuilder
 
         $order = $this->getOrder();
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        /**
+ * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
+*/
         $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
