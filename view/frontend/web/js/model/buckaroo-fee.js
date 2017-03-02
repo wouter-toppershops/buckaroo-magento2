@@ -7,14 +7,14 @@ define(
     [
 
     ],
-    function() {
+    function () {
         "use strict";
 
         var buckarooFeeConfig = window.buckarooConfig ?
             window.buckarooConfig.buckarooFee :
             window.checkoutConfig.buckarooFee;
 
-        return function(itemId) {
+        return function (itemId) {
             return {
                 itemId: itemId,
 
@@ -22,14 +22,14 @@ define(
                  * @param key
                  * @returns {*}
                  */
-                getConfigValue: function(key) {
+                getConfigValue: function (key) {
                     return buckarooFeeConfig[key];
                 },
 
                 /**
                  * @returns {window.buckarooConfig.priceFormat|*|mage.configurable.options.priceFormat|.options.priceFormat|priceFormat}
                  */
-                getPriceFormat: function() {
+                getPriceFormat: function () {
                     return window.buckarooConfig.priceFormat;
                 },
 

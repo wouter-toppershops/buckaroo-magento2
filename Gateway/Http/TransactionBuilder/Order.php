@@ -48,8 +48,8 @@ class Order extends AbstractTransactionBuilder
     protected function setOrderCurrencyAndAmount()
     {
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance
+         */
         $methodInstance = $this->order->getPayment()->getMethodInstance();
         $method = $methodInstance->buckarooPaymentMethodCode;
 
@@ -93,8 +93,8 @@ class Order extends AbstractTransactionBuilder
         }
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
         $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();

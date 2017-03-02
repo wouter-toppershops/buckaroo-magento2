@@ -39,8 +39,8 @@ class TotalsConverter
         array $addressTotals = []
     ) {
         /**
- * @var \Magento\Quote\Api\Data\TotalSegmentInterface[] $totals 
-*/
+         * @var \Magento\Quote\Api\Data\TotalSegmentInterface[] $totals
+         */
         $totalSegments = $proceed($addressTotals);
         if (!isset($addressTotals[$this->code])) {
             return $totalSegments;
@@ -48,43 +48,43 @@ class TotalsConverter
 
         $total = $addressTotals[$this->code];
         /**
- * @var \Magento\Quote\Api\Data\TotalSegmentExtensionInterface $totalSegmentExtension 
-*/
+         * @var \Magento\Quote\Api\Data\TotalSegmentExtensionInterface $totalSegmentExtension
+         */
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension = $this->totalSegmentExtensionFactory->create();
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension->setBuckarooFee($total->getBuckarooFee());
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension->setBaseBuckarooFee($total->getBaseBuckarooFee());
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension->setBuckarooFeeTaxAmount($total->getBuckarooFeeTaxAmount());
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension->setBuckarooFeeBaseTaxAmount($total->getBuckarooFeeBaseTaxAmount());
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension->setBuckarooFeeInclTax($total->getBuckarooFeeInclTax());
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegmentExtension->setBaseBuckarooFeeInclTax($total->getBaseBuckarooFeeInclTax());
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $totalSegments[$this->code]->setExtensionAttributes($totalSegmentExtension);
 
         return $totalSegments;

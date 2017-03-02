@@ -217,11 +217,11 @@ class Afterpay2 extends AbstractConfigProvider
 
         if ($method) {
             switch ($method) {
-            case '1':
-                $paymentMethodName = 'afterpayacceptgiro';
-                break;
-            case '2':
-                $paymentMethodName = 'afterpaydigiaccept';
+                case '1':
+                    $paymentMethodName = 'afterpayacceptgiro';
+                    break;
+                case '2':
+                    $paymentMethodName = 'afterpaydigiaccept';
             }
         }
 

@@ -42,8 +42,8 @@ namespace TIG\Buckaroo\Observer;
 class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
 {
     /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account 
-*/
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Account
+     */
     protected $account;
 
     /**
@@ -63,11 +63,11 @@ class UpdateOrderStatus implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         /**
- * @var $payment \Magento\Sales\Model\Order\Payment 
-*/
+         * @var $payment \Magento\Sales\Model\Order\Payment
+         */
         $payment = $observer->getPayment();
 
         if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {

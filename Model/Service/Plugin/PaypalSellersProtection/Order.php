@@ -67,8 +67,8 @@ class Order
     ) {
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $sellersProtectionActive = (bool) $this->configProviderMethodFactory
             ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE)
             ->getSellersProtection();
@@ -78,11 +78,11 @@ class Order
 
         $payment = $paymentMethod->payment;
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         /**
- * @var \Magento\Sales\Model\Order $order 
-*/
+         * @var \Magento\Sales\Model\Order $order
+         */
         $order = $payment->getOrder();
         $shippingAddress = $order->getShippingAddress();
 

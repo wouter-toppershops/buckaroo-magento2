@@ -131,8 +131,8 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
 
         $address = $shippingAssignment->getShipping()->getAddress();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $associatedTaxables = $address->getAssociatedTaxables();
         if (!$associatedTaxables) {
             $associatedTaxables = [];
@@ -151,8 +151,8 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
         ];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $address->setAssociatedTaxables($associatedTaxables);
 
         return $this;

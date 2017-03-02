@@ -42,8 +42,8 @@ namespace TIG\Buckaroo\Controller\Redirect;
 class Process extends \Magento\Framework\App\Action\Action
 {
     /**
- * @var array 
-*/
+     * @var array
+     */
     protected $response;
 
     /**
@@ -163,58 +163,58 @@ class Process extends \Magento\Framework\App\Action\Action
         }
 
         switch ($statusCode) {
-        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
-        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
-            if ($this->order->canInvoice()) {
-                // Set the 'Pending payment status' here
-                $pendingStatus = $this->orderStatusFactory->get(
-                    $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'),
-                    $this->order
-                );
-                if ($pendingStatus) {
-                    $this->order->setStatus($pendingStatus);
-                    $this->order->save();
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
+                if ($this->order->canInvoice()) {
+                    // Set the 'Pending payment status' here
+                    $pendingStatus = $this->orderStatusFactory->get(
+                        $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'),
+                        $this->order
+                    );
+                    if ($pendingStatus) {
+                        $this->order->setStatus($pendingStatus);
+                        $this->order->save();
+                    }
                 }
-            }
 
-            // Send order confirmation mail if we're supposed to
-            /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
-            if (!$this->order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
-                $this->orderSender->send($this->order, true);
-            }
+                // Send order confirmation mail if we're supposed to
+                /**
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
+                if (!$this->order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
+                    $this->orderSender->send($this->order, true);
+                }
 
-            // Redirect to success page
-            $this->redirectSuccess();
-            break;
-        case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
-        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
-        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
-        case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
-            /*
-            * Something went wrong, so we're going to have to
-            * 1) recreate the quote for the user
-            * 2) cancel the order we had to create to even get here
-            * 3) redirect back to the checkout page to offer the user feedback & the option to try again
-            */
-            $this->messageManager->addErrorMessage(
-                __(
-                    'Unfortunately an error occurred while processing your payment. Please try again. If this' .
-                    ' error persists, please choose a different payment method.'
-                )
-            );
+                // Redirect to success page
+                $this->redirectSuccess();
+                break;
+            case $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
+            case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
+                /*
+                * Something went wrong, so we're going to have to
+                * 1) recreate the quote for the user
+                * 2) cancel the order we had to create to even get here
+                * 3) redirect back to the checkout page to offer the user feedback & the option to try again
+                */
+                $this->messageManager->addErrorMessage(
+                    __(
+                        'Unfortunately an error occurred while processing your payment. Please try again. If this' .
+                        ' error persists, please choose a different payment method.'
+                    )
+                );
 
-            if (!$this->recreateQuote()) {
-                $this->debugger->log('Could not recreate the quote.', \TIG\Buckaroo\Debug\Logger::ERROR);
-            }
+                if (!$this->recreateQuote()) {
+                    $this->debugger->log('Could not recreate the quote.', \TIG\Buckaroo\Debug\Logger::ERROR);
+                }
 
-            if (!$this->cancelOrder($statusCode)) {
-                $this->debugger->log('Could not cancel the order.', \TIG\Buckaroo\Debug\Logger::ERROR);
-            }
+                if (!$this->cancelOrder($statusCode)) {
+                    $this->debugger->log('Could not cancel the order.', \TIG\Buckaroo\Debug\Logger::ERROR);
+                }
 
-            $this->redirectFailure();
-            break;
+                $this->redirectFailure();
+                break;
             //no default
         }
 
@@ -234,28 +234,28 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->quote->setReservedOrderId(null);
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFee(null);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBaseBuckarooFee(null);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFeeTaxAmount(null);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFeeBaseTaxAmount(null);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFeeInclTax(null);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBaseBuckarooFeeInclTax(null);
 
         if ($this->cart->setQuote($this->quote)->save()) {
@@ -279,8 +279,8 @@ class Process extends \Magento\Framework\App\Action\Action
         }
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if (!$this->accountConfig->getCancelOnFailed()) {
             return true;
         }
@@ -311,8 +311,8 @@ class Process extends \Magento\Framework\App\Action\Action
     protected function redirectSuccess()
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $url = $this->accountConfig->getSuccessRedirect();
 
         return $this->_redirect($url);
@@ -326,8 +326,8 @@ class Process extends \Magento\Framework\App\Action\Action
     protected function redirectFailure()
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $url = $this->accountConfig->getFailureRedirect();
 
         return $this->_redirect($url);

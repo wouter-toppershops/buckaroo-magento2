@@ -63,10 +63,12 @@ define(
          * */
 
         $.validator.addMethod(
-            'BIC', function (value) {
+            'BIC',
+            function (value) {
                 var patternBIC = new RegExp('^([a-zA-Z]){4}([a-zA-Z]){2}([0-9a-zA-Z]){2}([0-9a-zA-Z]{3})?$');
                 return patternBIC.test(value);
-            }, $.mage.__('Enter Valid BIC number')
+            },
+            $.mage.__('Enter Valid BIC number')
         );
 
         return Component.extend(
@@ -83,7 +85,7 @@ define(
              * @override
              */
                 initialize : function (options) {
-                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    if (checkoutData.getSelectedPaymentMethod() == options.index) {
                         window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
                     }
 
@@ -99,7 +101,8 @@ define(
                     this.bicnumber.subscribe(
                         function () {
                             $('.' + this.getCode() + ' [data-validate]').valid();
-                        }, this
+                        },
+                        this
                     );
 
 
@@ -109,7 +112,8 @@ define(
                     this.bicnumber.subscribe(
                         function () {
                             $('.' + this.getCode() + ' [data-validate]').valid();
-                        }, this
+                        },
+                        this
                     );
 
 
@@ -120,7 +124,8 @@ define(
                     this.buttoncheck = ko.computed(
                         function () {
                             return this.bicnumber().length > 0 && this.validate();
-                        }, this
+                        },
+                        this
                     );
 
                     return this;
@@ -170,7 +175,7 @@ define(
                     }
                 },
 
-                selectPaymentMethod: function() {
+                selectPaymentMethod: function () {
                     window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
 
                     selectPaymentMethodAction(this.getData());
@@ -178,7 +183,7 @@ define(
                     return true;
                 },
 
-                getData: function() {
+                getData: function () {
                     return {
                         "method": this.item.method,
                         "po_number": null,
@@ -188,13 +193,13 @@ define(
                     };
                 },
 
-                payWithBaseCurrency: function() {
+                payWithBaseCurrency: function () {
                     var allowedCurrencies = window.checkoutConfig.payment.buckaroo.giropay.allowedCurrencies;
 
                     return allowedCurrencies.indexOf(this.currencyCode) < 0;
                 },
 
-                getPayWithBaseCurrencyText: function() {
+                getPayWithBaseCurrencyText: function () {
                     var text = $.mage.__('The transaction will be processed using %s.');
 
                     return text.replace('%s', this.baseCurrencyCode);

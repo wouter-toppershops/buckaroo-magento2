@@ -84,7 +84,8 @@ class GiftcardsTest extends BaseTest
         $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            Giftcards::class, [
+            Giftcards::class,
+            [
             'objectManager' => $this->objectManager,
             'scopeConfig' => $this->scopeConfig,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,

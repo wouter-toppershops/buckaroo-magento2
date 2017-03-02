@@ -140,8 +140,8 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     public function refund(Transaction $transaction)
     {
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig
+         */
         $refundConfig = $this->configProviderFactory->get('refund');
 
         if ($refundConfig->getEnabled()) {
@@ -186,26 +186,26 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
         }
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig
+         */
         $predefinedConfig = $this->configProviderFactory->get('predefined');
 
         switch ($this->mode) {
-        case \TIG\Buckaroo\Helper\Data::MODE_TEST:
-            $wsdl = $predefinedConfig->getWsdlTestWeb();
-            break;
-        case \TIG\Buckaroo\Helper\Data::MODE_LIVE:
-            $wsdl = $predefinedConfig->getWsdlLiveWeb();
-            break;
-        default:
-            throw new \TIG\Buckaroo\Exception(
-                __(
-                    "Invalid mode set: %1",
-                    [
+            case \TIG\Buckaroo\Helper\Data::MODE_TEST:
+                $wsdl = $predefinedConfig->getWsdlTestWeb();
+                break;
+            case \TIG\Buckaroo\Helper\Data::MODE_LIVE:
+                $wsdl = $predefinedConfig->getWsdlLiveWeb();
+                break;
+            default:
+                throw new \TIG\Buckaroo\Exception(
+                    __(
+                        "Invalid mode set: %1",
+                        [
                             $this->mode
                         ]
-                )
-            );
+                    )
+                );
         }
 
         return $wsdl;
@@ -220,8 +220,8 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     public function doRequest(Transaction $transaction)
     {
         /**
- * @var \Magento\Payment\Gateway\Http\Transfer $transfer 
-*/
+         * @var \Magento\Payment\Gateway\Http\Transfer $transfer
+         */
         $transfer = $this->objectFactory->create(
             '\Magento\Payment\Gateway\Http\Transfer',
             [

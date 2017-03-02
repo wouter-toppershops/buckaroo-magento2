@@ -67,9 +67,10 @@ class CreditcardTest extends BaseTest
         $this->assetRepository = m::mock(Repository::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(
-            Creditcard::class, [
-            'assetRepo' => $this->assetRepository,
-            'scopeConfig' => $this->scopeConfig
+            Creditcard::class,
+            [
+                'assetRepo' => $this->assetRepository,
+                'scopeConfig' => $this->scopeConfig
             ]
         );
     }
@@ -82,8 +83,8 @@ class CreditcardTest extends BaseTest
             ->once()
             ->withArgs(
                 [
-                                  Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
-                              ]
+                    Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
+                ]
             )
             ->andReturn($issuers);
 
@@ -91,10 +92,10 @@ class CreditcardTest extends BaseTest
             ->once()
             ->withArgs(
                 [
-                                  Creditcard::XPATH_ALLOWED_CURRENCIES,
-                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                                  null
-                              ]
+                    Creditcard::XPATH_ALLOWED_CURRENCIES,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    null
+                ]
             )
             ->andReturn($allowedCurrencies);
 
@@ -121,10 +122,10 @@ class CreditcardTest extends BaseTest
             ->once()
             ->withArgs(
                 [
-                                  \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::XPATH_CREDITCARD_ACTIVE,
-                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                                  null
-                              ]
+                    \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::XPATH_CREDITCARD_ACTIVE,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    null
+                ]
             )
             ->andReturn('1');
 

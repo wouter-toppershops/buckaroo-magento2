@@ -48,8 +48,8 @@ class Refund extends AbstractTransactionBuilder
     protected function setRefundCurrencyAndAmount()
     {
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance
+         */
         $methodInstance = $this->order->getPayment()->getMethodInstance();
         $method = $methodInstance->buckarooPaymentMethodCode;
 
@@ -85,8 +85,8 @@ class Refund extends AbstractTransactionBuilder
         $order = $this->getOrder();
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
         $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();

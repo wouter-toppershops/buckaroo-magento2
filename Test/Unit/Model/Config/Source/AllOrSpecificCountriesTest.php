@@ -68,8 +68,8 @@ class AllOrSpecificCountriesTest extends BaseTest
         foreach ($shouldHaveOptions as $key => $option) {
             foreach ($result as $optionContents) {
                 /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 if ($optionContents['label']->getText() == $option->getText()) {
                     unset($shouldHaveOptions[$key]);
                     break;

@@ -99,8 +99,8 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
         $currencies = $this->allowedCurrenciesConfig->getAllowedCurrencies();
         if ($method) {
             /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfig 
-*/
+             * @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfig
+             */
             $methodConfig = $this->configProviderMethodFactory->get($method);
             $currencies = $methodConfig->getBaseAllowedCurrencies();
         }

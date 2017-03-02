@@ -79,7 +79,8 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Config\Backend\Certificate::class, [
+            \TIG\Buckaroo\Model\Config\Backend\Certificate::class,
+            [
             'objectManager' => $this->objectManager,
             'readFactory' => $this->readFactory,
             'scopeConfig' => $this->scopeConfig,
@@ -154,7 +155,8 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         $this->markTestSkipped('Needs revision');
 
         $this->object->setData(
-            'fieldset_data', [
+            'fieldset_data',
+            [
             'certificate_upload'=> $this->uploadFixture,
             'certificate_label' => $this->uploadFixture['label'],
             ]

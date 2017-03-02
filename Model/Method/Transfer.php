@@ -123,8 +123,8 @@ class Transfer extends AbstractMethod
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig
+         */
         $transferConfig = $this->configProviderMethodFactory->get('transfer');
 
         $dueDays = abs($transferConfig->getDueDate());
@@ -133,13 +133,13 @@ class Transfer extends AbstractMethod
         $now->modify('+' . $dueDays . ' day');
 
         /**
- * @var \Magento\Sales\Model\Order\Address $billingAddress 
-*/
+         * @var \Magento\Sales\Model\Order\Address $billingAddress
+         */
         $billingAddress = $payment->getOrder()->getBillingAddress();
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
@@ -165,8 +165,8 @@ class Transfer extends AbstractMethod
         ];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -207,8 +207,8 @@ class Transfer extends AbstractMethod
         $services = array_merge($services, $requestParams);
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')

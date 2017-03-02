@@ -55,28 +55,28 @@ class TotalsCollector
         Quote $quote
     ) {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFee(0);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBaseBuckarooFee(0);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeTaxAmount(0);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeBaseTaxAmount(0);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeInclTax(0);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBaseBuckarooFeeInclTax(0);
     }
 }

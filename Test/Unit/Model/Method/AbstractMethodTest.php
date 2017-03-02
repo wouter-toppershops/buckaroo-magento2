@@ -129,7 +129,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
          * class.
          */
-        $this->object = $this->objectManagerHelper->getObject(AbstractMethodMock::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            AbstractMethodMock::class,
+            [
             'objectManager' => $this->objectManager,
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,
@@ -139,7 +141,8 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             'helper' => $this->helper,
             'request' => $this->request,
             'refundFieldsFactory' => $this->refundFieldsFactory,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -189,7 +192,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableDisabled()
     {
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
 
         $this->account->shouldReceive('getActive')->once()->andReturn(0);
@@ -203,7 +208,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableAdminhtmlDisabled()
     {
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
 
         $this->account->shouldReceive('getActive')->once()->andReturn(1);
@@ -237,7 +244,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->getValues();
 
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->once()->andReturn(1);
 
@@ -272,7 +281,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->getValues(1, null, null);
 
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
@@ -309,7 +320,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->getValues();
 
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
@@ -341,7 +354,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->getValues();
 
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
@@ -374,7 +389,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->getValues(1, null, null);
 
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
@@ -410,7 +427,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->getValues(1, null, null);
 
-        /** @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote */
+        /**
+         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         */
         $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
@@ -439,7 +458,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testCanRefundParentFalse()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->object->setCanRefund(false);
 
         $this->assertFalse($this->object->canRefund());
@@ -452,7 +473,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testCanRefundNotEnabled($enabled)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->object->setCanRefund(true);
 
         $this->configProvider->shouldReceive('get')->andReturnSelf();
@@ -483,7 +506,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->setExpectedException('\InvalidArgumentException');
 
         $payment = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $this->object->$method($payment, 0);
     }
@@ -525,9 +550,13 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
 
         $payment = \Mockery::mock($mockClass);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->object->$canMethod(false);
         $this->object->$method($payment, 0);
     }
@@ -671,7 +700,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $stubbedMethods = [$methodTransactionBuilder];
 
@@ -689,7 +720,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             $stubbedMethods
         );
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $partialMock->$setCanMethod(true);
 
         $partialMock->expects($this->once())
@@ -704,10 +737,14 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 ->willReturn(true);
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $partialMock->$method($payment, 0);
 
-        /** @noinspection PhpUndefinedFieldInspection */
+        /**
+         * @noinspection PhpUndefinedFieldInspection
+         */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -758,7 +795,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $stubbedMethods = [$methodTransactionBuilder];
 
@@ -776,7 +815,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             $stubbedMethods
         );
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $partialMock->$setCanMethod(true);
 
         $partialMock->expects($this->once())
@@ -791,7 +832,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 ->willReturn(true);
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->assertEquals($partialMock, $partialMock->$method($payment, 0));
 
         /** @noinspection PhpUndefinedFieldInspection */
@@ -834,7 +877,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $transaction = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
 
@@ -877,7 +922,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             $stubbedMethods
         );
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $partialMock->setEventManager($eventManagerMock);
 
         $partialMock->$setCanMethod(true);
@@ -907,9 +954,13 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             $this->configMethodProvider->shouldReceive('get')->withAnyArgs()->andReturnSelf();
             $this->configMethodProvider->shouldReceive('getAllowedCurrencies')->once()->withAnyArgs()->andReturnSelf();
 
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $payment->shouldReceive('getCurrencyCode')->once()->andReturn(false);
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $payment->shouldReceive('setIsFraudDetected')->once()->with(false);
         }
 
@@ -917,7 +968,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->assertEquals($partialMock, $result);
 
-        /** @noinspection PhpUndefinedFieldInspection */
+        /**
+         * @noinspection PhpUndefinedFieldInspection
+         */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -988,7 +1041,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $response = [];
 
         $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
-        /** @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock */
+        /**
+         * @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock
+         */
 
         $this->gateway->shouldReceive($gatewayMethod)
             ->once()
@@ -1045,7 +1100,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $response = [];
 
         $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
-        /** @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock */
+        /**
+         * @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock
+         */
 
         $this->gateway->shouldReceive($gatewayMethod)
             ->once()
@@ -1080,7 +1137,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $response = ['test_response'];
 
         $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
-        /** @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock */
+        /**
+         * @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock
+         */
 
         $this->gateway->shouldReceive($gatewayMethod)
             ->once()
@@ -1109,7 +1168,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $partialMock = $this->getPartialObject(
             AbstractMethod::class,
@@ -1119,7 +1180,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $partialMock->expects($this->once())->method('void')->with($payment)->willReturnSelf();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->assertSame($partialMock, $partialMock->cancel($payment));
     }
 
@@ -1137,7 +1200,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             . ','
             . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
         $payment = \Mockery::mock($mockClass);
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $this->object->saveTransactionData($response, $payment, true, false);
     }
@@ -1175,7 +1240,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 ->once()
                 ->with(AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $key);
         }
-        /** @var \Magento\Payment\Model\InfoInterface $payment */
+        /**
+         * @var \Magento\Payment\Model\InfoInterface $payment
+         */
 
         $partialMock = $this->getPartialObject(
             AbstractMethod::class,
@@ -1188,7 +1255,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             ->with($arrayResponse)
             ->willReturn($arrayResponse);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $partialMock->saveTransactionData($response, $payment, $close, $saveId);
     }
 

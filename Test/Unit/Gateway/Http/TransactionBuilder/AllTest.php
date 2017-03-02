@@ -71,7 +71,8 @@ class AllTest extends BaseTest
         $this->configProvider = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Factory');
 
         $this->object = $this->objectManagerHelper->getObject(
-            Order::class, [
+            Order::class,
+            [
             'configProviderFactory' => $this->configProvider,
             ]
         );
@@ -160,7 +161,8 @@ class AllTest extends BaseTest
          * The Order class is used by default, but in this case we want to test the Refund class specifically.
          */
         $this->object = $this->objectManagerHelper->getObject(
-            Refund::class, [
+            Refund::class,
+            [
             'configProviderFactory' => $this->configProvider,
             ]
         );

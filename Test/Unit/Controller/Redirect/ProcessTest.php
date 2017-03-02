@@ -122,7 +122,8 @@ class ProcessTest extends BaseTest
         $this->orderStatusFactory = m::mock(\TIG\Buckaroo\Model\OrderStatusFactory::class)->makePartial();
 
         $this->context = $this->objectManagerHelper->getObject(
-            Context::class, [
+            Context::class,
+            [
             'request' => $this->request,
             'redirect' => $this->redirect,
             'messageManager' => $this->messageManager,
@@ -130,7 +131,8 @@ class ProcessTest extends BaseTest
         );
 
         $this->controller = $this->objectManagerHelper->getObject(
-            Process::class, [
+            Process::class,
+            [
             'context' => $this->context,
             'helper' => $this->helper,
             'order' => $this->order,

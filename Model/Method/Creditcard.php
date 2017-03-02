@@ -165,18 +165,18 @@ class Creditcard extends AbstractMethod
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         /**
- * If there are no credit cards chosen, we can't be available 
-*/
+         * If there are no credit cards chosen, we can't be available
+         */
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $ccConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $ccConfig
+         */
         $ccConfig = $this->configProviderMethodFactory->get('creditcard');
         if (null === $ccConfig->getAllowedCreditcards()) {
             return false;
         }
         /**
- * Return the regular isAvailable result 
-*/
+         * Return the regular isAvailable result
+         */
         return parent::isAvailable($quote);
     }
 
@@ -194,8 +194,8 @@ class Creditcard extends AbstractMethod
         ];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -217,8 +217,8 @@ class Creditcard extends AbstractMethod
         ];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -246,8 +246,8 @@ class Creditcard extends AbstractMethod
         ];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -272,8 +272,8 @@ class Creditcard extends AbstractMethod
         $services = array_merge($services, $requestParams);
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')

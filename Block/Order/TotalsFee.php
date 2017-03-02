@@ -72,8 +72,8 @@ class TotalsFee extends \TIG\Buckaroo\Block\Order\Totals
     {
         $this->_initTotals();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $source = $this->getSource();
         $totals = $this->helper->getBuckarooPaymentFeeTotal($source);
         if (!empty($totals)) {

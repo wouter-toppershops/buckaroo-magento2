@@ -48,45 +48,45 @@ class SetBuckarooFee implements \Magento\Framework\Event\ObserverInterface
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         /* @var $order \Magento\Sales\Model\Order */
         $order = $observer->getEvent()->getOrder();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         /**
- * @var $quote \Magento\Quote\Model\Quote $quote 
-*/
+         * @var $quote \Magento\Quote\Model\Quote $quote
+         */
         $quote = $observer->getEvent()->getQuote();
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if ($quote->getBaseBuckarooFee() > 0) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFee($quote->getBuckarooFee());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBaseBuckarooFee($quote->getBaseBuckarooFee());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeTaxAmount($quote->getBuckarooFeeTaxAmount());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeBaseTaxAmount($quote->getBuckarooFeeBaseTaxAmount());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeInclTax($quote->getBuckarooFeeInclTax());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBaseBuckarooFeeInclTax($quote->getBaseBuckarooFeeInclTax());
         }
     }

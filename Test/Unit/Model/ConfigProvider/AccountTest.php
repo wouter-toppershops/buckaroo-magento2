@@ -65,7 +65,8 @@ class AccountTest extends BaseTest
 
         $this->scopeConfig = m::mock(ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(
-            Account::class, [
+            Account::class,
+            [
             'scopeConfig' => $this->scopeConfig,
             ]
         );

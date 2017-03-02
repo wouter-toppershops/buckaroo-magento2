@@ -49,8 +49,8 @@ class Edit extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
         $giftcardId = $this->getRequest()->getParam('entity_id');
 
         /**
- * @var \TIG\Buckaroo\Model\Giftcard $model 
-*/
+         * @var \TIG\Buckaroo\Model\Giftcard $model
+         */
         $model = $this->giftcardFactory->create();
 
         if ($giftcardId) {
@@ -69,8 +69,8 @@ class Edit extends \TIG\Buckaroo\Controller\Adminhtml\Giftcard\Index
         $this->_coreRegistry->register('buckaroo_giftcard', $model);
 
         /**
- * @var \Magento\Backend\Model\View\Result\Page $resultPage 
-*/
+         * @var \Magento\Backend\Model\View\Result\Page $resultPage
+         */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('TIG_Buckaroo::buckaroo_giftcards');
         $resultPage->getConfig()->getTitle()->prepend(__('Buckaroo Giftcards'));

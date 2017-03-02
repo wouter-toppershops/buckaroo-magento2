@@ -68,8 +68,8 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
         $client = new Client\SoapClientWSSEC($wsdl, $options);
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig
+         */
         $privateKeyConfig = $this->configProviderFactory->get('private_key');
 
         $client->loadPem($privateKeyConfig->getPrivateKey());

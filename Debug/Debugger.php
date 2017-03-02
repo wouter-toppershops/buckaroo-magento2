@@ -109,8 +109,8 @@ class Debugger
          * Get some settings
          */
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $config 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $config
+         */
         $config = $this->configProviderFactory->get('account');
 
         /**
@@ -260,8 +260,8 @@ class Debugger
          */
         if (strpos($this->getMode(), 'log') !== false) {
             /**
- * Stream handler handles local file logging capabilities 
-*/
+             * Stream handler handles local file logging capabilities
+             */
             $this->logger->pushHandler($this->createStreamHandler($filename));
             $this->logger->addRecord($level, $message, []);
         }
@@ -270,8 +270,8 @@ class Debugger
          */
         if (strpos($this->mode, 'mail') !== false) {
             /**
- * Mail handler handles sending logs to configured e-mail addresses 
-*/
+             * Mail handler handles sending logs to configured e-mail addresses
+             */
             $headers =  'From: ' . $this->getMailFrom() . "\r\n" .
                         'Reply-To: ' . $this->getMailFrom() . "\r\n" .
                         'X-Mailer: PHP/' . phpversion();

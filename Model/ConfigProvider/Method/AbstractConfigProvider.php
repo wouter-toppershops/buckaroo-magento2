@@ -111,8 +111,8 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
 
         if (!$this->allowedCurrencies) {
             /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig 
-*/
+             * @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig
+             */
             $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
             if ($allowedCurrenciesConfig) {
                 $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();

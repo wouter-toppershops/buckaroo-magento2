@@ -77,13 +77,21 @@ define(
 
         /**
          * Validate IBAN and BIC number
+         * This function check if the checksum if correct
          */
-        function isValidIBAN($v){ //This function check if the checksum if correct
+        function isValidIBAN($v)
+        {
             $v = $v.replace(/^(.{4})(.*)$/,"$2$1"); //Move the first 4 chars from left to the right
-            $v = $v.replace(/[A-Z]/g,function($e){return $e.charCodeAt(0) - 'A'.charCodeAt(0) + 10}); //Convert A-Z to 10-25
+            //Convert A-Z to 10-25
+            $v = $v.replace(
+                /[A-Z]/g,
+                function ($e) {
+                    return $e.charCodeAt(0) - 'A'.charCodeAt(0) + 10;
+                }
+            );
             var $sum = 0;
             var $ei = 1; //First exponent
-            for(var $i = $v.length - 1; $i >= 0; $i--){
+            for (var $i = $v.length - 1; $i >= 0; $i--) {
                 $sum += $ei * parseInt($v.charAt($i),10); //multiply the digit by it's exponent
                 $ei = ($ei * 10) % 97; //compute next base 10 exponent  in modulus 97
             }
@@ -94,7 +102,8 @@ define(
          * Add validation methods
          */
         $.validator.addMethod(
-            'IBAN', function (value) {
+            'IBAN',
+            function (value) {
                 var patternIBAN = new RegExp('^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$');
                 return (patternIBAN.test(value) && isValidIBAN(value));
             },
@@ -129,10 +138,10 @@ define(
                 baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
                 /**
-             * @override
-             */
+                 * @override
+                 */
                 initialize : function (options) {
-                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    if (checkoutData.getSelectedPaymentMethod() == options.index) {
                         window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
                     }
 
@@ -142,24 +151,24 @@ define(
                 initObservable: function () {
                     this._super().observe(
                         [
-                        'businessMethod',
-                        'paymentMethod',
-                        'telephoneNumber',
-                        'selectedGender',
-                        'selectedBusiness',
-                        'firstname',
-                        'lastname',
-                        'CustomerName',
-                        'BillingName',
-                        'dateValidate',
-                        'CocNumber',
-                        'CompanyName',
-                        'CostCenter',
-                        'VATNumber',
-                        'bankaccountnumber',
-                        'termsValidate',
-                        'genderValidate',
-                        'dummy'
+                            'businessMethod',
+                            'paymentMethod',
+                            'telephoneNumber',
+                            'selectedGender',
+                            'selectedBusiness',
+                            'firstname',
+                            'lastname',
+                            'CustomerName',
+                            'BillingName',
+                            'dateValidate',
+                            'CocNumber',
+                            'CompanyName',
+                            'CostCenter',
+                            'VATNumber',
+                            'bankaccountnumber',
+                            'termsValidate',
+                            'genderValidate',
+                            'dummy'
                         ]
                     );
 
@@ -169,20 +178,21 @@ define(
                     this.lastName       = quote.billingAddress().lastname;
 
                     /**
-                 * Observe customer first & lastname
-                 * bind them together, so they could appear in the frontend
-                 */
+                     * Observe customer first & lastname
+                     * bind them together, so they could appear in the frontend
+                     */
                     this.CustomerName = ko.computed(
-                        function() {
+                        function () {
                             return this.firstName + " " + this.lastName;
-                        }, this
+                        },
+                        this
                     );
                     this.BillingName(this.CustomerName());
 
                     /**
-                 * observe radio buttons
-                 * check if selected
-                 */
+                     * observe radio buttons
+                     * check if selected
+                     */
                     var self = this;
                     this.setSelectedGender = function (value) {
                         self.selectedGender(value);
@@ -190,8 +200,8 @@ define(
                     };
 
                     /**
-                 * Check if TelephoneNumber is filled in. If not - show field
-                 */
+                     * Check if TelephoneNumber is filled in. If not - show field
+                     */
                     this.hasTelephoneNumber = ko.computed(
                         function () {
                             var telephone = quote.billingAddress() ? quote.billingAddress().telephone : null;
@@ -200,13 +210,13 @@ define(
                     );
 
                     /**
-                 * Repair IBAN value to uppercase
-                 */
+                     * Repair IBAN value to uppercase
+                     */
                     this.bankaccountnumber.extend({ uppercase: true });
 
                     /**
-                 * Validation on the input fields
-                 */
+                     * Validation on the input fields
+                     */
 
                     var runValidation = function () {
                         $('.' + this.getCode() + ' [data-validate]').filter(':not([name*="agreement"])').valid();
@@ -224,13 +234,12 @@ define(
                     this.genderValidate.subscribe(runValidation,this);
 
                     /**
-                 * Create a function to check if all the required fields, in specific conditions, are filled in.
-                 * Within checkB2C - hide IBAN unless paymentMethod = Acceptgiro (1).
-                 * Within checkB2B - show all possible fields except IBAN.
-                 */
+                     * Create a function to check if all the required fields, in specific conditions, are filled in.
+                     * Within checkB2C - hide IBAN unless paymentMethod = Acceptgiro (1).
+                     * Within checkB2B - show all possible fields except IBAN.
+                     */
 
-                    var checkB2C = function()
-                {
+                    var checkB2C = function () {
                         return (
                         this.selectedGender() !== null &&
                         this.BillingName() !== null &&
@@ -238,18 +247,17 @@ define(
                         this.termsValidate() !== false &&
                         this.genderValidate() !== null &&
                         (
-                            (
-                                this.paymentMethod == PAYMENT_METHOD_ACCEPTGIRO &&
-                                this.bankaccountnumber().length > 0
-                            ) ||
-                            this.paymentMethod == PAYMENT_METHOD_DIGIACCEPT
+                        (
+                        this.paymentMethod == PAYMENT_METHOD_ACCEPTGIRO &&
+                        this.bankaccountnumber().length > 0
+                        ) ||
+                        this.paymentMethod == PAYMENT_METHOD_DIGIACCEPT
                         ) &&
                         this.validate()
                         );
                     };
 
-                    var checkB2B = function ()
-                {
+                    var checkB2B = function () {
                         return (
                         this.selectedGender() !== null &&
                         this.BillingName() !== null &&
@@ -265,8 +273,8 @@ define(
                     };
 
                     /**
-                 * Check if the required fields are filled. If so: enable place order button (true) | if not: disable place order button (false)
-                 */
+                     * Check if the required fields are filled. If so: enable place order button (true) | if not: disable place order button (false)
+                     */
                     this.buttoncheck = ko.computed(
                         function () {
                             this.selectedGender();
@@ -283,30 +291,34 @@ define(
                             additionalValidators.validate();
 
                             /**
-                        * Run If Else function to select the right fields to validate.
-                        * Other fields will be ignored.
-                        */
-                            if (this.businessMethod == BUSINESS_METHOD_B2C 
-                                || (this.businessMethod == BUSINESS_METHOD_BOTH 
+                             * Run If Else function to select the right fields to validate.
+                             * Other fields will be ignored.
+                             */
+                            if (this.businessMethod == BUSINESS_METHOD_B2C
+                                || (this.businessMethod == BUSINESS_METHOD_BOTH
                                 && this.selectedBusiness() == BUSINESS_METHOD_B2C)
                             ) {
                                 return checkB2C.bind(this)();
                             } else {
                                 return checkB2B.bind(this)();
                             }
-                        }, this
+                        },
+                        this
                     );
 
                     /**
-                 * The agreement checkbox won't force an update of our bindings. So check for changes manually and notify
-                 * the bindings if something happend. Use $.proxy() to access the local this object. The dummy property is
-                 * used to notify the bindings.
-                 */
+                     * The agreement checkbox won't force an update of our bindings. So check for changes manually and notify
+                     * the bindings if something happend. Use $.proxy() to access the local this object. The dummy property is
+                     * used to notify the bindings.
+                     */
                     $('.payment-methods').on(
-                        'click', '.' + this.getCode() + ' [name*="agreement"]', $.proxy(
+                        'click',
+                        '.' + this.getCode() + ' [name*="agreement"]',
+                        $.proxy(
                             function () {
                                 this.dummy.notifySubscribers();
-                            }, this
+                            },
+                            this
                         )
                     );
 
@@ -314,17 +326,17 @@ define(
                 },
 
                 /**
-             * Place order.
-             *
-             * @todo To override the script used for placeOrderAction, we need to override the placeOrder method
-             *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
-             *
-             *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
-             *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
-             */
+                 * Place order.
+                 *
+                 * @todo To override the script used for placeOrderAction, we need to override the placeOrder method
+                 *          on our parent class (Magento_Checkout/js/view/payment/default) so we can
+                 *
+                 *          placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own
+                 *          version (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
+                 */
                 placeOrder: function (data, event) {
                     var self = this,
-                    placeOrder;
+                        placeOrder;
 
                     if (event) {
                         event.preventDefault();
@@ -335,7 +347,7 @@ define(
                         placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
 
                         $.when(placeOrder).fail(
-                            function() {
+                            function () {
                                 self.isPlaceOrderActionAllowed(true);
                             }
                         ).done(this.afterPlaceOrder.bind(this));
@@ -352,7 +364,7 @@ define(
                     }
                 },
 
-                selectPaymentMethod: function() {
+                selectPaymentMethod: function () {
                     window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
 
                     selectPaymentMethodAction(this.getData());
@@ -361,8 +373,8 @@ define(
                 },
 
                 /**
-             * Run validation function
-             */
+                 * Run validation function
+                 */
 
                 validate: function () {
                     return (
@@ -371,7 +383,7 @@ define(
                     );
                 },
 
-                getData: function() {
+                getData: function () {
                     return {
                         "method": this.item.method,
                         "po_number": null,
@@ -389,7 +401,6 @@ define(
                         }
                     };
                 }
-
             }
         );
     }

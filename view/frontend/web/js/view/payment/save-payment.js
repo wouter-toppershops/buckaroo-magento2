@@ -22,8 +22,8 @@ define(
                     this._super();
 
                     /**
-                 * Observe the onclick event on all payment methods.
-                 */
+                     * Observe the onclick event on all payment methods.
+                     */
                     $('body').on(
                         'click',
                         '.payment-methods input[type="radio"][name="payment[method]"]',
@@ -32,18 +32,18 @@ define(
                 },
 
                 /**
-             * Save the selected payment method.
-             */
-                savePaymentMethod: function() {
-                    /**
-                 * Build the URL for saving the selected payment method.
+                 * Save the selected payment method.
                  */
+                savePaymentMethod: function () {
+                    /**
+                     * Build the URL for saving the selected payment method.
+                     */
                     var params = {};
                     var payload = {};
 
                     /**
-                 * If we're checking out as guest, we're going to need a cartId and a guest email
-                 */
+                     * If we're checking out as guest, we're going to need a cartId and a guest email
+                     */
                     if (resourceUrlManager.getCheckoutMethod() == 'guest') {
                         params = {
                             cartId: quote.getQuoteId()
@@ -58,8 +58,8 @@ define(
                     var url = resourceUrlManager.getUrl(urls, params);
 
                     /**
-                 * The API expects a JSON object with the selected payment method and the selected billing address
-                 */
+                     * The API expects a JSON object with the selected payment method and the selected billing address
+                     */
                     payload.paymentMethod = {
                         method: $('.payment-methods input[type="radio"][name="payment[method]"]:checked').val(),
                         additional_data: {
@@ -69,27 +69,27 @@ define(
                     payload.billingAddress = quote.billingAddress();
 
                     /**
-                 * Send the selected payment method, along with a cart identifier, the billing address and a 'skip
-                 * validation' flag to the save payment method API.
-                 */
+                     * Send the selected payment method, along with a cart identifier, the billing address and a 'skip
+                     * validation' flag to the save payment method API.
+                     */
                     storage.post(
                         url,
                         /**
-                        * The APi expects a JSON object with the selected payment method and the selected billing address.
-                        */
+                         * The APi expects a JSON object with the selected payment method and the selected billing address.
+                         */
                         JSON.stringify(payload)
                     ).done(
                         function () {
                             /**
-                         * Update the totals in the summary block.
-                         *
-                         * While the method is called 'getTotals', it will actually fetch the latest totals from
-                         * Magento's API and then update the entire summary block.
-                         *
-                         * Please note that the empty array is required for this function. it may contain callbacks,
-                         * however these MUST return true for the function to work as expected. otherwise it will
-                         * silently crash.
-                         */
+                             * Update the totals in the summary block.
+                             *
+                             * While the method is called 'getTotals', it will actually fetch the latest totals from
+                             * Magento's API and then update the entire summary block.
+                             *
+                             * Please note that the empty array is required for this function. it may contain callbacks,
+                             * however these MUST return true for the function to work as expected. otherwise it will
+                             * silently crash.
+                             */
                             getTotals([]);
                         }
                     ).error(

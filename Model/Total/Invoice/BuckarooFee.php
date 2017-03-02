@@ -52,16 +52,16 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
         $order = $invoice->getOrder();
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $buckarooFeeLeft = $order->getBuckarooFee() - $order->getBuckarooFeeInvoiced();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $baseBuckarooFeeLeft = $order->getBaseBuckarooFee() - $order->getBaseBuckarooFeeInvoiced();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
             if ($baseBuckarooFeeLeft < $invoice->getBaseGrandTotal()) {
                 $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeLeft);
@@ -75,12 +75,12 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
             }
 
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $invoice->setBuckarooFee($buckarooFeeLeft);
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $invoice->setBaseBuckarooFee($baseBuckarooFeeLeft);
         }
 

@@ -72,7 +72,8 @@ class IdealTest extends \TIG\Buckaroo\Test\BaseTest
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Ideal::class, [
+            \TIG\Buckaroo\Model\Method\Ideal::class,
+            [
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
             ]

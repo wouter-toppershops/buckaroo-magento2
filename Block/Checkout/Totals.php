@@ -89,8 +89,8 @@ class Totals extends \Magento\Checkout\Block\Total\DefaultTotal
     {
         $values = [];
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total = $this->getTotal();
         $totals = $this->helper->getTotals($total);
         foreach ($totals as $total) {

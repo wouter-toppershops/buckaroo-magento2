@@ -52,39 +52,39 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
         $order = $creditmemo->getOrder();
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
-        if ($order->getBaseBuckarooFeeInvoiced() 
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        if ($order->getBaseBuckarooFeeInvoiced()
             && $order->getBaseBuckarooFeeInvoiced() != $order->getBaseBuckarooFeeRefunded()
         ) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBaseBuckarooFeeRefunded($order->getBaseBuckarooFeeInvoiced());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeRefunded($order->getBuckarooFeeInvoiced());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $creditmemo->setBaseBuckarooFee($order->getBaseBuckarooFeeInvoiced());
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $creditmemo->setBuckarooFee($order->getBuckarooFeeInvoiced());
         }
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $creditmemo->setBaseGrandTotal(
             $creditmemo->getBaseGrandTotal() +
             $creditmemo->getBaseBuckarooFee()
         );
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $creditmemo->setGrandTotal(
             $creditmemo->getGrandTotal() +
             $creditmemo->getBuckarooFee()

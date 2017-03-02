@@ -67,7 +67,8 @@ class TransactionBuilderFactoryTest extends BaseTest
     public function getTransactionBuilder($transactionBuilders = [])
     {
         $object = $this->objectManagerHelper->getObject(
-            TransactionBuilderFactory::class, [
+            TransactionBuilderFactory::class,
+            [
             'objectManager' => $this->objectManager,
             'transactionBuilders' => $transactionBuilders,
             ]

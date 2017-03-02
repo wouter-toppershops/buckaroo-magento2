@@ -50,9 +50,9 @@ define(
     ) {
         'use strict';
 
-        ko.extenders.uppercase = function(target) {
+        ko.extenders.uppercase = function (target) {
             target.subscribe(
-                function(newValue) {
+                function (newValue) {
                     target(newValue.toUpperCase());
                 }
             );
@@ -110,8 +110,8 @@ define(
             }
         );
         /**
-    * Add view logic here if needed 
-    */
+         * Add view logic here if needed
+         */
         return Component.extend({});
     }
 );

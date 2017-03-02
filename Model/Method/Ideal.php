@@ -154,8 +154,8 @@ class Ideal extends AbstractMethod
         ];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -196,8 +196,8 @@ class Ideal extends AbstractMethod
         $services = array_merge($services, $requestParams);
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -228,8 +228,8 @@ class Ideal extends AbstractMethod
         parent::validate();
 
         /**
- * @var IdealConfig $config 
-*/
+         * @var IdealConfig $config
+         */
         $config = $this->objectManager->get(IdealConfig::class);
 
         $paymentInfo = $this->getInfoInstance();

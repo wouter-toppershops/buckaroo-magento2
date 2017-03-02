@@ -69,7 +69,8 @@ class GiftcardsTest extends \TIG\Buckaroo\Test\BaseTest
         $giftcardFactory->shouldReceive('create')->andReturn($giftcardModel);
 
         $object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Config\Source\Giftcards::class, [
+            \TIG\Buckaroo\Model\Config\Source\Giftcards::class,
+            [
             'modelGiftcardFactory' => $giftcardFactory,
             ]
         );

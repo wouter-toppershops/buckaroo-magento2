@@ -73,7 +73,8 @@ class FactoryTest extends BaseTest
 
         $this->objectManagerInterface = m::mock('\Magento\Framework\ObjectManagerInterface');
         $this->object = $this->objectManagerHelper->getObject(
-            Factory::class, [
+            Factory::class,
+            [
             'objectManager' => $this->objectManagerInterface,
             'configProviders' => $this->configProviders,
             ]

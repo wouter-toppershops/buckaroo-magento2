@@ -52,33 +52,33 @@ class Push
     public $creditAmount;
 
     /**
- * @var \Magento\Sales\Model\Order $order  
-*/
+     * @var \Magento\Sales\Model\Order $order
+     */
     public $order;
 
     /**
- * @var  \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory 
-*/
+     * @var  \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
+     */
     public $creditmemoFactory;
 
     /**
- * @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender 
-*/
+     * @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender
+     */
     public $creditEmailSender;
 
     /**
- * @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader 
-*/
+     * @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader
+     */
     public $creditmemoLoader;
 
     /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory 
-*/
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory
+     */
     public $configProviderFactory;
 
     /**
- * @var \TIG\Buckaroo\Debug\Debugger $debugger 
-*/
+     * @var \TIG\Buckaroo\Debug\Debugger $debugger
+     */
     public $debugger;
 
     /**
@@ -124,8 +124,8 @@ class Push
         $this->debugger->addToMessage('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza. ');
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig
+         */
         $refundConfig = $this->configProviderFactory->get('refund');
         if (!$refundConfig->getAllowPush()) {
             $this->debugger->addToMessage(
@@ -140,8 +140,8 @@ class Push
             $this->debugger->addToMessage('Validation incorrect :');
             $this->debugger->addToMessage(
                 [
-                'signature'      => $signatureValidation,
-                'canOrderCredit' => $this->order->canCreditmemo()
+                    'signature'      => $signatureValidation,
+                    'canOrderCredit' => $this->order->canCreditmemo()
                 ]
             );
             $this->debugger->log();
@@ -221,17 +221,17 @@ class Push
     {
         try {
             /**
- * @var \Magento\Sales\Model\Order\Creditmemo $creditmemo 
-*/
+             * @var \Magento\Sales\Model\Order\Creditmemo $creditmemo
+             */
             $creditmemo = $this->creditmemoFactory->createByOrder($this->order, $creditData);
 
             /**
- * @var \Magento\Sales\Model\Order\Creditmemo\Item $creditmemoItem 
-*/
+             * @var \Magento\Sales\Model\Order\Creditmemo\Item $creditmemoItem
+             */
             foreach ($creditmemo->getAllItems() as $creditmemoItem) {
                 /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 $creditmemoItem->setBackToStock(false);
             }
 
@@ -296,8 +296,8 @@ class Push
 
         foreach ($this->order->getCreditmemosCollection() as $creditmemo) {
             /**
- * @var \Magento\Sales\Model\Order\Creditmemo $creditmemo 
-*/
+             * @var \Magento\Sales\Model\Order\Creditmemo $creditmemo
+             */
             $adjustment = $creditmemo->getBaseAdjustmentPositive() - $creditmemo->getBaseAdjustmentNegative();
             $totalAdjustments += $adjustment;
         }
@@ -316,8 +316,8 @@ class Push
 
         if ($this->order->getBaseTotalRefunded() == null) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced();
         }
 
@@ -387,8 +387,8 @@ class Push
 
         foreach ($this->order->getAllItems() as $orderItem) {
             /**
- * @var \Magento\Sales\Model\Order\Item $orderItem 
-*/
+             * @var \Magento\Sales\Model\Order\Item $orderItem
+             */
             if (!array_key_exists($orderItem->getId(), $items)) {
                 if ((float)$this->creditAmount == (float)$this->order->getBaseGrandTotal()) {
                     $qty = $orderItem->getQtyInvoiced() - $orderItem->getQtyRefunded();

@@ -67,7 +67,8 @@ class GiftcardsTest extends BaseTest
         $this->assetRepository = m::mock(Repository::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(
-            Giftcards::class, [
+            Giftcards::class,
+            [
             'assetRepo' => $this->assetRepository,
             'scopeConfig' => $this->scopeConfig
             ]

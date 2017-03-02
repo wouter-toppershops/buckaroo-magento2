@@ -25,8 +25,8 @@ define(
                 includingTaxMessage : '(Including Tax)',
 
                 /**
-             * @override
-             */
+                 * @override
+                 */
                 initialize : function (options) {
                     this.model = new BuckarooFee();
 
@@ -36,56 +36,56 @@ define(
                 },
 
                 /**
-             * Get buckaroo fee price based on options.
-             *
-             * @returns {int}
-             */
+                 * Get buckaroo fee price based on options.
+                 *
+                 * @returns {int}
+                 */
                 getValue : function () {
                     var price = 0,
-                    buckarooFeeSegment;
+                        buckarooFeeSegment;
 
-                    if (this.totals() 
-                        && totals.getSegment('buckaroo_fee') 
+                    if (this.totals()
+                        && totals.getSegment('buckaroo_fee')
                         && totals.getSegment('buckaroo_fee').hasOwnProperty('extension_attributes')
                     ) {
                         buckarooFeeSegment = totals.getSegment('buckaroo_fee')['extension_attributes'];
 
                         price = buckarooFeeSegment.hasOwnProperty('buckaroo_fee') ?
-                        buckarooFeeSegment['buckaroo_fee'] :
-                        0;
+                            buckarooFeeSegment['buckaroo_fee'] :
+                            0;
                     }
 
                     return this.getFormattedPrice(price);
                 },
 
                 /**
-             * Get buckaroo fee price (including tax) based on options.
-             *
-             * @returns {int}
-             */
+                 * Get buckaroo fee price (including tax) based on options.
+                 *
+                 * @returns {int}
+                 */
                 getIncludingTaxValue : function () {
                     var price = 0,
-                    buckarooFeeSegment;
+                        buckarooFeeSegment;
 
-                    if (this.totals() 
-                        && totals.getSegment('buckaroo_fee') 
+                    if (this.totals()
+                        && totals.getSegment('buckaroo_fee')
                         && totals.getSegment('buckaroo_fee').hasOwnProperty('extension_attributes')
                     ) {
                         buckarooFeeSegment = totals.getSegment('buckaroo_fee')['extension_attributes'];
 
                         price = buckarooFeeSegment.hasOwnProperty('buckaroo_fee_incl_tax') ?
-                        buckarooFeeSegment['buckaroo_fee_incl_tax'] :
-                        0;
+                            buckarooFeeSegment['buckaroo_fee_incl_tax'] :
+                            0;
                     }
 
                     return this.getFormattedPrice(price);
                 },
 
                 /**
-             * Check buckaroo fee option availability.
-             *
-             * @returns {Boolean}
-             */
+                 * Check buckaroo fee option availability.
+                 *
+                 * @returns {Boolean}
+                 */
                 isAvailable : function () {
                     var isAvailable = false;
 
@@ -93,8 +93,8 @@ define(
                         return false;
                     }
 
-                    if (this.totals() 
-                        && totals.getSegment('buckaroo_fee') 
+                    if (this.totals()
+                        && totals.getSegment('buckaroo_fee')
                         && totals.getSegment('buckaroo_fee').hasOwnProperty('extension_attributes')
                     ) {
                         isAvailable = (0 < totals.getSegment('buckaroo_fee')['extension_attributes'].buckaroo_fee);
@@ -104,19 +104,19 @@ define(
                 },
 
                 /**
-             * Check if both buckaroo fee prices should be displayed.
-             *
-             * @returns {Boolean}
-             */
+                 * Check if both buckaroo fee prices should be displayed.
+                 *
+                 * @returns {Boolean}
+                 */
                 displayBothPrices : function () {
                     return (true == this.model.displayBothPrices());
                 },
 
                 /**
-             * Check if buckaroo fee prices should be displayed including tax.
-             *
-             * @returns {Boolean}
-             */
+                 * Check if buckaroo fee prices should be displayed including tax.
+                 *
+                 * @returns {Boolean}
+                 */
                 displayPriceInclTax : function () {
                     var displayPriceInclTax = this.model.displayInclTaxPrice();
 
@@ -124,15 +124,15 @@ define(
                 },
 
                 /**
-             * Check if buckaroo fee prices should be displayed excluding tax.
-             *
-             * @returns {Boolean}
-             */
+                 * Check if buckaroo fee prices should be displayed excluding tax.
+                 *
+                 * @returns {Boolean}
+                 */
                 displayPriceExclTax : function () {
                     return !this.displayPriceInclTax() && !this.displayBothPrices();
                 },
 
-                getTitle : function() {
+                getTitle : function () {
                     return window.checkoutConfig.buckarooFee.title();
                 }
             }

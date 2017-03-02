@@ -45,13 +45,13 @@ use TIG\Buckaroo\Block\Adminhtml\Giftcard\Edit;
 class EditTest extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
- * @var  Registry 
-*/
+     * @var  Registry
+     */
     protected $registry;
 
     /**
- * @var  Edit 
-*/
+     * @var  Edit
+     */
     protected $object;
 
     public function setUp()

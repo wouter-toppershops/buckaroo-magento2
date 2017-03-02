@@ -85,8 +85,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         $displayBothPrices = false;
         $displayIncludeTaxPrice = false;
 
-        if ($dataObject instanceof \Magento\Sales\Model\Order 
-            || $dataObject instanceof \Magento\Sales\Model\Order\Invoice 
+        if ($dataObject instanceof \Magento\Sales\Model\Order
+            || $dataObject instanceof \Magento\Sales\Model\Order\Invoice
             || $dataObject instanceof \Magento\Sales\Model\Order\Creditmemo
         ) {
             $displayBothPrices = $this->displaySalesBothPrices();
@@ -104,8 +104,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         if ($displayBothPrices || $displayIncludeTaxPrice) {
             if ($displayBothPrices) {
                 /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 $this->addTotalToTotals(
                     $totals,
                     'buckaroo_fee_excl',
@@ -115,8 +115,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
                 );
             }
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $this->addTotalToTotals(
                 $totals,
                 'buckaroo_fee_incl',
@@ -126,8 +126,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
             );
         } else {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $this->addTotalToTotals(
                 $totals,
                 'buckaroo_fee',
@@ -139,12 +139,12 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
 
         //Set public object data
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->buckarooFee    = $dataObject->getBuckarooFee();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->buckarooFeeTax = $dataObject->getBuckarooFeeTaxAmount();
 
         return $totals;
@@ -179,11 +179,11 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         $label = false;
 
         /**
- * Parse data object for payment method 
-*/
+         * Parse data object for payment method
+         */
         if ($dataObject instanceof \Magento\Sales\Model\Order) {
             $method = $dataObject->getPayment()->getMethod();
-        } elseif ($dataObject instanceof \Magento\Sales\Model\Order\Invoice 
+        } elseif ($dataObject instanceof \Magento\Sales\Model\Order\Invoice
             || $dataObject instanceof \Magento\Sales\Model\Order\Creditmemo
         ) {
             $method = $dataObject->getOrder()->getPayment()->getMethod();
@@ -192,32 +192,32 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         }
 
         /**
- * If a method is found, and the method has a config provider, try to get the label from config 
-*/
+         * If a method is found, and the method has a config provider, try to get the label from config
+         */
         if ($method && $this->configProviderMethodFactory->has($method)) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $label = $this->configProviderMethodFactory->get($method)->getPaymentFeeLabel();
         }
 
         /**
- * If no label is set yet, get the default configurable label 
-*/
+         * If no label is set yet, get the default configurable label
+         */
         if (!$label) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $label = $this->configProviderFactory->get('account')->getPaymentFeeLabel();
         }
 
         /**
- * If no label is set yet, return a default label 
-*/
+         * If no label is set yet, return a default label
+         */
         if (!$label) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $label = __('Buckaroo Fee');
         }
 
@@ -234,8 +234,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         $totals = [];
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->addTotalToTotals(
             $totals,
             'buckaroo_fee',
@@ -257,8 +257,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function buckarooPaymentCalculationInclTax($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
@@ -274,8 +274,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function buckarooPaymentFeeCalculationExclTax($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
@@ -290,8 +290,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function displayCartIncludeTaxPrice($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplayCart($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
@@ -307,8 +307,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function displayCartExcludeTaxPrice($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplayCart($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
@@ -323,8 +323,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function displayCartBothPrices($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplayCart($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
@@ -339,8 +339,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function displaySalesIncludeTaxPrice($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplaySales($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
@@ -356,8 +356,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function displaySalesExcludeTaxPrice($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplaySales($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
@@ -372,8 +372,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function displaySalesBothPrices($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplaySales($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
@@ -387,8 +387,8 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
     public function getBuckarooFeeTaxClass($store = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $configValue = $this->configProviderFactory->get('buckaroo_fee')->getTaxClass($store);
 
         return $configValue;

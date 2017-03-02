@@ -50,23 +50,23 @@ use \TIG\Buckaroo\Model\ValidatorInterface;
 class Push implements ValidatorInterface
 {
     /**
- * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig 
-*/
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
     public $scopeConfig;
 
     /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory 
-*/
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     */
     public $configProviderFactory;
 
     /**
- * @var \TIG\Buckaroo\Helper\Data $helper 
-*/
+     * @var \TIG\Buckaroo\Helper\Data $helper
+     */
     public $helper;
 
     /**
- * @var \TIG\Buckaroo\Debug\Debugger $debugger 
-*/
+     * @var \TIG\Buckaroo\Debug\Debugger $debugger
+     */
     public $debugger;
 
     public $bpeResponseMessages = [
@@ -187,8 +187,8 @@ class Push implements ValidatorInterface
         }
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
         $accountConfig = $this->configProviderFactory->get('account');
 
         $digitalSignature = $accountConfig->getSecretKey();

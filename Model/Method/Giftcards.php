@@ -132,18 +132,18 @@ class Giftcards extends AbstractMethod
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
         /**
- * If there are no giftcards chosen, we can't be available 
-*/
+         * If there are no giftcards chosen, we can't be available
+         */
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards $ccConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards $ccConfig
+         */
         $gcConfig = $this->configProviderMethodFactory->get('giftcards');
         if (null === $gcConfig->getAllowedGiftcards()) {
             return false;
         }
         /**
- * Return the regular isAvailable result 
-*/
+         * Return the regular isAvailable result
+         */
         return parent::isAvailable($quote);
     }
 
@@ -246,8 +246,8 @@ class Giftcards extends AbstractMethod
         if ($capturePartial) {
 
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $transactionBuilder->setAmount($currentInvoiceTotal)
                 ->setInvoiceId(
                     $payment->getOrder()->getIncrementId(). '-' .

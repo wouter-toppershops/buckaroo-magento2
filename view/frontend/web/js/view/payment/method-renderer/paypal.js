@@ -72,7 +72,7 @@ define(
              * @override
              */
                 initialize : function (options) {
-                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    if (checkoutData.getSelectedPaymentMethod() == options.index) {
                         window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
                     }
 
@@ -98,7 +98,7 @@ define(
                         placeOrder = placeOrderAction(this.getData(), this.redirectAfterPlaceOrder, this.messageContainer);
 
                         $.when(placeOrder).fail(
-                            function() {
+                            function () {
                                 self.isPlaceOrderActionAllowed(true);
                             }
                         ).done(this.afterPlaceOrder.bind(this));
@@ -115,7 +115,7 @@ define(
                     }
                 },
 
-                selectPaymentMethod: function() {
+                selectPaymentMethod: function () {
                     window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
 
                     selectPaymentMethodAction(this.getData());
@@ -123,13 +123,13 @@ define(
                     return true;
                 },
 
-                payWithBaseCurrency: function() {
+                payWithBaseCurrency: function () {
                     var allowedCurrencies = window.checkoutConfig.payment.buckaroo.paypal.allowedCurrencies;
 
                     return allowedCurrencies.indexOf(this.currencyCode) < 0;
                 },
 
-                getPayWithBaseCurrencyText: function() {
+                getPayWithBaseCurrencyText: function () {
                     var text = $.mage.__('The transaction will be processed using %s.');
 
                     return text.replace('%s', this.baseCurrencyCode);

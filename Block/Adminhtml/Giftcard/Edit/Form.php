@@ -48,13 +48,13 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
     protected function _prepareForm()
     {
         /**
- * @var \TIG\Buckaroo\Model\Giftcard $model 
-*/
+        * @var \TIG\Buckaroo\Model\Giftcard $model
+        */
         $model = $this->_coreRegistry->registry('buckaroo_giftcard');
 
         /**
- * @var \Magento\Framework\Data\Form $form 
-*/
+         * @var \Magento\Framework\Data\Form $form
+         */
         $form = $this->_formFactory->create(
             [
                 'data' => [

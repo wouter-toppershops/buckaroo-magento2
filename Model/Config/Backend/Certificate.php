@@ -109,13 +109,13 @@ class Certificate extends \Magento\Framework\App\Config\Value
              * Read the configuration contents
              */
             /**
- * @var \Magento\Framework\Filesystem\File\Read $read 
-*/
+             * @var \Magento\Framework\Filesystem\File\Read $read
+             */
             $read = $this->readFactory->create($certFile['tmp_name'], \Magento\Framework\Filesystem\DriverPool::FILE);
 
             /**
- * @var \TIG\Buckaroo\Model\Certificate $certDB 
-*/
+             * @var \TIG\Buckaroo\Model\Certificate $certDB
+             */
             $certDB = $this->objectManager->create('TIG\Buckaroo\Model\Certificate');
             $certDB->setCertificate($read->readAll());
             $certDB->setName($certLabel);

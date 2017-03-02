@@ -94,11 +94,12 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->catalogHelper = \Mockery::mock(\Magento\Catalog\Helper\Data::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Total\Quote\BuckarooFee::class, [
-            'configProviderFactory' => $this->configProviderFactory,
-            'configProviderMethodFactory' => $this->configProviderMethodFactory,
-            'priceCurrency' => $this->priceCurrency,
-            'catalogHelper' => $this->catalogHelper,
+            \TIG\Buckaroo\Model\Total\Quote\BuckarooFee::class,
+            [
+                'configProviderFactory' => $this->configProviderFactory,
+                'configProviderMethodFactory' => $this->configProviderMethodFactory,
+                'priceCurrency' => $this->priceCurrency,
+                'catalogHelper' => $this->catalogHelper,
             ]
         );
     }
@@ -110,15 +111,15 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $taxIncl = \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX;
 
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
         $quote = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         /**
- * @var \Magento\Quote\Model\Quote $quote 
-*/
+         * @var \Magento\Quote\Model\Quote $quote
+         */
 
         $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
@@ -136,15 +137,15 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $paymentCode = 'tig_buckaroo_non_existing';
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
         $quote = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         /**
- * @var \Magento\Quote\Model\Quote $quote 
-*/
+         * @var \Magento\Quote\Model\Quote $quote
+         */
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(false);
 
@@ -157,15 +158,15 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $invalidFee = 'invalid';
 
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
         $quote = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         /**
- * @var \Magento\Quote\Model\Quote $quote 
-*/
+         * @var \Magento\Quote\Model\Quote $quote
+         */
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
@@ -193,8 +194,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $expectedValue
     ) {
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
@@ -202,8 +203,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quote->shouldReceive('getShippingAddress')->andReturnSelf();
         $quote->shouldReceive($quoteMethod)->andReturn($quoteAmount);
         /**
- * @var \Magento\Quote\Model\Quote $quote 
-*/
+         * @var \Magento\Quote\Model\Quote $quote
+         */
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
@@ -256,8 +257,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $expectedValue
     ) {
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
@@ -266,8 +267,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quote->shouldReceive('getBillingAddress')->once()->andReturnSelf();
         $quote->shouldReceive($quoteMethod)->andReturn($quoteAmount);
         /**
- * @var \Magento\Quote\Model\Quote $quote 
-*/
+         * @var \Magento\Quote\Model\Quote $quote
+         */
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
@@ -308,8 +309,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $quoteMock = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         /**
- * @var \Magento\Quote\Model\Quote $quoteMock 
-*/
+         * @var \Magento\Quote\Model\Quote $quoteMock
+         */
 
         $totalMock = \Mockery::mock(\Magento\Quote\Model\Quote\Address\Total::class);
         $totalMock->shouldReceive('getBuckarooFee')->once()->andReturn($expectedBuckarooFee);
@@ -319,8 +320,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $totalMock->shouldReceive('getBuckarooFeeTaxAmount')->once()->andReturn($expectedBuckarooFeeTaxAmount);
         $totalMock->shouldReceive('getBuckarooFeeBaseTaxAmount')->once()->andReturn($expectedBaseBuckarooFeeTaxAmount);
         /**
- * @var \Magento\Quote\Model\Quote\Address\Total $totalMock 
-*/
+         * @var \Magento\Quote\Model\Quote\Address\Total $totalMock
+         */
 
         $this->assertEquals($expected, $this->object->fetch($quoteMock, $totalMock));
     }
@@ -329,21 +330,21 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $quoteMock = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         /**
- * @var \Magento\Quote\Model\Quote $quoteMock 
-*/
+         * @var \Magento\Quote\Model\Quote $quoteMock
+         */
 
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
         $shippingAssignmentMock->shouldReceive('getItems')->once()->andReturn(false);
         /**
- * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock 
-*/
+         * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock
+         */
 
         $totalMock = \Mockery::mock(\Magento\Quote\Model\Quote\Address\Total::class);
         $totalMock->shouldReceive('setBuckarooFee')->once()->with(0);
         $totalMock->shouldReceive('setBaseBuckarooFee')->once()->with(0);
         /**
- * @var \Magento\Quote\Model\Quote\Address\Total $totalMock 
-*/
+         * @var \Magento\Quote\Model\Quote\Address\Total $totalMock
+         */
 
         $this->assertEquals($this->object, $this->object->collect($quoteMock, $shippingAssignmentMock, $totalMock));
     }
@@ -359,21 +360,21 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quoteMock->shouldReceive('getPayment')->andReturnSelf();
         $quoteMock->shouldReceive('getMethod')->andReturn($method);
         /**
- * @var \Magento\Quote\Model\Quote $quoteMock 
-*/
+         * @var \Magento\Quote\Model\Quote $quoteMock
+         */
 
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
         $shippingAssignmentMock->shouldReceive('getItems')->once()->andReturn(true);
         /**
- * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock 
-*/
+         * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock
+         */
 
         $totalMock = \Mockery::mock(\Magento\Quote\Model\Quote\Address\Total::class);
         $totalMock->shouldReceive('setBuckarooFee')->once()->with(0);
         $totalMock->shouldReceive('setBaseBuckarooFee')->once()->with(0);
         /**
- * @var \Magento\Quote\Model\Quote\Address\Total $totalMock 
-*/
+         * @var \Magento\Quote\Model\Quote\Address\Total $totalMock
+         */
 
         $this->assertEquals($this->object, $this->object->collect($quoteMock, $shippingAssignmentMock, $totalMock));
     }
@@ -398,8 +399,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
         $quoteMock = \Mockery::mock(\Magento\Quote\Model\Quote::class);
@@ -407,8 +408,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quoteMock->shouldReceive('getMethod')->andReturn($paymentCode);
         $quoteMock->shouldReceive('getMethodInstance')->andReturn($paymentMethod);
         /**
- * @var \Magento\Quote\Model\Quote $quoteMock 
-*/
+         * @var \Magento\Quote\Model\Quote $quoteMock
+         */
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
@@ -422,15 +423,15 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
         $shippingAssignmentMock->shouldReceive('getItems')->once()->andReturn(true);
         /**
- * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock 
-*/
+         * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock
+         */
 
         $totalMock = \Mockery::mock(\Magento\Quote\Model\Quote\Address\Total::class);
         $totalMock->shouldReceive('setBuckarooFee')->once()->with(0);
         $totalMock->shouldReceive('setBaseBuckarooFee')->once()->with(0);
         /**
- * @var \Magento\Quote\Model\Quote\Address\Total $totalMock 
-*/
+         * @var \Magento\Quote\Model\Quote\Address\Total $totalMock
+         */
 
         $this->assertEquals($this->object, $this->object->collect($quoteMock, $shippingAssignmentMock, $totalMock));
     }
@@ -444,21 +445,21 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quoteMock->shouldReceive('getMethod')->andReturn($paymentCode);
         $quoteMock->shouldReceive('getMethodInstance')->andReturn(new \stdClass());
         /**
- * @var \Magento\Quote\Model\Quote $quoteMock 
-*/
+         * @var \Magento\Quote\Model\Quote $quoteMock
+         */
 
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
         $shippingAssignmentMock->shouldReceive('getItems')->once()->andReturn(true);
         /**
- * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock 
-*/
+         * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock
+         */
 
         $totalMock = \Mockery::mock(\Magento\Quote\Model\Quote\Address\Total::class);
         $totalMock->shouldReceive('setBuckarooFee')->once()->with(0);
         $totalMock->shouldReceive('setBaseBuckarooFee')->once()->with(0);
         /**
- * @var \Magento\Quote\Model\Quote\Address\Total $totalMock 
-*/
+         * @var \Magento\Quote\Model\Quote\Address\Total $totalMock
+         */
 
         $this->assertEquals($this->object, $this->object->collect($quoteMock, $shippingAssignmentMock, $totalMock));
     }
@@ -486,8 +487,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethod
+         */
         $paymentMethod->buckarooPaymentMethodCode = $paymentCode;
 
         $quoteMock = \Mockery::mock(\Magento\Quote\Model\Quote::class);
@@ -498,14 +499,14 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quoteMock->shouldReceive('setBuckarooFee')->once()->with($fee);
         $quoteMock->shouldReceive('setBaseBuckarooFee')->once()->with($fee);
         /**
- * @var \Magento\Quote\Model\Quote $quoteMock 
-*/
+         * @var \Magento\Quote\Model\Quote $quoteMock
+         */
 
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
         $shippingAssignmentMock->shouldReceive('getItems')->once()->andReturn(true);
         /**
- * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock 
-*/
+         * @var \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignmentMock
+         */
 
         $totalMock = \Mockery::mock(\Magento\Quote\Model\Quote\Address\Total::class);
         $totalMock->shouldReceive('setBuckarooFee')->once()->with(0);
@@ -518,8 +519,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $totalMock->shouldReceive('setGrandTotal')->once()->with($fee + $grandTotal);
 
         /**
- * @var \Magento\Quote\Model\Quote\Address\Total $totalMock 
-*/
+         * @var \Magento\Quote\Model\Quote\Address\Total $totalMock
+         */
 
         $this->assertEquals($this->object, $this->object->collect($quoteMock, $shippingAssignmentMock, $totalMock));
     }

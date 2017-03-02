@@ -162,8 +162,8 @@ class Account extends AbstractConfigProvider
     public function getOrderStatusSuccess($paymentMethod = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $orderStatusSuccess = parent::getOrderStatusSuccess();
 
         /**
@@ -171,8 +171,8 @@ class Account extends AbstractConfigProvider
          */
         if ($paymentMethod !== null) {
             /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider 
-*/
+             * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider
+             */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();
@@ -196,8 +196,8 @@ class Account extends AbstractConfigProvider
     public function getOrderStatusFailed($paymentMethod = null)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $orderStatusFailed = parent::getOrderStatusFailed();
 
         /**
@@ -205,8 +205,8 @@ class Account extends AbstractConfigProvider
          */
         if ($paymentMethod !== null) {
             /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider 
-*/
+             * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $methodConfigProvider
+             */
             $methodConfigProvider = $this->getMethodConfigProvider($paymentMethod);
 
             $activeStatus = $methodConfigProvider->getActiveStatus();

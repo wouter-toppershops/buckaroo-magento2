@@ -411,8 +411,8 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         $module = $this->moduleList->getOne(self::MODULE_CODE);
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
         $accountConfig = $this->configProviderFactory->get('account');
 
         $headers[] = new \SoapHeader(

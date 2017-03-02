@@ -75,8 +75,8 @@ class EnableModeTest extends BaseTest
             foreach ($options as $option) {
                 if ($option['value'] == $key) {
                     /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+                     * @noinspection PhpUndefinedMethodInspection
+                     */
                     $this->assertEquals($option['label']->getText(), $shouldHaveOptionValue->getText());
                     break;
                 }
@@ -91,8 +91,8 @@ class EnableModeTest extends BaseTest
         foreach ($options as $key => $option) {
             if (array_key_exists($key, $this->shouldHaveOptions)) {
                 /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 $this->assertEquals($option->getText(), $this->shouldHaveOptions[$key]->getText());
             }
         }

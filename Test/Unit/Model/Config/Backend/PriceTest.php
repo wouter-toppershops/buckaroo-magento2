@@ -61,7 +61,8 @@ class PriceTest extends \TIG\Buckaroo\Test\BaseTest
         $this->resource->shouldReceive('save');
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Config\Backend\Price::class, [
+            \TIG\Buckaroo\Model\Config\Backend\Price::class,
+            [
             'resource' => $this->resource,
             ]
         );

@@ -60,7 +60,8 @@ class RefundTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class)->makePartial();
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\ConfigProvider\Refund::class, [
+            \TIG\Buckaroo\Model\ConfigProvider\Refund::class,
+            [
             'scopeConfig' => $this->scopeConfig,
             ]
         );

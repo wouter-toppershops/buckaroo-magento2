@@ -74,8 +74,8 @@ class StatusesSuccess implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig
+         */
         $statesConfig = $this->configProviderFactory->get('states');
         $state = $statesConfig->getOrderStateSuccess();
 

@@ -71,11 +71,11 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         /**
- * @var $payment \Magento\Sales\Model\Order\Payment 
-*/
+         * @var $payment \Magento\Sales\Model\Order\Payment
+         */
         $payment = $observer->getPayment();
 
         if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
@@ -85,8 +85,8 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
         $order = $payment->getOrder();
         $order->save();
         /**
- * @noinspection PhpUndefinedFieldInspection 
-*/
+         * @noinspection PhpUndefinedFieldInspection
+         */
         if (!$payment->getMethodInstance()->usesRedirect
             && !$order->getEmailSent()
             && $this->accountConfig->getOrderConfirmationEmail()

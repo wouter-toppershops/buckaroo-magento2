@@ -122,8 +122,8 @@ class RoundingWarning extends \Magento\Backend\Block\Template
         }
 
         /**
- * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethodInstance 
-*/
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethodInstance
+         */
         $paymentMethodInstance = $payment->getMethodInstance();
 
         /**

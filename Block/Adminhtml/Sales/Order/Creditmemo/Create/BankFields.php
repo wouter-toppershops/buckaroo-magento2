@@ -80,8 +80,8 @@ class BankFields extends \Magento\Backend\Block\Template
         $paymentMethod = $this->getPaymentMethod();
 
         /**
- * If no payment method is found, return the empty array. 
-*/
+        * If no payment method is found, return the empty array.
+        */
         if (!$paymentMethod) {
             return $extraFields;
         }
@@ -93,8 +93,8 @@ class BankFields extends \Magento\Backend\Block\Template
         $fields = $this->refundFieldsFactory->get($paymentMethod);
 
         /**
- * Parse the code and label in the same array, to keep the data paired. 
-*/
+        * Parse the code and label in the same array, to keep the data paired.
+        */
         if ($fields) {
             foreach ($fields as $field) {
                 $extraFields[$field['label']] = $field['code'];
@@ -116,14 +116,14 @@ class BankFields extends \Magento\Backend\Block\Template
 
         $layout = $this->getLayout();
         /**
- * @var \Magento\Sales\Block\Adminhtml\Order\Payment $paymentBlock 
-*/
+         * @var \Magento\Sales\Block\Adminhtml\Order\Payment $paymentBlock
+         */
         $paymentBlock = $layout->getBlock($this->orderPaymentBlock);
 
         if ($paymentBlock) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+            * @noinspection PhpUndefinedMethodInspection
+            */
             $paymentMethod = $paymentBlock->getPayment()->getMethod();
         }
 

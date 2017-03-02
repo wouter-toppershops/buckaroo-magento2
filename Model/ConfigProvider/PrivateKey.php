@@ -64,8 +64,8 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
         $this->certificate = $certificate;
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
+         */
         $configProvider = $configProviderFactory->get('account');
         $certificateId = $configProvider->getCertificateFile();
 

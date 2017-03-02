@@ -61,7 +61,8 @@ class NumberTest extends \TIG\Buckaroo\Test\BaseTest
         $this->resource->shouldReceive('save');
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Config\Backend\Number::class, [
+            \TIG\Buckaroo\Model\Config\Backend\Number::class,
+            [
             'resource' => $this->resource,
             ]
         );

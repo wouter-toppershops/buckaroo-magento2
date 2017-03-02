@@ -46,18 +46,18 @@ use TIG\Buckaroo\Model\GiftcardFactory;
 class Index extends \Magento\Backend\App\Action
 {
     /**
- * @var  PageFactory 
-*/
+     * @var  PageFactory
+     */
     protected $resultPageFactory;
 
     /**
- * @var  Registry 
-*/
+     * @var  Registry
+     */
     protected $_coreRegistry;
 
     /**
- * @var  GiftcardFactory 
-*/
+     * @var  GiftcardFactory
+     */
     protected $giftcardFactory;
 
     /**
@@ -85,8 +85,8 @@ class Index extends \Magento\Backend\App\Action
     public function execute()
     {
         /**
- * @var \Magento\Backend\Model\View\Result\Page $resultPage 
-*/
+         * @var \Magento\Backend\Model\View\Result\Page $resultPage
+         */
         $resultPage = $this->resultPageFactory->create();
         $resultPage->setActiveMenu('TIG_Buckaroo::buckaroo_giftcards');
         $resultPage->getConfig()->getTitle()->prepend(__('Buckaroo Giftcards'));

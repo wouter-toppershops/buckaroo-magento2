@@ -61,7 +61,8 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         );
 
         $object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Config\Source\Creditcard::class, [
+            \TIG\Buckaroo\Model\Config\Source\Creditcard::class,
+            [
             'configProvider' => $configProvider,
             ]
         );

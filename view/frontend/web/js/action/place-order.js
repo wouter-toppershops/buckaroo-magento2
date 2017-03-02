@@ -22,11 +22,12 @@ define(
             redirectOnSuccess = redirectOnSuccess !== false;
 
             /**
-    * Checkout for guest and registered customer. 
-    */
+             * Checkout for guest and registered customer.
+             */
             if (!customer.isLoggedIn()) {
                 serviceUrl = urlBuilder.createUrl(
-                    '/guest-buckaroo/:quoteId/payment-information', {
+                    '/guest-buckaroo/:quoteId/payment-information',
+                    {
                         quoteId: quote.getQuoteId()
                     }
                 );
@@ -48,7 +49,8 @@ define(
             fullScreenLoader.startLoader();
 
             return storage.post(
-                serviceUrl, JSON.stringify(payload)
+                serviceUrl,
+                JSON.stringify(payload)
             ).done(
                 function (response) {
                     if (redirectOnSuccess) {

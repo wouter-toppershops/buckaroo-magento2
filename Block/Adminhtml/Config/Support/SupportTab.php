@@ -78,8 +78,8 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
     public function render(AbstractElement $element)
     {
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->setElement($element);
 
         return $this->toHtml();

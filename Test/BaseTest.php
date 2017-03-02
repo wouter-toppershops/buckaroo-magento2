@@ -53,8 +53,8 @@ class BaseTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         /**
- * Require functions.php to be able to use the translate function 
-*/
+         * Require functions.php to be able to use the translate function
+         */
         if (strpos(__DIR__, 'vendor') === false) {
             include_once __DIR__ . '/../../../../functions.php';
         } else {
@@ -98,12 +98,12 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         }
 
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->object->setData('info_instance', $infoInterface);
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->assertEquals($this->object, $this->object->assignData($data));
 
         return $this;

@@ -85,7 +85,8 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Refund\Push::class, [
+            \TIG\Buckaroo\Model\Refund\Push::class,
+            [
             'debugger' => $this->debugger,
             'objectManager' => $this->objectManager,
             'creditmemoFactory' => $this->creditmemoFactory,

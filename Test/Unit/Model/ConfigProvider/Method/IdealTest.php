@@ -71,7 +71,8 @@ class IdealTest extends BaseTest
         $this->assetRepository = m::mock(Repository::class);
         $this->scopeConfig = m::mock(ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(
-            Ideal::class, [
+            Ideal::class,
+            [
             'assetRepo' => $this->assetRepository,
             'scopeConfig' => $this->scopeConfig,
             ]

@@ -45,27 +45,22 @@ class AbstractMethodMock extends \TIG\Buckaroo\Model\Method\AbstractMethod
 
     public function getOrderTransactionBuilder($payment)
     {
-
     }
 
     public function getAuthorizeTransactionBuilder($payment)
     {
-
     }
 
     public function getCaptureTransactionBuilder($payment)
     {
-
     }
 
     public function getRefundTransactionBuilder($payment)
     {
-
     }
 
     public function getVoidTransactionBuilder($payment)
     {
-
     }
 
     public function setCanRefund($value)

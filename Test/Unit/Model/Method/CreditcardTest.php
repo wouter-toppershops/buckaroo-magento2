@@ -83,7 +83,8 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Creditcard::class, [
+            \TIG\Buckaroo\Model\Method\Creditcard::class,
+            [
             'scopeConfig' => $this->scopeConfig,
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,

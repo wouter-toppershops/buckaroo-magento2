@@ -45,8 +45,8 @@ use Magento\Framework\Registry;
 class Edit extends \Magento\Backend\Block\Widget\Form\Container
 {
     /**
- * @var Registry 
-*/
+     * @var Registry
+     */
     protected $_coreRegistry = null;
 
     /**

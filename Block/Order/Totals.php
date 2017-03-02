@@ -58,8 +58,8 @@ class Totals extends \Magento\Sales\Block\Order\Totals
             $area = (string) $area;
             foreach ($this->_totals as $total) {
                 /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 $totalArea = (string) $total->getArea();
                 if ($totalArea == $area) {
                     $totals[] = $total;

@@ -63,7 +63,8 @@ class SaveTest extends BaseTest
         $this->redirect = \Mockery::mock(RedirectInterface::class)->makePartial();
 
         $context = $this->objectManagerHelper->getObject(
-            \Magento\Backend\App\Action\Context::class, [
+            \Magento\Backend\App\Action\Context::class,
+            [
             'request' => $httpRequest,
             'response' => $httpResponse,
             'redirect' => $this->redirect

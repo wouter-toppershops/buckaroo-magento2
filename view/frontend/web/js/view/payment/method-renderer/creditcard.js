@@ -70,10 +70,10 @@ define(
                 baseCurrencyCode : window.checkoutConfig.quoteData.base_currency_code,
 
                 /**
-             * @override
-             */
+                 * @override
+                 */
                 initialize : function (options) {
-                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    if (checkoutData.getSelectedPaymentMethod() == options.index) {
                         window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
                     }
 
@@ -86,37 +86,37 @@ define(
                     this.creditcards = ko.observableArray(window.checkoutConfig.payment.buckaroo.creditcard.cards);
 
                     /**
-                 * observe radio buttons
-                 * check if selected
-                 */
+                     * observe radio buttons
+                     * check if selected
+                     */
                     var self = this;
-                    this.setSelectedCard= function (value)
-                {
+                    this.setSelectedCard = function (value) {
                         self.selectedCard(value);
                         return true;
                     };
 
                     /**
-                 * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
-                 */
+                     * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
+                     */
                     this.buttoncheck = ko.computed(
-                        function(){
+                        function () {
                             return this.selectedCard();
-                        }, this
+                        },
+                        this
                     );
 
                     return this;
                 },
 
                 /**
-             * Place order.
-             *
-             * placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own version
-             * (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
-             */
+                 * Place order.
+                 *
+                 * placeOrderAction has been changed from Magento_Checkout/js/action/place-order to our own version
+                 * (TIG_Buckaroo/js/action/place-order) to prevent redirect and handle the response.
+                 */
                 placeOrder: function (data, event) {
                     var self = this,
-                    placeOrder;
+                        placeOrder;
 
                     if (event) {
                         event.preventDefault();
@@ -144,7 +144,7 @@ define(
                     }
                 },
 
-                selectPaymentMethod: function() {
+                selectPaymentMethod: function () {
                     window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
 
                     selectPaymentMethodAction(this.getData());
@@ -152,7 +152,7 @@ define(
                     return true;
                 },
 
-                getData: function() {
+                getData: function () {
                     var selectedCardCode = null;
                     if (this.selectedCard()) {
                         selectedCardCode = this.selectedCard().code;
@@ -167,13 +167,13 @@ define(
                     };
                 },
 
-                payWithBaseCurrency: function() {
+                payWithBaseCurrency: function () {
                     var allowedCurrencies = window.checkoutConfig.payment.buckaroo.creditcard.allowedCurrencies;
 
                     return allowedCurrencies.indexOf(this.currencyCode) < 0;
                 },
 
-                getPayWithBaseCurrencyText: function() {
+                getPayWithBaseCurrencyText: function () {
                     var text = $.mage.__('The transaction will be processed using %s.');
 
                     return text.replace('%s', this.baseCurrencyCode);

@@ -78,7 +78,8 @@ class PaypalTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Paypal::class, [
+            \TIG\Buckaroo\Model\Method\Paypal::class,
+            [
             'scopeConfig' => $this->scopeConfig,
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,

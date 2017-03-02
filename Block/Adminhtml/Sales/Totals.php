@@ -68,14 +68,14 @@ class Totals extends \Magento\Framework\View\Element\Template
     {
         $parent = $this->getParentBlock();
         /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+        * @noinspection PhpUndefinedMethodInspection
+        */
         $source = $parent->getSource();
         $totals = $this->helper->getTotals($source);
         foreach ($totals as $total) {
             /**
- * @noinspection PhpUndefinedMethodInspection 
-*/
+            * @noinspection PhpUndefinedMethodInspection
+            */
             $this->getParentBlock()->addTotalBefore(new \Magento\Framework\DataObject($total), 'grand_total');
         }
         return $this;

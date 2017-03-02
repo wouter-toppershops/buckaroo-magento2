@@ -74,7 +74,7 @@ define(
              * @override
              */
                 initialize : function (options) {
-                    if(checkoutData.getSelectedPaymentMethod() == options.index) {
+                    if (checkoutData.getSelectedPaymentMethod() == options.index) {
                         window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
                     }
 
@@ -100,9 +100,10 @@ define(
                  * Check if the required fields are filled. If so: enable place order button (true) | ifnot: disable place order button (false)
                  */
                     this.buttoncheck = ko.computed(
-                        function(){
+                        function () {
                             return this.selectedBank() !== null;
-                        }, this
+                        },
+                        this
                     );
 
                     return this;
@@ -144,7 +145,7 @@ define(
                     }
                 },
 
-                selectPaymentMethod: function() {
+                selectPaymentMethod: function () {
                     window.checkoutConfig.buckarooFee.title(this.paymentFeeLabel);
 
                     selectPaymentMethodAction(this.getData());
@@ -152,7 +153,7 @@ define(
                     return true;
                 },
 
-                getData: function() {
+                getData: function () {
                     var selectedBankCode = null;
                     if (this.selectedBank()) {
                         selectedBankCode = this.selectedBank().code;
@@ -167,13 +168,13 @@ define(
                     };
                 },
 
-                payWithBaseCurrency: function() {
+                payWithBaseCurrency: function () {
                     var allowedCurrencies = window.checkoutConfig.payment.buckaroo.ideal.allowedCurrencies;
 
                     return allowedCurrencies.indexOf(this.currencyCode) < 0;
                 },
 
-                getPayWithBaseCurrencyText: function() {
+                getPayWithBaseCurrencyText: function () {
                     var text = $.mage.__('The transaction will be processed using %s.');
 
                     return text.replace('%s', this.baseCurrencyCode);

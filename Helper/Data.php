@@ -181,8 +181,8 @@ class Data extends AbstractHelper
     public function getMode($paymentMethod = null)
     {
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
+         */
         $configProvider = $this->configProviderFactory->get('account');
         $baseMode = $configProvider->getActive();
 
@@ -191,8 +191,8 @@ class Data extends AbstractHelper
         }
 
         /**
- * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider 
-*/
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider
+         */
         $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
         $mode = $configProvider->getActive();
 

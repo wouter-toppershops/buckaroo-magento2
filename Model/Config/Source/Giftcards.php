@@ -92,8 +92,8 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
     protected function getGiftcardData()
     {
         /**
- * @var \TIG\Buckaroo\Model\Giftcard $giftcardModel 
-*/
+         * @var \TIG\Buckaroo\Model\Giftcard $giftcardModel
+         */
         $giftcardModel = $this->giftcardModel->create();
         $giftcardCollection = $giftcardModel->getCollection()->setOrder(
             'label',
