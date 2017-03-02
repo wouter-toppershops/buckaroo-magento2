@@ -69,7 +69,7 @@ class Toolbar
                 'Partial refunds combined with a payment fee can only be refunded via the Buckaroo Payment Plaza, ' .
                 'see also the ' .
                 '<a href="http://servicedesk.tig.nl/hc/nl/articles/217984838" target="_blank">KB article</a>.<br>' .
-                '<a href="https://payment.buckaroo.nl" target="_blank">' .
+                '<a href="https://plaza.buckaroo.nl" target="_blank">' .
                 'Open a new window to the Buckaroo Payment Plaza</a>.'
             );
             $onClick = "confirmSetLocation('{$message}', '#')";
