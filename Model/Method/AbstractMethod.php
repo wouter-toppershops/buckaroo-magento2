@@ -514,6 +514,37 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * Should be overwritten by the respective payment method class when it has a specific failure message.
+     *
+     * @param $transactionResponse
+     *
+     * @return string
+     */
+    protected function getFailureMessageFromMethod($transactionResponse)
+    {
+        return '';
+    }
+
+    /**
+     * @param $transactionResponse
+     *
+     * @return string
+     */
+    protected function getFailureMessage($transactionResponse)
+    {
+        $message = 'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.';
+
+        $billingCountry = $this->payment->getOrder()->getBillingAddress()->getCountryId();
+
+        if ($billingCountry == 'NL' && $transactionResponse->Status->Code->Code == 490) {
+            $methodMessage = $this->getFailureMessageFromMethod($transactionResponse);
+            $message = strlen($methodMessage) > 0 ? $methodMessage : $message;
+        }
+
+        return $message;
+    }
+
+    /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
      * @return array
@@ -532,10 +563,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            $failureMessage = $this->getFailureMessage($response[0]);
+
             throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
+                new \Magento\Framework\Phrase($failureMessage)
             );
         }
 
@@ -621,10 +652,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            $failureMessage = $this->getFailureMessage($response[0]);
+
             throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
+                new \Magento\Framework\Phrase($failureMessage)
             );
         }
 
