@@ -1147,4 +1147,30 @@ class Afterpay2 extends AbstractMethod
 
         return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
+
+    /**
+     * Failure message from failed Aferpay Transactions
+     *
+     * {@inheritdoc}
+     */
+    protected function getFailureMessageFromMethod($transactionResponse)
+    {
+        $transactionType = $transactionResponse->TransactionType;
+        $methodMessage = '';
+
+        if ($transactionType != 'C011' && $transactionType != 'C016') {
+            return $methodMessage;
+        }
+
+        $subcodeMessage = $transactionResponse->Status->SubCode->_;
+        $subcodeMessage = explode(':', $subcodeMessage);
+
+        if (count($subcodeMessage) > 1) {
+            array_shift($subcodeMessage);
+        }
+
+        $methodMessage = trim(implode(':', $subcodeMessage));
+
+        return $methodMessage;
+    }
 }
