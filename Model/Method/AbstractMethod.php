@@ -526,17 +526,23 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param $transactionResponse
+     * @param $response
      *
      * @return string
      */
-    protected function getFailureMessage($transactionResponse)
+    protected function getFailureMessage($response)
     {
         $message = 'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.';
 
+        if (!isset($response[0]) || empty($response[0])) {
+            return $message;
+        }
+
+        $transactionResponse = $response[0];
+        $responseCode = $transactionResponse->Status->Code->Code;
         $billingCountry = $this->payment->getOrder()->getBillingAddress()->getCountryId();
 
-        if ($billingCountry == 'NL' && $transactionResponse->Status->Code->Code == 490) {
+        if ($billingCountry == 'NL' && $responseCode == 490) {
             $methodMessage = $this->getFailureMessageFromMethod($transactionResponse);
             $message = strlen($methodMessage) > 0 ? $methodMessage : $message;
         }
@@ -563,7 +569,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
-            $failureMessage = $this->getFailureMessage($response[0]);
+            $failureMessage = $this->getFailureMessage($response);
 
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase($failureMessage)
@@ -652,7 +658,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
-            $failureMessage = $this->getFailureMessage($response[0]);
+            $failureMessage = $this->getFailureMessage($response);
 
             throw new \TIG\Buckaroo\Exception(
                 new \Magento\Framework\Phrase($failureMessage)
