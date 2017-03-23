@@ -98,6 +98,11 @@ class Order extends AbstractTransactionBuilder
             $ip = $this->remoteAddress->getRemoteAddress();
         }
 
+        // Some of the plaza gateway requests do not support IPv6.
+        if (strpos($ip, ':') !== false) {
+            $ip = '127.0.0.'.rand(1, 100);
+        }
+
         $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
 
         $body = [
