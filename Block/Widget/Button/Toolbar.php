@@ -49,8 +49,13 @@ class Toolbar
     private $allowedMethods = [
         'tig_buckaroo_afterpay',
         'tig_buckaroo_afterpay2',
+        'tig_buckaroo_creditcard',
         'tig_buckaroo_ideal',
-        'tig_buckaroo_creditcard'
+        'tig_buckaroo_mrcash',
+        'tig_buckaroo_paypal',
+        'tig_buckaroo_sepadirectdebit',
+        'tig_buckaroo_sofortbanking',
+        'tig_buckaroo_transfer'
     ];
 
     /**
