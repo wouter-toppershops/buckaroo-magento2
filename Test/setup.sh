@@ -33,10 +33,17 @@ sed -i -e "s/MAGENTO_DB_USER/${MAGENTO_DB_USER}/g" "${BUILD_DIR}/app/etc/env.php
 sed -i -e "s/MAGENTO_DB_PASS/${MAGENTO_DB_PASS}/g" "${BUILD_DIR}/app/etc/env.php"
 sed -i -e "s/MAGENTO_DB_NAME/${MAGENTO_DB_NAME}/g" "${BUILD_DIR}/app/etc/env.php"
 
+zip --exclude=node_modules/* --exclude=vendor/* --exclude=.git/* -r build.zip .
+
+REPOSITORY_CONFIG="{\"type\": \"package\",\"package\": { \"name\": \"tig/buckaroo\", \"version\": \"master\", \"dist\": {\"type\": \"zip\",\"url\": \"${TRAVIS_BUILD_DIR}/build.zip\",\"reference\": \"master\" }, \"autoload\": {\"files\": [\"registration.php\"],\"psr-4\": {\"TIG\\\\Buckaroo\\\\\": \"\"}},\"require\": {\"mockery/mockery\": \"^0.9.4\"}}}"
+
+if [ -d "$HOME/.cache/composer/files/tig/" ]; then
+    rm -rf $HOME/.cache/composer/files/tig/;
+fi
+
 ( cd "${BUILD_DIR}/" && composer config minimum-stability dev )
-( cd "${BUILD_DIR}/" && composer config repositories.buckaroo vcs ${TRAVIS_BUILD_DIR} )
-( cd "${BUILD_DIR}/" && composer require tig/buckaroo:dev-${TRAVIS_BRANCH} )
-( cd "${BUILD_DIR}/vendor/tig/buckaroo" && git checkout ${TRAVIS_COMMIT} )
+( cd "${BUILD_DIR}/" && composer config repositories.buckaroo "${REPOSITORY_CONFIG}" )
+( cd "${BUILD_DIR}/" && composer require tig/buckaroo --ignore-platform-reqs )
 
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "DROP DATABASE IF EXISTS \`${MAGENTO_DB_NAME}\`; CREATE DATABASE \`${MAGENTO_DB_NAME}\`;"
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} ${MAGENTO_DB_NAME} < Test/Fixtures/tig-buckaroo-fixture.sql
