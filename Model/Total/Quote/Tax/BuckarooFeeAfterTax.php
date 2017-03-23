@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Total\Quote\Tax;
@@ -64,20 +64,30 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
         \Magento\Quote\Api\Data\ShippingAssignmentInterface $shippingAssignment,
         \Magento\Quote\Model\Quote\Address\Total $total
     ) {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBuckarooFeeInclTax(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBaseBuckarooFeeInclTax(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBuckarooFeeTaxAmount(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBuckarooFeeBaseTaxAmount(0);
 
         if (!$shippingAssignment->getItems()) {
             return $this;
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $extraTaxableDetails = $total->getExtraTaxableDetails();
 
         if (empty($extraTaxableDetails[BuckarooFee::QUOTE_TYPE])) {
@@ -95,24 +105,40 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
         $buckarooFeeInclTax = $buckarooFeeTaxDetails['price_incl_tax'];
         $buckarooFeeBaseInclTax = $buckarooFeeTaxDetails['base_price_incl_tax'];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBuckarooFeeInclTax($buckarooFeeInclTax);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBaseBuckarooFeeInclTax($buckarooFeeBaseInclTax);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBuckarooFeeBaseTaxAmount($buckarooFeeBaseTaxAmount);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $total->setBuckarooFeeTaxAmount($buckarooFeeTaxAmount);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeInclTax($buckarooFeeInclTax);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBaseBuckarooFeeInclTax($buckarooFeeBaseInclTax);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeBaseTaxAmount($buckarooFeeBaseTaxAmount);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeTaxAmount($buckarooFeeTaxAmount);
 
         return $this;
@@ -128,7 +154,9 @@ class BuckarooFeeAfterTax extends \Magento\Quote\Model\Quote\Address\Total\Abstr
      */
     public function fetch(\Magento\Quote\Model\Quote $quote, \Magento\Quote\Model\Quote\Address\Total $total)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         return [
             'code' => 'buckaroo_fee',
             'title' => $this->getLabel(),

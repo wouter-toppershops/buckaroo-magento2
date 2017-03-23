@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Backend;
 
@@ -78,11 +78,14 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         $this->readFactory = \Mockery::mock(\Magento\Framework\Filesystem\File\ReadFactory::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Backend\Certificate::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Config\Backend\Certificate::class,
+            [
             'objectManager' => $this->objectManager,
             'readFactory' => $this->readFactory,
             'scopeConfig' => $this->scopeConfig,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -151,10 +154,13 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $this->markTestSkipped('Needs revision');
 
-        $this->object->setData('fieldset_data', [
+        $this->object->setData(
+            'fieldset_data',
+            [
             'certificate_upload'=> $this->uploadFixture,
             'certificate_label' => $this->uploadFixture['label'],
-        ]);
+            ]
+        );
 
         $this->uploadMock();
 

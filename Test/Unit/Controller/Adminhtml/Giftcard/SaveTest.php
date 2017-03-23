@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Controller\Adminhtml\Giftcard;
 
@@ -62,11 +62,14 @@ class SaveTest extends BaseTest
         $httpResponse = \Mockery::mock(\Magento\Framework\App\Response\Http::class)->makePartial();
         $this->redirect = \Mockery::mock(RedirectInterface::class)->makePartial();
 
-        $context = $this->objectManagerHelper->getObject(\Magento\Backend\App\Action\Context::class, [
+        $context = $this->objectManagerHelper->getObject(
+            \Magento\Backend\App\Action\Context::class,
+            [
             'request' => $httpRequest,
             'response' => $httpResponse,
             'redirect' => $this->redirect
-        ]);
+            ]
+        );
 
         $registry = \Mockery::mock(\Magento\Framework\Registry::class);
 

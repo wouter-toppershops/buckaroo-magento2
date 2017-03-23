@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
@@ -139,7 +139,9 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function refund(Transaction $transaction)
     {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig
+         */
         $refundConfig = $this->configProviderFactory->get('refund');
 
         if ($refundConfig->getEnabled()) {
@@ -183,7 +185,9 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
             throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig
+         */
         $predefinedConfig = $this->configProviderFactory->get('predefined');
 
         switch ($this->mode) {
@@ -215,7 +219,9 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function doRequest(Transaction $transaction)
     {
-        /** @var \Magento\Payment\Gateway\Http\Transfer $transfer */
+        /**
+         * @var \Magento\Payment\Gateway\Http\Transfer $transfer
+         */
         $transfer = $this->objectFactory->create(
             '\Magento\Payment\Gateway\Http\Transfer',
             [

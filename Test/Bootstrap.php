@@ -1,5 +1,6 @@
 <?php
 /**
+ *
  *          ..::..
  *     ..::::::::::::..
  *   ::'''''':''::'''''::
@@ -9,6 +10,7 @@
  *   ::::..:::..::.....::
  *     ''::::::::::::''
  *          ''::''
+ *
  *
  * NOTICE OF LICENSE
  *
@@ -24,24 +26,17 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
- * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright   Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
-
-namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
-
-/**
- * Class AbstractTransactionBuilder. Temporary for testing only.
- *
- * @package TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder
- */
-class AbstractTransactionBuilderMock extends \TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilder
-{
+if (strpos(__DIR__, 'app/code') !== false) {
     /**
-     * @return array
+     * From app/code/TIG/Buckaroo
      */
-    public function getBody()
-    {
-        return array('body item');
-    }
+    require_once(__DIR__ . '/../../../../../dev/tests/unit/framework/bootstrap.php');
+} else {
+    /**
+     * From vendor/tig/buckaroo
+     */
+    require_once(__DIR__ . '/../../../../dev/tests/unit/framework/bootstrap.php');
 }

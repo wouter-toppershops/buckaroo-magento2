@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Validator;
@@ -49,16 +49,24 @@ use \TIG\Buckaroo\Model\ValidatorInterface;
  */
 class Push implements ValidatorInterface
 {
-    /** @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig */
+    /**
+     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     */
     public $scopeConfig;
 
-    /** @var \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory */
+    /**
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     */
     public $configProviderFactory;
 
-    /** @var \TIG\Buckaroo\Helper\Data $helper */
+    /**
+     * @var \TIG\Buckaroo\Helper\Data $helper
+     */
     public $helper;
 
-    /** @var \TIG\Buckaroo\Debug\Debugger $debugger */
+    /**
+     * @var \TIG\Buckaroo\Debug\Debugger $debugger
+     */
     public $debugger;
 
     public $bpeResponseMessages = [
@@ -76,10 +84,10 @@ class Push implements ValidatorInterface
     ];
 
     /**
-     * @param \TIG\Buckaroo\Helper\Data                             $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface    $scopeConfig
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory            $configProviderFactory
-     * @param \TIG\Buckaroo\Debug\Debugger                          $debugger
+     * @param \TIG\Buckaroo\Helper\Data                          $helper
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
+     * @param \TIG\Buckaroo\Debug\Debugger                       $debugger
      */
     public function __construct(
         \TIG\Buckaroo\Helper\Data $helper,
@@ -105,6 +113,7 @@ class Push implements ValidatorInterface
 
     /**
      * Checks if the status code is returned by the bpe push and is valid.
+     *
      * @param $code
      *
      * @return array
@@ -177,7 +186,9 @@ class Push implements ValidatorInterface
             $signatureString .= $brq_key. '=' . $value;
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
         $accountConfig = $this->configProviderFactory->get('account');
 
         $digitalSignature = $accountConfig->getSecretKey();

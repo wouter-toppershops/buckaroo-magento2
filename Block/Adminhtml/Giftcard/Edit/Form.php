@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Block\Adminhtml\Giftcard\Edit;
@@ -47,10 +47,14 @@ class Form extends \Magento\Backend\Block\Widget\Form\Generic
      */
     protected function _prepareForm()
     {
-        /** @var \TIG\Buckaroo\Model\Giftcard $model */
+        /**
+        * @var \TIG\Buckaroo\Model\Giftcard $model
+        */
         $model = $this->_coreRegistry->registry('buckaroo_giftcard');
 
-        /** @var \Magento\Framework\Data\Form $form */
+        /**
+         * @var \Magento\Framework\Data\Form $form
+         */
         $form = $this->_formFactory->create(
             [
                 'data' => [

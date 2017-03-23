@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider\Method;
 
@@ -173,15 +173,15 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     public function testGetActive()
     {
         $this->scopeConfig->shouldReceive('getValue')
-                          ->once()
-                          ->withArgs(
-                              [
+            ->once()
+            ->withArgs(
+                [
                                   \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::XPATH_TRANSFER_ACTIVE,
                                   \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
                                   null
                               ]
-                          )
-                          ->andReturn('1');
+            )
+            ->andReturn('1');
 
         $this->assertEquals(1, $this->object->getActive());
     }

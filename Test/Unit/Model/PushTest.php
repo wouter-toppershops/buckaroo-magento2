@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model;
 
@@ -88,7 +88,9 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
         $this->debugger = \Mockery::mock(\TIG\Buckaroo\Debug\Debugger::class);
 
-        /** Needed to deal with __destruct */
+        /**
+         * Needed to deal with __destruct
+         */
         $this->debugger->shouldReceive('log')->andReturnSelf();
 
         $this->orderSender = \Mockery::mock(\Magento\Sales\Model\Order\Email\Sender\OrderSender::class);
@@ -97,14 +99,17 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
          * class.
          */
-        $this->object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Push::class, [
-            'objectManager' => $this->objectManager,
-            'request' => $this->request,
-            'helper' => $this->helper,
-            'configProviderFactory' => $this->configProviderFactory,
-            'debugger' => $this->debugger,
-            'orderSender' => $this->orderSender,
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Push::class,
+            [
+                'objectManager' => $this->objectManager,
+                'request' => $this->request,
+                'helper' => $this->helper,
+                'configProviderFactory' => $this->configProviderFactory,
+                'debugger' => $this->debugger,
+                'orderSender' => $this->orderSender,
+            ]
+        );
     }
 
     /**
@@ -241,11 +246,11 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
      * @param      $sendOrderConfirmationEmail
      * @param      $paymentAction
      * @param      $amount
-     * @param bool $textAmount
-     * @param bool $autoInvoice
-     * @param bool $orderCanInvoice
-     * @param bool $orderHasInvoices
-     * @param bool $postData
+     * @param bool                       $textAmount
+     * @param bool                       $autoInvoice
+     * @param bool                       $orderCanInvoice
+     * @param bool                       $orderHasInvoices
+     * @param bool                       $postData
      *
      * @dataProvider processSucceededPushDataProvider
      */
@@ -266,44 +271,61 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $message = 'testMessage';
         $status = 'testStatus';
 
-        /** Only orders with this state should have their status updated */
+        /**
+         * Only orders with this state should have their status updated
+         */
         $successPaymentState = \Magento\Sales\Model\Order::STATE_PROCESSING;
 
-        /** Set config values on config provider mock */
+        /**
+         * Set config values on config provider mock
+         */
         $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getOrderConfirmationEmail')
             ->andReturn($sendOrderConfirmationEmail);
         $this->configProviderFactory->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
 
-        /** Build an order mock and set several non mandatory method calls */
+        /**
+         * Build an order mock and set several non mandatory method calls
+         */
         $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $orderMock->shouldReceive('getEmailSent')->andReturn($orderEmailSent);
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getTotalDue')->andReturn($amount);
 
-        /** The order state has to be checked at least once */
+        /**
+         * The order state has to be checked at least once
+         */
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
 
-        /** If order email is not sent and order email should be sent, expect sending of order email */
+        /**
+         * If order email is not sent and order email should be sent, expect sending of order email
+         */
         if (!$orderEmailSent && $sendOrderConfirmationEmail) {
             $this->orderSender->shouldReceive('send')->with($orderMock);
         }
 
-        /** Build a payment mock and set the payment action */
+        /**
+         * Build a payment mock and set the payment action
+         */
         $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
         $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
 
-        /** Build a currency mock */
+        /**
+         * Build a currency mock
+         */
         $currencyMock = \Mockery::mock(\Magento\Directory\Model\Currency::class);
         $currencyMock->shouldReceive('formatTxt')->andReturn($textAmount);
 
-        /** Update order mock with payment and currency mock */
+        /**
+         * Update order mock with payment and currency mock
+         */
         $orderMock->shouldReceive('getPayment')->andReturn($paymentMock);
         $orderMock->shouldReceive('getBaseCurrency')->andReturn($currencyMock);
 
-        /** If no auto invoicing is required, or if auto invoice is required and the order can be invoiced and
+        /**
+         * If no auto invoicing is required, or if auto invoice is required and the order can be invoiced and
          *  has no invoices, expect a status update
          */
         if (!$autoInvoice || ($autoInvoice && $orderCanInvoice && !$orderHasInvoices)) {
@@ -316,7 +338,9 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                     'authorized. Please create an invoice to capture the authorized amount.';
             }
 
-            /** Only orders with the success state should have their status updated */
+            /**
+             * Only orders with the success state should have their status updated
+             */
             if ($state == $successPaymentState) {
                 $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
             } else {
@@ -324,7 +348,9 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             }
         }
 
-        /** Build a PHP_Unit (not Mockery) partial mock to capture internal calls to public method addTransactionData */
+        /**
+         * Build a PHP_Unit (not Mockery) partial mock to capture internal calls to public method addTransactionData
+         */
         $objectMock = $this->getPartialObject(
             get_class($this->object),
             [
@@ -338,35 +364,51 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             ['addTransactionData']
         );
 
-        /** If autoInvoice is required, also test protected method saveInvoice */
+        /**
+         * If autoInvoice is required, also test protected method saveInvoice
+         */
         if ($autoInvoice) {
             $orderMock->shouldReceive('canInvoice')->andReturn($orderCanInvoice);
             $orderMock->shouldReceive('hasInvoices')->andReturn($orderHasInvoices);
 
             if (!$orderCanInvoice || $orderHasInvoices) {
-                /** If order cannot be invoiced or if order already has invoices, expect an exception */
+                /**
+                 * If order cannot be invoiced or if order already has invoices, expect an exception
+                 */
                 $this->setExpectedException(\TIG\Buckaroo\Exception::class);
                 $this->debugger->shouldReceive('addToMessage')->withAnyArgs();
             } else {
-                /** Order can be invoice, so test invoice flow */
+                /**
+                 * Order can be invoice, so test invoice flow
+                 */
                 $objectMock->expects($this->once())->method('addTransactionData');
 
-                /** Payment should receive register capture notification only once and payment should be saved */
+                /**
+                 * Payment should receive register capture notification only once and payment should be saved
+                 */
                 $paymentMock->shouldReceive('registerCaptureNotification')->once()->with($amount);
                 $paymentMock->shouldReceive('save')->once()->withNoArgs();
 
-                /** Order should be saved at least once  */
+                /**
+                 * Order should be saved at least once
+                 */
                 $orderMock->shouldReceive('save')->atLeast(1)->withNoArgs();
 
-                /** @noinspection PhpUndefinedFieldInspection */
+                /**
+                 * @noinspection PhpUndefinedFieldInspection
+                 */
                 $objectMock->postData = $postData;
 
                 $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
 
-                /** Invoice collection should be array iterable so a simple array is used for a mock collection */
+                /**
+                 * Invoice collection should be array iterable so a simple array is used for a mock collection
+                 */
                 $orderMock->shouldReceive('getInvoiceCollection')->andReturn([$invoiceMock]);
 
-                /** If key brq_transactions is set in postData, invoice should expect a transaction id to be set */
+                /**
+                 * If key brq_transactions is set in postData, invoice should expect a transaction id to be set
+                 */
                 if (isset($postData['brq_transactions'])) {
                     $invoiceMock->shouldReceive('setTransactionId')
                         ->with($postData['brq_transactions'])
@@ -376,592 +418,1128 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
             }
         }
 
-        /** @noinspection PhpUndefinedFieldInspection */
+        /**
+         * @noinspection PhpUndefinedFieldInspection
+         */
         $objectMock->order = $orderMock;
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->assertTrue($objectMock->processSucceededPush($status, $message));
     }
 
     public function processSucceededPushDataProvider()
     {
         return [
-            /** CANCELED && AUTHORIZE */
+            /**
+             * CANCELED && AUTHORIZE
+             */
             0 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             1 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             2 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             3 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
-            /** CANCELED && NOT AUTHORIZE */
+            /**
+             * CANCELED && NOT AUTHORIZE
+             */
             4 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             5 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             6 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             7 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
-            /** CANCELED && NOT AUTHORIZE && AUTO INVOICE*/
+            /**
+             * CANCELED && NOT AUTHORIZE && AUTO INVOICE
+             */
             8 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             9 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 true,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             10 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 true,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 ['brq_transactions' => 'test_transaction_id'],
             ],
             11 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 true,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             12 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_CANCELED,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 true,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 true,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
-            /** PROCESSING && AUTHORIZE */
+            /**
+             * PROCESSING && AUTHORIZE
+             */
             13 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             14 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             15 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             16 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
-            /** PROCESSING && NOT AUTHORIZE */
+            /**
+             * PROCESSING && NOT AUTHORIZE
+             */
             17 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             18 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             19 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             20 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 false,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 false,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 false,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
-            /** PROCESSING && NOT AUTHORIZE && AUTO INVOICE*/
+            /**
+             * PROCESSING && NOT AUTHORIZE && AUTO INVOICE
+             */
             21 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             22 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 true,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             23 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 true,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 false,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 ['brq_transactions' => 'test_transaction_id'],
             ],
             24 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 false,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 true,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
             25 => [
-                /** $state */
+                /**
+                 * $state
+                 */
                 \Magento\Sales\Model\Order::STATE_PROCESSING,
-                /** $orderEmailSent */
+                /**
+                 * $orderEmailSent
+                 */
                 true,
-                /** $sendOrderConfirmationEmail */
+                /**
+                 * $sendOrderConfirmationEmail
+                 */
                 true,
-                /** $paymentAction */
+                /**
+                 * $paymentAction
+                 */
                 'not_authorize',
-                /** $amount */
+                /**
+                 * $amount
+                 */
                 '15.95',
-                /** $textAmount */
+                /**
+                 * $textAmount
+                 */
                 '$15.95',
-                /** $autoInvoice */
+                /**
+                 * $autoInvoice
+                 */
                 true,
-                /** $orderCanInvoice */
+                /**
+                 * $orderCanInvoice
+                 */
                 true,
-                /** $orderHasInvoices */
+                /**
+                 * $orderHasInvoices
+                 */
                 true,
-                /** $postData */
+                /**
+                 * $postData
+                 */
                 false,
             ],
         ];

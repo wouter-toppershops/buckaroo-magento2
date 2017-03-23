@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 
@@ -48,8 +48,8 @@ class Toolbar
 {
     /**
      * @param ToolbarContext $toolbar
-     * @param AbstractBlock $context
-     * @param ButtonList $buttonList
+     * @param AbstractBlock  $context
+     * @param ButtonList     $buttonList
      * @return array
      */
     public function beforePushButtons(
@@ -69,7 +69,7 @@ class Toolbar
                 'Partial refunds combined with a payment fee can only be refunded via the Buckaroo Payment Plaza, ' .
                 'see also the ' .
                 '<a href="http://servicedesk.tig.nl/hc/nl/articles/217984838" target="_blank">KB article</a>.<br>' .
-                '<a href="https://payment.buckaroo.nl" target="_blank">' .
+                '<a href="https://plaza.buckaroo.nl" target="_blank">' .
                 'Open a new window to the Buckaroo Payment Plaza</a>.'
             );
             $onClick = "confirmSetLocation('{$message}', '#')";

@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
@@ -66,7 +66,7 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
      * extending child class.
      *
      * @param string $method
-     * @param mixed $params
+     * @param mixed  $params
      *
      * @return mixed|null
      *
@@ -135,7 +135,7 @@ abstract class AbstractConfigProvider implements ConfigProviderInterface
     /**
      * Get all config in associated array
      *
-     * @param null|int|\Magento\Store\Model\Store $store
+     * @param  null|int|\Magento\Store\Model\Store $store
      * @return array
      */
     public function getConfig($store = null)

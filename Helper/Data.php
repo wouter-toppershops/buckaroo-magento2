@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Helper;
@@ -180,7 +180,9 @@ class Data extends AbstractHelper
      */
     public function getMode($paymentMethod = null)
     {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
+         */
         $configProvider = $this->configProviderFactory->get('account');
         $baseMode = $configProvider->getActive();
 
@@ -188,7 +190,9 @@ class Data extends AbstractHelper
             return $baseMode;
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider
+         */
         $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
         $mode = $configProvider->getActive();
 

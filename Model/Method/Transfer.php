@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -122,7 +122,9 @@ class Transfer extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig
+         */
         $transferConfig = $this->configProviderMethodFactory->get('transfer');
 
         $dueDays = abs($transferConfig->getDueDate());
@@ -130,10 +132,14 @@ class Transfer extends AbstractMethod
         $now = new \DateTime();
         $now->modify('+' . $dueDays . ' day');
 
-        /** @var \Magento\Sales\Model\Order\Address $billingAddress */
+        /**
+         * @var \Magento\Sales\Model\Order\Address $billingAddress
+         */
         $billingAddress = $payment->getOrder()->getBillingAddress();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
@@ -158,10 +164,12 @@ class Transfer extends AbstractMethod
             ],
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
     }
@@ -198,7 +206,9 @@ class Transfer extends AbstractMethod
         $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')

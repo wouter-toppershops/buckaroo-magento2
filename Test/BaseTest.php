@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test;
 
@@ -44,19 +44,36 @@ use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 class BaseTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var null|string
+     */
+    protected $instanceClass;
+
+    /**
      * @var \Magento\Framework\TestFramework\Unit\Helper\ObjectManager
      */
     protected $objectManagerHelper;
 
     protected $object;
 
+    /**
+     * @param array $args
+     *
+     * @return object
+     */
+    public function getInstance(array $args = [])
+    {
+        return $this->getObject($this->instanceClass, $args);
+    }
+
     public function setUp()
     {
-        /** Require functions.php to be able to use the translate function */
+        /**
+         * Require functions.php to be able to use the translate function
+         */
         if (strpos(__DIR__, 'vendor') === false) {
-            require_once __DIR__ . '/../../../../functions.php';
+            include_once __DIR__ . '/../../../../functions.php';
         } else {
-            require_once __DIR__ . '/../../../../app/functions.php';
+            include_once __DIR__ . '/../../../../app/functions.php';
         }
 
         ini_set('error_reporting', E_ALL);
@@ -64,6 +81,151 @@ class BaseTest extends \PHPUnit_Framework_TestCase
         ini_set('display_startup_errors', '1');
 
         $this->objectManagerHelper = new ObjectManager($this);
+    }
+
+    /**
+     * @param $method
+     * @param $instance
+     *
+     * @return \ReflectionMethod
+     */
+    protected function getMethod($method, $instance)
+    {
+        $method = new \ReflectionMethod($instance, $method);
+        $method->setAccessible(true);
+
+        return $method;
+    }
+
+    /**
+     * @param      $method
+     * @param null $instance
+     *
+     * @return mixed
+     */
+    protected function invoke($method, $instance = null)
+    {
+        if ($instance === null) {
+            $instance = $this->getInstance();
+        }
+
+        $method = $this->getMethod($method, $instance);
+
+        return $method->invoke($instance);
+    }
+
+    /**
+     * @param       $method
+     * @param array $args
+     * @param null  $instance
+     *
+     * @return mixed
+     */
+    protected function invokeArgs($method, $args = [], $instance = null)
+    {
+        if ($instance === null) {
+            $instance = $this->getInstance();
+        }
+
+        $method = $this->getMethod($method, $instance);
+
+        return $method->invokeArgs($instance, $args);
+    }
+
+    /**
+     * @param      $property
+     * @param null $instance
+     *
+     * @return \ReflectionProperty
+     */
+    protected function getProperty($property, $instance = null)
+    {
+        if ($instance === null) {
+            $instance = $this->getInstance();
+        }
+
+        $reflection = new \ReflectionObject($instance);
+        $property = $reflection->getProperty($property);
+        $property->setAccessible(true);
+        return $property->getValue($instance);
+    }
+
+    /**
+     * @param      $property
+     * @param      $value
+     * @param null $instance
+     *
+     * @return \ReflectionProperty
+     */
+    protected function setProperty($property, $value, $instance = null)
+    {
+        if ($instance === null) {
+            $instance = $this->getInstance();
+        }
+
+        $reflection = new \ReflectionObject($instance);
+        $property = $reflection->getProperty($property);
+        $property->setAccessible(true);
+        $property->setValue($instance, $value);
+
+        return $property;
+    }
+
+    /**
+     * @param      $class
+     * @param bool $return Immediate call getMock.
+     *
+     * @return \PHPUnit_Framework_MockObject_MockBuilder|\PHPUnit_Framework_MockObject_MockObject
+     */
+    protected function getFakeMock($class, $return = false)
+    {
+        $mock = $this->getMockBuilder($class);
+        $mock->disableOriginalConstructor();
+
+        if ($return) {
+            return $mock->getMock();
+        }
+
+        return $mock;
+    }
+
+    /**
+     * @param       $class
+     * @param array $args
+     *
+     * @return object
+     * @throws \Exception
+     */
+    protected function getObject($class, $args = [])
+    {
+        if ($this->objectManagerHelper === null) {
+            throw new \Exception('The object manager is not loaded. Dit you forget to call parent::setUp();?');
+        }
+
+        return $this->objectManagerHelper->getObject($class, $args);
+    }
+
+    /**
+     * Quickly mock a function.
+     *
+     * @param                                          $function
+     * @param                                          $response
+     * @param \PHPUnit_Framework_MockObject_MockObject $instance
+     * @param                                          $with
+     */
+    protected function mockFunction(
+        \PHPUnit_Framework_MockObject_MockObject $instance,
+        $function,
+        $response,
+        $with = []
+    ) {
+        $method = $instance->method($function);
+
+        if ($with) {
+            $method->with($with);
+        }
+
+        $method->willReturn($response);
     }
 
     /**
@@ -95,9 +257,13 @@ class BaseTest extends \PHPUnit_Framework_TestCase
             $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->object->setData('info_instance', $infoInterface);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->assertEquals($this->object, $this->object->assignData($data));
 
         return $this;
