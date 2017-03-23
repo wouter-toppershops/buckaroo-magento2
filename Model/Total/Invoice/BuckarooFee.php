@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Total\Invoice;
@@ -44,18 +44,24 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
     /**
      * Collect Buckaroo fee total for invoice
      *
-     * @param \Magento\Sales\Model\Order\Invoice $invoice
+     * @param  \Magento\Sales\Model\Order\Invoice $invoice
      * @return $this
      */
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $buckarooFeeLeft = $order->getBuckarooFee() - $order->getBuckarooFeeInvoiced();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $baseBuckarooFeeLeft = $order->getBaseBuckarooFee() - $order->getBaseBuckarooFeeInvoiced();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if ($order->getBaseBuckarooFee() && $baseBuckarooFeeLeft > 0) {
             if ($baseBuckarooFeeLeft < $invoice->getBaseGrandTotal()) {
                 $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeLeft);
@@ -68,9 +74,13 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
                 $invoice->setBaseGrandTotal(0);
             }
 
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $invoice->setBuckarooFee($buckarooFeeLeft);
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $invoice->setBaseBuckarooFee($baseBuckarooFeeLeft);
         }
 

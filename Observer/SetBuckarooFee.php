@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Observer;
@@ -47,26 +47,46 @@ class SetBuckarooFee implements \Magento\Framework\Event\ObserverInterface
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         /* @var $order \Magento\Sales\Model\Order */
         $order = $observer->getEvent()->getOrder();
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $quote \Magento\Quote\Model\Quote $quote */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        /**
+         * @var $quote \Magento\Quote\Model\Quote $quote
+         */
         $quote = $observer->getEvent()->getQuote();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if ($quote->getBaseBuckarooFee() > 0) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFee($quote->getBuckarooFee());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBaseBuckarooFee($quote->getBaseBuckarooFee());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeTaxAmount($quote->getBuckarooFeeTaxAmount());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeBaseTaxAmount($quote->getBuckarooFeeBaseTaxAmount());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBuckarooFeeInclTax($quote->getBuckarooFeeInclTax());
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $order->setBaseBuckarooFeeInclTax($quote->getBaseBuckarooFeeInclTax());
         }
     }

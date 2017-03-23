@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider\Method;
 
@@ -66,10 +66,13 @@ class GiftcardsTest extends BaseTest
 
         $this->assetRepository = m::mock(Repository::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-        $this->object = $this->objectManagerHelper->getObject(Giftcards::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            Giftcards::class,
+            [
             'assetRepo' => $this->assetRepository,
             'scopeConfig' => $this->scopeConfig
-        ]);
+            ]
+        );
     }
 
     /**

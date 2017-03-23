@@ -1,6 +1,6 @@
 <?php
 return array (
-  'modules' => 
+  'modules' =>
   array (
     'Magento_Store' => 1,
     'Magento_AdvancedPricingImportExport' => 1,

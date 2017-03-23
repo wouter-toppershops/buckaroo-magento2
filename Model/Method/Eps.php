@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -122,14 +122,18 @@ class Eps extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $services = [
             'Name'             => 'eps',
             'Action'           => 'Pay',
             'Version'          => 1,
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -169,7 +173,9 @@ class Eps extends AbstractMethod
         $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')

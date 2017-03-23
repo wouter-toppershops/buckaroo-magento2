@@ -40,20 +40,23 @@ namespace TIG\Buckaroo\Model\Config\Source;
 
 class Certificates implements \Magento\Framework\Option\ArrayInterface
 {
-    /** @noinspection PhpUndefinedClassInspection */
+    /**
+     * @noinspection PhpUndefinedClassInspection
+     */
+
     /**
      * @var \TIG\Buckaroo\Model\CertificateFactory $certificateModel
      */
     protected $modelCertificateFactory;
 
-    /** @noinspection PhpUndefinedClassInspection */
+    /**
+     * @noinspection PhpUndefinedClassInspection
+     */
     /**
      * @param \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
      */
-    public function __construct(
-        /** @noinspection PhpUndefinedClassInspection */
-        \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
-    ) {
+    public function __construct(\TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory)
+    {
         $this->modelCertificateFactory = $modelCertificateFactory;
     }
 

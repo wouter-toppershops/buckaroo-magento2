@@ -34,8 +34,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
@@ -52,8 +52,8 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     protected $certificate;
 
     /**
-     * @param \TIG\Buckaroo\Model\Certificate                    $certificate
-     * @param Factory                                            $configProviderFactory
+     * @param \TIG\Buckaroo\Model\Certificate $certificate
+     * @param Factory                         $configProviderFactory
      *
      * @throws \LogicException
      */
@@ -63,7 +63,9 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     ) {
         $this->certificate = $certificate;
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
+         */
         $configProvider = $configProviderFactory->get('account');
         $certificateId = $configProvider->getCertificateFile();
 

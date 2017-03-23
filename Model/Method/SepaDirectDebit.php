@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -186,10 +186,12 @@ class SepaDirectDebit extends AbstractMethod
             ];
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest');
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
 
         return $transactionBuilder;
     }
@@ -228,14 +230,16 @@ class SepaDirectDebit extends AbstractMethod
         $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
-                           ->setServices($services)
-                           ->setMethod('TransactionRequest')
-                           ->setOriginalTransactionKey(
-                               $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-                           )
-                           ->setChannel('CallCenter');
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+            )
+            ->setChannel('CallCenter');
 
         return $transactionBuilder;
     }
@@ -294,7 +298,9 @@ class SepaDirectDebit extends AbstractMethod
         if ($paymentInfo instanceof Payment) {
             $billingCountry = $paymentInfo->getOrder()->getBillingAddress()->getCountryId();
         } else {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
         }
 

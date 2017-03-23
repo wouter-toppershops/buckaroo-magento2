@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Observer;
@@ -70,8 +70,12 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
      */
     public function execute(\Magento\Framework\Event\Observer $observer)
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        /** @var $payment \Magento\Sales\Model\Order\Payment */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        /**
+         * @var $payment \Magento\Sales\Model\Order\Payment
+         */
         $payment = $observer->getPayment();
 
         if (strpos($payment->getMethod(), 'tig_buckaroo') === false) {
@@ -80,7 +84,9 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
 
         $order = $payment->getOrder();
         $order->save();
-        /** @noinspection PhpUndefinedFieldInspection */
+        /**
+         * @noinspection PhpUndefinedFieldInspection
+         */
         if (!$payment->getMethodInstance()->usesRedirect
             && !$order->getEmailSent()
             && $this->accountConfig->getOrderConfirmationEmail()

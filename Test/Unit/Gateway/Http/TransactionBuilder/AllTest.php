@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
@@ -70,9 +70,12 @@ class AllTest extends BaseTest
         $this->order = m::mock('Magento\Sales\Model\Order');
         $this->configProvider = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Factory');
 
-        $this->object = $this->objectManagerHelper->getObject(Order::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            Order::class,
+            [
             'configProviderFactory' => $this->configProvider,
-        ]);
+            ]
+        );
     }
 
     /**
@@ -157,9 +160,12 @@ class AllTest extends BaseTest
         /**
          * The Order class is used by default, but in this case we want to test the Refund class specifically.
          */
-        $this->object = $this->objectManagerHelper->getObject(Refund::class, [
+        $this->object = $this->objectManagerHelper->getObject(
+            Refund::class,
+            [
             'configProviderFactory' => $this->configProvider,
-        ]);
+            ]
+        );
 
         $this->object->amount = 50;
         $this->object->currency = 'EUR';

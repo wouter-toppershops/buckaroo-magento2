@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
@@ -112,6 +112,7 @@ class Afterpay2 extends AbstractConfigProvider
     /**
      * paymentMethod 1 = afterpayacceptgiro
      * paymentMethod 2 = afterpaydigiaccept
+     *
      * @return bool|int
      */
     public function getPaymentMethod()
@@ -126,6 +127,7 @@ class Afterpay2 extends AbstractConfigProvider
 
     /**
      * Get the config values for the high tax classes.
+     *
      * @return bool|mixed
      */
     public function getHighTaxClasses()
@@ -140,6 +142,7 @@ class Afterpay2 extends AbstractConfigProvider
 
     /**
      * Get the config values for the middle tax classes
+     *
      * @return bool|mixed
      */
     public function getMiddleTaxClasses()
@@ -154,6 +157,7 @@ class Afterpay2 extends AbstractConfigProvider
 
     /**
      * Get the config values for the low tax classes
+     *
      * @return bool|mixed
      */
     public function getLowTaxClasses()
@@ -168,6 +172,7 @@ class Afterpay2 extends AbstractConfigProvider
 
     /**
      * Get the config values for the zero tax classes
+     *
      * @return bool|mixed
      */
     public function getZeroTaxClasses()
@@ -182,6 +187,7 @@ class Afterpay2 extends AbstractConfigProvider
 
     /**
      * Get the config values for the no tax classes
+     *
      * @return bool|mixed
      */
     public function getNoTaxClasses()

@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -161,7 +161,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
-     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
      * @param \Magento\Framework\Registry                             $registry
      * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
@@ -169,6 +168,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Payment\Helper\Data                            $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -184,7 +184,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param array                                                   $data
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager = null,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
@@ -192,6 +191,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Framework\ObjectManagerInterface $objectManager = null,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -245,7 +245,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return false;
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig
+         */
         $refundConfig = $this->configProviderFactory->get('refund');
 
         if ($refundConfig->getEnabled()) {
@@ -264,7 +266,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public function assignData(\Magento\Framework\DataObject $data)
     {
         if ($data instanceof \Magento\Framework\DataObject) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $this->getInfoInstance()->setAdditionalInformation(
                 'buckaroo_skip_validation',
                 $data->getBuckarooSkipValidation()
@@ -276,8 +280,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * Older version expect different formatted $data
      *
-     * @param \Magento\Framework\DataObject $data
-     * @todo Think of a nicer way to implement the version differences in one codebase
+     * @param  \Magento\Framework\DataObject $data
+     * @todo   Think of a nicer way to implement the version differences in one codebase
      * @return array
      */
     public function assignDataConvertAllVersionsArray(\Magento\Framework\DataObject $data)
@@ -311,7 +315,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * Check whether payment method can be used
      *
-     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @param  \Magento\Quote\Api\Data\CartInterface|null $quote
      * @return bool
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
@@ -319,7 +323,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if (null == $quote) {
             return false;
         }
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
         $accountConfig = $this->configProviderFactory->get('account');
         if ($accountConfig->getActive() == 0) {
             return false;
@@ -387,7 +393,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $maximum = $this->getConfigData('max_amount', $storeId);
         $minimum = $this->getConfigData('min_amount', $storeId);
 
-        /** @var \Magento\Quote\Model\Quote $quote */
+        /**
+         * @var \Magento\Quote\Model\Quote $quote
+         */
         $total = $quote->getGrandTotal();
 
         if ($maximum !== null && $total > $maximum) {
@@ -419,7 +427,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     /**
      * Retrieve information from payment configuration
      *
-     * @param string $field
+     * @param string                                     $field
      * @param int|string|null|\Magento\Store\Model\Store $storeId
      *
      * @return mixed
@@ -591,9 +599,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $configProvider = $this->configProviderMethodFactory->get($this->buckarooPaymentMethodCode);
         $allowedCurrencies = $configProvider->getAllowedCurrencies();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if (!$payment->getCurrencyCode() || !in_array($payment->getCurrencyCode(), $allowedCurrencies)) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $this->payment->setIsFraudDetected(false);
         }
 
@@ -971,7 +983,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     ) {
         if (!empty($response->Key)) {
             $transactionKey = $response->Key;
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $payment->setIsTransactionClosed($close);
 
             /**
@@ -984,13 +998,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
              */
             $rawInfo = $this->getTransactionAdditionalInfo($arrayResponse);
 
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $payment->setTransactionAdditionalInfo(
                 \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
                 $rawInfo
             );
 
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $payment->setTransactionId($transactionKey);
 
             /**

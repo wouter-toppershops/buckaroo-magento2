@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider\Method;
 
@@ -66,10 +66,13 @@ class CreditcardTest extends BaseTest
 
         $this->assetRepository = m::mock(Repository::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-        $this->object = $this->objectManagerHelper->getObject(Creditcard::class, [
-            'assetRepo' => $this->assetRepository,
-            'scopeConfig' => $this->scopeConfig
-        ]);
+        $this->object = $this->objectManagerHelper->getObject(
+            Creditcard::class,
+            [
+                'assetRepo' => $this->assetRepository,
+                'scopeConfig' => $this->scopeConfig
+            ]
+        );
     }
 
     public function testGetImageUrl()
@@ -77,24 +80,24 @@ class CreditcardTest extends BaseTest
         $issuers = 'amex,visa';
         $allowedCurrencies = 'USD,EUR';
         $this->scopeConfig->shouldReceive('getValue')
-                          ->once()
-                          ->withArgs(
-                              [
-                                  Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
-                              ]
-                          )
-                          ->andReturn($issuers);
+            ->once()
+            ->withArgs(
+                [
+                    Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
+                ]
+            )
+            ->andReturn($issuers);
 
         $this->scopeConfig->shouldReceive('getValue')
-                          ->once()
-                          ->withArgs(
-                              [
-                                  Creditcard::XPATH_ALLOWED_CURRENCIES,
-                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                                  null
-                              ]
-                          )
-                          ->andReturn($allowedCurrencies);
+            ->once()
+            ->withArgs(
+                [
+                    Creditcard::XPATH_ALLOWED_CURRENCIES,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    null
+                ]
+            )
+            ->andReturn($allowedCurrencies);
 
         $shouldReceive = $this->assetRepository
             ->shouldReceive('getUrl')
@@ -116,15 +119,15 @@ class CreditcardTest extends BaseTest
     public function testGetActive()
     {
         $this->scopeConfig->shouldReceive('getValue')
-                          ->once()
-                          ->withArgs(
-                              [
-                                  \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::XPATH_CREDITCARD_ACTIVE,
-                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                                  null
-                              ]
-                          )
-                          ->andReturn('1');
+            ->once()
+            ->withArgs(
+                [
+                    \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard::XPATH_CREDITCARD_ACTIVE,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                    null
+                ]
+            )
+            ->andReturn('1');
 
         $this->assertEquals(1, $this->object->getActive());
     }

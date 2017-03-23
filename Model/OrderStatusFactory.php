@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model;
@@ -81,12 +81,16 @@ class OrderStatusFactory
     {
         $status = false;
 
-        /** @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethodInstance */
+        /**
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $paymentMethodInstance
+         */
         $paymentMethodInstance = $order->getPayment()->getMethodInstance();
         $paymentMethod = $paymentMethodInstance->buckarooPaymentMethodCode;
 
         if ($this->configProviderMethodFactory->has($paymentMethod)) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
+            /**
+             * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider
+             */
             $configProvider = $this->configProviderMethodFactory->get($paymentMethod);
 
             if ($configProvider->getActiveStatus()) {
@@ -98,7 +102,9 @@ class OrderStatusFactory
             return $status;
         }
 
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
+         */
         $configProvider = $this->configProviderFactory->get('account');
 
         switch ($statusCode) {
@@ -125,7 +131,7 @@ class OrderStatusFactory
     }
 
     /**
-     * @param int                                                              $statusCode
+     * @param int                                                               $statusCode
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $configProvider
      *
      * @return string|false|null
@@ -134,7 +140,9 @@ class OrderStatusFactory
         $statusCode,
         \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $configProvider
     ) {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\AbstractConfigProvider $configProvider
+         */
         $status = false;
 
         switch ($statusCode) {

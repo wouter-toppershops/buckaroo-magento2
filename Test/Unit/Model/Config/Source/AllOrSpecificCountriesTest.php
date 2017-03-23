@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Source;
 
@@ -67,7 +67,9 @@ class AllOrSpecificCountriesTest extends BaseTest
         $result = $this->object->toOptionArray();
         foreach ($shouldHaveOptions as $key => $option) {
             foreach ($result as $optionContents) {
-                /** @noinspection PhpUndefinedMethodInspection */
+                /**
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 if ($optionContents['label']->getText() == $option->getText()) {
                     unset($shouldHaveOptions[$key]);
                     break;

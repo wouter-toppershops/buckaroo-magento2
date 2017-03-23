@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test;
 
@@ -67,11 +67,13 @@ class BaseTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        /** Require functions.php to be able to use the translate function */
+        /**
+         * Require functions.php to be able to use the translate function
+         */
         if (strpos(__DIR__, 'vendor') === false) {
-            require_once __DIR__ . '/../../../../functions.php';
+            include_once __DIR__ . '/../../../../functions.php';
         } else {
-            require_once __DIR__ . '/../../../../app/functions.php';
+            include_once __DIR__ . '/../../../../app/functions.php';
         }
 
         ini_set('error_reporting', E_ALL);
@@ -255,9 +257,13 @@ class BaseTest extends \PHPUnit_Framework_TestCase
             $infoInterface->shouldReceive('setAdditionalInformation')->with($key, $value);
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->object->setData('info_instance', $infoInterface);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->assertEquals($this->object, $this->object->assignData($data));
 
         return $this;

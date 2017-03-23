@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Config\Backend;
 
@@ -108,10 +108,14 @@ class Certificate extends \Magento\Framework\App\Config\Value
             /**
              * Read the configuration contents
              */
-            /** @var \Magento\Framework\Filesystem\File\Read $read */
+            /**
+             * @var \Magento\Framework\Filesystem\File\Read $read
+             */
             $read = $this->readFactory->create($certFile['tmp_name'], \Magento\Framework\Filesystem\DriverPool::FILE);
 
-            /** @var \TIG\Buckaroo\Model\Certificate $certDB */
+            /**
+             * @var \TIG\Buckaroo\Model\Certificate $certDB
+             */
             $certDB = $this->objectManager->create('TIG\Buckaroo\Model\Certificate');
             $certDB->setCertificate($read->readAll());
             $certDB->setName($certLabel);

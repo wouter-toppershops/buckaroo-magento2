@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Source;
 
@@ -45,7 +45,8 @@ class GiftcardsTest extends \TIG\Buckaroo\Test\BaseTest
         $giftcardCollection = \Mockery::mock(\TIG\Buckaroo\Model\ResourceModel\Giftcard\Collection::class)
             ->makePartial();
         $giftcardCollection->shouldReceive('setOrder')->andReturnSelf();
-        $giftcardCollection->shouldReceive('getData')->andReturn([
+        $giftcardCollection->shouldReceive('getData')->andReturn(
+            [
             [
                 'label' => 'Test 1',
                 'servicecode' => 'code1',
@@ -58,7 +59,8 @@ class GiftcardsTest extends \TIG\Buckaroo\Test\BaseTest
                 'label' => 'Test 3',
                 'servicecode' => 'code3',
             ],
-        ]);
+            ]
+        );
 
         $giftcardModel = \Mockery::mock(\TIG\Buckaroo\Model\Giftcard::class)->makePartial();
         $giftcardModel->shouldReceive('getCollection')->andReturn($giftcardCollection);
@@ -66,9 +68,12 @@ class GiftcardsTest extends \TIG\Buckaroo\Test\BaseTest
         $giftcardFactory = \Mockery::mock(\TIG\Buckaroo\Model\GiftcardFactory::class);
         $giftcardFactory->shouldReceive('create')->andReturn($giftcardModel);
 
-        $object = $this->objectManagerHelper->getObject(\TIG\Buckaroo\Model\Config\Source\Giftcards::class, [
+        $object = $this->objectManagerHelper->getObject(
+            \TIG\Buckaroo\Model\Config\Source\Giftcards::class,
+            [
             'modelGiftcardFactory' => $giftcardFactory,
-        ]);
+            ]
+        );
 
         $expected = [
             [

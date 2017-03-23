@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Gateway\Http\Client;
@@ -50,8 +50,8 @@ use TIG\Buckaroo\Soap\ClientFactory;
 class Soap extends \Magento\Payment\Gateway\Http\Client\Soap
 {
     /**
-     * @param Logger $logger
-     * @param ClientFactory $clientFactory
+     * @param Logger                $logger
+     * @param ClientFactory         $clientFactory
      * @param EmptyConverter | null $converter
      */
     public function __construct(
