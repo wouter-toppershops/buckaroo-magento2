@@ -86,16 +86,22 @@ class Order extends AbstractTransactionBuilder
             $this->amount = 0;
         }
 
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
+        $accountConfig = $this->configProviderFactory->get('account');
+
         $order = $this->getOrder();
+
+        if ($accountConfig->getCreateOrderBeforeTransaction()) {
+            $order->save();
+        }
+
 
         if (!$this->invoiceId) {
             $this->invoiceId = $order->getIncrementId();
         }
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
         if (!$ip) {

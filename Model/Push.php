@@ -180,8 +180,8 @@ class Push implements PushInterface
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
 
-        //Skip informational messages for processing
-        if ($this->postData['brq_mutationtype'] == 'Informational') {
+        //Skip informational messages for group processing giftcards
+        if ($this->postData['brq_transaction_type'] == 'I150') {
             return;
         }
 
