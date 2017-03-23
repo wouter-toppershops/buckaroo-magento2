@@ -49,6 +49,11 @@ class PaymentGuarantee extends AbstractConfigProvider
         'EUR'
     ];
 
+    private $paymentNames = [
+        '1' => 'buckaroo3extended_transfer',
+        '2' => 'buckaroo3extended_ideal'
+    ];
+
     /**
      * @return array|void
      */
@@ -74,6 +79,12 @@ class PaymentGuarantee extends AbstractConfigProvider
         ];
     }
 
+    public function getPaymentMethodToUse()
+    {
+        $code = $this->getPaymentMethod();
+        return $this->paymentNames[$code];
+    }
+
     /**
      * @return bool|int
      */
@@ -84,7 +95,20 @@ class PaymentGuarantee extends AbstractConfigProvider
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
 
-        return $paymentMethod ? $paymentMethod : false;
+        return $paymentMethod ? $paymentMethod : '2'; // Default use ideal
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSendMail()
+    {
+        $sendMail = $this->scopeConfig->getValue(
+            self::XPATH_PAYMENTGUARANTEE_SEND_EMAIL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $sendMail ? 'true' : 'false';
     }
 
     /**
@@ -97,6 +121,6 @@ class PaymentGuarantee extends AbstractConfigProvider
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
 
-        return $paymentFee ? $paymentFee : false;
+        return $paymentFee ? $paymentFee : 0;
     }
 }

@@ -209,6 +209,9 @@ class PaymentGuarantee extends AbstractMethod
      */
     private function getPaymentGuaranteeRequestParameters($payment)
     {
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PaymentGuarantee $config */
+        $config = $this->configProviderMethodFactory->get('paymentguarantee');
+
         /** @var \Magento\Sales\Api\Data\OrderAddressInterface $billingAddress */
         $billingAddress = $payment->getOrder()->getBillingAddress();
         /** @var \Magento\Sales\Api\Data\OrderAddressInterface $shippingAddress */
@@ -220,7 +223,7 @@ class PaymentGuarantee extends AbstractMethod
 
         $defaultValues = [
             [
-                '_'    => '0',
+                '_'    => $config->getPaymentFee(),
                 'Name' => 'AmountVat'
             ],
             [
@@ -268,14 +271,19 @@ class PaymentGuarantee extends AbstractMethod
                 'Name' => 'CustomerIBAN'
             ],
             [
-                '_'    => 'buckaroo3extended_ideal',
+                '_'    => $config->getPaymentMethodToUse(),
                 'Name' => 'PaymentMethodsAllowed'
             ],
             [
-                '_'    => 'FALSE',
+                '_'    => $config->getSendMail(),
                 'Name' => 'SendMail'
             ]
         ];
+
+        if ($this->isAddressDataDifferent($billingAddress->getData(), $shippingAddress->getData())) {
+            $returnValues = array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE'));
+            return array_merge($returnValues, $this->singleAddress($shippingAddress, 'SHIPPING', 2));
+        }
 
         return array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE,SHIPPING'));
 
@@ -296,32 +304,38 @@ class PaymentGuarantee extends AbstractMethod
             [
                 '_'       => $addressType,
                 'Name'    => 'AddressType',
-                'Group'   => 'address'
+                'Group'   => 'address',
+                'GroupID' => 'address_'.$id
             ],
             [
                 '_'       => $street['street'],
                 'Name'    => 'Street',
-                'Group'   => 'address'
+                'Group'   => 'address',
+                'GroupID' => 'address_'.$id
             ],
             [
                 '_'       => $street['house_number'],
                 'Name'    => 'HouseNumber',
-                'Group'   => 'address'
+                'Group'   => 'address',
+                'GroupID' => 'address_'.$id
             ],
             [
                 '_'       => $address->getPostcode(),
                 'Name'    => 'ZipCode',
-                'Group'   => 'address'
+                'Group'   => 'address',
+                'GroupID' => 'address_'.$id
             ],
             [
                 '_'       => $address->getCity(),
                 'Name'    => 'City',
-                'Group'   => 'address'
+                'Group'   => 'address',
+                'GroupID' => 'address_'.$id
             ],
             [
                 '_'       => $address->getCountryId(),
                 'Name'    => 'Country',
-                'Group'   => 'address'
+                'Group'   => 'address',
+                'GroupID' => 'address_'.$id
             ]
         ];
     }
@@ -354,7 +368,7 @@ class PaymentGuarantee extends AbstractMethod
             array_diff_key($addressTwo, $keysToExclude)
         );
 
-        return empty($arrayDifferences);
+        return !empty($arrayDifferences);
     }
 
     /**
