@@ -49,7 +49,8 @@ class Toolbar
     private $allowedMethods = [
         'tig_buckaroo_afterpay',
         'tig_buckaroo_afterpay2',
-        'tig_buckaroo_ideal'
+        'tig_buckaroo_ideal',
+        'tig_buckaroo_creditcard'
     ];
 
     /**
