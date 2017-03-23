@@ -231,6 +231,19 @@
                 <payment_action>order</payment_action>
                 <available_in_backend>0</available_in_backend>
             </tig_buckaroo_giftcards>
+
+            <tig_buckaroo_paymentguarantee>
+                <active>0</active>
+                <model>TIG\Buckaroo\Model\Method\PaymentGuarantee</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo Payment Guarantee</title>
+                <sort_order>190</sort_order>
+                <order_email>1</order_email>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <available_in_backend>0</available_in_backend>
+            </tig_buckaroo_paymentguarantee>
         </payment>
 
         <tig_buckaroo>

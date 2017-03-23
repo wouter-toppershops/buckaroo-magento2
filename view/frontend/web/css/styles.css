@@ -309,12 +309,12 @@
 
 /* ======================= PaymentGuarantee ======================== */
 .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:after {
-    background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
+    background: url(../images/tig_buckaroo_paymentguarantee_title.png) no-repeat;
     float: right;
     margin-right: 10px;
     margin-top: -7px;
     background-size: auto 35px;
-    width: 41px;
+    width: 106px;
     height: 35px;
     content: ' ';
 }
@@ -475,7 +475,7 @@
 
     /* PaymentGuarantee */
     .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:before {
-        background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
+        background: url(../images/tig_buckaroo_paymentguarantee_title.png) no-repeat;
         margin-top: -4px;
         float: left;
         margin-right: 10px;
