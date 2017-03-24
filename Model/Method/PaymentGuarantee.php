@@ -64,17 +64,17 @@ class PaymentGuarantee extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canAuthorize            = false;
+    protected $_canAuthorize            = true;
 
     /**
      * @var bool
      */
-    protected $_canCapture              = false;
+    protected $_canCapture              = true;
 
     /**
      * @var bool
      */
-    protected $_canCapturePartial       = false;
+    protected $_canCapturePartial       = true;
 
     /**
      * @var bool
@@ -84,7 +84,7 @@ class PaymentGuarantee extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canVoid                 = true;
+    protected $_canVoid                 = false;
 
     /**
      * @var bool
@@ -128,6 +128,20 @@ class PaymentGuarantee extends AbstractMethod
     }
 
     /**
+     * Check capture availability
+     *
+     * @return bool
+     * @api
+     */
+    public function canCapture()
+    {
+//        if ($this->getConfigData('payment_action') == 'order') {
+//            return false;
+//        }
+        return $this->_canCapture;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function getOrderTransactionBuilder($payment)
@@ -162,7 +176,28 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getAuthorizeTransactionBuilder($payment)
     {
-        return false;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'paymentguarantee',
+            'Action'           => 'order',
+            'Version'          => 1,
+            'RequestParameter' => $this->stripKeysFromParameters(
+                [
+                    'InvoiceDate',
+                    'DateDue',
+                    'PaymentMethodsAllowed'
+                ],
+                $this->getPaymentGuaranteeRequestParameters($payment)
+            )
+        ];
+
+        /** @noinspection PhpUndefinedMethodInspection */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
     }
 
     /**
@@ -198,7 +233,20 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
-        return true;
+        return false;
+    }
+
+    /**
+     * @param array $parameters
+     * @param array $keys
+     *
+     * @return array
+     */
+    private function stripKeysFromParameters($keys, $parameters)
+    {
+        return array_filter($parameters, function ($value) use ($keys) {
+             return !in_array($value['Name'], $keys);
+        });
     }
 
     /**

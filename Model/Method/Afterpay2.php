@@ -132,11 +132,6 @@ class Afterpay2 extends AbstractMethod
     public $usesRedirect                = false;
 
     /**
-     * @var null
-     */
-    public $remoteAddress               = null;
-
-    /**
      * @var bool
      */
     public $closeAuthorizeTransaction   = false;
@@ -1156,33 +1151,5 @@ class Afterpay2 extends AbstractMethod
         }
 
         return $format;
-    }
-
-    /**
-     * @param bool  $ipToLong
-     * @param array $alternativeHeaders
-     *
-     * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface
-     */
-    public function getRemoteAddress($ipToLong = false, $alternativeHeaders = [])
-    {
-        if ($this->remoteAddress === null) {
-            foreach ($alternativeHeaders as $var) {
-                if ($this->request->getServer($var, false)) {
-                    $this->remoteAddress = $this->request->getServer($var);
-                    break;
-                }
-            }
-
-            if (!$this->remoteAddress) {
-                $this->remoteAddress = $this->request->getServer('REMOTE_ADDR');
-            }
-        }
-
-        if (!$this->remoteAddress) {
-            return false;
-        }
-
-        return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
 }

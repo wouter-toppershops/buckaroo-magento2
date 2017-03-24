@@ -161,6 +161,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
+     * @var null
+     */
+    public $remoteAddress = null;
+
+    /**
      * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
      * @param \Magento\Framework\Registry                             $registry
@@ -439,6 +444,34 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this->getOrderPlaceRedirectUrl();
         }
         return parent::getConfigData($field, $storeId);
+    }
+
+    /**
+     * @param bool  $ipToLong
+     * @param array $alternativeHeaders
+     *
+     * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface
+     */
+    public function getRemoteAddress($ipToLong = false, $alternativeHeaders = [])
+    {
+        if ($this->remoteAddress === null) {
+            foreach ($alternativeHeaders as $var) {
+                if ($this->request->getServer($var, false)) {
+                    $this->remoteAddress = $this->request->getServer($var);
+                    break;
+                }
+            }
+
+            if (!$this->remoteAddress) {
+                $this->remoteAddress = $this->request->getServer('REMOTE_ADDR');
+            }
+        }
+
+        if (!$this->remoteAddress) {
+            return false;
+        }
+
+        return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
 
     /**
