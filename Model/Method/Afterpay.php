@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -198,7 +198,9 @@ class Afterpay extends AbstractMethod
      */
     public function getPaymentMethodName($payment)
     {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterpayConfig
+         */
         $afterpayConfig = $this->configProviderMethodFactory->get('afterpay');
 
         $methodName = $afterpayConfig->getPaymentMethodName();
@@ -217,7 +219,9 @@ class Afterpay extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $services = [
             'Name'             => $this->getPaymentMethodName($payment),
             'Action'           => 'Pay',
@@ -226,7 +230,9 @@ class Afterpay extends AbstractMethod
                 $this->getAfterPayRequestParameters($payment),
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -291,7 +297,9 @@ class Afterpay extends AbstractMethod
         $services['RequestParameter'] = $articles;
 
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setAmount($currentInvoiceTotal)
@@ -306,7 +314,9 @@ class Afterpay extends AbstractMethod
 
         // Partial Capture Settings
         if ($capturePartial) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $transactionBuilder->setInvoiceId(
                 $payment->getOrder()->getIncrementId(). '-' .
                 $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
@@ -334,7 +344,9 @@ class Afterpay extends AbstractMethod
                 $this->getAfterPayRequestParameters($payment),
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
@@ -355,7 +367,9 @@ class Afterpay extends AbstractMethod
             'Version'          => 1,
         ];
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setAmount(0)
             ->setType('void')
@@ -386,7 +400,9 @@ class Afterpay extends AbstractMethod
         $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -492,7 +508,9 @@ class Afterpay extends AbstractMethod
     {
         $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
 
-        /** @var \Magento\Eav\Model\Entity\Collection\AbstractCollection|array $cartData */
+        /**
+         * @var \Magento\Eav\Model\Entity\Collection\AbstractCollection|array $cartData
+         */
         $cartData = $this->objectManager->create('Magento\Checkout\Model\Cart')->getItems();
 
         // Set loop variables
@@ -647,29 +665,39 @@ class Afterpay extends AbstractMethod
     /**
      * Get the service cost lines (buckfee)
      *
-     * @param (int) $latestKey
+     * @param (int)                                                                              $latestKey
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param                                                                                    $includesTax
+     * @param $includesTax
      *
-     * @return array
+     * @return   array
      * @internal param $ (int) $latestKey
      */
     public function getServiceCostLine($latestKey, $payment, $includesTax)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /**
+         * @var \Magento\Sales\Model\Order $order
+         */
         $order = $payment->getOrder();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $buckarooFee = $order->getBuckarooFee();
 
         if ($includesTax) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $buckarooFeeLine = $order->getBaseBuckarooFeeInclTax();
         } else {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $buckarooFeeLine = $order->getBaseBuckarooFee();
         }
 
-        /** @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper */
+        /**
+         * @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper
+         */
         $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
 
         $article = [];
@@ -706,14 +734,16 @@ class Afterpay extends AbstractMethod
     /**
      * Get the discount cost lines
      *
-     * @param (int) $latestKey
+     * @param (int)                                                                              $latestKey
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return array
      */
     public function getDiscountLine($latestKey, $payment)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /**
+         * @var \Magento\Sales\Model\Order $order
+         */
         $order      = $payment->getOrder();
 
         $article = [];
@@ -735,14 +765,16 @@ class Afterpay extends AbstractMethod
     /**
      * Get the tax line
      *
-     * @param (int) $latestKey
+     * @param (int)                                                                              $latestKey
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return array
      */
     public function getTaxLine($latestKey, $payment)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /**
+         * @var \Magento\Sales\Model\Order $order
+         */
         $order      = $payment->getOrder();
 
         $article = $this->getArticleArrayLine(
@@ -750,7 +782,7 @@ class Afterpay extends AbstractMethod
             'BTW',
             2,
             1,
-            number_format($order->getTaxAmount(),2),
+            number_format($order->getTaxAmount(), 2),
             4
         );
 
@@ -819,7 +851,9 @@ class Afterpay extends AbstractMethod
         if (!$taxClassId) {
             return $taxCategory;
         }
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterPayConfig */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay $afterPayConfig
+         */
         $afterPayConfig = $this->configProviderMethodFactory
             ->get(\TIG\Buckaroo\Model\Method\Afterpay::PAYMENT_METHOD_CODE);
 
@@ -851,7 +885,9 @@ class Afterpay extends AbstractMethod
      */
     public function getRequestBillingData($payment)
     {
-        /** @var \Magento\Sales\Api\Data\OrderAddressInterface $billingAddress */
+        /**
+         * @var \Magento\Sales\Api\Data\OrderAddressInterface $billingAddress
+         */
         $billingAddress = $payment->getOrder()->getBillingAddress();
         $streetFormat   = $this->formatStreet($billingAddress->getStreet());
 
@@ -932,7 +968,9 @@ class Afterpay extends AbstractMethod
      */
     public function getRequestShippingData($payment)
     {
-        /** @var \Magento\Sales\Api\Data\OrderAddressInterface $shippingAddress */
+        /**
+         * @var \Magento\Sales\Api\Data\OrderAddressInterface $shippingAddress
+         */
         $shippingAddress = $payment->getOrder()->getShippingAddress();
         $streetFormat    = $this->formatStreet($shippingAddress->getStreet());
 
@@ -1121,7 +1159,7 @@ class Afterpay extends AbstractMethod
     }
 
     /**
-     * @param bool $ipToLong
+     * @param bool  $ipToLong
      * @param array $alternativeHeaders
      *
      * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface

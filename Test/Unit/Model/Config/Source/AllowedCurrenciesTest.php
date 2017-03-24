@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Source;
 
@@ -84,9 +84,11 @@ class AllowedCurrenciesTest extends \TIG\Buckaroo\Test\BaseTest
         $this->allowedCurrenciesConfig->shouldReceive('getAllowedCurrencies')->andReturn(['ABC', 'DEF', 'GHI']);
 
         $this->currencyBundle = \Mockery::mock(\Magento\Framework\Locale\Bundle\CurrencyBundle::class)->makePartial();
-        $this->currencyBundle->shouldReceive('get')->andReturn([
+        $this->currencyBundle->shouldReceive('get')->andReturn(
+            [
             'Currencies' => $this->fixture,
-        ]);
+            ]
+        );
 
         $this->object = $this->objectManagerHelper->getObject(
             \TIG\Buckaroo\Model\Config\Source\AllowedCurrencies::class,

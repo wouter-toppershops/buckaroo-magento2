@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Block\Adminhtml\Sales;
 
@@ -67,11 +67,15 @@ class Totals extends \Magento\Framework\View\Element\Template
     public function initTotals()
     {
         $parent = $this->getParentBlock();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+        * @noinspection PhpUndefinedMethodInspection
+        */
         $source = $parent->getSource();
         $totals = $this->helper->getTotals($source);
         foreach ($totals as $total) {
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+            * @noinspection PhpUndefinedMethodInspection
+            */
             $this->getParentBlock()->addTotalBefore(new \Magento\Framework\DataObject($total), 'grand_total');
         }
         return $this;

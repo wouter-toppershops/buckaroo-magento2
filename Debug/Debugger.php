@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Debug;
@@ -92,9 +92,9 @@ class Debugger
     protected $mode = 'log';
 
     /**
-     * @param \TIG\Buckaroo\Debug\Logger                    $logger
-     * @param \Magento\Framework\ObjectManagerInterface     $objectManager
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory    $configProviderFactory
+     * @param \TIG\Buckaroo\Debug\Logger                 $logger
+     * @param \Magento\Framework\ObjectManagerInterface  $objectManager
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
     public function __construct(
         \TIG\Buckaroo\Debug\Logger $logger,
@@ -108,7 +108,9 @@ class Debugger
         /**
          * Get some settings
          */
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $config */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $config
+         */
         $config = $this->configProviderFactory->get('account');
 
         /**
@@ -210,9 +212,9 @@ class Debugger
     /**
      * Log message
      *
-     * @param      $message
-     * @param int  $level
-     * @param null $filename
+     * @param $message
+     * @param int     $level
+     * @param null    $filename
      *
      * @return $this
      */
@@ -257,7 +259,9 @@ class Debugger
          * Monolog requires handlers, so we need to check which ones we need to push
          */
         if (strpos($this->getMode(), 'log') !== false) {
-            /** Stream handler handles local file logging capabilities */
+            /**
+             * Stream handler handles local file logging capabilities
+             */
             $this->logger->pushHandler($this->createStreamHandler($filename));
             $this->logger->addRecord($level, $message, []);
         }
@@ -265,7 +269,9 @@ class Debugger
          * @todo Monolog's NativeMailHandler seems broken, so we use mail() in the meantime
          */
         if (strpos($this->mode, 'mail') !== false) {
-            /** Mail handler handles sending logs to configured e-mail addresses */
+            /**
+             * Mail handler handles sending logs to configured e-mail addresses
+             */
             $headers =  'From: ' . $this->getMailFrom() . "\r\n" .
                         'Reply-To: ' . $this->getMailFrom() . "\r\n" .
                         'X-Mailer: PHP/' . phpversion();

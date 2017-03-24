@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\Method;
@@ -131,13 +131,19 @@ class Giftcards extends AbstractMethod
      */
     public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
     {
-        /** If there are no giftcards chosen, we can't be available */
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards $ccConfig */
+        /**
+         * If there are no giftcards chosen, we can't be available
+         */
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards $ccConfig
+         */
         $gcConfig = $this->configProviderMethodFactory->get('giftcards');
         if (null === $gcConfig->getAllowedGiftcards()) {
             return false;
         }
-        /** Return the regular isAvailable result */
+        /**
+         * Return the regular isAvailable result
+         */
         return parent::isAvailable($quote);
     }
 
@@ -239,7 +245,9 @@ class Giftcards extends AbstractMethod
         // Partial Capture Settings
         if ($capturePartial) {
 
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $transactionBuilder->setAmount($currentInvoiceTotal)
                 ->setInvoiceId(
                     $payment->getOrder()->getIncrementId(). '-' .

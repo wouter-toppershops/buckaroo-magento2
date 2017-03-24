@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@totalinternetgroup.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
@@ -98,7 +98,9 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
     {
         $currencies = $this->allowedCurrenciesConfig->getAllowedCurrencies();
         if ($method) {
-            /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfig */
+            /**
+             * @var \TIG\Buckaroo\Model\ConfigProvider\Method\ConfigProviderInterface $methodConfig
+             */
             $methodConfig = $this->configProviderMethodFactory->get($method);
             $currencies = $methodConfig->getBaseAllowedCurrencies();
         }
@@ -123,8 +125,8 @@ class AllowedCurrencies implements \Magento\Framework\Option\ArrayInterface
      * $method is what is defined in system.xml (i.e. ::ideal) and is directly passed to toOptionArray for method
      * configuration exemptions.
      *
-     * @param      $method
-     * @param null $params
+     * @param $method
+     * @param null   $params
      *
      * @return array
      */

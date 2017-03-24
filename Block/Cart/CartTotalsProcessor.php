@@ -34,7 +34,9 @@ class CartTotalsProcessor extends AbstractTotalsProcessor implements LayoutProce
      */
     public function process($jsLayout)
     {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider */
+        /**
+        * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
+        */
         $configProvider = $this->configProviderFactory->get('account');
         $paymentFeeLabel = $configProvider->getPaymentFeeLabel();
 

@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Plugin;
 
@@ -46,7 +46,7 @@ class TotalsCollector
      * Reset quote reward point amount
      *
      * @param \Magento\Quote\Model\Quote\TotalsCollector $subject
-     * @param Quote $quote
+     * @param Quote                                      $quote
      *
      * @return void
      */
@@ -54,17 +54,29 @@ class TotalsCollector
         \Magento\Quote\Model\Quote\TotalsCollector $subject,
         Quote $quote
     ) {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFee(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBaseBuckarooFee(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeTaxAmount(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeBaseTaxAmount(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBuckarooFeeInclTax(0);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $quote->setBaseBuckarooFeeInclTax(0);
     }
 }

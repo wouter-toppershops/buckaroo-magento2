@@ -33,15 +33,17 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 TIG B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Controller\Redirect;
 
 class Process extends \Magento\Framework\App\Action\Action
 {
-    /** @var array */
+    /**
+     * @var array
+     */
     protected $response;
 
     /**
@@ -176,7 +178,9 @@ class Process extends \Magento\Framework\App\Action\Action
                 }
 
                 // Send order confirmation mail if we're supposed to
-                /** @noinspection PhpUndefinedMethodInspection */
+                /**
+                 * @noinspection PhpUndefinedMethodInspection
+                 */
                 if (!$this->order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
                     $this->orderSender->send($this->order, true);
                 }
@@ -189,11 +193,11 @@ class Process extends \Magento\Framework\App\Action\Action
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
                 /*
-                 * Something went wrong, so we're going to have to
-                 * 1) recreate the quote for the user
-                 * 2) cancel the order we had to create to even get here
-                 * 3) redirect back to the checkout page to offer the user feedback & the option to try again
-                 */
+                * Something went wrong, so we're going to have to
+                * 1) recreate the quote for the user
+                * 2) cancel the order we had to create to even get here
+                * 3) redirect back to the checkout page to offer the user feedback & the option to try again
+                */
                 $this->messageManager->addErrorMessage(
                     __(
                         'Unfortunately an error occurred while processing your payment. Please try again. If this' .
@@ -229,17 +233,29 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->quote->setTriggerRecollect('1');
         $this->quote->setReservedOrderId(null);
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFee(null);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBaseBuckarooFee(null);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFeeTaxAmount(null);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFeeBaseTaxAmount(null);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBuckarooFeeInclTax(null);
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $this->quote->setBaseBuckarooFeeInclTax(null);
 
         if ($this->cart->setQuote($this->quote)->save()) {
@@ -262,7 +278,9 @@ class Process extends \Magento\Framework\App\Action\Action
             return true;
         }
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if (!$this->accountConfig->getCancelOnFailed()) {
             return true;
         }
@@ -292,7 +310,9 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectSuccess()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $url = $this->accountConfig->getSuccessRedirect();
 
         return $this->_redirect($url);
@@ -305,7 +325,9 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectFailure()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $url = $this->accountConfig->getFailureRedirect();
 
         return $this->_redirect($url);

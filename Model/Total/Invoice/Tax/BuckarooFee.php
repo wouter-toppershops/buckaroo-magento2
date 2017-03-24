@@ -33,8 +33,8 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Model\Total\Invoice\Tax;
 
@@ -43,20 +43,26 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
     /**
      * Collect buckaroo fee tax totals
      *
-     * @param \Magento\Sales\Model\Order\Invoice $invoice
+     * @param  \Magento\Sales\Model\Order\Invoice $invoice
      * @return $this
      */
     public function collect(\Magento\Sales\Model\Order\Invoice $invoice)
     {
         $order = $invoice->getOrder();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $buckarooFeeTaxAmountLeft = $order->getBuckarooFeeTaxAmount() - $order->getBuckarooFeeTaxAmountInvoiced();
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         $baseBuckarooFeeTaxAmountLeft = $order->getBuckarooFeeBaseTaxAmount()
             - $order->getBuckarooFeeBaseTaxAmountInvoiced();
 
-        /** @noinspection PhpUndefinedMethodInspection */
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
         if ($order->getBuckarooFeeBaseTaxAmount() && $baseBuckarooFeeTaxAmountLeft > 0) {
             if ($baseBuckarooFeeTaxAmountLeft < $invoice->getBaseGrandTotal()) {
                 $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeTaxAmountLeft);
@@ -72,9 +78,13 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
             $invoice->setTaxAmount($invoice->getTaxAmount() + $buckarooFeeTaxAmountLeft);
             $invoice->setBaseTaxAmount($invoice->getBaseTaxAmount() + $baseBuckarooFeeTaxAmountLeft);
 
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $invoice->setBuckarooFeeTaxAmount($buckarooFeeTaxAmountLeft);
-            /** @noinspection PhpUndefinedMethodInspection */
+            /**
+             * @noinspection PhpUndefinedMethodInspection
+             */
             $invoice->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTaxAmountLeft);
         }
 
