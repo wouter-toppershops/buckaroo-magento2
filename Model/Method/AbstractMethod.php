@@ -151,7 +151,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     // @codingStandardsIgnoreEnd
 
     /**
-     * @var \Magento\Developer\Helper\Data
+     * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -161,6 +161,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
      * @param \Magento\Framework\Registry                             $registry
      * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
@@ -168,7 +169,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Payment\Helper\Data                            $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
-     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -184,6 +184,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param array                                                   $data
      */
     public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
@@ -191,7 +192,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\ObjectManagerInterface $objectManager = null,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -218,7 +218,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $resourceCollection,
             $data
         );
-
+        /**
+         * @todo : Remove usage of objectManager, better to use DI.
+         */
         $this->objectManager                = $objectManager;
         $this->gateway                      = $gateway;
         $this->transactionBuilderFactory    = $transactionBuilderFactory;
@@ -369,8 +371,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $methodValue = $this->getConfigData('limit_by_ip');
         if ($accountConfig->getLimitByIp() == 1 || $methodValue == 1) {
             $storeId = $quote ? $quote->getStoreId() : null;
-            $developmentHelper = $this->objectManager->create(\Magento\Developer\Helper\Data::class);
-            $isAllowed = $developmentHelper->isDevAllowed($storeId);
+            $isAllowed = $this->developmentHelper->isDevAllowed($storeId);
 
             if (!$isAllowed) {
                 return false;
