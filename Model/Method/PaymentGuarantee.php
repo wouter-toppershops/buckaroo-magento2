@@ -124,7 +124,6 @@ class PaymentGuarantee extends AbstractMethod
         $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
         $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
 
-
         return $this;
     }
 
@@ -267,10 +266,6 @@ class PaymentGuarantee extends AbstractMethod
                 'Name' => 'PhoneNumber'
             ],
             [
-                '_'    => $payment->getAdditionalInformation('customer_iban'),
-                'Name' => 'CustomerIBAN'
-            ],
-            [
                 '_'    => $config->getPaymentMethodToUse(),
                 'Name' => 'PaymentMethodsAllowed'
             ],
@@ -279,6 +274,15 @@ class PaymentGuarantee extends AbstractMethod
                 'Name' => 'SendMail'
             ]
         ];
+
+        if ($payment->getAdditionalInformation('customer_iban')) {
+            $defaultValues = array_merge($defaultValues, [
+                [
+                    '_'    => $payment->getAdditionalInformation('customer_iban'),
+                    'Name' => 'CustomerIBAN'
+                ]
+            ]);
+        }
 
         if ($this->isAddressDataDifferent($billingAddress->getData(), $shippingAddress->getData())) {
             $returnValues = array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE'));
