@@ -180,7 +180,7 @@ class PaymentGuarantee extends AbstractMethod
 
         $services = [
             'Name'             => 'paymentguarantee',
-            'Action'           => 'order',
+            'Action'           => 'Order',
             'Version'          => 1,
             'RequestParameter' => $this->stripKeysFromParameters(
                 [
@@ -205,27 +205,7 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getRefundTransactionBuilder($payment)
     {
-        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
-
-        $services = [
-            'Name'    => 'paymentguarantee',
-            'Action'  => 'Refund',
-            'Version' => 1,
-        ];
-
-        $requestParams = $this->addExtraFields($this->_code);
-        $services = array_merge($services, $requestParams);
-
-        /** @noinspection PhpUndefinedMethodInspection */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey(
-                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-            )
-            ->setChannel('CallCenter');
-
-        return $transactionBuilder;
+        return false;
     }
 
     /**
@@ -244,9 +224,11 @@ class PaymentGuarantee extends AbstractMethod
      */
     private function stripKeysFromParameters($keys, $parameters)
     {
-        return array_filter($parameters, function ($value) use ($keys) {
+        $stripped = array_filter($parameters, function ($value) use ($keys) {
              return !in_array($value['Name'], $keys);
         });
+
+        return array_values($stripped);
     }
 
     /**
