@@ -150,6 +150,19 @@ class Push
             );
         }
 
+        $creditmemoCollection = $this->order->getCreditmemosCollection();
+        $creditmemosByTransactionId = $creditmemoCollection->getItemsByColumnValue(
+            'transaction_id',
+            $this->postData['brq_transactions']
+        );
+
+        if (count($creditmemosByTransactionId) > 0) {
+            $this->debugger->addToMessage('The transaction has already been refunded.');
+            $this->debugger->log();
+
+            return false;
+        }
+
         $creditmemo = $this->createCreditmemo();
 
         $this->debugger->addToMessage('Order successful refunded = '. $creditmemo);

@@ -108,6 +108,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->creditmemoFactory->shouldReceive('getAllItems')->andReturn([]);
         $this->creditmemoFactory->shouldReceive('isValidGrandTotal')->andReturn(true);
         $this->creditmemoFactory->shouldReceive('setTransactionId')->once()->with($id);
+        $this->creditmemoFactory->shouldReceive('getItemsByColumnValue')->with('transaction_id', $id)->andReturn([]);
 
         $this->configProviderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->configProviderFactory->shouldReceive('getAllowPush')->andReturn(true);
