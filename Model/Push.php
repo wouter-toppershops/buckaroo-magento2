@@ -180,8 +180,8 @@ class Push implements PushInterface
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
 
-        //Skip informational messages for processing
-        if ($this->postData['brq_mutationtype'] == 'Informational') {
+        //Skip informational messages for group processing giftcards
+        if ($this->postData['brq_transaction_type'] == 'I150') {
             return;
         }
 
@@ -196,10 +196,10 @@ class Push implements PushInterface
 
         //Check if the order can receive further status updates
         $this->order = $this->objectManager->create(Order::class)
-            ->loadByIncrementId($this->postData['brq_invoicenumber']);
+            ->loadByIncrementId($this->postData['brq_ordernumber']);
 
         if (!$this->order->getId()) {
-            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber');
+            $this->debugger->addToMessage('Order could not be loaded by brq_ordernumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
