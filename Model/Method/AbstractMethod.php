@@ -181,6 +181,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
      * @param array                                                   $data
      */
     public function __construct(
@@ -204,6 +205,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        \Magento\Developer\Helper\Data $developmentHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -232,6 +234,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
+        $this->developmentHelper            = $developmentHelper;
 
         $this->gateway->setMode(
             $this->helper->getMode($this->buckarooPaymentMethodCode)

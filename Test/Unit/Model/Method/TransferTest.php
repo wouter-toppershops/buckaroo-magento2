@@ -194,6 +194,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
             'buckaroo_transaction_key'
         )->andReturn('getAdditionalInformation');
+        $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
+            'buckaroo_original_transaction_key'
+        )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
         $this->transactionBuilderFactory->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();

@@ -90,11 +90,14 @@ class OrderTest extends BaseTest
 
         $account = \Mockery::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
         $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
+        $account->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
 
         $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
+        $order->shouldReceive('save');
+        
         $this->object->setOrder($order);
 
         $result = $this->object->getBody();
