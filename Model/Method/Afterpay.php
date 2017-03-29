@@ -123,7 +123,7 @@ class Afterpay extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefundInvoicePartial = false;
+    protected $_canRefundInvoicePartial = true;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -400,9 +400,22 @@ class Afterpay extends AbstractMethod
         $requestParams = $this->addExtraFields($this->_code);
         $services = array_merge($services, $requestParams);
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+        $articles = [];
+
+        if ($this->canRefundPartialPerInvoice() && $creditmemo) {
+            //AddCreditMemoArticles
+            $articles = $this->getCreditmemoArticleData($payment);
+        }
+
+        if (isset($services['RequestParameter'])) {
+            $articles = array_merge($services['RequestParameter'], $articles);
+        }
+
+        $services['RequestParameter'] = $articles;
+
+        /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest')
@@ -410,6 +423,13 @@ class Afterpay extends AbstractMethod
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
             ->setChannel('CallCenter');
+
+        if ($this->canRefundPartialPerInvoice() && $creditmemo) {
+            $invoice = $creditmemo->getInvoice();
+
+            $transactionBuilder->setInvoiceId('CM' . $invoice->getIncrementId())
+                ->setOriginalTransactionKey($payment->getParentTransactionId());
+        }
 
         return $transactionBuilder;
     }
@@ -622,6 +642,55 @@ class Afterpay extends AbstractMethod
         $requestData = $articles;
 
         return $requestData;
+    }
+
+    /**
+     * @param $payment
+     *
+     * @return array
+     */
+    public function getCreditmemoArticleData($payment)
+    {
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+        $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+
+        $articles = [];
+        $count = 1;
+
+        /** @var \Magento\Sales\Model\Order\Creditmemo\Item $item */
+        foreach ($creditmemo->getAllItems() as $item) {
+            if (empty($item) || $this->calculateProductPrice($item, $includesTax) == 0) {
+                continue;
+            }
+
+            $article = $this->getArticleArrayLine(
+                $count,
+                $item->getQty() . ' x ' . $item->getName(),
+                $item->getProductId(),
+                1,
+                $this->calculateProductPrice($item, $includesTax),
+                $this->getTaxCategory($item->getTaxClassId())
+            );
+
+            $articles = array_merge($articles, $article);
+
+            if ($count < self::AFTERPAY_MAX_ARTICLE_COUNT) {
+                $count++;
+                continue;
+            }
+
+            break;
+        }
+
+        // hasCreditmemos only counts actually saved creditmemos.
+        // The current creditmemo is still "in progress" and thus has yet to be saved.
+        if (count($articles) > 0 && $payment->getOrder()->hasCreditmemos() == 0) {
+            $serviceLine = $this->getServiceCostLine($count, $payment, $includesTax);
+            $articles = array_merge($articles, $serviceLine);
+        }
+
+        return $articles;
     }
 
     /**
@@ -1184,5 +1253,31 @@ class Afterpay extends AbstractMethod
         }
 
         return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
+    }
+
+    /**
+     * Failure message from failed Aferpay Transactions
+     *
+     * {@inheritdoc}
+     */
+    protected function getFailureMessageFromMethod($transactionResponse)
+    {
+        $transactionType = $transactionResponse->TransactionType;
+        $methodMessage = '';
+
+        if ($transactionType != 'C011' && $transactionType != 'C016') {
+            return $methodMessage;
+        }
+
+        $subcodeMessage = $transactionResponse->Status->SubCode->_;
+        $subcodeMessage = explode(':', $subcodeMessage);
+
+        if (count($subcodeMessage) > 1) {
+            array_shift($subcodeMessage);
+        }
+
+        $methodMessage = trim(implode(':', $subcodeMessage));
+
+        return $methodMessage;
     }
 }

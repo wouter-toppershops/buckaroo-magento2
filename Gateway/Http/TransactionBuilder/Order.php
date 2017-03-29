@@ -76,6 +76,11 @@ class Order extends AbstractTransactionBuilder
      */
     public function getBody()
     {
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
+        $accountConfig = $this->configProviderFactory->get('account');
+        
         if ($this->amount < 0.01 || !$this->currency) {
             $this->setOrderCurrencyAndAmount();
         }
@@ -88,14 +93,15 @@ class Order extends AbstractTransactionBuilder
 
         $order = $this->getOrder();
 
+        if ($accountConfig->getCreateOrderBeforeTransaction()) {
+            $order->save();
+        }
+
+
         if (!$this->invoiceId) {
             $this->invoiceId = $order->getIncrementId();
         }
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
         if (!$ip) {
