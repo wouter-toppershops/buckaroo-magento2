@@ -133,9 +133,14 @@ class Order extends AbstractTransactionBuilder
         ];
 
         $services = $this->getServices();
-        if (isset($services['Name']) && isset($services['Action'])
-            && ($services['Name'] == 'paymentguarantee') && $services['Action'] == 'Order') {
-            unset($body['Invoice']);
+        if (isset($services['Name']) && isset($services['Action'])) {
+            if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'Order') {
+                unset($body['Invoice']);
+            }
+
+            if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'PartialInvoice') {
+                unset($body['OriginalTransactionKey']);
+            }
         }
 
         $customVars = $this->getCustomVars();

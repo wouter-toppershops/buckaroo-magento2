@@ -100,6 +100,11 @@ class PaymentGuarantee extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+
+    /**
+     * @var bool
+     */
+    protected $_isPartialCapture        = false;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -135,9 +140,9 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function canCapture()
     {
-//        if ($this->getConfigData('payment_action') == 'order') {
-//            return false;
-//        }
+        if ($this->getConfigData('payment_action') == 'order') {
+            return false;
+        }
         return $this->_canCapture;
     }
 
@@ -168,7 +173,48 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getCaptureTransactionBuilder($payment)
     {
-        return false;
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'paymentguarantee',
+            'Action'           => 'PartialInvoice',
+            'Version'          => 1,
+            'RequestParameter' => $this->keepKeysFromParameters(
+                [
+                    'AmountVat',
+                    'InvoiceDate',
+                    'DateDue',
+                    'PaymentMethodsAllowed',
+                    'SendMail',
+                    'CustomerCode'
+                ],
+                $this->getPaymentGuaranteeRequestParameters($payment)
+            )
+        ];
+
+        /** @var \Magento\Sales\Model\Order $order */
+        $order       = $payment->getOrder();
+        $totalAmount = $this->calculateInvoiceAmount($order);
+
+        $transactionBuilder->setOrder($order)
+            ->setServices($services)
+            ->setAmount($totalAmount)
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        if ($this->_isPartialCapture) {
+            /** @noinspection PhpUndefinedMethodInspection */
+            $transactionBuilder->setInvoiceId($this->getPartialInvoiceId($order))
+                ->setOriginalTransactionKey(
+                    $payment->getParentTransactionId()
+                );
+        }
+
+        return $transactionBuilder;
     }
 
     /**
@@ -205,7 +251,29 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getRefundTransactionBuilder($payment)
     {
-        return false;
+        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
+
+        $services = [
+            'Name'    => 'paymentguarantee',
+            'Action'  => 'CreditNote',
+            'Version' => 1,
+        ];
+
+        $requestParams = $this->addExtraFields($this->_code);
+        $services = array_merge($services, $requestParams);
+
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
+            )
+            ->setChannel('CallCenter');
+
+        return $transactionBuilder;
     }
 
     /**
@@ -226,6 +294,21 @@ class PaymentGuarantee extends AbstractMethod
     {
         $stripped = array_filter($parameters, function ($value) use ($keys) {
              return !in_array($value['Name'], $keys);
+        });
+
+        return array_values($stripped);
+    }
+
+    /**
+     * @param $keys
+     * @param $parameters
+     *
+     * @return array
+     */
+    private function keepKeysFromParameters($keys, $parameters)
+    {
+        $stripped = array_filter($parameters, function ($value) use ($keys) {
+            return in_array($value['Name'], $keys);
         });
 
         return array_values($stripped);
@@ -439,5 +522,51 @@ class PaymentGuarantee extends AbstractMethod
         }
 
         return $format;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     * @return int|float
+     */
+    private function calculateInvoiceAmount($order)
+    {
+        $invoiceAmount = 0;
+
+        if (!$order->hasInvoices()) {
+            return $invoiceAmount;
+        }
+
+        $i = 0;
+        /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+        foreach ($order->getInvoiceCollection() as $invoice) {
+            if (++$i !== $order->hasInvoices()) {
+                continue;
+            }
+            $invoiceAmount = $invoice->getBaseGrandTotal();
+        }
+
+        $this->setCaptureType($order, $invoiceAmount);
+        return $invoiceAmount;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return string
+     */
+    private function getPartialInvoiceId($order)
+    {
+        return $order->getIncrementId() . '-'
+            . $order->hasInvoices() . '-'
+            . substr(md5(date("YMDHis")), 0, 6);
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     * @param $invoiceAmount
+     */
+    private function setCaptureType($order, $invoiceAmount)
+    {
+        $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $order->hasInvoices() == 1);
     }
 }
