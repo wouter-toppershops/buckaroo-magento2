@@ -281,16 +281,6 @@
 }
 */
 
-#tig_buckaroo_tig_buckaroo_payment_section_tig_buckaroo_giropay-head:after{
-    color:#db1200;
-    content: 'Beta';
-    text-transform: uppercase;
-    font-size:10px;
-    margin-left:3px;
-    position :absolute;
-    font-weight:lighter;
-}
-
 .block-version h3 {
     cursor: auto !important;
 }
