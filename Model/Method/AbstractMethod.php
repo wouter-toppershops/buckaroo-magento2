@@ -184,6 +184,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param array                                                   $data
      */
     public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
@@ -191,7 +192,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -866,6 +866,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         parent::void($payment);
 
         $this->payment = $payment;
+
+        // Do not cancel authorize when accept authorize is failed.
+        // buckaroo_failed_authorize is set in Push.php
+        if ($this->payment->getAdditionalInformation('buckaroo_failed_authorize') == 1) {
+            return $this;
+        }
+        
 
         $transactionBuilder = $this->getVoidTransactionBuilder($payment);
 

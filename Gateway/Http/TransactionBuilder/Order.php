@@ -76,6 +76,11 @@ class Order extends AbstractTransactionBuilder
      */
     public function getBody()
     {
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
+        $accountConfig = $this->configProviderFactory->get('account');
+        
         if ($this->amount < 0.01 || !$this->currency) {
             $this->setOrderCurrencyAndAmount();
         }
@@ -85,11 +90,6 @@ class Order extends AbstractTransactionBuilder
             $creditAmount = $this->amount;
             $this->amount = 0;
         }
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
 
         $order = $this->getOrder();
 
