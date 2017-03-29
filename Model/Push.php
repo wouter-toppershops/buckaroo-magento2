@@ -55,6 +55,7 @@ class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
+    const BUCK_PUSH_ACCEPT_PAY_TYPE        = 'C016';
     const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
     const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
@@ -437,7 +438,9 @@ class Push implements PushInterface
             
             //Do not cancel order on a failed authorize, because it will send a cancel authorize message to
             //Buckaroo, this is not needed/correct.
-            if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE) {
+            if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE
+                || $this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_PAY_TYPE
+                ) {
                 $payment = $this->order->getPayment();
                 $payment->setAdditionalInformation('buckaroo_failed_authorize', 1);
                 $payment->save();
