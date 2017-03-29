@@ -151,7 +151,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     // @codingStandardsIgnoreEnd
 
     /**
-     * @var \Magento\Developer\Helper\Data
+     * @var \Magento\Framework\ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -161,6 +161,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
      * @param \Magento\Framework\Registry                             $registry
      * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
@@ -168,7 +169,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Payment\Helper\Data                            $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
-     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -181,9 +181,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
      * @param array                                                   $data
      */
     public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
         \Magento\Framework\Model\Context $context,
         \Magento\Framework\Registry $registry,
         \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
@@ -191,7 +193,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
-        \Magento\Framework\ObjectManagerInterface $objectManager = null,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -204,6 +205,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        \Magento\Developer\Helper\Data $developmentHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -218,7 +220,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             $resourceCollection,
             $data
         );
-
+        /**
+         * @todo : Remove usage of objectManager, better to use DI.
+         */
         $this->objectManager                = $objectManager;
         $this->gateway                      = $gateway;
         $this->transactionBuilderFactory    = $transactionBuilderFactory;
@@ -230,6 +234,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
+        $this->developmentHelper            = $developmentHelper;
 
         $this->gateway->setMode(
             $this->helper->getMode($this->buckarooPaymentMethodCode)
@@ -369,8 +374,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $methodValue = $this->getConfigData('limit_by_ip');
         if ($accountConfig->getLimitByIp() == 1 || $methodValue == 1) {
             $storeId = $quote ? $quote->getStoreId() : null;
-            $developmentHelper = $this->objectManager->create(\Magento\Developer\Helper\Data::class);
-            $isAllowed = $developmentHelper->isDevAllowed($storeId);
+            $isAllowed = $this->developmentHelper->isDevAllowed($storeId);
 
             if (!$isAllowed) {
                 return false;
@@ -522,6 +526,43 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * Should be overwritten by the respective payment method class when it has a specific failure message.
+     *
+     * @param $transactionResponse
+     *
+     * @return string
+     */
+    protected function getFailureMessageFromMethod($transactionResponse)
+    {
+        return '';
+    }
+
+    /**
+     * @param $response
+     *
+     * @return string
+     */
+    protected function getFailureMessage($response)
+    {
+        $message = 'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.';
+
+        if (!isset($response[0]) || empty($response[0])) {
+            return $message;
+        }
+
+        $transactionResponse = $response[0];
+        $responseCode = $transactionResponse->Status->Code->Code;
+        $billingCountry = $this->payment->getOrder()->getBillingAddress()->getCountryId();
+
+        if ($billingCountry == 'NL' && $responseCode == 490) {
+            $methodMessage = $this->getFailureMessageFromMethod($transactionResponse);
+            $message = strlen($methodMessage) > 0 ? $methodMessage : $message;
+        }
+
+        return $message;
+    }
+
+    /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
      * @return array
@@ -540,10 +581,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            $failureMessage = $this->getFailureMessage($response);
+
             throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
+                new \Magento\Framework\Phrase($failureMessage)
             );
         }
 
@@ -633,10 +674,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            $failureMessage = $this->getFailureMessage($response);
+
             throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
+                new \Magento\Framework\Phrase($failureMessage)
             );
         }
 
@@ -828,6 +869,13 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         parent::void($payment);
 
         $this->payment = $payment;
+
+        // Do not cancel authorize when accept authorize is failed.
+        // buckaroo_failed_authorize is set in Push.php
+        if ($this->payment->getAdditionalInformation('buckaroo_failed_authorize') == 1) {
+            return $this;
+        }
+        
 
         $transactionBuilder = $this->getVoidTransactionBuilder($payment);
 

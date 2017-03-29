@@ -200,6 +200,13 @@
                 <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
                 <config_path>tig_buckaroo/account/payment_fee_label</config_path>
             </field>
+
+            <field id="create_order_before_transaction" translate="label comment" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Create order before transaction</label>
+                <comment><![CDATA[This will create an order before setting up the transaction with Buckaroo.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>tig_buckaroo/account/create_order_before_transaction</config_path>
+            </field>
         </group>
     </group>
 </include>
