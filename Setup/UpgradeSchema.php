@@ -57,6 +57,10 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
             $this->createGiftcardTable($installer);
         }
 
+        if (!$installer->tableExists('tig_buckaroo_invoice')) {
+            $this->createInvoiceTable($installer);
+        }
+
         $installer->endSetup();
     }
 
@@ -103,6 +107,67 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         );
 
         $table->setComment('TIG Buckaroo Giftcard');
+
+        $installer->getConnection()->createTable($table);
+    }
+
+    /**
+     * @param SchemaSetupInterface $installer
+     *
+     * @throws \Zend_Db_Exception
+     */
+    protected function createInvoiceTable(SchemaSetupInterface $installer)
+    {
+        $table = $installer->getConnection()->newTable($installer->getTable('tig_buckaroo_invoice'));
+
+        $table->addColumn(
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'identity' => true,
+                'unsigned' => true,
+                'nullable' => false,
+                'primary'  => true,
+            ],
+            'Entity ID'
+        );
+
+        $table->addColumn(
+            'invoice_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'identity' => false,
+                'unsigned' => true,
+                'nullable' => false,
+                'primary' => false,
+            ],
+            'Invoice ID'
+        );
+
+        $table->addForeignKey(
+            $installer->getFkName('tig_buckaroo_invoice', 'invoice_id', 'sales_invoice', 'entity_id'),
+            'invoice_id',
+            $installer->getTable('sales_invoice'),
+            'entity_id',
+            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+        );
+
+        $table->addColumn(
+            'custom_invoice_number',
+            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            null,
+            [
+                'identity' => false,
+                'unsigned' => true,
+                'nullable' => false,
+                'primary' => false,
+            ],
+            'Custom Invoice Number'
+        );
+
+        $table->setComment('TIG Buckaroo Invoice');
 
         $installer->getConnection()->createTable($table);
     }
