@@ -79,7 +79,7 @@ class PaymentGuarantee extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefund               = false;
+    protected $_canRefund               = true;
 
     /**
      * @var bool
@@ -100,6 +100,11 @@ class PaymentGuarantee extends AbstractMethod
      * @var bool
      */
     protected $_canRefundInvoicePartial = true;
+
+    /**
+     * @var bool
+     */
+    public $closeAuthorizeTransaction   = false;
 
     /**
      * @var bool
