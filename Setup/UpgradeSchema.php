@@ -134,37 +134,23 @@ class UpgradeSchema implements \Magento\Framework\Setup\UpgradeSchemaInterface
         );
 
         $table->addColumn(
-            'invoice_id',
-            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            'invoice_transaction_id',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             null,
             [
-                'identity' => false,
-                'unsigned' => true,
                 'nullable' => false,
-                'primary' => false,
             ],
-            'Invoice ID'
-        );
-
-        $table->addForeignKey(
-            $installer->getFkName('tig_buckaroo_invoice', 'invoice_id', 'sales_invoice', 'entity_id'),
-            'invoice_id',
-            $installer->getTable('sales_invoice'),
-            'entity_id',
-            \Magento\Framework\DB\Ddl\Table::ACTION_CASCADE
+            'Invoice Transaction ID'
         );
 
         $table->addColumn(
-            'custom_invoice_number',
-            \Magento\Framework\DB\Ddl\Table::TYPE_INTEGER,
+            'invoice_number',
+            \Magento\Framework\DB\Ddl\Table::TYPE_TEXT,
             null,
             [
-                'identity' => false,
-                'unsigned' => true,
                 'nullable' => false,
-                'primary' => false,
             ],
-            'Custom Invoice Number'
+            'Invoice Number'
         );
 
         $table->setComment('TIG Buckaroo Invoice');
