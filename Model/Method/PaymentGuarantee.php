@@ -335,12 +335,21 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getRefundTransactionBuilder($payment)
     {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
             'Name'    => 'paymentguarantee',
             'Action'  => 'CreditNote',
             'Version' => 1,
+            'RequestParameter' => $this->keepKeysFromParameters(
+                [
+                    'AmountVat',
+                    'OriginalInvoiceNumber'
+                ],
+                $this->getPaymentGuaranteeRequestParameters($payment)
+            )
         ];
 
         $requestParams = $this->addExtraFields($this->_code);
@@ -349,13 +358,18 @@ class PaymentGuarantee extends AbstractMethod
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $transactionBuilder->setOrder($payment->getOrder())
+        $transactionBuilder->setOrder($order)
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
             ->setChannel('CallCenter');
+
+        if ($this->isPartialRefund($payment)) {
+            $transactionBuilder->setInvoiceId($this->getPartialCreditmemoId($order))
+                ->setOriginalTransactionKey($payment->getParentTransactionId());
+        }
 
         return $transactionBuilder;
     }
@@ -497,13 +511,18 @@ class PaymentGuarantee extends AbstractMethod
             ]);
         }
 
+        $invoiceId = $this->getInvoiceIdFromTransaction($payment);
+
+        if (count($invoiceId)) {
+            $defaultValues = array_merge($defaultValues, $invoiceId);
+        }
+
         if ($this->isAddressDataDifferent($billingAddress->getData(), $shippingAddress->getData())) {
             $returnValues = array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE'));
             return array_merge($returnValues, $this->singleAddress($shippingAddress, 'SHIPPING', 2));
         }
 
         return array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE,SHIPPING'));
-
     }
 
     /**
@@ -650,6 +669,42 @@ class PaymentGuarantee extends AbstractMethod
     }
 
     /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    private function getInvoiceIdFromTransaction($payment)
+    {
+        $originalInvoiceNumber = [];
+
+        /** @var \Magento\Sales\Model\Order $order */
+        $creditmemo = $payment->getCreditmemo();
+
+        if (!$creditmemo) {
+            return $originalInvoiceNumber;
+        }
+
+        $transactionId = $creditmemo->getInvoice()->getTransactionId();
+
+        $buckarooInvoice = $this->invoiceFactory->create();
+        $buckarooInvoice->load($transactionId, 'invoice_transaction_id');
+        $buckarooInvoiceNumber = $buckarooInvoice->getInvoiceNumber();
+
+        if (!$buckarooInvoiceNumber) {
+            return $originalInvoiceNumber;
+        }
+
+        $originalInvoiceNumber = [
+            [
+                '_'    => $buckarooInvoiceNumber,
+                'Name' => 'OriginalInvoiceNumber'
+            ]
+        ];
+
+        return $originalInvoiceNumber;
+    }
+
+    /**
      * @param \Magento\Sales\Model\Order $order
      *
      * @return string
@@ -663,10 +718,38 @@ class PaymentGuarantee extends AbstractMethod
 
     /**
      * @param \Magento\Sales\Model\Order $order
+     *
+     * @return string
+     */
+    private function getPartialCreditmemoId($order)
+    {
+        return $order->getIncrementId() . '-'
+        . ($order->hasCreditmemos() + 1) . '-'
+        . substr(md5(date("YMDHis")), 0, 6);
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
      * @param $invoiceAmount
      */
     private function setCaptureType($order, $invoiceAmount)
     {
         $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $order->hasInvoices() == 1);
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return bool
+     */
+    private function isPartialRefund($payment)
+    {
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
+
+        return !($order->getBaseGrandTotal() == $creditmemo->getBaseGrandTotal() && $order->hasCreditmemos() == 1);
     }
 }
