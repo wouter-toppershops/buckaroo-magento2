@@ -110,7 +110,86 @@ class PaymentGuarantee extends AbstractMethod
      * @var bool
      */
     protected $_isPartialCapture        = false;
+    /**
+     * @var \TIG\Buckaroo\Model\InvoiceFactory
+     */
+    private $invoiceFactory;
     // @codingStandardsIgnoreEnd
+
+    /**
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory            $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                            $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \TIG\Buckaroo\Model\InvoiceFactory                      $invoiceFactory
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory    $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface             $messageManager
+     * @param \TIG\Buckaroo\Helper\Data                               $helper
+     * @param \Magento\Framework\App\RequestInterface                 $request
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
+     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param array                                                   $data
+     */
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \TIG\Buckaroo\Model\InvoiceFactory $invoiceFactory,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \Magento\Framework\Message\ManagerInterface $messageManager = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $objectManager,
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $messageManager,
+            $helper,
+            $request,
+            $refundFieldsFactory,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
+            $data
+        );
+
+        $this->invoiceFactory = $invoiceFactory;
+    }
 
     /**
      * {@inheritdoc}
@@ -287,6 +366,22 @@ class PaymentGuarantee extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function afterCapture($payment, $response)
+    {
+        $responseInvoiceId = $response[0]->Invoice;
+        $responseTransactionId = $response[0]->Key;
+
+        $buckarooInvoice = $this->invoiceFactory->create();
+        $buckarooInvoice->setInvoiceTransactionId($responseTransactionId);
+        $buckarooInvoice->setInvoiceNumber($responseInvoiceId);
+        $buckarooInvoice->save();
+
+        return parent::afterCapture($payment, $response);
     }
 
     /**

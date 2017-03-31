@@ -36,7 +36,7 @@ use Magento\Framework\Model\AbstractModel;
 class Invoice extends AbstractModel
 {
     const FIELD_INVOICE_TRANSACTION_ID = 'invoice_transaction_id';
-    const FIELD_INVOICE_NUMBER = '_invoice_number';
+    const FIELD_INVOICE_NUMBER = 'invoice_number';
 
     // @codingStandardsIgnoreLine
     protected $_eventPrefix = 'tig_buckaroo_invoice';
