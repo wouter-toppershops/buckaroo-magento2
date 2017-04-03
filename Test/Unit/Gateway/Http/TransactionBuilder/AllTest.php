@@ -91,7 +91,7 @@ class AllTest extends BaseTest
         $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
 
-        $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
+        $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->object->setOrder($this->order);
 
@@ -122,6 +122,7 @@ class AllTest extends BaseTest
 
         $this->object->amount = 50;
         $this->object->currency = 'EUR';
+        $this->object->invoiceId = $expected['Invoice'];
         $this->object->setStartRecurrent($expected['StartRecurrent']);
         $this->object->setServices($expected['Services']['Service']);
 
