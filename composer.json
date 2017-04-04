@@ -32,5 +32,8 @@
         "psr-4": {
             "TIG\\Buckaroo\\": ""
         }
+    },
+    "require-dev": {
+        "satooshi/php-coveralls": "^1.0"
     }
 }
