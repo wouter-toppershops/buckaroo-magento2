@@ -31,6 +31,8 @@
  */
 namespace TIG\Buckaroo\Model\Method;
 
+use TIG\Buckaroo\Model\Invoice;
+
 class PaymentGuarantee extends AbstractMethod
 {
     /**
@@ -110,10 +112,21 @@ class PaymentGuarantee extends AbstractMethod
      * @var bool
      */
     protected $_isPartialCapture        = false;
+
     /**
      * @var \TIG\Buckaroo\Model\InvoiceFactory
      */
     private $invoiceFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Api\InvoiceRepositoryInterface
+     */
+    private $invoiceRepository;
+
+    /**
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -126,6 +139,8 @@ class PaymentGuarantee extends AbstractMethod
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
      * @param \TIG\Buckaroo\Model\InvoiceFactory                      $invoiceFactory
+     * @param \TIG\Buckaroo\Api\InvoiceRepositoryInterface            $invoiceRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder            $searchCriteriaBuilder
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -150,6 +165,8 @@ class PaymentGuarantee extends AbstractMethod
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
         \TIG\Buckaroo\Model\InvoiceFactory $invoiceFactory,
+        \TIG\Buckaroo\Api\InvoiceRepositoryInterface $invoiceRepository,
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -189,6 +206,8 @@ class PaymentGuarantee extends AbstractMethod
         );
 
         $this->invoiceFactory = $invoiceFactory;
+        $this->invoiceRepository = $invoiceRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
     }
 
     /**
@@ -393,7 +412,7 @@ class PaymentGuarantee extends AbstractMethod
         $buckarooInvoice = $this->invoiceFactory->create();
         $buckarooInvoice->setInvoiceTransactionId($responseTransactionId);
         $buckarooInvoice->setInvoiceNumber($responseInvoiceId);
-        $buckarooInvoice->save();
+        $this->invoiceRepository->save($buckarooInvoice);
 
         return parent::afterCapture($payment, $response);
     }
@@ -677,7 +696,7 @@ class PaymentGuarantee extends AbstractMethod
     {
         $originalInvoiceNumber = [];
 
-        /** @var \Magento\Sales\Model\Order $order */
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
         $creditmemo = $payment->getCreditmemo();
 
         if (!$creditmemo) {
@@ -685,10 +704,17 @@ class PaymentGuarantee extends AbstractMethod
         }
 
         $transactionId = $creditmemo->getInvoice()->getTransactionId();
+        $buckarooInvoiceNumber = null;
 
-        $buckarooInvoice = $this->invoiceFactory->create();
-        $buckarooInvoice->load($transactionId, 'invoice_transaction_id');
-        $buckarooInvoiceNumber = $buckarooInvoice->getInvoiceNumber();
+        $searchCriteria = $this->searchCriteriaBuilder->addFilter('invoice_transaction_id', $transactionId);
+        $searchCriteria->setPageSize(1);
+        $list = $this->invoiceRepository->getList($searchCriteria->create());
+
+        if ($list->getTotalCount()) {
+            /** @var Invoice $buckarooInvoice */
+            $buckarooInvoice = $list->getItems()[0];
+            $buckarooInvoiceNumber = $buckarooInvoice->getInvoiceNumber();
+        }
 
         if (!$buckarooInvoiceNumber) {
             return $originalInvoiceNumber;

@@ -32,8 +32,9 @@
 namespace TIG\Buckaroo\Model;
 
 use Magento\Framework\Model\AbstractModel;
+use TIG\Buckaroo\Api\Data\InvoiceInterface;
 
-class Invoice extends AbstractModel
+class Invoice extends AbstractModel implements InvoiceInterface
 {
     const FIELD_INVOICE_TRANSACTION_ID = 'invoice_transaction_id';
     const FIELD_INVOICE_NUMBER = 'invoice_number';
@@ -53,9 +54,7 @@ class Invoice extends AbstractModel
     }
 
     /**
-     * @param $value
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setInvoiceTransactionId($value)
     {
@@ -63,7 +62,7 @@ class Invoice extends AbstractModel
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getInvoiceTransactionId()
     {
@@ -71,9 +70,7 @@ class Invoice extends AbstractModel
     }
 
     /**
-     * @param $value
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setInvoiceNumber($value)
     {
@@ -81,7 +78,7 @@ class Invoice extends AbstractModel
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getInvoiceNumber()
     {
