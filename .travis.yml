@@ -9,8 +9,7 @@ addons:
 
 language: php
 
-php:
-  - 7.0
+php: 7.0
 
 env:
   global:
@@ -18,12 +17,12 @@ env:
 
   matrix:
     - MAGENTO_VERSION=2.0.8
-    - MAGENTO_VERSION=2.0.9
-    - MAGENTO_VERSION=2.0.10
-    - MAGENTO_VERSION=2.1.0
-    - MAGENTO_VERSION=2.1.1
-    - MAGENTO_VERSION=2.1.2
-    - MAGENTO_VERSION=2.1.3
+#    - MAGENTO_VERSION=2.0.9
+#    - MAGENTO_VERSION=2.0.10
+#    - MAGENTO_VERSION=2.1.0
+#    - MAGENTO_VERSION=2.1.1
+#    - MAGENTO_VERSION=2.1.2
+#    - MAGENTO_VERSION=2.1.3
 
 matrix:
   include:
