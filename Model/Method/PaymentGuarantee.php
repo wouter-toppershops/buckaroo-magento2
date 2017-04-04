@@ -468,10 +468,6 @@ class PaymentGuarantee extends AbstractMethod
 
         $defaultValues = [
             [
-                '_'    => $config->getPaymentFee(),
-                'Name' => 'AmountVat'
-            ],
-            [
                 '_'    => date('Y-m-d'),
                 'Name' => 'InvoiceDate'
             ],
@@ -520,6 +516,9 @@ class PaymentGuarantee extends AbstractMethod
                 'Name' => 'SendMail'
             ]
         ];
+
+        $taxAmount = $this->calculateTaxAmount($payment);
+        $defaultValues = array_merge($defaultValues, $taxAmount);
 
         if ($payment->getAdditionalInformation('customer_iban')) {
             $defaultValues = array_merge($defaultValues, [
@@ -685,6 +684,49 @@ class PaymentGuarantee extends AbstractMethod
 
         $this->setCaptureType($order, $invoiceAmount);
         return $invoiceAmount;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    private function calculateTaxAmount($payment)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
+
+        $taxAmount = $order->getBaseTaxAmount();
+
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+
+        // if there's an invoice but no creditmemo, it means a capture is in progress.
+        if ($order->hasInvoices() && !$creditmemo) {
+            $i = 0;
+            /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+            foreach ($order->getInvoiceCollection() as $invoice) {
+                if (++$i !== $order->hasInvoices()) {
+                    continue;
+                }
+
+                $taxAmount = $invoice->getBaseTaxAmount();
+            }
+        }
+
+        //If there's a creditmemo in the payment, it means a refund is currently in progress.
+        if ($creditmemo) {
+            $taxAmount = $creditmemo->getBaseTaxAmount();
+        }
+
+        $taxAmountParameter = [
+            [
+                '_'    => $taxAmount,
+                'Name' => 'AmountVat'
+            ]
+        ];
+
+        return $taxAmountParameter;
     }
 
     /**
