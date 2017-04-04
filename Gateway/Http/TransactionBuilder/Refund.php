@@ -100,7 +100,7 @@ class Refund extends AbstractTransactionBuilder
             'Currency' => $this->currency,
             'AmountDebit' => 0,
             'AmountCredit' => $this->amount,
-            'Invoice' => $order->getIncrementId(),
+            'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
             'ClientIP' => (object)[
