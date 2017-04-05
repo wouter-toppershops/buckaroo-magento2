@@ -313,9 +313,9 @@
     float: right;
     margin-right: 10px;
     margin-top: -7px;
-    background-size: auto 35px;
-    width: 106px;
-    height: 35px;
+    background-size: auto 32px;
+    width: 48px;
+    height: 34px;
     content: ' ';
 }
 
@@ -479,7 +479,7 @@
         margin-top: -4px;
         float: left;
         margin-right: 10px;
-        background-size: auto 30px;
+        background-size: auto 25px;
         width: 40px;
         height: 30px;
         content: ' ';
