@@ -33,6 +33,8 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 class PaymentGuarantee extends AbstractConfigProvider
 {
+    const XPATH_ALLOWED_CURRENCIES                    = 'buckaroo/tig_buckaroo_paymentguarantee/allowed_currencies';
+
     const XPATH_PAYMENTGUARANTEE_PAYMENT_FEE          = 'payment/tig_buckaroo_paymentguarantee/payment_fee';
     const XPATH_PAYMENTGUARANTEE_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_paymentguarantee/payment_fee_label';
     const XPATH_PAYMENTGUARANTEE_ACTIVE               = 'payment/tig_buckaroo_paymentguarantee/active';

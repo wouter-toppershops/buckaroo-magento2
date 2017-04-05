@@ -40,6 +40,7 @@
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="TIG\Buckaroo\Gateway\GatewayInterface" type="TIG\Buckaroo\Gateway\Http\Bpe3"/>
+    <preference for="TIG\Buckaroo\Api\InvoiceRepositoryInterface" type="TIG\Buckaroo\Model\InvoiceRepository"/>
     <preference for="TIG\Buckaroo\Api\PushInterface" type="TIG\Buckaroo\Model\Push"/>
     <preference for="TIG\Buckaroo\Api\PaymentInformationManagementInterface" type="TIG\Buckaroo\Model\PaymentInformationManagement"/>
     <preference for="TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface" type="TIG\Buckaroo\Model\GuestPaymentInformationManagement"/>

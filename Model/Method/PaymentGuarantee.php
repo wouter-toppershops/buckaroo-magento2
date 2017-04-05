@@ -31,6 +31,8 @@
  */
 namespace TIG\Buckaroo\Model\Method;
 
+use TIG\Buckaroo\Model\Invoice;
+
 class PaymentGuarantee extends AbstractMethod
 {
     /**
@@ -110,7 +112,103 @@ class PaymentGuarantee extends AbstractMethod
      * @var bool
      */
     protected $_isPartialCapture        = false;
+
+    /**
+     * @var \TIG\Buckaroo\Model\InvoiceFactory
+     */
+    private $invoiceFactory;
+
+    /**
+     * @var \TIG\Buckaroo\Api\InvoiceRepositoryInterface
+     */
+    private $invoiceRepository;
+
+    /**
+     * @var \Magento\Framework\Api\SearchCriteriaBuilder
+     */
+    private $searchCriteriaBuilder;
     // @codingStandardsIgnoreEnd
+
+    /**
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory            $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                            $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \TIG\Buckaroo\Model\InvoiceFactory                      $invoiceFactory
+     * @param \TIG\Buckaroo\Api\InvoiceRepositoryInterface            $invoiceRepository
+     * @param \Magento\Framework\Api\SearchCriteriaBuilder            $searchCriteriaBuilder
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory    $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
+     * @param \Magento\Framework\Message\ManagerInterface             $messageManager
+     * @param \TIG\Buckaroo\Helper\Data                               $helper
+     * @param \Magento\Framework\App\RequestInterface                 $request
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
+     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param array                                                   $data
+     */
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \TIG\Buckaroo\Model\InvoiceFactory $invoiceFactory,
+        \TIG\Buckaroo\Api\InvoiceRepositoryInterface $invoiceRepository,
+        \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \Magento\Framework\Message\ManagerInterface $messageManager = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $objectManager,
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $messageManager,
+            $helper,
+            $request,
+            $refundFieldsFactory,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
+            $data
+        );
+
+        $this->invoiceFactory = $invoiceFactory;
+        $this->invoiceRepository = $invoiceRepository;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+    }
 
     /**
      * {@inheritdoc}
@@ -256,12 +354,21 @@ class PaymentGuarantee extends AbstractMethod
      */
     public function getRefundTransactionBuilder($payment)
     {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
         $transactionBuilder = $this->transactionBuilderFactory->get('refund');
 
         $services = [
             'Name'    => 'paymentguarantee',
             'Action'  => 'CreditNote',
             'Version' => 1,
+            'RequestParameter' => $this->keepKeysFromParameters(
+                [
+                    'AmountVat',
+                    'OriginalInvoiceNumber'
+                ],
+                $this->getPaymentGuaranteeRequestParameters($payment)
+            )
         ];
 
         $requestParams = $this->addExtraFields($this->_code);
@@ -270,13 +377,18 @@ class PaymentGuarantee extends AbstractMethod
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $transactionBuilder->setOrder($payment->getOrder())
+        $transactionBuilder->setOrder($order)
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
             ->setChannel('CallCenter');
+
+        if ($this->isPartialRefund($payment)) {
+            $transactionBuilder->setInvoiceId($this->getPartialCreditmemoId($order))
+                ->setOriginalTransactionKey($payment->getParentTransactionId());
+        }
 
         return $transactionBuilder;
     }
@@ -287,6 +399,22 @@ class PaymentGuarantee extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return false;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function afterCapture($payment, $response)
+    {
+        $responseInvoiceId = $response[0]->Invoice;
+        $responseTransactionId = $response[0]->Key;
+
+        $buckarooInvoice = $this->invoiceFactory->create();
+        $buckarooInvoice->setInvoiceTransactionId($responseTransactionId);
+        $buckarooInvoice->setInvoiceNumber($responseInvoiceId);
+        $this->invoiceRepository->save($buckarooInvoice);
+
+        return parent::afterCapture($payment, $response);
     }
 
     /**
@@ -340,10 +468,6 @@ class PaymentGuarantee extends AbstractMethod
 
         $defaultValues = [
             [
-                '_'    => $config->getPaymentFee(),
-                'Name' => 'AmountVat'
-            ],
-            [
                 '_'    => date('Y-m-d'),
                 'Name' => 'InvoiceDate'
             ],
@@ -393,6 +517,9 @@ class PaymentGuarantee extends AbstractMethod
             ]
         ];
 
+        $taxAmount = $this->calculateTaxAmount($payment);
+        $defaultValues = array_merge($defaultValues, $taxAmount);
+
         if ($payment->getAdditionalInformation('customer_iban')) {
             $defaultValues = array_merge($defaultValues, [
                 [
@@ -402,13 +529,18 @@ class PaymentGuarantee extends AbstractMethod
             ]);
         }
 
+        $invoiceId = $this->getInvoiceIdFromTransaction($payment);
+
+        if (count($invoiceId)) {
+            $defaultValues = array_merge($defaultValues, $invoiceId);
+        }
+
         if ($this->isAddressDataDifferent($billingAddress->getData(), $shippingAddress->getData())) {
             $returnValues = array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE'));
             return array_merge($returnValues, $this->singleAddress($shippingAddress, 'SHIPPING', 2));
         }
 
         return array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE,SHIPPING'));
-
     }
 
     /**
@@ -555,6 +687,92 @@ class PaymentGuarantee extends AbstractMethod
     }
 
     /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    private function calculateTaxAmount($payment)
+    {
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
+
+        $taxAmount = $order->getBaseTaxAmount();
+
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+
+        // if there's an invoice but no creditmemo, it means a capture is in progress.
+        if ($order->hasInvoices() && !$creditmemo) {
+            $i = 0;
+            /** @var \Magento\Sales\Model\Order\Invoice $invoice */
+            foreach ($order->getInvoiceCollection() as $invoice) {
+                if (++$i !== $order->hasInvoices()) {
+                    continue;
+                }
+
+                $taxAmount = $invoice->getBaseTaxAmount();
+            }
+        }
+
+        //If there's a creditmemo in the payment, it means a refund is currently in progress.
+        if ($creditmemo) {
+            $taxAmount = $creditmemo->getBaseTaxAmount();
+        }
+
+        $taxAmountParameter = [
+            [
+                '_'    => $taxAmount,
+                'Name' => 'AmountVat'
+            ]
+        ];
+
+        return $taxAmountParameter;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    private function getInvoiceIdFromTransaction($payment)
+    {
+        $originalInvoiceNumber = [];
+
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+
+        if (!$creditmemo) {
+            return $originalInvoiceNumber;
+        }
+
+        $transactionId = $creditmemo->getInvoice()->getTransactionId();
+        $buckarooInvoiceNumber = null;
+
+        $searchCriteria = $this->searchCriteriaBuilder->addFilter('invoice_transaction_id', $transactionId);
+        $searchCriteria->setPageSize(1);
+        $list = $this->invoiceRepository->getList($searchCriteria->create());
+
+        if ($list->getTotalCount()) {
+            /** @var Invoice $buckarooInvoice */
+            $buckarooInvoice = $list->getItems()[0];
+            $buckarooInvoiceNumber = $buckarooInvoice->getInvoiceNumber();
+        }
+
+        if (!$buckarooInvoiceNumber) {
+            return $originalInvoiceNumber;
+        }
+
+        $originalInvoiceNumber = [
+            [
+                '_'    => $buckarooInvoiceNumber,
+                'Name' => 'OriginalInvoiceNumber'
+            ]
+        ];
+
+        return $originalInvoiceNumber;
+    }
+
+    /**
      * @param \Magento\Sales\Model\Order $order
      *
      * @return string
@@ -568,10 +786,38 @@ class PaymentGuarantee extends AbstractMethod
 
     /**
      * @param \Magento\Sales\Model\Order $order
+     *
+     * @return string
+     */
+    private function getPartialCreditmemoId($order)
+    {
+        return $order->getIncrementId() . '-'
+        . ($order->hasCreditmemos() + 1) . '-'
+        . substr(md5(date("YMDHis")), 0, 6);
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
      * @param $invoiceAmount
      */
     private function setCaptureType($order, $invoiceAmount)
     {
         $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $order->hasInvoices() == 1);
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return bool
+     */
+    private function isPartialRefund($payment)
+    {
+        /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
+        $creditmemo = $payment->getCreditmemo();
+
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
+
+        return !($order->getBaseGrandTotal() == $creditmemo->getBaseGrandTotal() && $order->hasCreditmemos() == 1);
     }
 }
