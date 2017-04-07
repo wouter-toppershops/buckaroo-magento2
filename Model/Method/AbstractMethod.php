@@ -161,6 +161,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    protected $productMetadata;
+
+    /**
      * @var null
      */
     public $remoteAddress = null;
@@ -174,6 +179,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Payment\Helper\Data                            $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
+     * @param \Magento\Framework\App\ProductMetadataInterface         $productMetadata
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -197,6 +204,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Developer\Helper\Data $developmentHelper,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -237,6 +246,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->configProviderFactory        = $configProviderFactory;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
+        $this->developmentHelper            = $developmentHelper;
+        $this->productMetadata              = $productMetadata;
 
         $this->gateway->setMode(
             $this->helper->getMode($this->buckarooPaymentMethodCode)
@@ -294,10 +305,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public function assignDataConvertAllVersionsArray(\Magento\Framework\DataObject $data)
     {
         if (!is_array($data)) {
-            $data->convertToArray();
+            $data = $data->convertToArray();
         }
 
-        $magentoVersion = str_replace('.', '', $this->getMagentoVersion());
+        $magentoVersion = $this->productMetadata->getVersion();
+        $magentoVersion = str_replace('.', '', $magentoVersion);
 
         // Below 2.0.5 versions do not consists the key additional_data.
         if ($magentoVersion < '205') {
@@ -305,18 +317,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         return $data;
-    }
-
-    /**
-     * Determine Magento 2 Version used for changing assignData output data on differences
-     * between 2.0.4 and 2.0.7+
-     *
-     * @return string
-     */
-    public function getMagentoVersion()
-    {
-        $productMetadata = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface');
-        return $productMetadata->getVersion();
     }
 
     /**
