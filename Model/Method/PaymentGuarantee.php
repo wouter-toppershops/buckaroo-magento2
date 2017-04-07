@@ -752,7 +752,7 @@ class PaymentGuarantee extends AbstractMethod
         }
 
         $transactionId = $creditmemo->getInvoice()->getTransactionId();
-        $buckarooInvoiceNumber = null;
+        $buckarooInvoiceNumber = $payment->getOrder()->getIncrementId();
 
         $searchCriteria = $this->searchCriteriaBuilder->addFilter('invoice_transaction_id', $transactionId);
         $searchCriteria->setPageSize(1);
