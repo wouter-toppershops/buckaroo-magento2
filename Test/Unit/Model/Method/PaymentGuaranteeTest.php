@@ -69,7 +69,7 @@ class PaymentGuaranteeTest extends BaseTest
                     'termsCondition' => '1',
                     'customer_gender' => 'male',
                     'customer_billingName' => 'TIG',
-                    'customer_DoB' => '1990-01-01',
+                    'customer_DoB' => '01/01/1990',
                     'customer_iban' => 'NL12345'
                 ]
             ],
@@ -80,8 +80,20 @@ class PaymentGuaranteeTest extends BaseTest
                         'termsCondition' => '0',
                         'customer_gender' => 'female',
                         'customer_billingName' => 'TIG',
-                        'customer_DoB' => '1990-10-07',
+                        'customer_DoB' => '07/10/1990',
                         'customer_iban' => 'BE67890'
+                    ]
+                ]
+            ],
+            'incorrect DoB dateformat' => [
+                '2.1.5',
+                [
+                    'additional_data' => [
+                        'termsCondition' => '1',
+                        'customer_gender' => 'female',
+                        'customer_billingName' => 'TIG',
+                        'customer_DoB' => '1990-01-01',
+                        'customer_iban' => 'NL65498'
                     ]
                 ]
             ],
