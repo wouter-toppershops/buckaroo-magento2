@@ -235,8 +235,10 @@ class PaymentGuarantee extends AbstractMethod
             'customer_billingName',
             $additionalData['customer_billingName']
         );
-        $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
         $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
+
+        $dobDate = \DateTime::createFromFormat('d/m/Y', $additionalData['customer_DoB']);
+        $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $dobDate->format('Y-m-d'));
 
         return $this;
     }
