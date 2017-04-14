@@ -186,7 +186,7 @@ class Push implements PushInterface
         if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
             return;
         }
-        
+
         //Start debug mailing/logging with the postdata.
         $this->debugger->addToMessage($this->originalPostData);
 
@@ -196,12 +196,18 @@ class Push implements PushInterface
         //Check if the push can be processed and if the order can be updated IMPORTANT => use the original post data.
         $validSignature = $this->validator->validateSignature($this->originalPostData);
 
+        $brqOrderId = $this->postData['brq_invoicenumber'];
+
+        if (isset($this->postData['brq_ordernumber']) && strlen($this->postData['brq_ordernumber']) > 0) {
+            $brqOrderId = $this->postData['brq_ordernumber'];
+        }
+
         //Check if the order can receive further status updates
         $this->order = $this->objectManager->create(Order::class)
-            ->loadByIncrementId($this->postData['brq_ordernumber']);
+            ->loadByIncrementId($brqOrderId);
 
         if (!$this->order->getId()) {
-            $this->debugger->addToMessage('Order could not be loaded by brq_ordernumber');
+            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
@@ -434,7 +440,7 @@ class Push implements PushInterface
 
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
-            
+
             //Do not cancel order on a failed authorize, because it will send a cancel authorize message to
             //Buckaroo, this is not needed/correct.
             if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE) {
@@ -531,7 +537,7 @@ class Push implements PushInterface
      * @param $newStatus
      */
     protected function updateOrderStatus($orderState, $newStatus, $description)
-    {       
+    {
         if ($this->order->getState() == $orderState) {
             $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
