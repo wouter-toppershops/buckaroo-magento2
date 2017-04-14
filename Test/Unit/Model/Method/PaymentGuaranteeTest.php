@@ -232,7 +232,7 @@ class PaymentGuaranteeTest extends BaseTest
     {
         $invoiceMock = $this->getFakeMock(Invoice::class)->getMock();
 
-        $invoiceFactoryMock = $this->getFakeMock(InvoiceFactory::class)->getMock();
+        $invoiceFactoryMock = $this->getFakeMock(InvoiceFactory::class)->setMethods(['create'])->getMock();
         $invoiceFactoryMock->expects($this->once())->method('create')->willReturn($invoiceMock);
 
         $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
