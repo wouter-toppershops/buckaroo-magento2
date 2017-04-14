@@ -132,11 +132,6 @@ class Afterpay2 extends AbstractMethod
     public $usesRedirect                = false;
 
     /**
-     * @var null
-     */
-    public $remoteAddress               = null;
-
-    /**
      * @var bool
      */
     public $closeAuthorizeTransaction   = false;

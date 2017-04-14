@@ -85,6 +85,7 @@ class OrderTest extends BaseTest
 
         $this->object->amount = 50;
         $this->object->currency = 'EUR';
+        $this->object->invoiceId = $expected['Invoice'];
         $this->object->setStartRecurrent($expected['StartRecurrent']);
         $this->object->setServices($expected['Services']['Service']);
 
@@ -94,7 +95,7 @@ class OrderTest extends BaseTest
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
 
         $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
-        $order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
+        $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $order->shouldReceive('save');
         

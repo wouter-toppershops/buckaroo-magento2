@@ -43,78 +43,48 @@ namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 class Order extends AbstractTransactionBuilder
 {
     /**
-     * @throws \TIG\Buckaroo\Exception
-     */
-    protected function setOrderCurrencyAndAmount()
-    {
-        /**
-         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance
-         */
-        $methodInstance = $this->order->getPayment()->getMethodInstance();
-        $method = $methodInstance->buckarooPaymentMethodCode;
-
-        $configProvider = $this->configProviderMethodFactory->get($method);
-        $allowedCurrencies = $configProvider->getAllowedCurrencies();
-
-        if (in_array($this->order->getOrderCurrencyCode(), $allowedCurrencies)) {
-            $this->amount = $this->order->getGrandTotal();
-            $this->currency = $this->order->getOrderCurrencyCode();
-        } elseif (in_array($this->order->getBaseCurrencyCode(), $allowedCurrencies)) {
-            $this->amount = $this->order->getBaseGrandTotal();
-            $this->currency = $this->order->getBaseCurrencyCode();
-        } else {
-            throw new \TIG\Buckaroo\Exception(
-                __("The selected payment method does not support the selected currency or the store's base currency.")
-            );
-        }
-
-        $this->invoiceId = $this->order->getIncrementId();
-    }
-
-    /**
      * @return array
      */
     public function getBody()
     {
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
-        
-        if ($this->amount < 0.01 || !$this->currency) {
-            $this->setOrderCurrencyAndAmount();
+        if (!$this->getCurrency()) {
+            $this->setOrderCurrency();
+        }
+
+        if ($this->getAmount() < 0.01) {
+            $this->setOrderAmount();
         }
 
         $creditAmount = 0;
         if ($this->getType() == 'void') {
-            $creditAmount = $this->amount;
-            $this->amount = 0;
+            $creditAmount = $this->getAmount();
+            $this->setAmount(0);
         }
 
         $order = $this->getOrder();
 
-        if ($accountConfig->getCreateOrderBeforeTransaction()) {
-            $order->save();
-        }
-
-
-        if (!$this->invoiceId) {
-            $this->invoiceId = $order->getIncrementId();
-        }
-
+        /**
+         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
+         */
+        $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
         if (!$ip) {
             $ip = $this->remoteAddress->getRemoteAddress();
         }
 
+        // Some of the plaza gateway requests do not support IPv6.
+        if (strpos($ip, ':') !== false) {
+            $ip = '127.0.0.'.rand(1, 100);
+        }
+
         $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
 
         $body = [
             'Currency' => $this->currency,
-            'AmountDebit' => $this->amount,
+            'AmountDebit' => $this->getAmount(),
             'AmountCredit' => $creditAmount,
-            'Invoice' => $this->invoiceId,
+            'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
             'Description' => $accountConfig->getTransactionLabel(),
             'ClientIP' => (object)[
@@ -133,6 +103,17 @@ class Order extends AbstractTransactionBuilder
             ],
         ];
 
+        $services = $this->getServices();
+        if (isset($services['Name']) && isset($services['Action'])) {
+            if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'Order') {
+                unset($body['Invoice']);
+            }
+
+            if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'PartialInvoice') {
+                unset($body['OriginalTransactionKey']);
+            }
+        }
+
         $customVars = $this->getCustomVars();
         if (count($customVars) > 0) {
             foreach ($customVars as $key => $val) {
@@ -141,5 +122,52 @@ class Order extends AbstractTransactionBuilder
         }
 
         return $body;
+    }
+
+    /**
+     * @return array
+     * @throws \TIG\Buckaroo\Exception
+     */
+    private function getAllowedCurrencies()
+    {
+        /**
+         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $methodInstance
+         */
+        $methodInstance = $this->order->getPayment()->getMethodInstance();
+        $method = $methodInstance->buckarooPaymentMethodCode;
+
+        $configProvider = $this->configProviderMethodFactory->get($method);
+        return $configProvider->getAllowedCurrencies();
+    }
+
+    /**
+     * @return $this
+     */
+    private function setOrderAmount()
+    {
+        if ($this->getCurrency() == $this->order->getOrderCurrencyCode()) {
+            return $this->setAmount($this->order->getGrandTotal());
+        }
+
+        return $this->setAmount($this->order->getBaseGrandTotal());
+    }
+
+    /**
+     * @return $this
+     * @throws \TIG\Buckaroo\Exception
+     */
+    private function setOrderCurrency()
+    {
+        if (in_array($this->order->getOrderCurrencyCode(), $this->getAllowedCurrencies())) {
+            return $this->setCurrency($this->order->getOrderCurrencyCode());
+        }
+
+        if (in_array($this->order->getBaseCurrencyCode(), $this->getAllowedCurrencies())) {
+            return $this->setCurrency($this->order->getBaseCurrencyCode());
+        }
+
+        throw new \TIG\Buckaroo\Exception(
+            __("The selected payment method does not support the selected currency or the store's base currency.")
+        );
     }
 }

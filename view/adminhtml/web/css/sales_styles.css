@@ -188,6 +188,18 @@
     content           :' ';
 }
 
+/* PaymentGuarantee */
+.tig_buckaroo_payment_paymentguarantee:before {
+    background: url(../images/tig_buckaroo_paymentguarantee_title.png) no-repeat;
+    float             : left;
+    margin-right      : 10px;
+    margin-top        : -2px;
+    width             : 68px;
+    height            : 26px;
+    background-size   : auto 23px;
+    content            : ' ';
+}
+
 /* ===================== Order Overview -  Credit Card / Debit Card Method Styling ======================= */
 
 .tig_buckaroo_payment_card_mastercard:before {

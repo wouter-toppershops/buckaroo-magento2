@@ -161,6 +161,16 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    protected $productMetadata;
+
+    /**
+     * @var null
+     */
+    public $remoteAddress = null;
+
+    /**
      * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
      * @param \Magento\Framework\Registry                             $registry
@@ -169,6 +179,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Payment\Helper\Data                            $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
+     * @param \Magento\Framework\App\ProductMetadataInterface         $productMetadata
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -193,6 +205,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Developer\Helper\Data $developmentHelper,
+        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -235,6 +249,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->priceHelper                  = $priceHelper;
         $this->developmentHelper            = $developmentHelper;
+        $this->productMetadata              = $productMetadata;
 
         $this->gateway->setMode(
             $this->helper->getMode($this->buckarooPaymentMethodCode)
@@ -292,10 +307,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public function assignDataConvertAllVersionsArray(\Magento\Framework\DataObject $data)
     {
         if (!is_array($data)) {
-            $data->convertToArray();
+            $data = $data->convertToArray();
         }
 
-        $magentoVersion = str_replace('.', '', $this->getMagentoVersion());
+        $magentoVersion = $this->productMetadata->getVersion();
+        $magentoVersion = str_replace('.', '', $magentoVersion);
 
         // Below 2.0.5 versions do not consists the key additional_data.
         if ($magentoVersion < '205') {
@@ -303,18 +319,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         return $data;
-    }
-
-    /**
-     * Determine Magento 2 Version used for changing assignData output data on differences
-     * between 2.0.4 and 2.0.7+
-     *
-     * @return string
-     */
-    public function getMagentoVersion()
-    {
-        $productMetadata = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface');
-        return $productMetadata->getVersion();
     }
 
     /**
@@ -442,6 +446,34 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this->getOrderPlaceRedirectUrl();
         }
         return parent::getConfigData($field, $storeId);
+    }
+
+    /**
+     * @param bool  $ipToLong
+     * @param array $alternativeHeaders
+     *
+     * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface
+     */
+    public function getRemoteAddress($ipToLong = false, $alternativeHeaders = [])
+    {
+        if ($this->remoteAddress === null) {
+            foreach ($alternativeHeaders as $var) {
+                if ($this->request->getServer($var, false)) {
+                    $this->remoteAddress = $this->request->getServer($var);
+                    break;
+                }
+            }
+
+            if (!$this->remoteAddress) {
+                $this->remoteAddress = $this->request->getServer('REMOTE_ADDR');
+            }
+        }
+
+        if (!$this->remoteAddress) {
+            return false;
+        }
+
+        return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
 
     /**
@@ -875,7 +907,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if ($this->payment->getAdditionalInformation('buckaroo_failed_authorize') == 1) {
             return $this;
         }
-        
 
         $transactionBuilder = $this->getVoidTransactionBuilder($payment);
 

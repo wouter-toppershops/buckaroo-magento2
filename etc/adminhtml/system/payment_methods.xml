@@ -68,5 +68,7 @@
 
         <include path="TIG_Buckaroo::system/payment_methods/giftcards.xml"/>
 
+        <include path="TIG_Buckaroo::system/payment_methods/paymentguarantee.xml"/>
+
     </group>
 </include>
