@@ -73,7 +73,7 @@
 
             <field id="payment_flow" translate="label comment" type="select" sortOrder="1" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Payment flow</label>
-                <comment><![CDATA[Whether to use separate order/authorization and capture/invoice calls or to use a combined 'payment inventation' call.]]></comment>
+                <comment><![CDATA[Whether to use separate order/authorization and capture/invoice calls or to use a combined 'payment invitation' call.]]></comment>
                 <config_path>payment/tig_buckaroo_paymentguarantee/payment_action</config_path>
                 <source_model>TIG\Buckaroo\Model\Config\Source\PaymentFlow</source_model>
             </field>
