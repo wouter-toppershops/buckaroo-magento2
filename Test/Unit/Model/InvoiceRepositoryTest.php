@@ -102,7 +102,7 @@ class InvoiceRepositoryTest extends BaseTest
     public function testGetById($id)
     {
         if (!$id) {
-            $this->setExpectedException(NoSuchEntityException::class, __('Invoice with id "%1" does not exist.', $id));
+            $this->setExpectedException(NoSuchEntityException::class, __('Invoice with id "%1" does not exist.', $id)->render());
         }
 
         $invoiceMock = $this->getFakeMock(Invoice::class)->setMethods(['load', 'getId'])->getMock();
