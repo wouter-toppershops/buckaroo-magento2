@@ -152,8 +152,12 @@ class Afterpay2 extends AbstractMethod
                 'customer_billingName',
                 $additionalData['customer_billingName']
             );
-            $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
+
+            $dobDate = \DateTime::createFromFormat('d/m/Y', $additionalData['customer_DoB']);
+            $dobDate = (!$dobDate ? $additionalData['customer_DoB'] : $dobDate->format('Y-m-d'));
+            $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $dobDate);
+
             if (isset($additionalData['selectedBusiness'])
                 && $additionalData['selectedBusiness'] == self::BUSINESS_METHOD_B2B
             ) {
