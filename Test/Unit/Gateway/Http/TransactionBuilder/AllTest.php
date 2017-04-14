@@ -68,6 +68,7 @@ class AllTest extends BaseTest
         parent::setUp();
 
         $this->order = m::mock('Magento\Sales\Model\Order');
+        $this->order->shouldReceive('save');
         $this->configProvider = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Factory');
 
         $this->object = $this->objectManagerHelper->getObject(
@@ -89,6 +90,7 @@ class AllTest extends BaseTest
     {
         $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
         $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
+        $account->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
 
         $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);

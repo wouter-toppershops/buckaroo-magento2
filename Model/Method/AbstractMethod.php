@@ -193,6 +193,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
      * @param array                                                   $data
      */
     public function __construct(
@@ -218,6 +219,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        \Magento\Developer\Helper\Data $developmentHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -556,6 +558,43 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * Should be overwritten by the respective payment method class when it has a specific failure message.
+     *
+     * @param $transactionResponse
+     *
+     * @return string
+     */
+    protected function getFailureMessageFromMethod($transactionResponse)
+    {
+        return '';
+    }
+
+    /**
+     * @param $response
+     *
+     * @return string
+     */
+    protected function getFailureMessage($response)
+    {
+        $message = 'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.';
+
+        if (!isset($response[0]) || empty($response[0])) {
+            return $message;
+        }
+
+        $transactionResponse = $response[0];
+        $responseCode = $transactionResponse->Status->Code->Code;
+        $billingCountry = $this->payment->getOrder()->getBillingAddress()->getCountryId();
+
+        if ($billingCountry == 'NL' && $responseCode == 490) {
+            $methodMessage = $this->getFailureMessageFromMethod($transactionResponse);
+            $message = strlen($methodMessage) > 0 ? $methodMessage : $message;
+        }
+
+        return $message;
+    }
+
+    /**
      * @param \TIG\Buckaroo\Gateway\Http\Transaction $transaction
      *
      * @return array
@@ -574,10 +613,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            $failureMessage = $this->getFailureMessage($response);
+
             throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
+                new \Magento\Framework\Phrase($failureMessage)
             );
         }
 
@@ -667,10 +706,10 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         }
 
         if (!$this->validatorFactory->get('transaction_response_status')->validate($response)) {
+            $failureMessage = $this->getFailureMessage($response);
+
             throw new \TIG\Buckaroo\Exception(
-                new \Magento\Framework\Phrase(
-                    'Unfortunately the payment was unsuccessful. Please try again or choose a different payment method.'
-                )
+                new \Magento\Framework\Phrase($failureMessage)
             );
         }
 
@@ -862,6 +901,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         parent::void($payment);
 
         $this->payment = $payment;
+
+        // Do not cancel authorize when accept authorize is failed.
+        // buckaroo_failed_authorize is set in Push.php
+        if ($this->payment->getAdditionalInformation('buckaroo_failed_authorize') == 1) {
+            return $this;
+        }
 
         $transactionBuilder = $this->getVoidTransactionBuilder($payment);
 

@@ -53,7 +53,9 @@ use \TIG\Buckaroo\Model\Method\AbstractMethod;
  */
 class Push implements PushInterface
 {
-    const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE = 'I014';
+    const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
+    const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
+    const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
     const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
 
@@ -180,11 +182,11 @@ class Push implements PushInterface
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
 
-        //Skip informational messages for processing
-        if ($this->postData['brq_mutationtype'] == 'Informational') {
+        //Skip informational messages for group processing giftcards
+        if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
             return;
         }
-
+        
         //Start debug mailing/logging with the postdata.
         $this->debugger->addToMessage($this->originalPostData);
 
@@ -196,10 +198,10 @@ class Push implements PushInterface
 
         //Check if the order can receive further status updates
         $this->order = $this->objectManager->create(Order::class)
-            ->loadByIncrementId($this->postData['brq_invoicenumber']);
+            ->loadByIncrementId($this->postData['brq_ordernumber']);
 
         if (!$this->order->getId()) {
-            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber');
+            $this->debugger->addToMessage('Order could not be loaded by brq_ordernumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
@@ -432,7 +434,16 @@ class Push implements PushInterface
 
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
-            $this->order->cancel()->save();
+            
+            //Do not cancel order on a failed authorize, because it will send a cancel authorize message to
+            //Buckaroo, this is not needed/correct.
+            if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE) {
+                $payment = $this->order->getPayment();
+                $payment->setAdditionalInformation('buckaroo_failed_authorize', 1);
+                $payment->save();
+            }
+                $this->order->cancel()->save();
+
         }
 
         $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $description);
@@ -503,7 +514,7 @@ class Push implements PushInterface
      */
     protected function setOrderNotificationNote($message)
     {
-        $note = 'Buckaroo attempted to update this order, but failed: ' .$message;
+        $note = 'Buckaroo attempted to update this order, but failed: ' . $message;
         try {
             $this->order->addStatusHistoryComment($note);
             $this->order->save();
@@ -520,7 +531,7 @@ class Push implements PushInterface
      * @param $newStatus
      */
     protected function updateOrderStatus($orderState, $newStatus, $description)
-    {
+    {       
         if ($this->order->getState() == $orderState) {
             $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
