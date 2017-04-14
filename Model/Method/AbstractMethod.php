@@ -219,7 +219,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
-        \Magento\Developer\Helper\Data $developmentHelper = null,
         array $data = []
     ) {
         parent::__construct(
