@@ -615,49 +615,35 @@ class PaymentGuaranteeTest extends BaseTest
             'different amounts' => [
                 1,
                 2,
-                1,
                 true
             ],
-            'multiple creditmemos' => [
+            'same amounts' => [
                 3,
                 3,
-                2,
-                true
-            ],
-            'multiple creditmemos and different amounts' => [
-                5,
-                4,
-                3,
-                true
-            ],
-            'one creditmemo and same amounts' => [
-                6,
-                6,
-                1,
                 false
             ],
         ];
     }
 
     /**
-     * @param $orderAmount
+     * @param $invoiceAmount
      * @param $creditmemoAmount
-     * @param $hasCreditmemos
      * @param $expected
      *
      * @dataProvider isPartialRefundProvider
      */
-    public function testIsPartialRefund($orderAmount, $creditmemoAmount, $hasCreditmemos, $expected)
+    public function testIsPartialRefund($invoiceAmount, $creditmemoAmount, $expected)
     {
-        $creditmemoMock = $this->getFakeMock(Creditmemo::class)->setMethods(['getBaseGrandTotal'])->getMock();
+        $invoiceMock = $this->getFakeMock(MagentoInvoice::class)->setMethods(['getBaseGrandTotal'])->getMock();
+        $invoiceMock->expects($this->once())->method('getBaseGrandTotal')->willReturn($invoiceAmount);
+
+        $creditmemoMock = $this->getFakeMock(Creditmemo::class)
+            ->setMethods(['getBaseGrandTotal', 'getInvoice'])
+            ->getMock();
+        $creditmemoMock->expects($this->once())->method('getInvoice')->willReturn($invoiceMock);
         $creditmemoMock->expects($this->once())->method('getBaseGrandTotal')->willReturn($creditmemoAmount);
 
-        $orderMock = $this->getFakeMock(Order::class)->setMethods(['getBaseGrandTotal', 'hasCreditmemos'])->getMock();
-        $orderMock->expects($this->once())->method('getBaseGrandTotal')->willReturn($orderAmount);
-        $orderMock->expects($this->any())->method('hasCreditmemos')->willReturn($hasCreditmemos);
-
-        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder', 'getCreditmemo'])->getMock();
-        $paymentMock->expects($this->atLeastOnce())->method('getOrder')->willReturn($orderMock);
+        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getCreditmemo'])->getMock();
         $paymentMock->expects($this->atLeastOnce())->method('getCreditmemo')->willReturn($creditmemoMock);
 
         $instance = $this->getInstance();
