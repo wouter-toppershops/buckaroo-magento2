@@ -90,19 +90,19 @@ class PaymentGuaranteeTest extends BaseTest
         return [
             'null value' => [
                 null,
-                'buckaroo3extended_ideal'
+                'ideal'
             ],
             'empty value' => [
                 '',
-                'buckaroo3extended_ideal'
+                'ideal'
             ],
             'acceptgiro method' => [
                 '1',
-                'buckaroo3extended_transfer'
+                'transfer'
             ],
             'iDEAL method' => [
                 '2',
-                'buckaroo3extended_ideal'
+                'ideal'
             ],
         ];
     }
