@@ -312,6 +312,7 @@ class PaymentGuarantee extends AbstractMethod
             ->setServices($services)
             ->setAmount($totalAmount)
             ->setMethod('TransactionRequest')
+            ->setInvoiceId($this->getPartialInvoiceId($order))
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
@@ -320,10 +321,9 @@ class PaymentGuarantee extends AbstractMethod
 
         if ($this->_isPartialCapture) {
             /** @noinspection PhpUndefinedMethodInspection */
-            $transactionBuilder->setInvoiceId($this->getPartialInvoiceId($order))
-                ->setOriginalTransactionKey(
-                    $payment->getParentTransactionId()
-                );
+            $transactionBuilder->setOriginalTransactionKey(
+                $payment->getParentTransactionId()
+            );
         }
 
         return $transactionBuilder;
@@ -389,14 +389,14 @@ class PaymentGuarantee extends AbstractMethod
         $transactionBuilder->setOrder($order)
             ->setServices($services)
             ->setMethod('TransactionRequest')
+            ->setInvoiceId($this->getPartialCreditmemoId($order))
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
             ->setChannel('CallCenter');
 
         if ($this->isPartialRefund($payment)) {
-            $transactionBuilder->setInvoiceId($this->getPartialCreditmemoId($order))
-                ->setOriginalTransactionKey($payment->getParentTransactionId());
+            $transactionBuilder->setOriginalTransactionKey($payment->getParentTransactionId());
         }
 
         return $transactionBuilder;
@@ -824,9 +824,8 @@ class PaymentGuarantee extends AbstractMethod
         /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
         $creditmemo = $payment->getCreditmemo();
 
-        /** @var \Magento\Sales\Model\Order $order */
-        $order = $payment->getOrder();
+        $invoice = $creditmemo->getInvoice();
 
-        return !($order->getBaseGrandTotal() == $creditmemo->getBaseGrandTotal() && $order->hasCreditmemos() == 1);
+        return ($invoice->getBaseGrandTotal() != $creditmemo->getBaseGrandTotal());
     }
 }

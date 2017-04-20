@@ -52,8 +52,8 @@ class PaymentGuarantee extends AbstractConfigProvider
     ];
 
     private $paymentNames = [
-        '1' => 'buckaroo3extended_transfer',
-        '2' => 'buckaroo3extended_ideal'
+        '1' => 'transfer',
+        '2' => 'ideal'
     ];
 
     /**
