@@ -42,6 +42,7 @@
     <preference for="TIG\Buckaroo\Gateway\GatewayInterface" type="TIG\Buckaroo\Gateway\Http\Bpe3"/>
     <preference for="TIG\Buckaroo\Api\CertificateRepositoryInterface" type="TIG\Buckaroo\Model\CertificateRepository"/>
     <preference for="TIG\Buckaroo\Api\InvoiceRepositoryInterface" type="TIG\Buckaroo\Model\InvoiceRepository"/>
+    <preference for="TIG\Buckaroo\Api\GiftcardRepositoryInterface" type="TIG\Buckaroo\Model\GiftcardRepository"/>
     <preference for="TIG\Buckaroo\Api\PushInterface" type="TIG\Buckaroo\Model\Push"/>
     <preference for="TIG\Buckaroo\Api\PaymentInformationManagementInterface" type="TIG\Buckaroo\Model\PaymentInformationManagement"/>
     <preference for="TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface" type="TIG\Buckaroo\Model\GuestPaymentInformationManagement"/>
