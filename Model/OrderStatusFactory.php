@@ -39,34 +39,38 @@
 
 namespace TIG\Buckaroo\Model;
 
+use TIG\Buckaroo\Helper\Data;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+
 class OrderStatusFactory
 {
     /**
-     * @var ConfigProvider\Factory
+     * @var Account
      */
-    protected $configProviderFactory;
+    protected $account;
 
     /**
-     * @var ConfigProvider\Method\Factory
+     * @var Factory
      */
     protected $configProviderMethodFactory;
 
     /**
-     * @var \TIG\Buckaroo\Helper\Data
+     * @var Data
      */
     protected $helper;
 
     /**
-     * @param ConfigProvider\Factory        $configProviderFactory
-     * @param ConfigProvider\Method\Factory $configProviderMethodFactory
-     * @param \TIG\Buckaroo\Helper\Data     $helper
+     * @param Account $account
+     * @param Factory $configProviderMethodFactory
+     * @param Data    $helper
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \TIG\Buckaroo\Helper\Data $helper
+        Account $account,
+        Factory $configProviderMethodFactory,
+        Data $helper
     ) {
-        $this->configProviderFactory = $configProviderFactory;
+        $this->account = $account;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
         $this->helper = $helper;
     }
@@ -102,11 +106,6 @@ class OrderStatusFactory
             return $status;
         }
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
-         */
-        $configProvider = $this->configProviderFactory->get('account');
-
         switch ($statusCode) {
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_TECHNICAL_ERROR'):
@@ -114,16 +113,16 @@ class OrderStatusFactory
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_MERCHANT'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED'):
-                $status = $configProvider->getOrderStatusFailed();
+                $status = $this->account->getOrderStatusFailed();
                 break;
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'):
-                $status = $configProvider->getOrderStatusSuccess();
+                $status = $this->account->getOrderStatusSuccess();
                 break;
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PAYMENT_ON_HOLD'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_CONSUMER'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_PENDING_PROCESSING'):
             case $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_WAITING_ON_USER_INPUT'):
-                $status = $configProvider->getOrderStatusPending();
+                $status = $this->account->getOrderStatusPending();
                 break;
         }
 
