@@ -39,6 +39,8 @@
 
 namespace TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection;
 
+use TIG\Buckaroo\Model\ConfigProvider\Method\Paypal;
+
 class Push
 {
     /**#@+
@@ -51,29 +53,18 @@ class Push
     const ELIGIBILITY_TYPE_NONE                 = 'None';
     /**#@-*/
 
-    // @codingStandardsIgnoreStart
-    /**#@+
-     * Xpaths to the paypal seller protection custom order statuses.
+    /**
+     * @var Paypal
      */
-    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ELIGIBLE             = 'payment/tig_buckaroo_paypal/sellers_protection_eligible';
-    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ITEM_NOT_RECEIVED    = 'payment/tig_buckaroo_paypal/sellers_protection_itemnotreceived_eligible';
-    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_UNAUTHORIZED_PAYMENT = 'payment/tig_buckaroo_paypal/sellers_protection_unauthorizedpayment_eligible';
-    const XPATH_PAYPAL_SELLER_PROTECTION_STATUS_NONE                 = 'payment/tig_buckaroo_paypal/sellers_protection_ineligible';
-    /**#@-*/
-    // @codingStandardsIgnoreEnd
+    protected $configProviderPaypal;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param Paypal $congigProviderPaypal
      */
     public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        Paypal $congigProviderPaypal
     ) {
-        $this->scopeConfig = $scopeConfig;
+        $this->configProviderPaypal = $congigProviderPaypal;
     }
 
     /**
@@ -108,34 +99,22 @@ class Push
                     " Not Received."
                 );
 
-                $status = $this->scopeConfig->getValue(
-                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ELIGIBLE,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+                $status = $this->configProviderPaypal->getSellersProtectionEligible();
                 break;
             case self::ELIGIBILITY_TYPE_ITEM_NOT_RECEIVED:
                 $comment = __("Merchant is protected by Paypal Seller Protection Policy for Item Not Received.");
 
-                $status = $this->scopeConfig->getValue(
-                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_ITEM_NOT_RECEIVED,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+                $status = $this->configProviderPaypal->getSellersProtectionItemnotreceivedEligible();
                 break;
             case self::ELIGIBILITY_TYPE_UNAUTHORIZED_PAYMENT:
                 $comment = __("Merchant is protected by Paypal Seller Protection Policy for Unauthorized Payment.");
 
-                $status = $this->scopeConfig->getValue(
-                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_UNAUTHORIZED_PAYMENT,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+                $status = $this->configProviderPaypal->getSellersProtectionUnauthorizedpaymentEligible();
                 break;
             case self::ELIGIBILITY_TYPE_NONE:
                 $comment = __("Merchant is not protected under the Seller Protection Policy.");
 
-                $status = $this->scopeConfig->getValue(
-                    self::XPATH_PAYPAL_SELLER_PROTECTION_STATUS_NONE,
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-                );
+                $status = $this->configProviderPaypal->getSellersProtectionIneligible();
                 break;
             default:
                 throw new \InvalidArgumentException("Invalid eligibility type.");
