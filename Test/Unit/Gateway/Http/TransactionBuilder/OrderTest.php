@@ -48,19 +48,19 @@ class OrderTest extends BaseTest
     protected $object;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory|\Mockery\MockInterface
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Account|\Mockery\MockInterface
      */
-    protected $configProvider;
+    protected $configProviderAccount;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configProviderAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
 
         $this->object = $this->objectManagerHelper->getObject(
             \TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class,
-            ['configProviderFactory' => $this->configProvider]
+            ['configProviderAccount' => $this->configProviderAccount]
         );
     }
 
@@ -89,16 +89,14 @@ class OrderTest extends BaseTest
         $this->object->setStartRecurrent($expected['StartRecurrent']);
         $this->object->setServices($expected['Services']['Service']);
 
-        $account = \Mockery::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
-        $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
-        $account->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
-        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+        $this->configProviderAccount->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
+        $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
 
         $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $order->shouldReceive('save');
-        
+
         $this->object->setOrder($order);
 
         $result = $this->object->getBody();

@@ -40,6 +40,11 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\ObjectManagerInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+
 abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
 {
     /**
@@ -78,37 +83,22 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $type = false;
 
     /**
-     * @var \Magento\Framework\App\ProductMetadataInterface
+     * @var ProductMetadataInterface
      */
     protected $productMetadata;
 
     /**
-     * @var \Magento\Framework\Module\ModuleListInterface
+     * @var ModuleListInterface
      */
     protected $moduleList;
 
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var Account
      */
-    protected $urlBuilder;
+    protected $configProviderAccount;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
-
-    /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
-     */
-    protected $remoteAddress;
-
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
-     */
-    protected $configProviderMethodFactory;
-
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var ObjectManagerInterface
      */
     protected $objectManager;
 
@@ -258,33 +248,24 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     /**
      * TransactionBuilder constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadataInterface      $productMetadata
-     * @param \Magento\Framework\Module\ModuleListInterface        $moduleList
-     * @param \Magento\Framework\UrlInterface                      $urlBuilder
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory           $configProviderFactory
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory    $configProviderMethodFactory
-     * @param \Magento\Framework\ObjectManagerInterface            $objectManager
-     * @param null                                                 $amount
-     * @param null                                                 $currency
+     * @param ProductMetadataInterface $productMetadata
+     * @param ModuleListInterface      $moduleList
+     * @param Account                  $configProviderAccount
+     * @param ObjectManagerInterface   $objectManager
+     * @param null|int|float|double    $amount
+     * @param null|string              $currency
      */
     public function __construct(
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
-        \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        ProductMetadataInterface $productMetadata,
+        ModuleListInterface $moduleList,
+        Account $configProviderAccount,
+        ObjectManagerInterface $objectManager,
         $amount = null,
         $currency = null
     ) {
         $this->productMetadata             = $productMetadata;
         $this->moduleList                  = $moduleList;
-        $this->urlBuilder                  = $urlBuilder;
-        $this->configProviderFactory       = $configProviderFactory;
-        $this->remoteAddress               = $remoteAddress;
-        $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->configProviderAccount       = $configProviderAccount;
         $this->objectManager               = $objectManager;
 
         if ($amount !== null) {
@@ -415,17 +396,12 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     {
         $module = $this->moduleList->getOne(self::MODULE_CODE);
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
-
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
             'MessageControlBlock',
             [
                 'Id'                => '_control',
-                'WebsiteKey'        => $accountConfig->getMerchantKey(),
+                'WebsiteKey'        => $this->configProviderAccount->getMerchantKey(),
                 'Culture'           => 'nl-NL',
                 'TimeStamp'         => time(),
                 'Channel'           => $this->channel,

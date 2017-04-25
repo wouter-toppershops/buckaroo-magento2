@@ -40,8 +40,54 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\UrlInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+
 class Order extends AbstractTransactionBuilder
 {
+    /** @var UrlInterface */
+    protected $urlBuilder;
+
+    /** @var RemoteAddress */
+    protected $remoteAddress;
+
+    /** @var Factory */
+    protected $configProviderMethodFactory;
+
+    /**
+     * @param ProductMetadataInterface $productMetadata
+     * @param ModuleListInterface      $moduleList
+     * @param Account                  $configProviderAccount
+     * @param ObjectManagerInterface   $objectManager
+     * @param UrlInterface             $urlBuilder
+     * @param RemoteAddress            $remoteAddress
+     * @param Factory                  $configProviderMethodFactory
+     * @param null                     $amount
+     * @param null                     $currency
+     */
+    public function __construct(
+        ProductMetadataInterface $productMetadata,
+        ModuleListInterface $moduleList,
+        Account $configProviderAccount,
+        ObjectManagerInterface $objectManager,
+        UrlInterface $urlBuilder,
+        RemoteAddress $remoteAddress,
+        Factory $configProviderMethodFactory,
+        $amount = null,
+        $currency = null
+    ) {
+        parent::__construct($productMetadata, $moduleList, $configProviderAccount, $objectManager, $amount, $currency);
+
+        $this->urlBuilder = $urlBuilder;
+        $this->remoteAddress = $remoteAddress;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+    }
+
     /**
      * @return array
      */
@@ -63,11 +109,6 @@ class Order extends AbstractTransactionBuilder
 
         $order = $this->getOrder();
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
-
         $ip = $order->getRemoteIp();
         if (!$ip) {
             $ip = $this->remoteAddress->getRemoteAddress();
@@ -81,12 +122,12 @@ class Order extends AbstractTransactionBuilder
         $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
 
         $body = [
-            'Currency' => $this->currency,
+            'Currency' => $this->getCurrency(),
             'AmountDebit' => $this->getAmount(),
             'AmountCredit' => $creditAmount,
             'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $accountConfig->getTransactionLabel(),
+            'Description' => $this->configProviderAccount->getTransactionLabel(),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
