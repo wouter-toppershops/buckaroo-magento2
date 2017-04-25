@@ -140,6 +140,7 @@ class PaymentGuarantee extends AbstractMethod
      * @param \Magento\Payment\Model\Method\Logger                    $logger
      * @param \Magento\Developer\Helper\Data                          $developmentHelper
      * @param \Magento\Framework\App\ProductMetadataInterface         $productMetadata
+     * @param \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee          $configProviderBuckarooFee
      * @param \TIG\Buckaroo\Model\InvoiceFactory                      $invoiceFactory
      * @param \TIG\Buckaroo\Api\InvoiceRepositoryInterface            $invoiceRepository
      * @param \Magento\Framework\Api\SearchCriteriaBuilder            $searchCriteriaBuilder
@@ -168,6 +169,7 @@ class PaymentGuarantee extends AbstractMethod
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Developer\Helper\Data $developmentHelper,
         \Magento\Framework\App\ProductMetadataInterface $productMetadata,
+        \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee $configProviderBuckarooFee,
         \TIG\Buckaroo\Model\InvoiceFactory $invoiceFactory,
         \TIG\Buckaroo\Api\InvoiceRepositoryInterface $invoiceRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -196,6 +198,7 @@ class PaymentGuarantee extends AbstractMethod
             $logger,
             $developmentHelper,
             $productMetadata,
+            $configProviderBuckarooFee,
             $resource,
             $resourceCollection,
             $gateway,

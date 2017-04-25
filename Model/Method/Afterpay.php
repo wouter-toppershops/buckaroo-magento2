@@ -768,11 +768,6 @@ class Afterpay extends AbstractMethod
             $buckarooFeeLine = $order->getBaseBuckarooFee();
         }
 
-        /**
-         * @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper
-         */
-        $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
-
         $article = [];
 
         if (false !== $buckarooFee && (double)$buckarooFee > 0) {
@@ -784,7 +779,7 @@ class Afterpay extends AbstractMethod
                 1,
                 1,
                 round($buckarooFeeLine, 2),
-                $this->getTaxCategory($feeHelper->getBuckarooFeeTaxClass($storeId))
+                $this->getTaxCategory($this->configProviderBuckarooFee->getTaxClass($storeId))
             );
         }
         // Add aditional shippin costs.
