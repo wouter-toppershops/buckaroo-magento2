@@ -43,6 +43,11 @@ class PhoneFormatter
         'BE' => ['00320', '0320', '320', '32'],
     ];
 
+    private $startingNotation = [
+        'NL' => ['0', '0', '3', '1'],
+        'BE' => ['0', '0', '3', '2'],
+    ];
+
     /**
      * @param $phoneNumber
      * @param $country
@@ -83,7 +88,8 @@ class PhoneFormatter
         }
 
         if ($phoneLength == 10) {
-            $phoneNumber = '0031' . substr($phoneNumber, 1);
+            $notationStart = implode($this->startingNotation[$country]);
+            $phoneNumber = $notationStart . substr($phoneNumber, 1);
         }
 
         return $phoneNumber;
@@ -124,11 +130,11 @@ class PhoneFormatter
     {
         array_walk(
             $this->invalidNotation[$country],
-            function ($invalid) use (&$phoneNumber) {
+            function ($invalid) use (&$phoneNumber, $country) {
                 $phoneNumberPart = substr($phoneNumber, 0, strlen($invalid));
 
                 if (strpos($phoneNumberPart, $invalid) !== false) {
-                    $phoneNumber = $this->formatNotation($phoneNumber, $invalid);
+                    $phoneNumber = $this->formatNotation($phoneNumber, $invalid, $country);
                 }
             }
         );
@@ -139,23 +145,25 @@ class PhoneFormatter
     /**
      * @param $phoneNumber
      * @param $invalid
+     * @param $country
      *
      * @return string
      */
-    private function formatNotation($phoneNumber, $invalid)
+    private function formatNotation($phoneNumber, $invalid, $country)
     {
         $valid = substr($invalid, 0, -1);
+        $countryNotation = $this->startingNotation[$country];
 
-        if (substr($valid, 0, 2) == '31') {
-            $valid = "00" . $valid;
+        if (substr($valid, 0, 2) == $countryNotation[2] . $countryNotation[3]) {
+            $valid = $countryNotation[0] . $countryNotation[1] . $valid;
         }
 
-        if (substr($valid, 0, 2) == '03') {
-            $valid = "0" . $valid;
+        if (substr($valid, 0, 2) == $countryNotation[1] . $countryNotation[2]) {
+            $valid = $countryNotation[0] . $valid;
         }
 
-        if ($valid == '3') {
-            $valid = "0" . $valid . "1";
+        if ($valid == $countryNotation[2]) {
+            $valid = $countryNotation[1] . $valid . $countryNotation[3];
         }
 
         $phoneNumber = substr_replace($phoneNumber, $valid, 0, strlen($invalid));
