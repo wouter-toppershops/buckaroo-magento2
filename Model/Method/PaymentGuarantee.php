@@ -127,6 +127,11 @@ class PaymentGuarantee extends AbstractMethod
      * @var \Magento\Framework\Api\SearchCriteriaBuilder
      */
     private $searchCriteriaBuilder;
+
+    /**
+     * @var \TIG\Buckaroo\Service\Formatter\AddressFormatter
+     */
+    private $addressFormatter;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -143,6 +148,7 @@ class PaymentGuarantee extends AbstractMethod
      * @param \TIG\Buckaroo\Model\InvoiceFactory                      $invoiceFactory
      * @param \TIG\Buckaroo\Api\InvoiceRepositoryInterface            $invoiceRepository
      * @param \Magento\Framework\Api\SearchCriteriaBuilder            $searchCriteriaBuilder
+     * @param \TIG\Buckaroo\Service\Formatter\AddressFormatter        $addressFormatter
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
@@ -171,6 +177,7 @@ class PaymentGuarantee extends AbstractMethod
         \TIG\Buckaroo\Model\InvoiceFactory $invoiceFactory,
         \TIG\Buckaroo\Api\InvoiceRepositoryInterface $invoiceRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
+        \TIG\Buckaroo\Service\Formatter\AddressFormatter $addressFormatter,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -214,6 +221,7 @@ class PaymentGuarantee extends AbstractMethod
         $this->invoiceFactory = $invoiceFactory;
         $this->invoiceRepository = $invoiceRepository;
         $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->addressFormatter = $addressFormatter;
     }
 
     /**
@@ -475,6 +483,11 @@ class PaymentGuarantee extends AbstractMethod
             ? $billingAddress->getCustomerId()
             : $payment->getOrder()->getIncrementId();
 
+        $telephone = $this->addressFormatter->formatTelephone(
+            $billingAddress->getTelephone(),
+            $billingAddress->getCountryId()
+        );
+
         $defaultValues = [
             [
                 '_'    => date('Y-m-d'),
@@ -513,8 +526,8 @@ class PaymentGuarantee extends AbstractMethod
                 'Name' => 'CustomerEmail'
             ],
             [
-                '_'    => $billingAddress->getTelephone(),
-                'Name' => 'PhoneNumber'
+                '_'    => $telephone['clean'],
+                'Name' => ($telephone['mobile'] ? 'MobilePhoneNumber' : 'PhoneNumber')
             ],
             [
                 '_'    => $config->getPaymentMethodToUse(),
@@ -561,7 +574,7 @@ class PaymentGuarantee extends AbstractMethod
      */
     private function singleAddress($address, $addressType, $id = 1)
     {
-        $street = $this->formatStreet($address->getStreet());
+        $street = $this->addressFormatter->formatStreet($address->getStreet());
 
         return [
             [
@@ -632,42 +645,6 @@ class PaymentGuarantee extends AbstractMethod
         );
 
         return !empty($arrayDifferences);
-    }
-
-    /**
-     * @param $street
-     *
-     * @return array
-     */
-    private function formatStreet($street)
-    {
-        // Street is always an array since it is parsed with two field objects.
-        // Nondeless it could be that only the first field is parsed to the array
-        if (isset($street[1])) {
-            $street = $street[0] . ' ' . $street[1];
-        } else {
-            $street = $street[0];
-        }
-
-        $format = [
-            'house_number'    => '',
-            'number_addition' => '',
-            'street'          => $street
-        ];
-
-        if (preg_match('#^(.*?)([0-9]+)(.*)#s', $street, $matches)) {
-            // Check if the number is at the beginning of streetname
-            if ('' == $matches[1]) {
-                $format['house_number'] = trim($matches[2]);
-                $format['street']       = trim($matches[3]);
-            } else {
-                $format['street']          = trim($matches[1]);
-                $format['house_number']    = trim($matches[2]);
-                $format['number_addition'] = trim($matches[3]);
-            }
-        }
-
-        return $format;
     }
 
     /**
