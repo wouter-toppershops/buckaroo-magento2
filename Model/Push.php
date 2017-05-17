@@ -196,7 +196,11 @@ class Push implements PushInterface
         //Check if the push can be processed and if the order can be updated IMPORTANT => use the original post data.
         $validSignature = $this->validator->validateSignature($this->originalPostData);
 
-        $brqOrderId = $this->postData['brq_invoicenumber'];
+        $brqOrderId = 0;
+
+        if (isset($this->postData['brq_invoicenumber']) && strlen($this->postData['brq_invoicenumber']) > 0) {
+            $brqOrderId = $this->postData['brq_invoicenumber'];
+        }
 
         if (isset($this->postData['brq_ordernumber']) && strlen($this->postData['brq_ordernumber']) > 0) {
             $brqOrderId = $this->postData['brq_ordernumber'];
