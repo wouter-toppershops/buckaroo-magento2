@@ -47,6 +47,8 @@ use TIG\Buckaroo\Model\ConfigProvider\Method\PaymentGuarantee as ConfigProviderP
 use TIG\Buckaroo\Model\Invoice;
 use TIG\Buckaroo\Model\InvoiceFactory;
 use TIG\Buckaroo\Model\Method\PaymentGuarantee;
+use TIG\Buckaroo\Service\Formatter\Address\StreetFormatter;
+use TIG\Buckaroo\Service\Formatter\AddressFormatter;
 use TIG\Buckaroo\Test\BaseTest;
 
 class PaymentGuaranteeTest extends BaseTest
@@ -320,10 +322,13 @@ class PaymentGuaranteeTest extends BaseTest
      */
     public function testSingleAddress($addressData, $addressType, $addressId, $expected)
     {
+        $streetFormatter = $this->getObject(StreetFormatter::class);
+        $addressFormatter = $this->getObject(AddressFormatter::class, ['streetFormatter' => $streetFormatter]);
+        $instance = $this->getInstance(['addressFormatter' => $addressFormatter]);
+
         $address = $this->getObject(Address::class);
         $address->setData($addressData);
 
-        $instance = $this->getInstance();
         $result = $this->invokeArgs('singleAddress', [$address, $addressType, $addressId], $instance);
         $this->assertEquals('address', $result[0]['Group']);
         $this->assertEquals('address_' . $addressId, $result[0]['GroupID']);
@@ -364,61 +369,6 @@ class PaymentGuaranteeTest extends BaseTest
     {
         $instance = $this->getInstance();
         $result = $this->invokeArgs('isAddressDataDifferent', [$dataOne, $dataTwo], $instance);
-
-        $this->assertEquals($expected, $result);
-    }
-
-    /**
-     * @return array
-     */
-    public function formatStreetProvider()
-    {
-        return [
-            'street only' => [
-                ['Kabelweg'],
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '',
-                    'number_addition' => '',
-                ]
-            ],
-            'with housenumber' => [
-                ['Kabelweg 37'],
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '37',
-                    'number_addition' => '',
-                ]
-            ],
-            'with number addition' => [
-                ['Kabelweg', '37 1'],
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '37',
-                    'number_addition' => '1',
-                ]
-            ],
-            'with letter addition' => [
-                ['Kabelweg 37', 'A'],
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '37',
-                    'number_addition' => 'A',
-                ]
-            ],
-        ];
-    }
-
-    /**
-     * @param $street
-     * @param $expected
-     *
-     * @dataProvider formatStreetProvider
-     */
-    public function testFormatStreet($street, $expected)
-    {
-        $instance = $this->getInstance();
-        $result = $this->invokeArgs('formatStreet', [$street], $instance);
 
         $this->assertEquals($expected, $result);
     }
