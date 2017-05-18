@@ -49,40 +49,27 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $order = $creditmemo->getOrder();
+        $invoice = $creditmemo->getInvoice();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        if ($order->getBuckarooFeeBaseTaxAmountInvoiced()
-            && $order->getBuckarooFeeBaseTaxAmountInvoiced() != $order->getBuckarooFeeBaseTaxAmountRefunded()
+        if ($invoice->getBuckarooFeeBaseTaxAmount()
+            && $order->getBuckarooFeeBaseTaxAmountInvoiced() > $order->getBuckarooFeeBaseTaxAmountRefunded()
         ) {
-            $buckarooFeeTaxInvoiced = $order->getBuckarooFeeTaxAmountInvoiced();
-            $baseBuckarooFeeTaxInvoiced = $order->getBuckarooFeeBaseTaxAmountInvoiced();
+            $baseBuckarooFeeTax = $invoice->getBuckarooFeeBaseTaxAmount();
+            $buckarooFeeTax = $invoice->getBuckarooFeeTaxAmount();
 
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $order->setBuckarooFeeBaseTaxAmountRefunded($baseBuckarooFeeTaxInvoiced);
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $order->setBuckarooFeeTaxAmountRefunded($buckarooFeeTaxInvoiced);
+            $order->setBuckarooFeeBaseTaxAmountRefunded(
+                $order->getBuckarooFeeBaseTaxAmountRefunded() +  $baseBuckarooFeeTax
+            );
+            $order->setBuckarooFeeTaxAmountRefunded($order->getBuckarooFeeTaxAmountRefunded() + $buckarooFeeTax);
 
-            $creditmemo->setBaseTaxAmount($creditmemo->getBaseTaxAmount() + $baseBuckarooFeeTaxInvoiced);
-            $creditmemo->setTaxAmount($creditmemo->getTaxAmount() + $buckarooFeeTaxInvoiced);
+            $creditmemo->setBaseTaxAmount($creditmemo->getBaseTaxAmount() + $baseBuckarooFeeTax);
+            $creditmemo->setTaxAmount($creditmemo->getTaxAmount() + $buckarooFeeTax);
 
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $creditmemo->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTaxInvoiced);
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $creditmemo->setBuckarooFeeTaxAmount($buckarooFeeTaxInvoiced);
+            $creditmemo->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTax);
+            $creditmemo->setBuckarooFeeTaxAmount($buckarooFeeTax);
 
-
-            $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseBuckarooFeeTaxInvoiced);
-            $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $buckarooFeeTaxInvoiced);
+            $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseBuckarooFeeTax);
+            $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $buckarooFeeTax);
         }
 
         return $this;
