@@ -56,22 +56,33 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
         if ($order->getBuckarooFeeBaseTaxAmountInvoiced()
             && $order->getBuckarooFeeBaseTaxAmountInvoiced() != $order->getBuckarooFeeBaseTaxAmountRefunded()
         ) {
+            $buckarooFeeTaxInvoiced = $order->getBuckarooFeeTaxAmountInvoiced();
+            $baseBuckarooFeeTaxInvoiced = $order->getBuckarooFeeBaseTaxAmountInvoiced();
+
             /**
              * @noinspection PhpUndefinedMethodInspection
              */
-            $order->setBuckarooFeeBaseTaxAmountRefunded($order->getBuckarooFeeBaseTaxAmountInvoiced());
+            $order->setBuckarooFeeBaseTaxAmountRefunded($baseBuckarooFeeTaxInvoiced);
             /**
              * @noinspection PhpUndefinedMethodInspection
              */
-            $order->setBuckarooFeeTaxAmountRefunded($order->getBuckarooFeeTaxAmountInvoiced());
+            $order->setBuckarooFeeTaxAmountRefunded($buckarooFeeTaxInvoiced);
+
+            $creditmemo->setBaseTaxAmount($creditmemo->getBaseTaxAmount() + $baseBuckarooFeeTaxInvoiced);
+            $creditmemo->setTaxAmount($creditmemo->getTaxAmount() + $buckarooFeeTaxInvoiced);
+
             /**
              * @noinspection PhpUndefinedMethodInspection
              */
-            $creditmemo->setBuckarooFeeBaseTaxAmount($order->getBuckarooFeeBaseTaxAmountInvoiced());
+            $creditmemo->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTaxInvoiced);
             /**
              * @noinspection PhpUndefinedMethodInspection
              */
-            $creditmemo->setBuckarooFeeTaxAmount($order->getBuckarooFeeTaxAmountInvoiced());
+            $creditmemo->setBuckarooFeeTaxAmount($buckarooFeeTaxInvoiced);
+
+
+            $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseBuckarooFeeTaxInvoiced);
+            $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $buckarooFeeTaxInvoiced);
         }
 
         return $this;
