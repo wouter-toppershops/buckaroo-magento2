@@ -81,14 +81,14 @@ class Creditcard extends AbstractConfigProvider
             'name' => 'American Express',
             'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
         ],
-//        [
-//            'name' => 'Carte Bancaire',
-//            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
-//        ],
-//        [
-//            'name' => 'Carte Bleue',
-//            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
-//        ],
+        [
+            'name' => 'Carte Bancaire',
+            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
+        ],
+        [
+            'name' => 'Carte Bleue',
+            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
+        ],
         [
             'name' => 'Maestro',
             'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,

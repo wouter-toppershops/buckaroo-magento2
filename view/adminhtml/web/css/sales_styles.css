@@ -268,29 +268,27 @@
     content: ' ';
 }
 
-/*.tig_buckaroo_payment_card_cartebleuevisa:before {*/
-    /*background-image  :url(../images/creditcard/ico-cbl.png);*/
-    /*background-repeat :no-repeat;*/
-    /*margin-top        :18px;*/
-    /*float             :left;*/
-    /*margin-right      :10px;*/
-    /*background-size   :auto 23px;*/
-    /*width             :40px;*/
-    /*height            :30px;*/
-    /*content           :' ';*/
-/*}*/
+.tig_buckaroo_payment_card_cartebleuevisa:before {
+    background: url(../images/creditcard/ico-cbl.png) no-repeat;
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
+}
 
-/*.tig_buckaroo_payment_card_cartebancaire:before {*/
-    /*background-image  :url(../images/creditcard/ico-cb.png);*/
-    /*background-repeat :no-repeat;*/
-    /*margin-top        :18px;*/
-    /*float             :left;*/
-    /*margin-right      :10px;*/
-    /*background-size   :auto 23px;*/
-    /*width             :40px;*/
-    /*height            :30px;*/
-    /*content           :' ';*/
-/*}*/
+.tig_buckaroo_payment_card_cartebancaire:before {
+    background: url(../images/creditcard/ico-cb.png) no-repeat;
+    margin-top: -2px;
+    float: left;
+    margin-right: 7px;
+    background-size: auto 23px;
+    width: 40px;
+    height: 23px;
+    content: ' ';
+}
 
 .tig_buckaroo_payment_card_dankort:before {
     background: url(../images/creditcard/ico-da.png) no-repeat;
