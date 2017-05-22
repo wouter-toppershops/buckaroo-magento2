@@ -70,24 +70,6 @@ class BuckarooFee extends AbstractConfigProvider
     const XPATH_BUCKAROOFEE_PRICE_DISPLAY_SALES = 'tax/sales_display/buckaroo_fee';
 
     /**
-     * @var \Magento\Checkout\Model\Session
-     */
-    protected $checkoutSession;
-
-    /**
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \Magento\Checkout\Model\Session                    $checkoutSession
-     */
-    public function __construct(
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \Magento\Checkout\Model\Session $checkoutSession
-    ) {
-        parent::__construct($scopeConfig);
-
-        $this->checkoutSession = $checkoutSession;
-    }
-
-    /**
      * Retrieve associated array of checkout configuration
      *
      * @param null $store

@@ -144,7 +144,6 @@ class PaymentGuarantee extends AbstractMethod
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
      * @param \Magento\Developer\Helper\Data                          $developmentHelper
-     * @param \Magento\Framework\App\ProductMetadataInterface         $productMetadata
      * @param \TIG\Buckaroo\Model\InvoiceFactory                      $invoiceFactory
      * @param \TIG\Buckaroo\Api\InvoiceRepositoryInterface            $invoiceRepository
      * @param \Magento\Framework\Api\SearchCriteriaBuilder            $searchCriteriaBuilder
@@ -154,7 +153,6 @@ class PaymentGuarantee extends AbstractMethod
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory    $transactionBuilderFactory
      * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
-     * @param \Magento\Framework\Message\ManagerInterface             $messageManager
      * @param \TIG\Buckaroo\Helper\Data                               $helper
      * @param \Magento\Framework\App\RequestInterface                 $request
      * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
@@ -173,7 +171,6 @@ class PaymentGuarantee extends AbstractMethod
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Developer\Helper\Data $developmentHelper,
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
         \TIG\Buckaroo\Model\InvoiceFactory $invoiceFactory,
         \TIG\Buckaroo\Api\InvoiceRepositoryInterface $invoiceRepository,
         \Magento\Framework\Api\SearchCriteriaBuilder $searchCriteriaBuilder,
@@ -183,7 +180,6 @@ class PaymentGuarantee extends AbstractMethod
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
-        \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
         \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
@@ -202,13 +198,11 @@ class PaymentGuarantee extends AbstractMethod
             $scopeConfig,
             $logger,
             $developmentHelper,
-            $productMetadata,
             $resource,
             $resourceCollection,
             $gateway,
             $transactionBuilderFactory,
             $validatorFactory,
-            $messageManager,
             $helper,
             $request,
             $refundFieldsFactory,
@@ -230,7 +224,7 @@ class PaymentGuarantee extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
-        $data = $this->assignDataConvertAllVersionsArray($data);
+        $data = $this->assignDataConvertToArray($data);
 
         if (!isset($data['additional_data']['termsCondition'])) {
             return $this;

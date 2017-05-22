@@ -39,7 +39,10 @@
  */
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
+use Magento\Checkout\Model\ConfigProviderInterface;
+use TIG\Buckaroo\Api\CertificateRepositoryInterface;
+
+class PrivateKey implements ConfigProviderInterface
 {
     /**
      * Xpath to the 'certificate_upload' setting.
@@ -52,29 +55,22 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     protected $certificate;
 
     /**
-     * @param \TIG\Buckaroo\Model\Certificate $certificate
-     * @param Factory                         $configProviderFactory
-     *
-     * @throws \LogicException
+     * @param CertificateRepositoryInterface $certificateRepository
+     * @param Account                        $account
      */
     public function __construct(
-        \TIG\Buckaroo\Model\Certificate $certificate,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        CertificateRepositoryInterface $certificateRepository,
+        Account $account
     ) {
-        $this->certificate = $certificate;
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
-         */
-        $configProvider = $configProviderFactory->get('account');
-        $certificateId = $configProvider->getCertificateFile();
+        $certificateId = $account->getCertificateFile();
 
         if (!$certificateId) {
             throw new \LogicException('No Buckaroo certificate configured.');
         }
 
-        $this->certificate->load($certificateId);
-        if (!$certificate->getId()) {
+        $this->certificate = $certificateRepository->getById($certificateId);
+
+        if (!$this->certificate->getId()) {
             throw new \LogicException('Invalid Buckaroo certificate configured.');
         }
     }

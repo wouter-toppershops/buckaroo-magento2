@@ -39,7 +39,12 @@
 
 namespace TIG\Buckaroo\Model\Total\Quote\Tax;
 
+use Magento\Catalog\Helper\Data;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
 use Magento\Tax\Model\Sales\Total\Quote\CommonTaxCollector;
+use TIG\Buckaroo\Model\ConfigProvider\Account as ConfigProviderAccount;
+use TIG\Buckaroo\Model\ConfigProvider\BuckarooFee as ConfigProviderBuckarooFee;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 
 class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
 {
@@ -47,49 +52,28 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
     const CODE_QUOTE_GW = 'buckaroo_fee';
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
-
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
-     */
-    protected $configProviderMethodFactory;
-
-    /**
-     * @var \Magento\Framework\Pricing\PriceCurrencyInterface
-     */
-    public $priceCurrency;
-
-    /**
-     * @var \TIG\Buckaroo\Helper\PaymentFee
-     */
-    protected $helper;
-
-    /**
-     * @var \Magento\Catalog\Helper\Data
-     */
-    public $catalogHelper;
-
-    /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
-     * @param \TIG\Buckaroo\Helper\PaymentFee                   $helper
-     * @param \Magento\Catalog\Helper\Data                      $catalogHelper
+     * @param ConfigProviderAccount     $configProviderAccount
+     * @param ConfigProviderBuckarooFee $configProviderBuckarooFee
+     * @param Factory                   $configProviderMethodFactory
+     * @param PriceCurrencyInterface    $priceCurrency
+     * @param Data                      $catalogHelper
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
-        \TIG\Buckaroo\Helper\PaymentFee $helper,
-        \Magento\Catalog\Helper\Data $catalogHelper
+        ConfigProviderAccount $configProviderAccount,
+        ConfigProviderBuckarooFee $configProviderBuckarooFee,
+        Factory $configProviderMethodFactory,
+        PriceCurrencyInterface $priceCurrency,
+        Data $catalogHelper
     ) {
-        parent::__construct($configProviderFactory, $configProviderMethodFactory, $priceCurrency, $catalogHelper);
+        parent::__construct(
+            $configProviderAccount,
+            $configProviderBuckarooFee,
+            $configProviderMethodFactory,
+            $priceCurrency,
+            $catalogHelper
+        );
 
         $this->setCode('pretax_buckaroo_fee');
-
-        $this->helper = $helper;
     }
 
     /**
@@ -127,7 +111,7 @@ class BuckarooFee extends \TIG\Buckaroo\Model\Total\Quote\BuckarooFee
 
         $paymentFee = $this->priceCurrency->convert($basePaymentFee, $quote->getStore());
 
-        $productTaxClassId = $this->helper->getBuckarooFeeTaxClass($quote->getStore());
+        $productTaxClassId = $this->configProviderBuckarooFee->getTaxClass($quote->getStore());
 
         $address = $shippingAssignment->getShipping()->getAddress();
         /**

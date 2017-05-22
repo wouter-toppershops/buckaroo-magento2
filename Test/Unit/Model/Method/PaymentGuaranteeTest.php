@@ -62,21 +62,9 @@ class PaymentGuaranteeTest extends BaseTest
     {
         return [
             'no data' => [
-                '2.0.5',
                 []
             ],
-            'version 2.0.0' => [
-                '2.0.0',
-                [
-                    'termsCondition' => '1',
-                    'customer_gender' => 'male',
-                    'customer_billingName' => 'TIG',
-                    'customer_DoB' => '01/01/1990',
-                    'customer_iban' => 'NL12345'
-                ]
-            ],
-            'version 2.1.0' => [
-                '2.1.0',
+            'correct DoB dateformat' => [
                 [
                     'additional_data' => [
                         'termsCondition' => '0',
@@ -88,7 +76,6 @@ class PaymentGuaranteeTest extends BaseTest
                 ]
             ],
             'incorrect DoB dateformat' => [
-                '2.1.5',
                 [
                     'additional_data' => [
                         'termsCondition' => '1',
@@ -103,20 +90,16 @@ class PaymentGuaranteeTest extends BaseTest
     }
 
     /**
-     * @param $version
      * @param $data
      *
      * @dataProvider assignDataProvider
      */
-    public function testAssignData($version, $data)
+    public function testAssignData($data)
     {
-        $productMetadataMock = $this->getFakeMock(ProductMetadata::class)->setMethods(['getVersion'])->getMock();
-        $productMetadataMock->expects($this->once())->method('getVersion')->willReturn($version);
-
         $dataObject = $this->getObject(DataObject::class);
         $dataObject->addData($data);
 
-        $instance = $this->getInstance(['productMetadata' => $productMetadataMock]);
+        $instance = $this->getInstance();
 
         $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
         $instance->setData('info_instance', $infoInstanceMock);

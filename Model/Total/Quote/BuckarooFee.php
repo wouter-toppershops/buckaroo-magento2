@@ -38,43 +38,54 @@
  */
 namespace TIG\Buckaroo\Model\Total\Quote;
 
+use Magento\Catalog\Helper\Data;
+use Magento\Framework\Pricing\PriceCurrencyInterface;
+use TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation;
+use TIG\Buckaroo\Model\ConfigProvider\Account as ConfigProviderAccount;
+use TIG\Buckaroo\Model\ConfigProvider\BuckarooFee as ConfigProviderBuckarooFee;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+
 class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
 {
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
+    /** @var ConfigProviderAccount */
+    protected $configProviderAccount;
+
+    /** @var ConfigProviderBuckarooFee */
+    protected $configProviderBuckarooFee;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var Factory
      */
     protected $configProviderMethodFactory;
 
     /**
-     * @var \Magento\Framework\Pricing\PriceCurrencyInterface
+     * @var PriceCurrencyInterface
      */
     public $priceCurrency;
 
     /**
-     * @var \Magento\Catalog\Helper\Data
+     * @var Data
      */
     public $catalogHelper;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
-     * @param \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency
-     * @param \Magento\Catalog\Helper\Data                      $catalogHelper
+     * @param ConfigProviderAccount     $configProviderAccount
+     * @param ConfigProviderBuckarooFee $configProviderBuckarooFee
+     * @param Factory                   $configProviderMethodFactory
+     * @param PriceCurrencyInterface    $priceCurrency
+     * @param Data                      $catalogHelper
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \Magento\Framework\Pricing\PriceCurrencyInterface $priceCurrency,
-        \Magento\Catalog\Helper\Data $catalogHelper
+        ConfigProviderAccount $configProviderAccount,
+        ConfigProviderBuckarooFee $configProviderBuckarooFee,
+        Factory $configProviderMethodFactory,
+        PriceCurrencyInterface $priceCurrency,
+        Data $catalogHelper
     ) {
         $this->setCode('buckaroo_fee');
 
-        $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderAccount = $configProviderAccount;
+        $this->configProviderBuckarooFee = $configProviderBuckarooFee;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
         $this->priceCurrency = $priceCurrency;
         $this->catalogHelper = $catalogHelper;
@@ -227,7 +238,7 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $feePercentageMode = $this->configProviderFactory->get('account')->getFeePercentageMode();
+        $feePercentageMode = $this->configProviderAccount->getFeePercentageMode();
         switch ($feePercentageMode) {
             case 'subtotal':
                 $total = $address->getBaseSubtotal();
@@ -259,17 +270,13 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
             $pseudoProduct = new \Magento\Framework\DataObject();
         }
 
-        $feeConfig = $this->configProviderFactory->get('buckaroo_fee');
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $pseudoProduct->setTaxClassId($feeConfig->getTaxClass());
+        $pseudoProduct->setTaxClassId($this->configProviderBuckarooFee->getTaxClass());
 
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
         if ($priceIncl === null
-            && $feeConfig->getPaymentFeeTax() == \TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation::DISPLAY_TYPE_INCLUDING_TAX
+            && $this->configProviderBuckarooFee->getPaymentFeeTax() == Calculation::DISPLAY_TYPE_INCLUDING_TAX
         ) {
             $priceIncl = true;
         } else {

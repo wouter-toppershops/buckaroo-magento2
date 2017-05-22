@@ -40,8 +40,54 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\App\ProductMetadataInterface;
+use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
+use Magento\Framework\Module\ModuleListInterface;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\UrlInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+
 class Refund extends AbstractTransactionBuilder
 {
+    /** @var UrlInterface */
+    protected $urlBuilder;
+
+    /** @var RemoteAddress */
+    protected $remoteAddress;
+
+    /** @var Factory */
+    protected $configProviderMethodFactory;
+
+    /**
+     * @param ProductMetadataInterface $productMetadata
+     * @param ModuleListInterface      $moduleList
+     * @param Account                  $configProviderAccount
+     * @param ObjectManagerInterface   $objectManager
+     * @param UrlInterface             $urlBuilder
+     * @param RemoteAddress            $remoteAddress
+     * @param Factory                  $configProviderMethodFactory
+     * @param null                     $amount
+     * @param null                     $currency
+     */
+    public function __construct(
+        ProductMetadataInterface $productMetadata,
+        ModuleListInterface $moduleList,
+        Account $configProviderAccount,
+        ObjectManagerInterface $objectManager,
+        UrlInterface $urlBuilder,
+        RemoteAddress $remoteAddress,
+        Factory $configProviderMethodFactory,
+        $amount = null,
+        $currency = null
+    ) {
+        parent::__construct($productMetadata, $moduleList, $configProviderAccount, $objectManager, $amount, $currency);
+
+        $this->urlBuilder = $urlBuilder;
+        $this->remoteAddress = $remoteAddress;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+    }
+
     /**
      * @throws \TIG\Buckaroo\Exception
      */
@@ -62,10 +108,10 @@ class Refund extends AbstractTransactionBuilder
              *       This problem occurs when the creditmemo is being refunded in the order's currency, rather than the
              *       store's base currency.
              */
-            $this->currency = $this->order->getOrderCurrencyCode();
-            $this->amount = round($this->amount * $this->order->getBaseToOrderRate(), 2);
+            $this->setCurrency($this->order->getOrderCurrencyCode());
+            $this->setAmount(round($this->getAmount() * $this->order->getBaseToOrderRate(), 2));
         } elseif (in_array($this->order->getBaseCurrencyCode(), $allowedCurrencies)) {
-            $this->currency = $this->order->getBaseCurrencyCode();
+            $this->setCurrency($this->order->getBaseCurrencyCode());
         } else {
             throw new \TIG\Buckaroo\Exception(
                 __("The selected payment method does not support the selected currency or the store's base currency.")
@@ -78,16 +124,11 @@ class Refund extends AbstractTransactionBuilder
      */
     public function getBody()
     {
-        if (!$this->currency) {
+        if (!$this->getCurrency()) {
             $this->setRefundCurrencyAndAmount();
         }
 
         $order = $this->getOrder();
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
         if (!$ip) {
@@ -97,12 +138,12 @@ class Refund extends AbstractTransactionBuilder
         $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
 
         $body = [
-            'Currency' => $this->currency,
+            'Currency' => $this->getCurrency(),
             'AmountDebit' => 0,
-            'AmountCredit' => $this->amount,
+            'AmountCredit' => $this->getAmount(),
             'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $accountConfig->getTransactionLabel(),
+            'Description' => $this->configProviderAccount->getTransactionLabel(),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',

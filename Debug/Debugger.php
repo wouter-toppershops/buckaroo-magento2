@@ -39,6 +39,10 @@
 
 namespace TIG\Buckaroo\Debug;
 
+use Magento\Framework\ObjectManagerInterface;
+use TIG\Buckaroo\Debug\Logger;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+
 class Debugger
 {
     /**
@@ -47,14 +51,14 @@ class Debugger
     protected $logger = null;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface|null
+     * @var ObjectManagerInterface|null
      */
     protected $objectManager = null;
 
     /**
-     * @var null|\TIG\Buckaroo\Model\ConfigProvider\Factory
+     * @var null|Account
      */
-    protected $configProviderFactory = null;
+    protected $configProviderAccount = null;
 
     /**
      * @var string
@@ -92,37 +96,29 @@ class Debugger
     protected $mode = 'log';
 
     /**
-     * @param \TIG\Buckaroo\Debug\Logger                 $logger
-     * @param \Magento\Framework\ObjectManagerInterface  $objectManager
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @param Logger                 $logger
+     * @param ObjectManagerInterface $objectManager
+     * @param Account                $configProviderAccount
      */
     public function __construct(
-        \TIG\Buckaroo\Debug\Logger $logger,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        Logger $logger,
+        ObjectManagerInterface $objectManager,
+        Account $configProviderAccount
     ) {
         $this->logger = $logger;
         $this->objectManager = $objectManager;
-        $this->configProviderFactory = $configProviderFactory;
-
-        /**
-         * Get some settings
-         */
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $config
-         */
-        $config = $this->configProviderFactory->get('account');
+        $this->configProviderAccount = $configProviderAccount;
 
         /**
          * Get the mode currently set in config and set it
          */
-        $this->setMode($config->getDebugMode());
+        $this->setMode($this->configProviderAccount->getDebugMode());
 
         /**
          * If debug emails are set, add them to $this->mailTo
          */
-        if ($config->getDebugEmail()) {
-            $mailTo = $config->getDebugEmail();
+        if ($this->configProviderAccount->getDebugEmail()) {
+            $mailTo = $this->configProviderAccount->getDebugEmail();
             /**
              * If it's a comma-separated list, split
              */
