@@ -40,19 +40,15 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
-use Magento\Framework\App\ProductMetadataInterface;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
-use Magento\Framework\Module\ModuleListInterface;
-use Magento\Framework\ObjectManagerInterface;
 use Magento\Framework\UrlInterface;
+use TIG\Buckaroo\Gateway\Http\Transaction;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+use TIG\Buckaroo\Service\Software\Data as SoftwareData;
 
 class Order extends AbstractTransactionBuilder
 {
-    /** @var UrlInterface */
-    protected $urlBuilder;
-
     /** @var RemoteAddress */
     protected $remoteAddress;
 
@@ -60,30 +56,27 @@ class Order extends AbstractTransactionBuilder
     protected $configProviderMethodFactory;
 
     /**
-     * @param ProductMetadataInterface $productMetadata
-     * @param ModuleListInterface      $moduleList
-     * @param Account                  $configProviderAccount
-     * @param ObjectManagerInterface   $objectManager
-     * @param UrlInterface             $urlBuilder
-     * @param RemoteAddress            $remoteAddress
-     * @param Factory                  $configProviderMethodFactory
-     * @param null                     $amount
-     * @param null                     $currency
+     * @param SoftwareData  $softwareData
+     * @param Account       $configProviderAccount
+     * @param Transaction   $transaction
+     * @param UrlInterface  $urlBuilder
+     * @param RemoteAddress $remoteAddress
+     * @param Factory       $configProviderMethodFactory
+     * @param null          $amount
+     * @param null          $currency
      */
     public function __construct(
-        ProductMetadataInterface $productMetadata,
-        ModuleListInterface $moduleList,
+        SoftwareData $softwareData,
         Account $configProviderAccount,
-        ObjectManagerInterface $objectManager,
+        Transaction $transaction,
         UrlInterface $urlBuilder,
         RemoteAddress $remoteAddress,
         Factory $configProviderMethodFactory,
         $amount = null,
         $currency = null
     ) {
-        parent::__construct($productMetadata, $moduleList, $configProviderAccount, $objectManager, $amount, $currency);
+        parent::__construct($softwareData, $configProviderAccount, $transaction, $urlBuilder, $amount, $currency);
 
-        $this->urlBuilder = $urlBuilder;
         $this->remoteAddress = $remoteAddress;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
     }
@@ -119,8 +112,6 @@ class Order extends AbstractTransactionBuilder
             $ip = '127.0.0.'.rand(1, 100);
         }
 
-        $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
-
         $body = [
             'Currency' => $this->getCurrency(),
             'AmountDebit' => $this->getAmount(),
@@ -132,10 +123,10 @@ class Order extends AbstractTransactionBuilder
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
             ],
-            'ReturnURL' => $processUrl,
-            'ReturnURLCancel' => $processUrl,
-            'ReturnURLError' => $processUrl,
-            'ReturnURLReject' => $processUrl,
+            'ReturnURL' => $this->getReturnUrl(),
+            'ReturnURLCancel' => $this->getReturnUrl(),
+            'ReturnURLError' => $this->getReturnUrl(),
+            'ReturnURLReject' => $this->getReturnUrl(),
             'OriginalTransactionKey' => $this->originalTransactionKey,
             'StartRecurrent' => $this->startRecurrent,
             'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
