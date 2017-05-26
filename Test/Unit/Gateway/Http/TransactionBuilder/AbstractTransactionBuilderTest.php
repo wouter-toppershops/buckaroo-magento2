@@ -38,10 +38,13 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use TIG\Buckaroo\Gateway\Http\Transaction;
 use TIG\Buckaroo\Test\BaseTest;
 
 class AbstractTransactionBuilderTest extends BaseTest
 {
+    protected $instanceClass = AbstractTransactionBuilderMock::class;
+
     /**
      * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilderMock
      */
@@ -143,6 +146,30 @@ class AbstractTransactionBuilderTest extends BaseTest
         $this->object->setType($value);
 
         $this->assertEquals($value, $this->object->getType());
+    }
+
+    public function testReturnUrl()
+    {
+        $value = 'testString';
+        $urlBuilderMock = $this->getFakeMock(\Magento\Framework\Url::class)->setMethods(['getRouteUrl'])->getMock();
+        $urlBuilderMock->method('getRouteUrl')->willReturn($value);
+
+        $instance = $this->getInstance(['urlBuilder' => $urlBuilderMock]);
+        $instance->setReturnUrl($value);
+
+        $this->assertEquals($value, $instance->getReturnUrl());
+    }
+
+    public function testBuild()
+    {
+        $transactionMock = $this->getMockBuilder(Transaction::class)->setMethods(null)->getMock();
+
+        $instance = $this->getInstance(['transaction' => $transactionMock]);
+        $result = $instance->build();
+
+        $this->assertInstanceOf(Transaction::class, $result);
+        $this->assertInternalType('array', $result->getBody());
+        $this->assertInternalType('array', $result->getHeaders());
     }
 
     public function testGetHeaders()

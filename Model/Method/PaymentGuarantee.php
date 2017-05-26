@@ -277,7 +277,8 @@ class PaymentGuarantee extends AbstractMethod
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
-            ->setMethod('TransactionRequest');
+            ->setMethod('TransactionRequest')
+            ->setReturnUrl('');
 
         return $transactionBuilder;
     }
@@ -314,6 +315,7 @@ class PaymentGuarantee extends AbstractMethod
             ->setServices($services)
             ->setAmount($totalAmount)
             ->setMethod('TransactionRequest')
+            ->setReturnUrl('')
             ->setInvoiceId($this->getPartialInvoiceId($order))
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
@@ -355,7 +357,8 @@ class PaymentGuarantee extends AbstractMethod
         /** @noinspection PhpUndefinedMethodInspection */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
-            ->setMethod('TransactionRequest');
+            ->setMethod('TransactionRequest')
+            ->setReturnUrl('');
 
         return $transactionBuilder;
     }
@@ -391,6 +394,7 @@ class PaymentGuarantee extends AbstractMethod
         $transactionBuilder->setOrder($order)
             ->setServices($services)
             ->setMethod('TransactionRequest')
+            ->setReturnUrl('')
             ->setInvoiceId($this->getPartialCreditmemoId($order))
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)

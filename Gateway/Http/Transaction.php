@@ -57,28 +57,23 @@ class Transaction
     protected $method;
 
     /**
-     * Transaction constructor.
-     *
-     * @param array  $body
-     * @param array  $headers
-     * @param string $method
-     */
-    public function __construct(
-        array $body,
-        array $headers,
-        $method
-    ) {
-        $this->body = $body;
-        $this->headers = $headers;
-        $this->method = $method;
-    }
-
-    /**
      * @return array
      */
     public function getBody()
     {
         return $this->body;
+    }
+
+    /**
+     * @param array $body
+     *
+     * @return $this
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+
+        return $this;
     }
 
     /**
@@ -90,10 +85,34 @@ class Transaction
     }
 
     /**
+     * @param array $headers
+     *
+     * @return $this
+     */
+    public function setHeaders($headers)
+    {
+        $this->headers = $headers;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getMethod()
     {
         return $this->method;
+    }
+
+    /**
+     * @param string $method
+     *
+     * @return $this
+     */
+    public function setMethod($method)
+    {
+        $this->method = $method;
+
+        return $this;
     }
 }
