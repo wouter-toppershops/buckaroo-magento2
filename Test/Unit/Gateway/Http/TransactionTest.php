@@ -43,19 +43,38 @@ use TIG\Buckaroo\Gateway\Http\Transaction;
 
 class TransactionTest extends BaseTest
 {
+    protected $instanceClass = Transaction::class;
+
     /**
      * Test the Transaction class.
      */
-    public function testTransaction()
+    public function testGetBody()
     {
         $body = ['this', 'is', 'the', 'body'];
+
+        $instance = $this->getInstance();
+        $instance->setBody($body);
+
+        $this->assertEquals($body, $instance->getBody());
+    }
+
+    public function testGetHeaders()
+    {
         $headers = ['this', 'is', 'the', 'header'];
+
+        $instance = $this->getInstance();
+        $instance->setHeaders($headers);
+
+        $this->assertEquals($headers, $instance->getHeaders());
+    }
+
+    public function testGetMethod()
+    {
         $method = 'post';
 
-        $transaction = new Transaction($body, $headers, $method);
+        $instance = $this->getInstance();
+        $instance->setMethod($method);
 
-        $this->assertEquals($body, $transaction->getBody());
-        $this->assertEquals($headers, $transaction->getHeaders());
-        $this->assertEquals($method, $transaction->getMethod());
+        $this->assertEquals($method, $instance->getMethod());
     }
 }

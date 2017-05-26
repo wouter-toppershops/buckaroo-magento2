@@ -608,10 +608,13 @@ class PaymentGuaranteeTest extends BaseTest
      */
     private function getTransactionInstance()
     {
-        $transactionOrderMock = $this->getFakeMock(TransactionBuilderOrder::class)->setMethods(null)->getMock();
+        $transactionOrderMock = $this->getFakeMock(TransactionBuilderOrder::class)
+            ->setMethods(['setReturnUrl'])
+            ->getMock();
+        $transactionOrderMock->method('setReturnUrl')->willReturnSelf();
 
         $transactionBuilderMock = $this->getFakeMock(TransactionBuilderFactory::class)->setMethods(['get'])->getMock();
-        $transactionBuilderMock->expects($this->any())->method('get')->willReturn($transactionOrderMock);
+        $transactionBuilderMock->method('get')->willReturn($transactionOrderMock);
 
         $configGuaranteeMock = $this->getFakeMock(ConfigProviderPaymentGuarantee::class)->getMock();
 
