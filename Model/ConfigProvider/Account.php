@@ -40,7 +40,7 @@
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
 
 /**
  * @method mixed getActive()
@@ -93,7 +93,7 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_CREATE_ORDER_BEFORE_TRANSACTION = 'tig_buckaroo/account/create_order_before_transaction';
 
     /**
-     * @var Factory
+     * @var MethodFactory
      */
     protected $methodConfigProviderFactory;
 
@@ -103,11 +103,11 @@ class Account extends AbstractConfigProvider
     protected $scopeConfig;
 
     /**
-     * @param Factory              $methodConfigProviderFactory
+     * @param MethodFactory        $methodConfigProviderFactory
      * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        Factory $methodConfigProviderFactory,
+        MethodFactory $methodConfigProviderFactory,
         ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($scopeConfig);
