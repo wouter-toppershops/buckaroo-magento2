@@ -31,6 +31,7 @@
  */
 namespace TIG\Buckaroo\Model\Method;
 
+use Magento\Sales\Api\Data\OrderAddressInterface;
 use TIG\Buckaroo\Model\Invoice;
 
 class PaymentGuarantee extends AbstractMethod
@@ -472,9 +473,9 @@ class PaymentGuarantee extends AbstractMethod
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PaymentGuarantee $config */
         $config = $this->configProviderMethodFactory->get('paymentguarantee');
 
-        /** @var \Magento\Sales\Api\Data\OrderAddressInterface $billingAddress */
+        /** @var OrderAddressInterface $billingAddress */
         $billingAddress = $payment->getOrder()->getBillingAddress();
-        /** @var \Magento\Sales\Api\Data\OrderAddressInterface $shippingAddress */
+        /** @var OrderAddressInterface $shippingAddress */
         $shippingAddress = $payment->getOrder()->getShippingAddress();
 
         $customerId = $billingAddress->getCustomerId()
@@ -555,7 +556,7 @@ class PaymentGuarantee extends AbstractMethod
             $defaultValues = array_merge($defaultValues, $invoiceId);
         }
 
-        if ($this->isAddressDataDifferent($billingAddress->getData(), $shippingAddress->getData())) {
+        if ($this->isAddressDataDifferent($billingAddress, $shippingAddress)) {
             $returnValues = array_merge($defaultValues, $this->singleAddress($billingAddress, 'INVOICE'));
             return array_merge($returnValues, $this->singleAddress($shippingAddress, 'SHIPPING', 2));
         }
@@ -564,7 +565,7 @@ class PaymentGuarantee extends AbstractMethod
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderAddressInterface $address
+     * @param OrderAddressInterface $address
      * @param string $addressType
      * @param int $id
      *
@@ -615,12 +616,37 @@ class PaymentGuarantee extends AbstractMethod
     }
 
     /**
-     * @param $addressOne
-     * @param $addressTwo
+     * @param array|OrderAddressInterface $addressOne
+     * @param array|OrderAddressInterface $addressTwo
      *
      * @return bool
      */
     private function isAddressDataDifferent($addressOne, $addressTwo)
+    {
+        if ($addressOne === null || $addressTwo === null) {
+            return false;
+        }
+
+        if ($addressOne instanceof OrderAddressInterface) {
+            $addressOne = $addressOne->getData();
+        }
+
+        if ($addressTwo instanceof OrderAddressInterface) {
+            $addressTwo = $addressTwo->getData();
+        }
+
+        $arrayDifferences = $this->calculateAddressDataDifference($addressOne, $addressTwo);
+
+        return !empty($arrayDifferences);
+    }
+
+    /**
+     * @param array $addressOne
+     * @param array $addressTwo
+     *
+     * @return array
+     */
+    private function calculateAddressDataDifference($addressOne, $addressTwo)
     {
         $keysToExclude = array_flip([
             'prefix',
@@ -642,7 +668,7 @@ class PaymentGuarantee extends AbstractMethod
             array_diff_key($addressTwo, $keysToExclude)
         );
 
-        return !empty($arrayDifferences);
+        return $arrayDifferences;
     }
 
     /**

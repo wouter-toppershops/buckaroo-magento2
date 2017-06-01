@@ -328,14 +328,40 @@ class PaymentGuaranteeTest extends BaseTest
     public function isAddressDataDifferentProvider()
     {
         return [
-            'is different' => [
+            'different arrays' => [
                 ['abc'],
                 ['def'],
+                false,
                 true
             ],
-            'is equal' => [
+            'equal arrays' => [
                 ['ghi'],
                 ['ghi'],
+                false,
+                false
+            ],
+            'different objects' => [
+                ['jkl'],
+                ['mno'],
+                true,
+                true
+            ],
+            'equal objects' => [
+                ['pqr'],
+                ['pqr'],
+                true,
+                false
+            ],
+            'first address is null' => [
+                null,
+                ['stu'],
+                true,
+                false
+            ],
+            'second address is null' => [
+                ['vwx'],
+                null,
+                true,
                 false
             ]
         ];
@@ -344,14 +370,28 @@ class PaymentGuaranteeTest extends BaseTest
     /**
      * @param $dataOne
      * @param $dataTwo
+     * @param $isObject
      * @param $expected
      *
      * @dataProvider isAddressDataDifferentProvider
      */
-    public function testIsAddressDataDifferent($dataOne, $dataTwo, $expected)
+    public function testIsAddressDataDifferent($dataOne, $dataTwo, $isObject, $expected)
     {
+        $addressOne = $dataOne;
+        $addessTwo = $dataTwo;
+
+        if ($isObject && $dataOne) {
+            $addressOne = $this->getFakeMock(Address::class)->getMock();
+            $addressOne->method('getData')->willReturn($dataOne);
+        }
+
+        if ($isObject && $dataTwo) {
+            $addessTwo = $this->getFakeMock(Address::class)->setMethods(['getData'])->getMock();
+            $addessTwo->method('getData')->willReturn($dataTwo);
+        }
+
         $instance = $this->getInstance();
-        $result = $this->invokeArgs('isAddressDataDifferent', [$dataOne, $dataTwo], $instance);
+        $result = $this->invokeArgs('isAddressDataDifferent', [$addressOne, $addessTwo], $instance);
 
         $this->assertEquals($expected, $result);
     }
