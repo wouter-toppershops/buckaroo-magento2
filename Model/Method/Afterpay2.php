@@ -1233,10 +1233,30 @@ class Afterpay2 extends AbstractMethod
      */
     public function isAddressDataDifferent($payment)
     {
-        $billingAddress  = $payment->getOrder()->getBillingAddress()->getData();
-        $shippingAddress = $payment->getOrder()->getShippingAddress()->getData();
+        $billingAddress = $payment->getOrder()->getBillingAddress();
+        $shippingAddress  = $payment->getOrder()->getShippingAddress();
 
-        $keysToExclude = [
+        if ($billingAddress === null || $shippingAddress === null) {
+            return false;
+        }
+
+        $billingAddressData = $billingAddress->getData();
+        $shippingAddressData = $shippingAddress->getData();
+
+        $arrayDifferences = $this->calculateAddressDataDifference($billingAddressData, $shippingAddressData);
+
+        return !empty($arrayDifferences);
+    }
+
+    /**
+     * @param array $addressOne
+     * @param array $addressTwo
+     *
+     * @return array
+     */
+    private function calculateAddressDataDifference($addressOne, $addressTwo)
+    {
+        $keysToExclude = array_flip([
             'prefix',
             'telephone',
             'fax',
@@ -1249,18 +1269,13 @@ class Afterpay2 extends AbstractMethod
             'vat_is_valid',
             'vat_id',
             'address_type'
-        ];
+        ]);
 
-        $filteredBillingAddress  = array_diff_key($billingAddress, array_flip($keysToExclude));
-        $filteredShippingAddress = array_diff_key($shippingAddress, array_flip($keysToExclude));
+        $filteredAddressOne = array_diff_key($addressOne, $keysToExclude);
+        $filteredAddressTwo = array_diff_key($addressTwo, $keysToExclude);
+        $arrayDiff = array_diff($filteredAddressOne, $filteredAddressTwo);
 
-        $arrayDiff = array_diff($filteredBillingAddress, $filteredShippingAddress);
-
-        if (empty($arrayDiff)) {
-            return false;
-        }
-
-        return true;
+        return $arrayDiff;
     }
 
     /**
