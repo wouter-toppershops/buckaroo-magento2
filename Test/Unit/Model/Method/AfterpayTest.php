@@ -32,6 +32,7 @@
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Address;
 use Magento\Sales\Model\Order\Creditmemo;
 use Magento\Sales\Model\Order\Creditmemo\Item;
 use Magento\Sales\Model\Order\Payment;
@@ -114,6 +115,72 @@ class AfterpayTest extends BaseTest
     {
         $instance = $this->getInstance();
         $result = $this->invokeArgs('getFailureMessageFromMethod', [$transactionResponse], $instance);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function isAddressDataDifferentProvider()
+    {
+        return [
+            'different data' => [
+                ['abc'],
+                ['def'],
+                true
+            ],
+            'equal data' => [
+                ['ghi'],
+                ['ghi'],
+                false
+            ],
+            'billing is null' => [
+                null,
+                ['jkl'],
+                false
+            ],
+            'shipping is null' => [
+                ['mno'],
+                null,
+                false
+            ]
+        ];
+    }
+
+    /**
+     * @param $billingData
+     * @param $shippingData
+     * @param $expected
+     *
+     * @dataProvider isAddressDataDifferentProvider
+     */
+    public function testIsAddressDataDifferent($billingData, $shippingData, $expected)
+    {
+        $billingAddress = $billingData;
+        $shippingAddress = $shippingData;
+
+        if ($billingData) {
+            $billingAddress = $this->getFakeMock(Address::class)->setMethods(['getData'])->getMock();
+            $billingAddress->method('getData')->willReturn($billingData);
+        }
+
+        if ($shippingData) {
+            $shippingAddress = $this->getFakeMock(Address::class)->setMethods(['getData'])->getMock();
+            $shippingAddress->method('getData')->willReturn($shippingData);
+        }
+
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['getBillingAddress', 'getShippingAddress'])
+            ->getMock();
+        $orderMock->expects($this->once())->method('getBillingAddress')->willReturn($billingAddress);
+        $orderMock->expects($this->once())->method('getShippingAddress')->willReturn($shippingAddress);
+
+        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
+        $paymentMock->expects($this->exactly(2))->method('getOrder')->willReturn($orderMock);
+
+        $instance = $this->getInstance();
+        $result = $instance->isAddressDataDifferent($paymentMock);
 
         $this->assertEquals($expected, $result);
     }
