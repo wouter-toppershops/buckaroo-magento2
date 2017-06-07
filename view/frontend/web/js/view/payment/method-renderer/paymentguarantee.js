@@ -40,6 +40,7 @@ define(
         'ko',
         'Magento_Checkout/js/checkout-data',
         'Magento_Checkout/js/action/select-payment-method',
+        'Magento_Ui/js/modal/modal',
         'Magento_Ui/js/lib/knockout/bindings/datepicker'
     ],
     function (
@@ -50,7 +51,8 @@ define(
         quote,
         ko,
         checkoutData,
-        selectPaymentMethodAction
+        selectPaymentMethodAction,
+        modal
     ) {
         'use strict';
 
@@ -96,6 +98,7 @@ define(
                 dateValidate : null,
                 bankaccountnumber : '',
                 termsValidat : null,
+                termsElement : null,
                 genderValidate : null
             },
 
@@ -216,6 +219,37 @@ define(
 
                 return this;
 
+            },
+
+            initAgreements: function (element) {
+                this.termsElement = element;
+
+                var options = {
+                    'type': 'popup',
+                    'modalClass': 'agreements-modal',
+                    'responsive': true,
+                    'innerScroll': true,
+                    'trigger': '.show-modal',
+                    'buttons': [
+                        {
+                            text: $.mage.__('Close'),
+                            class: 'action secondary action-hide-popup',
+                            click: function() {
+                                this.closeModal();
+                            }
+                        }
+                    ]
+                };
+
+                modal(options, $(this.termsElement));
+            },
+
+            showAgreements: function(data, event) {
+                if (event) {
+                    event.preventDefault();
+                }
+
+                $(this.termsElement).modal('openModal');
             },
 
             /**

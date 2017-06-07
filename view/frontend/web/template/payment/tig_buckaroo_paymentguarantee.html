@@ -141,10 +141,26 @@
                                    name="payment[tig_buckaroo_paymentguarantee][termsCondition]">
                             <span>
                                 <a target="_blank" href="#"
-                                   data-bind="i18n: 'Yes, I accept the terms and condition for the use of Payment Guarantee.'">
+                                   data-bind="
+                                   i18n: 'Yes, I accept the terms and condition for the use of Payment Guarantee.',
+                                   click: function(data, event) { return showAgreements(data, event) }">
                                 </a>
                             </span>
                             <div for="tig_buckaroo_paymentguarantee_TermsCondition" generated="true" class="mage-error" id="tig_buckaroo_paymentguarantee_TermsCondition-error" style="display: none;"><span data-bind="i18n: 'This is a required field.' "></span></div>
+                        </div>
+                    </div>
+
+                    <div class="tig_buckaroo_paymentguarantee_TermsCondition_modal"
+                         data-bind="afterRender: initAgreements"
+                         style="display:none;">
+                        <div class="tig_buckaroo_paymentguarantee_TermsCondition_content_first_line"
+                             data-bind="i18n: 'You can receive your order first and pay the invoice later with \'Payment Guarantee\'. You will agree with the Terms and Conditions if you choose for the payment method \'Payment Guarantee\'. To review your application, the information you have entered will be forwarded to Intrum Justitia in accordance with the terms of the terms and conditions.'">
+                        </div>
+                        <div class="tig_buckaroo_paymentguarantee_TermsCondition_content_second_line"
+                             data-bind="i18n: 'The payment of the Customer\'s payment will be outsourced to Buckaroo. The invoice indicates how to pay the invoice (after reception of goods and/or services). The invoice must be paid within 14 (fourteen) days after the invoice date.'">
+                        </div>
+                        <div class="tig_buckaroo_paymentguarantee_TermsCondition_content_third_line"
+                             data-bind="i18n: 'You must check this box to indicate that you agree to the terms and conditions.'">
                         </div>
                     </div>
 
