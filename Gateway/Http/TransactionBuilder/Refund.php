@@ -83,6 +83,7 @@ class Refund extends AbstractTransactionBuilder
         }
 
         $order = $this->getOrder();
+        $store = $order->getStore();
 
         /**
          * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
@@ -102,7 +103,7 @@ class Refund extends AbstractTransactionBuilder
             'AmountCredit' => $this->amount,
             'Invoice' => $order->getIncrementId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $accountConfig->getTransactionLabel(),
+            'Description' => $accountConfig->getTransactionLabel($store),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',

@@ -92,8 +92,9 @@ class Order extends AbstractTransactionBuilder
         }
 
         $order = $this->getOrder();
+        $store = $order->getStore();
 
-        if ($accountConfig->getCreateOrderBeforeTransaction()) {
+        if ($accountConfig->getCreateOrderBeforeTransaction($store)) {
             $order->save();
         }
 
@@ -116,7 +117,7 @@ class Order extends AbstractTransactionBuilder
             'AmountCredit' => $creditAmount,
             'Invoice' => $this->invoiceId,
             'Order' => $order->getIncrementId(),
-            'Description' => $accountConfig->getTransactionLabel(),
+            'Description' => $accountConfig->getTransactionLabel($store),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',

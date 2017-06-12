@@ -425,12 +425,14 @@ class Push implements PushInterface
     {
         $description = 'Payment status : '.$message;
 
+        $store = $this->order->getStore();
+
         /**
          * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
          */
         $accountConfig = $this->configProviderFactory->get('account');
 
-        $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
+        $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed($store);
 
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
@@ -461,12 +463,14 @@ class Push implements PushInterface
     {
         $amount = floatval($this->originalPostData['brq_amount']);
 
+        $store = $this->order->getStore();
+
         /**
          * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
          */
         $accountConfig = $this->configProviderFactory->get('account');
 
-        if (!$this->order->getEmailSent() && $accountConfig->getOrderConfirmationEmail()) {
+        if (!$this->order->getEmailSent() && $accountConfig->getOrderConfirmationEmail($store)) {
             $this->orderSender->send($this->order);
         }
 
@@ -483,7 +487,7 @@ class Push implements PushInterface
                 . ' has been authorized. Please create an invoice to capture the authorized amount.';
         }
 
-        if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $accountConfig->getAutoInvoice()) {
+        if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $accountConfig->getAutoInvoice($store)) {
             $this->saveInvoice();
         }
 

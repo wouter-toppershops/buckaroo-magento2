@@ -410,6 +410,9 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     {
         $module = $this->moduleList->getOne(self::MODULE_CODE);
 
+        /** @var \Magento\Store\Model\Store $store */
+        $store = $this->getOrder()->getStore();
+
         /**
          * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
          */
@@ -420,7 +423,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
             'MessageControlBlock',
             [
                 'Id'                => '_control',
-                'WebsiteKey'        => $accountConfig->getMerchantKey(),
+                'WebsiteKey'        => $accountConfig->getMerchantKey($store),
                 'Culture'           => 'nl-NL',
                 'TimeStamp'         => time(),
                 'Channel'           => $this->channel,
