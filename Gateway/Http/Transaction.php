@@ -56,6 +56,9 @@ class Transaction
      */
     protected $method;
 
+    /** @var null|\Magento\Store\Model\Store */
+    protected $store = null;
+
     /**
      * Transaction constructor.
      *
@@ -95,5 +98,25 @@ class Transaction
     public function getMethod()
     {
         return $this->method;
+    }
+
+    /**
+     * @param \Magento\Store\Model\Store $store
+     *
+     * @return $this
+     */
+    public function setStore($store)
+    {
+        $this->store = $store;
+
+        return $this;
+    }
+
+    /**
+     * @return \Magento\Store\Model\Store|null
+     */
+    public function getStore()
+    {
+        return $this->store;
     }
 }

@@ -395,6 +395,10 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
             ]
         );
 
+        $store = $this->getOrder()->getStore();
+
+        $transaction->setStore($store);
+
         return $transaction;
     }
 

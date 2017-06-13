@@ -39,6 +39,8 @@
  */
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
+use TIG\Buckaroo\Model\Certificate;
+
 class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
 {
     /**
@@ -47,36 +49,25 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     const XPATH_CERTIFICATE_ID = 'tig_buckaroo/account/certificate_file';
 
     /**
-     * @var \TIG\Buckaroo\Model\Certificate
+     * @var Certificate
      */
     protected $certificate;
 
+    /** @var Account */
+    protected $account;
+
     /**
-     * @param \TIG\Buckaroo\Model\Certificate $certificate
-     * @param Factory                         $configProviderFactory
+     * @param Certificate $certificate
+     * @param Account $account
      *
      * @throws \LogicException
      */
     public function __construct(
-        \TIG\Buckaroo\Model\Certificate $certificate,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+        Certificate $certificate,
+        Account $account
     ) {
         $this->certificate = $certificate;
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
-         */
-        $configProvider = $configProviderFactory->get('account');
-        $certificateId = $configProvider->getCertificateFile();
-
-        if (!$certificateId) {
-            throw new \LogicException('No Buckaroo certificate configured.');
-        }
-
-        $this->certificate->load($certificateId);
-        if (!$certificate->getId()) {
-            throw new \LogicException('Invalid Buckaroo certificate configured.');
-        }
+        $this->account = $account;
     }
 
     /**
@@ -93,10 +84,24 @@ class PrivateKey implements \Magento\Checkout\Model\ConfigProviderInterface
     /**
      * Return private key from certificate
      *
+     * @param $store
+     *
      * @return string
      */
-    public function getPrivateKey()
+    public function getPrivateKey($store = null)
     {
+        $certificateId = $this->account->getCertificateFile($store);
+
+        if (!$certificateId) {
+            throw new \LogicException('No Buckaroo certificate configured.');
+        }
+
+        $this->certificate->load($certificateId);
+
+        if (!$this->certificate->getId()) {
+            throw new \LogicException('Invalid Buckaroo certificate configured.');
+        }
+
         return $this->certificate->getCertificate();
     }
 }

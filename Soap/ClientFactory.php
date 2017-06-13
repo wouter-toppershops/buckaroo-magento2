@@ -46,6 +46,9 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
      */
     public $configProviderFactory;
 
+    /** @var null|\Magento\Store\Model\Store */
+    private $store = null;
+
     /**
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
      */
@@ -71,9 +74,30 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
          * @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig
          */
         $privateKeyConfig = $this->configProviderFactory->get('private_key');
+        $privateKey = $privateKeyConfig->getPrivateKey($this->getStore());
 
-        $client->loadPem($privateKeyConfig->getPrivateKey());
+        $client->loadPem($privateKey);
 
         return $client;
+    }
+
+    /**
+     * @param $store
+     *
+     * @return $this
+     */
+    public function setStore($store)
+    {
+        $this->store = $store;
+
+        return $this;
+    }
+
+    /**
+     * @return \Magento\Store\Model\Store|null
+     */
+    public function getStore()
+    {
+        return $this->store;
     }
 }
