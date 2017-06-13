@@ -201,6 +201,7 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $quote = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         $quote->shouldReceive('getShippingAddress')->andReturnSelf();
+        $quote->shouldReceive('getStore')->andReturnSelf();
         $quote->shouldReceive($quoteMethod)->andReturn($quoteAmount);
         /**
          * @var \Magento\Quote\Model\Quote $quote
@@ -216,6 +217,9 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertEquals($expectedValue, $this->object->getBaseFee($paymentMethod, $quote));
     }
 
+    /**
+     * @return array
+     */
     public function baseFeePercentageDataProvider()
     {
         return [
@@ -265,6 +269,7 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $quote = \Mockery::mock(\Magento\Quote\Model\Quote::class);
         $quote->shouldReceive('getShippingAddress')->andReturn(false);
         $quote->shouldReceive('getBillingAddress')->once()->andReturnSelf();
+        $quote->shouldReceive('getStore')->once()->andReturnSelf();
         $quote->shouldReceive($quoteMethod)->andReturn($quoteAmount);
         /**
          * @var \Magento\Quote\Model\Quote $quote

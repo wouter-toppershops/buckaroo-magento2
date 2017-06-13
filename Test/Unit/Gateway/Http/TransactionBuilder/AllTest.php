@@ -95,6 +95,7 @@ class AllTest extends BaseTest
 
         $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
+        $this->order->shouldReceive('getStore');
         $this->object->setOrder($this->order);
 
         return $this;
@@ -229,6 +230,11 @@ class AllTest extends BaseTest
         $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
         $account->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+
+        $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $order->shouldReceive('getStore')->once();
+
+        $this->object->setOrder($order);
 
         $result = $this->object->GetHeaders();
 

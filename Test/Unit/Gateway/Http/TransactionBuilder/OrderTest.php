@@ -96,8 +96,9 @@ class OrderTest extends BaseTest
         $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
+        $order->shouldReceive('getStore')->once();
         $order->shouldReceive('save');
-        
+
         $this->object->setOrder($order);
 
         $result = $this->object->getBody();

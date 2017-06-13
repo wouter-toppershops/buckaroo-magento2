@@ -150,6 +150,11 @@ class AbstractTransactionBuilderTest extends BaseTest
         $account->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
         $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
 
+        $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $order->shouldReceive('getStore')->once();
+
+        $this->object->setOrder($order);
+
         $result = $this->object->GetHeaders();
 
         $this->assertCount(2, $result);

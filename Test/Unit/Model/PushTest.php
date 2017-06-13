@@ -172,6 +172,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
 
         $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
+        $orderMock->shouldReceive('getStore')->once()->andReturnSelf();
 
         if ($state == $canceledPaymentState) {
             $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
