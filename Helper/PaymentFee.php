@@ -43,10 +43,11 @@ use \TIG\Buckaroo\Model\Config\Source\Display\Type as DisplayType;
 
 class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
 {
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
+    /** @var \TIG\Buckaroo\Model\ConfigProvider\Account */
+    protected $configProviderAccount;
+
+    /** @var \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee */
+    protected $configProviderBuckarooFee;
 
     /**
      * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
@@ -59,17 +60,20 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
 
     /**
      * @param \Magento\Framework\App\Helper\Context             $context
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Account        $configProviderAccount
+     * @param \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee    $configProviderBuckarooFee
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
      */
     public function __construct(
         \Magento\Framework\App\Helper\Context $context,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
+        \TIG\Buckaroo\Model\ConfigProvider\Account $configProviderAccount,
+        \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee $configProviderBuckarooFee,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
     ) {
         parent::__construct($context);
 
-        $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderAccount = $configProviderAccount;
+        $this->configProviderBuckarooFee = $configProviderBuckarooFee;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
     }
 
@@ -205,19 +209,13 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
          * If no label is set yet, get the default configurable label
          */
         if (!$label) {
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $label = $this->configProviderFactory->get('account')->getPaymentFeeLabel();
+            $label = $this->configProviderAccount->getPaymentFeeLabel();
         }
 
         /**
          * If no label is set yet, return a default label
          */
         if (!$label) {
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
             $label = __('Buckaroo Fee');
         }
 
@@ -259,7 +257,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax($store);
+        $configValue = $this->configProviderBuckarooFee->getPaymentFeeTax($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
     }
@@ -276,7 +274,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPaymentFeeTax($store);
+        $configValue = $this->configProviderBuckarooFee->getPaymentFeeTax($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
     }
@@ -292,7 +290,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplayCart($store);
+        $configValue = $this->configProviderBuckarooFee->getPriceDisplayCart($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
         $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
@@ -309,7 +307,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplayCart($store);
+        $configValue = $this->configProviderBuckarooFee->getPriceDisplayCart($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
     }
@@ -325,7 +323,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplayCart($store);
+        $configValue = $this->configProviderBuckarooFee->getPriceDisplayCart($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
     }
@@ -341,7 +339,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplaySales($store);
+        $configValue = $this->configProviderBuckarooFee->getPriceDisplaySales($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH ||
         $configValue == DisplayType::DISPLAY_TYPE_INCLUDING_TAX;
@@ -358,7 +356,7 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplaySales($store);
+        $configValue = $this->configProviderBuckarooFee->getPriceDisplaySales($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_EXCLUDING_TAX;
     }
@@ -374,24 +372,9 @@ class PaymentFee extends \Magento\Framework\App\Helper\AbstractHelper
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getPriceDisplaySales($store);
+        $configValue = $this->configProviderBuckarooFee->getPriceDisplaySales($store);
 
         return $configValue == DisplayType::DISPLAY_TYPE_BOTH;
-    }
-
-    /**
-     * @param \Magento\Store\Model\Store|int|null $store
-     *
-     * @return mixed
-     */
-    public function getBuckarooFeeTaxClass($store = null)
-    {
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $configValue = $this->configProviderFactory->get('buckaroo_fee')->getTaxClass($store);
-
-        return $configValue;
     }
 
     /**

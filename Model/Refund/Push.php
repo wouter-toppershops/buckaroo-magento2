@@ -38,7 +38,12 @@
  */
 namespace TIG\Buckaroo\Model\Refund;
 
+use Magento\Sales\Api\CreditmemoManagementInterface;
+use Magento\Sales\Model\Order\CreditmemoFactory;
+use Magento\Sales\Model\Order\Email\Sender\CreditmemoSender;
+use TIG\Buckaroo\Debug\Debugger;
 use TIG\Buckaroo\Exception;
+use TIG\Buckaroo\Model\ConfigProvider\Refund;
 
 /**
  * Class Creditmemo
@@ -57,52 +62,47 @@ class Push
     public $order;
 
     /**
-     * @var  \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory
+     * @var  CreditmemoFactory $creditmemoFactory
      */
     public $creditmemoFactory;
 
+    /** @var CreditmemoManagementInterface */
+    private $creditmemoManagement;
+
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender
+     * @var CreditmemoSender $creditEmailSender
      */
     public $creditEmailSender;
 
     /**
-     * @var \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader
+     * @var Refund
      */
-    public $creditmemoLoader;
+    public $configRefund;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory
-     */
-    public $configProviderFactory;
-
-    /**
-     * @var \TIG\Buckaroo\Debug\Debugger $debugger
+     * @var Debugger $debugger
      */
     public $debugger;
 
     /**
-     * @param \Magento\Sales\Model\Order\CreditmemoFactory               $creditmemoFactory
-     * @param \Magento\Framework\ObjectManagerInterface                  $objectManager
-     * @param \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender   $creditEmailSender
-     * @param \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory                 $configProviderFactor
-     * @param \TIG\Buckaroo\Debug\Debugger                               $debugger
+     * @param CreditmemoFactory             $creditmemoFactory
+     * @param CreditmemoManagementInterface $creditmemoManagement
+     * @param CreditmemoSender              $creditEmailSender
+     * @param Refund                        $configRefund
+     * @param Debugger                      $debugger
      */
     public function __construct(
-        \Magento\Sales\Model\Order\CreditmemoFactory $creditmemoFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Sales\Model\Order\Email\Sender\CreditmemoSender $creditEmailSender,
-        \Magento\Sales\Controller\Adminhtml\Order\CreditmemoLoader $creditmemoLoader,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactor,
-        \TIG\Buckaroo\Debug\Debugger $debugger
+        CreditmemoFactory $creditmemoFactory,
+        CreditmemoManagementInterface $creditmemoManagement,
+        CreditmemoSender $creditEmailSender,
+        Refund $configRefund,
+        Debugger $debugger
     ) {
         $this->creditmemoFactory     = $creditmemoFactory;
-        $this->objectManager         = $objectManager;
+        $this->creditmemoManagement  = $creditmemoManagement;
         $this->creditEmailSender     = $creditEmailSender;
-        $this->creditmemoLoader      = $creditmemoLoader;
         $this->debugger              = $debugger;
-        $this->configProviderFactory = $configProviderFactor;
+        $this->configRefund          = $configRefund;
     }
 
     /**
@@ -123,11 +123,7 @@ class Push
 
         $this->debugger->addToMessage('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza. ');
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig
-         */
-        $refundConfig = $this->configProviderFactory->get('refund');
-        if (!$refundConfig->getAllowPush()) {
+        if (!$this->configRefund->getAllowPush()) {
             $this->debugger->addToMessage(
                 'But failed, the configuration is set not to accept refunds out of Payment Plaza'
             )->log();
@@ -189,7 +185,11 @@ class Push
                 }
                 $creditmemo->setTransactionId($this->postData['brq_transactions']);
 
-                $this->saveCreditmemo($creditmemo, (bool)$creditData['do_offline'], !empty($creditData['send_email']));
+                $this->creditmemoManagement->refund(
+                    $creditmemo,
+                    (bool)$creditData['do_offline'],
+                    !empty($creditData['send_email'])
+                );
                 if (!empty($data['send_email'])) {
                     $this->creditEmailSender->send($creditmemo);
                 }
@@ -206,22 +206,6 @@ class Push
                 ->log();
         }
         return false;
-    }
-
-    /**
-     * Save creditmemo and related order, invoice in one transaction
-     *
-     * @param \Magento\Sales\Model\Order\Creditmemo $creditmemo
-     * @param bool                                  $do_offline
-     * @param bool                                  $send_email
-     */
-    public function saveCreditmemo($creditmemo, $do_offline, $send_email)
-    {
-        $creditmemoManagement = $this->objectManager->create(
-            'Magento\Sales\Api\CreditmemoManagementInterface'
-        );
-
-        $creditmemoManagement->refund($creditmemo, $do_offline, $send_email);
     }
 
     /**

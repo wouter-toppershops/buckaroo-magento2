@@ -40,21 +40,6 @@ namespace TIG\Buckaroo\Model\Config\Source;
 
 class DebugModes implements \Magento\Framework\Option\ArrayInterface
 {
-
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
-
-    /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
-     */
-    public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
-    ) {
-        $this->configProviderFactory = $configProviderFactory;
-    }
-
     /**
      * Options getter
      *

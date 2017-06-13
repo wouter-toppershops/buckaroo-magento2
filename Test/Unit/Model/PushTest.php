@@ -63,7 +63,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
     /**
      * @var \Mockery\MockInterface
      */
-    protected $configProviderFactory;
+    protected $configAccount;
 
     /**
      * @var \Mockery\MockInterface
@@ -85,7 +85,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->request = \Mockery::mock(\Magento\Framework\Webapi\Rest\Request::class);
         $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
-        $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
         $this->debugger = \Mockery::mock(\TIG\Buckaroo\Debug\Debugger::class);
 
         /**
@@ -105,7 +105,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 'objectManager' => $this->objectManager,
                 'request' => $this->request,
                 'helper' => $this->helper,
-                'configProviderFactory' => $this->configProviderFactory,
+                'configAccount' => $this->configAccount,
                 'debugger' => $this->debugger,
                 'orderSender' => $this->orderSender,
             ]
@@ -167,8 +167,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
 
         $canceledPaymentState = \Magento\Sales\Model\Order::STATE_CANCELED;
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
+        $this->configAccount->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
 
         $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
@@ -279,10 +278,9 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         /**
          * Set config values on config provider mock
          */
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getOrderConfirmationEmail')
+        $this->configAccount->shouldReceive('getOrderConfirmationEmail')
             ->andReturn($sendOrderConfirmationEmail);
-        $this->configProviderFactory->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
+        $this->configAccount->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
 
         /**
          * Build an order mock and set several non mandatory method calls
@@ -357,7 +355,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 'objectManager' => $this->objectManager,
                 'request' => $this->request,
                 'helper' => $this->helper,
-                'configProviderFactory' => $this->configProviderFactory,
+                'configAccount' => $this->configAccount,
                 'debugger' => $this->debugger,
                 'orderSender' => $this->orderSender,
             ],

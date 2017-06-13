@@ -118,7 +118,7 @@ class Ideal extends AbstractMethod
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
-        $data = $this->assignDataConvertAllVersionsArray($data);
+        $data = $this->assignDataConvertToArray($data);
 
         if (isset($data['additional_data']['buckaroo_skip_validation'])) {
             $this->getInfoInstance()->setAdditionalInformation(

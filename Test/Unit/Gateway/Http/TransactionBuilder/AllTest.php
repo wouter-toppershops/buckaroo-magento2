@@ -56,9 +56,9 @@ class AllTest extends BaseTest
     protected $object;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory|m\MockInterface
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Account|m\MockInterface
      */
-    protected $configProvider;
+    protected $configProviderAccount;
 
     /**
      * Setup the required dependencies
@@ -69,12 +69,12 @@ class AllTest extends BaseTest
 
         $this->order = m::mock('Magento\Sales\Model\Order');
         $this->order->shouldReceive('save');
-        $this->configProvider = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Factory');
+        $this->configProviderAccount = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
 
         $this->object = $this->objectManagerHelper->getObject(
             Order::class,
             [
-            'configProviderFactory' => $this->configProvider,
+            'configProviderAccount' => $this->configProviderAccount,
             ]
         );
     }
@@ -88,12 +88,10 @@ class AllTest extends BaseTest
      */
     public function createGetBodyMock(array $expected)
     {
-        $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
-        $account->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
-        $account->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
-        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+        $this->configProviderAccount->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
+        $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
 
-        $this->order->shouldReceive('getIncrementId')->twice()->andReturn($expected['Invoice']);
+        $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->object->setOrder($this->order);
 
@@ -124,6 +122,7 @@ class AllTest extends BaseTest
 
         $this->object->amount = 50;
         $this->object->currency = 'EUR';
+        $this->object->invoiceId = $expected['Invoice'];
         $this->object->setStartRecurrent($expected['StartRecurrent']);
         $this->object->setServices($expected['Services']['Service']);
 
@@ -165,7 +164,7 @@ class AllTest extends BaseTest
         $this->object = $this->objectManagerHelper->getObject(
             Refund::class,
             [
-            'configProviderFactory' => $this->configProvider,
+            'configProviderAccount' => $this->configProviderAccount,
             ]
         );
 
@@ -225,10 +224,7 @@ class AllTest extends BaseTest
     public function testGetHeaders()
     {
         $merchantKey = uniqid();
-
-        $account = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
-        $account->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
-        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+        $this->configProviderAccount->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
 
         $result = $this->object->GetHeaders();
 

@@ -309,14 +309,14 @@
 
 /* ======================= PaymentGuarantee ======================== */
 .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:after {
-    background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
-    float: right;
-    margin-right: 10px;
-    margin-top: -7px;
-    background-size: auto 35px;
-    width: 41px;
-    height: 35px;
-    content: ' ';
+    background: url(../images/tig_buckaroo_paymentguarantee_title.png) no-repeat;
+    float             : right;
+    margin-right      : 10px;
+    margin-top        : -2px;
+    width             : 68px;
+    height            : 26px;
+    background-size   : auto 23px;
+    content           : ' ';
 }
 
 /* ======================= EPS ======================== */
@@ -475,13 +475,13 @@
 
     /* PaymentGuarantee */
     .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:before {
-        background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
         margin-top: -4px;
         float: left;
         margin-right: 10px;
-        background-size: auto 30px;
         width: 40px;
-        height: 30px;
+        height: 31px;
+        background :url(../images/tig_buckaroo_paymentguarantee_title_small.png) no-repeat 5px 0;
+        background-size: auto 27px;
         content: ' ';
     }
 

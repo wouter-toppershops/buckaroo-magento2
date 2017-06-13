@@ -38,28 +38,34 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use TIG\Buckaroo\Gateway\Http\Transaction;
 use TIG\Buckaroo\Test\BaseTest;
 
 class AbstractTransactionBuilderTest extends BaseTest
 {
+    protected $instanceClass = AbstractTransactionBuilderMock::class;
+
     /**
      * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilderMock
      */
     protected $object;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory|\Mockery\MockInterface
+     * @var \TIG\Buckaroo\Model\ConfigProvider\Account|\Mockery\MockInterface
      */
-    protected $configProvider;
+    protected $configProviderAccount;
 
     public function setUp()
     {
         parent::setUp();
 
-        $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configProviderAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
 
         $this->object = $this->objectManagerHelper
-            ->getObject(AbstractTransactionBuilderMock::class, ['configProviderFactory' => $this->configProvider]);
+            ->getObject(
+                AbstractTransactionBuilderMock::class,
+                ['configProviderAccount' => $this->configProviderAccount]
+            );
     }
 
     public function testOriginalTransactionKey()
@@ -142,13 +148,34 @@ class AbstractTransactionBuilderTest extends BaseTest
         $this->assertEquals($value, $this->object->getType());
     }
 
+    public function testReturnUrl()
+    {
+        $value = 'testString';
+        $urlBuilderMock = $this->getFakeMock(\Magento\Framework\Url::class)->setMethods(['getRouteUrl'])->getMock();
+        $urlBuilderMock->method('getRouteUrl')->willReturn($value);
+
+        $instance = $this->getInstance(['urlBuilder' => $urlBuilderMock]);
+        $instance->setReturnUrl($value);
+
+        $this->assertEquals($value, $instance->getReturnUrl());
+    }
+
+    public function testBuild()
+    {
+        $transactionMock = $this->getMockBuilder(Transaction::class)->setMethods(null)->getMock();
+
+        $instance = $this->getInstance(['transaction' => $transactionMock]);
+        $result = $instance->build();
+
+        $this->assertInstanceOf(Transaction::class, $result);
+        $this->assertInternalType('array', $result->getBody());
+        $this->assertInternalType('array', $result->getHeaders());
+    }
+
     public function testGetHeaders()
     {
         $merchantKey = uniqid();
-
-        $account = \Mockery::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
-        $account->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
-        $this->configProvider->shouldReceive('get')->once()->with('account')->andReturn($account);
+        $this->configProviderAccount->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
 
         $result = $this->object->GetHeaders();
 

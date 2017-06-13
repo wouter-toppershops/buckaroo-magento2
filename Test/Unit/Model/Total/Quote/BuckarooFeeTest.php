@@ -60,10 +60,11 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
      */
     protected $objectManager;
 
-    /**
-     * @var \Mockery\MockInterface
-     */
-    protected $configProviderFactory;
+    /** @var \Mockery\MockInterface */
+    protected $configProviderAccount;
+
+    /** @var \Mockery\MockInterface */
+    protected $configProviderBuckarooFee;
 
     /**
      * @var \Mockery\MockInterface
@@ -89,14 +90,16 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->priceCurrency = \Mockery::mock(\Magento\Framework\Pricing\PriceCurrencyInterface::class);
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configProviderAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
+        $this->configProviderBuckarooFee = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\BuckarooFee::class);
         $this->configProviderMethodFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
         $this->catalogHelper = \Mockery::mock(\Magento\Catalog\Helper\Data::class);
 
         $this->object = $this->objectManagerHelper->getObject(
             \TIG\Buckaroo\Model\Total\Quote\BuckarooFee::class,
             [
-                'configProviderFactory' => $this->configProviderFactory,
+                'configProviderAccount' => $this->configProviderAccount,
+                'configProviderBuckarooFee' => $this->configProviderBuckarooFee,
                 'configProviderMethodFactory' => $this->configProviderMethodFactory,
                 'priceCurrency' => $this->priceCurrency,
                 'catalogHelper' => $this->catalogHelper,
@@ -121,9 +124,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
          * @var \Magento\Quote\Model\Quote $quote
          */
 
-        $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
-        $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
+        $this->configProviderBuckarooFee->shouldReceive('getTaxClass')->once()->andReturn(1);
+        $this->configProviderBuckarooFee->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
         $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($expectedFee);
 
         $this->configProviderMethodFactory->shouldReceive('has')->with($paymentCode)->andReturn(true);
@@ -210,8 +212,7 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
         $this->configProviderMethodFactory->shouldReceive('getPaymentFee')->atleast()->once()->andReturn($fee);
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getFeePercentageMode')->atleast()->once()->andReturn($feeMode);
+        $this->configProviderAccount->shouldReceive('getFeePercentageMode')->atleast()->once()->andReturn($feeMode);
 
         $this->assertEquals($expectedValue, $this->object->getBaseFee($paymentMethod, $quote));
     }
@@ -274,8 +275,7 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
         $this->configProviderMethodFactory->shouldReceive('getPaymentFee')->atleast()->once()->andReturn($fee);
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getFeePercentageMode')->atleast()->once()->andReturn($feeMode);
+        $this->configProviderAccount->shouldReceive('getFeePercentageMode')->atleast()->once()->andReturn($feeMode);
 
         $this->assertEquals($expectedValue, $this->object->getBaseFee($paymentMethod, $quote));
     }
@@ -415,9 +415,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderMethodFactory->shouldReceive('get')->with($paymentCode)->andReturnSelf();
         $this->configProviderMethodFactory->shouldReceive('getPaymentFee')->atleast()->once()->andReturn($expectedFee);
 
-        $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
-        $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
+        $this->configProviderBuckarooFee->shouldReceive('getTaxClass')->once()->andReturn(1);
+        $this->configProviderBuckarooFee->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
         $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($expectedFee);
 
         $shippingAssignmentMock = \Mockery::mock(\Magento\Quote\Api\Data\ShippingAssignmentInterface::class);
@@ -480,9 +479,8 @@ class BuckarooFeeTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->priceCurrency->shouldReceive('convert')->once()->with($fee, $store)->andReturn($fee);
 
-        $this->configProviderFactory->shouldReceive('get')->once()->with('buckaroo_fee')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getTaxClass')->once()->andReturn(1);
-        $this->configProviderFactory->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
+        $this->configProviderBuckarooFee->shouldReceive('getTaxClass')->once()->andReturn(1);
+        $this->configProviderBuckarooFee->shouldReceive('getPaymentFeeTax')->andReturn($taxIncl);
         $this->catalogHelper->shouldReceive('getTaxPrice')->andReturn($fee);
 
         $paymentMethod = \Mockery::mock(\TIG\Buckaroo\Model\Method\AbstractMethod::class);

@@ -39,7 +39,10 @@
 
 namespace TIG\Buckaroo\Model;
 
-class Certificate extends \Magento\Framework\Model\AbstractModel
+use Magento\Framework\Model\AbstractModel;
+use TIG\Buckaroo\Api\Data\CertificateInterface;
+
+class Certificate extends AbstractModel implements CertificateInterface
 {
     // @codingStandardsIgnoreStart
     /**
@@ -69,7 +72,7 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     // @codingStandardsIgnoreEnd
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getCertificate()
     {
@@ -77,7 +80,7 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getName()
     {
@@ -85,7 +88,7 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getCreatedAt()
     {
@@ -93,9 +96,7 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param string $certificate
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setCertificate($certificate)
     {
@@ -103,9 +104,7 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param string $name
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setName($name)
     {
@@ -113,9 +112,7 @@ class Certificate extends \Magento\Framework\Model\AbstractModel
     }
 
     /**
-     * @param string $createdAt
-     *
-     * @return $this
+     * {@inheritdoc}
      */
     public function setCreatedAt($createdAt)
     {

@@ -40,8 +40,47 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
+use Magento\Framework\UrlInterface;
+use TIG\Buckaroo\Gateway\Http\Transaction;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+use TIG\Buckaroo\Service\Software\Data as SoftwareData;
+
 class Refund extends AbstractTransactionBuilder
 {
+    /** @var RemoteAddress */
+    protected $remoteAddress;
+
+    /** @var Factory */
+    protected $configProviderMethodFactory;
+
+    /**
+     * @param SoftwareData  $softwareData
+     * @param Account       $configProviderAccount
+     * @param Transaction   $transaction
+     * @param UrlInterface  $urlBuilder
+     * @param RemoteAddress $remoteAddress
+     * @param Factory       $configProviderMethodFactory
+     * @param null          $amount
+     * @param null          $currency
+     */
+    public function __construct(
+        SoftwareData $softwareData,
+        Account $configProviderAccount,
+        Transaction $transaction,
+        UrlInterface $urlBuilder,
+        RemoteAddress $remoteAddress,
+        Factory $configProviderMethodFactory,
+        $amount = null,
+        $currency = null
+    ) {
+        parent::__construct($softwareData, $configProviderAccount, $transaction, $urlBuilder, $amount, $currency);
+
+        $this->remoteAddress = $remoteAddress;
+        $this->configProviderMethodFactory = $configProviderMethodFactory;
+    }
+
     /**
      * @throws \TIG\Buckaroo\Exception
      */
@@ -62,10 +101,10 @@ class Refund extends AbstractTransactionBuilder
              *       This problem occurs when the creditmemo is being refunded in the order's currency, rather than the
              *       store's base currency.
              */
-            $this->currency = $this->order->getOrderCurrencyCode();
-            $this->amount = round($this->amount * $this->order->getBaseToOrderRate(), 2);
+            $this->setCurrency($this->order->getOrderCurrencyCode());
+            $this->setAmount(round($this->getAmount() * $this->order->getBaseToOrderRate(), 2));
         } elseif (in_array($this->order->getBaseCurrencyCode(), $allowedCurrencies)) {
-            $this->currency = $this->order->getBaseCurrencyCode();
+            $this->setCurrency($this->order->getBaseCurrencyCode());
         } else {
             throw new \TIG\Buckaroo\Exception(
                 __("The selected payment method does not support the selected currency or the store's base currency.")
@@ -78,39 +117,32 @@ class Refund extends AbstractTransactionBuilder
      */
     public function getBody()
     {
-        if (!$this->currency) {
+        if (!$this->getCurrency()) {
             $this->setRefundCurrencyAndAmount();
         }
 
         $order = $this->getOrder();
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
 
         $ip = $order->getRemoteIp();
         if (!$ip) {
             $ip = $this->remoteAddress->getRemoteAddress();
         }
 
-        $processUrl = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
-
         $body = [
-            'Currency' => $this->currency,
+            'Currency' => $this->getCurrency(),
             'AmountDebit' => 0,
-            'AmountCredit' => $this->amount,
-            'Invoice' => $order->getIncrementId(),
+            'AmountCredit' => $this->getAmount(),
+            'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $accountConfig->getTransactionLabel(),
+            'Description' => $this->configProviderAccount->getTransactionLabel(),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',
             ],
-            'ReturnURL' => $processUrl,
-            'ReturnURLCancel' => $processUrl,
-            'ReturnURLError' => $processUrl,
-            'ReturnURLReject' => $processUrl,
+            'ReturnURL' => $this->getReturnUrl(),
+            'ReturnURLCancel' => $this->getReturnUrl(),
+            'ReturnURLError' => $this->getReturnUrl(),
+            'ReturnURLReject' => $this->getReturnUrl(),
             'OriginalTransactionKey' => $this->originalTransactionKey,
             'StartRecurrent' => $this->startRecurrent,
             'PushURL' => $this->urlBuilder->getDirectUrl('rest/V1/buckaroo/push'),
