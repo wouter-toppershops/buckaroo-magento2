@@ -38,6 +38,7 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use Magento\Sales\Model\Order;
 use TIG\Buckaroo\Gateway\Http\Transaction;
 use TIG\Buckaroo\Test\BaseTest;
 
@@ -164,7 +165,11 @@ class AbstractTransactionBuilderTest extends BaseTest
     {
         $transactionMock = $this->getMockBuilder(Transaction::class)->setMethods(null)->getMock();
 
+        $orderMock = $this->getFakeMock(Order::class)->setMethods(['getStore'])->getMock();
+        $orderMock->expects($this->atLeastOnce())->method('getStore');
+
         $instance = $this->getInstance(['transaction' => $transactionMock]);
+        $instance->setOrder($orderMock);
         $result = $instance->build();
 
         $this->assertInstanceOf(Transaction::class, $result);
@@ -177,7 +182,7 @@ class AbstractTransactionBuilderTest extends BaseTest
         $merchantKey = uniqid();
         $this->configProviderAccount->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
 
-        $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $order = \Mockery::mock(Order::class);
         $order->shouldReceive('getStore')->once();
 
         $this->object->setOrder($order);
