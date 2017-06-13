@@ -395,6 +395,10 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         $transaction->setHeaders($this->getHeaders());
         $transaction->setMethod($this->getMethod());
 
+        $store = $this->getOrder()->getStore();
+
+        $transaction->setStore($store);
+
         return $transaction;
     }
 
@@ -408,12 +412,15 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getHeaders()
     {
+        /** @var \Magento\Store\Model\Store $store */
+        $store = $this->getOrder()->getStore();
+
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
             'MessageControlBlock',
             [
                 'Id'                => '_control',
-                'WebsiteKey'        => $this->configProviderAccount->getMerchantKey(),
+                'WebsiteKey'        => $this->configProviderAccount->getMerchantKey($store),
                 'Culture'           => 'nl-NL',
                 'TimeStamp'         => time(),
                 'Channel'           => $this->channel,

@@ -101,6 +101,11 @@ class Order extends AbstractTransactionBuilder
         }
 
         $order = $this->getOrder();
+        $store = $order->getStore();
+
+        if ($this->configProviderAccount->getCreateOrderBeforeTransaction($store)) {
+            $order->save();
+        }
 
         $ip = $order->getRemoteIp();
         if (!$ip) {
@@ -118,7 +123,7 @@ class Order extends AbstractTransactionBuilder
             'AmountCredit' => $creditAmount,
             'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $this->configProviderAccount->getTransactionLabel(),
+            'Description' => $this->configProviderAccount->getTransactionLabel($store),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',

@@ -93,6 +93,7 @@ class AllTest extends BaseTest
 
         $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
+        $this->order->shouldReceive('getStore');
         $this->object->setOrder($this->order);
 
         return $this;
@@ -225,6 +226,11 @@ class AllTest extends BaseTest
     {
         $merchantKey = uniqid();
         $this->configProviderAccount->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
+
+        $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $order->shouldReceive('getStore')->once();
+
+        $this->object->setOrder($order);
 
         $result = $this->object->GetHeaders();
 

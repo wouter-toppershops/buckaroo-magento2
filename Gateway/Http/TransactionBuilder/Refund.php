@@ -122,6 +122,7 @@ class Refund extends AbstractTransactionBuilder
         }
 
         $order = $this->getOrder();
+        $store = $order->getStore();
 
         $ip = $order->getRemoteIp();
         if (!$ip) {
@@ -134,7 +135,7 @@ class Refund extends AbstractTransactionBuilder
             'AmountCredit' => $this->getAmount(),
             'Invoice' => $this->getInvoiceId(),
             'Order' => $order->getIncrementId(),
-            'Description' => $this->configProviderAccount->getTransactionLabel(),
+            'Description' => $this->configProviderAccount->getTransactionLabel($store),
             'ClientIP' => (object)[
                 '_' => $ip,
                 'Type' => strpos($ip, ':') === false ? 'IPv4' : 'IPv6',

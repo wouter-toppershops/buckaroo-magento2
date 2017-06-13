@@ -48,6 +48,9 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
      */
     public $configProviderPrivateKey;
 
+    /** @var null|\Magento\Store\Model\Store */
+    private $store = null;
+
     /**
      * @param PrivateKey $configProviderPrivateKey
      */
@@ -67,9 +70,31 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
      */
     public function create($wsdl, array $options = [])
     {
+        $privateKey = $this->configProviderPrivateKey->getPrivateKey($this->getStore());
+
         $client = new Client\SoapClientWSSEC($wsdl, $options);
-        $client->loadPem($this->configProviderPrivateKey->getPrivateKey());
+        $client->loadPem($privateKey);
 
         return $client;
+    }
+
+    /**
+     * @param $store
+     *
+     * @return $this
+     */
+    public function setStore($store)
+    {
+        $this->store = $store;
+
+        return $this;
+    }
+
+    /**
+     * @return \Magento\Store\Model\Store|null
+     */
+    public function getStore()
+    {
+        return $this->store;
     }
 }

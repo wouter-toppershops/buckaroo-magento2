@@ -235,10 +235,9 @@ class BuckarooFee extends \Magento\Quote\Model\Quote\Address\Total\AbstractTotal
         }
 
         $total = 0;
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $feePercentageMode = $this->configProviderAccount->getFeePercentageMode();
+
+        $feePercentageMode = $this->configProviderAccount->getFeePercentageMode($quote->getStore());
+
         switch ($feePercentageMode) {
             case 'subtotal':
                 $total = $address->getBaseSubtotal();

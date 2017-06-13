@@ -226,6 +226,8 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
 
         $transfer = $transfer->build();
 
+        $this->client->setStore($transaction->getStore());
+
         return $this->client->placeRequest($transfer);
     }
 }

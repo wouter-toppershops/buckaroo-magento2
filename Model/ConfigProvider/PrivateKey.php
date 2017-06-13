@@ -50,29 +50,25 @@ class PrivateKey implements ConfigProviderInterface
     const XPATH_CERTIFICATE_ID = 'tig_buckaroo/account/certificate_file';
 
     /**
-     * @var \TIG\Buckaroo\Model\Certificate
+     * @var CertificateRepositoryInterface
      */
-    protected $certificate;
+    protected $certificateRepository;
+
+    /** @var Account */
+    protected $account;
 
     /**
      * @param CertificateRepositoryInterface $certificateRepository
-     * @param Account                        $account
+     * @param Account $account
+     *
+     * @throws \LogicException
      */
     public function __construct(
         CertificateRepositoryInterface $certificateRepository,
         Account $account
     ) {
-        $certificateId = $account->getCertificateFile();
-
-        if (!$certificateId) {
-            throw new \LogicException('No Buckaroo certificate configured.');
-        }
-
-        $this->certificate = $certificateRepository->getById($certificateId);
-
-        if (!$this->certificate->getId()) {
-            throw new \LogicException('Invalid Buckaroo certificate configured.');
-        }
+        $this->certificateRepository = $certificateRepository;
+        $this->account = $account;
     }
 
     /**
@@ -89,10 +85,20 @@ class PrivateKey implements ConfigProviderInterface
     /**
      * Return private key from certificate
      *
+     * @param $store
+     *
      * @return string
      */
-    public function getPrivateKey()
+    public function getPrivateKey($store = null)
     {
-        return $this->certificate->getCertificate();
+        $certificateId = $this->account->getCertificateFile($store);
+
+        if (!$certificateId) {
+            throw new \LogicException('No Buckaroo certificate configured.');
+        }
+
+        $certificate = $this->certificateRepository->getById($certificateId);
+
+        return $certificate->getCertificate();
     }
 }

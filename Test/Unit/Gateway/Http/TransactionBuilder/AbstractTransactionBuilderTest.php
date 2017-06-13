@@ -177,6 +177,11 @@ class AbstractTransactionBuilderTest extends BaseTest
         $merchantKey = uniqid();
         $this->configProviderAccount->shouldReceive('getMerchantKey')->once()->andReturn($merchantKey);
 
+        $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $order->shouldReceive('getStore')->once();
+
+        $this->object->setOrder($order);
+
         $result = $this->object->GetHeaders();
 
         $this->assertCount(2, $result);

@@ -56,6 +56,9 @@ class Transaction
      */
     protected $method;
 
+    /** @var null|\Magento\Store\Model\Store */
+    protected $store = null;
+
     /**
      * @return array
      */
@@ -114,5 +117,25 @@ class Transaction
         $this->method = $method;
 
         return $this;
+    }
+
+    /**
+     * @param \Magento\Store\Model\Store $store
+     *
+     * @return $this
+     */
+    public function setStore($store)
+    {
+        $this->store = $store;
+
+        return $this;
+    }
+
+    /**
+     * @return \Magento\Store\Model\Store|null
+     */
+    public function getStore()
+    {
+        return $this->store;
     }
 }
