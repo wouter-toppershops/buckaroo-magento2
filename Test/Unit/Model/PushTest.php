@@ -267,8 +267,6 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderHasInvoices = false,
         $postData = false
     ) {
-        $this->markTestSkipped('Needs revision');
-
         $message = 'testMessage';
         $status = 'testStatus';
 
@@ -293,6 +291,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getTotalDue')->andReturn($amount);
+        $orderMock->shouldReceive('getStore')->andReturnSelf();
 
         /**
          * The order state has to be checked at least once
@@ -312,6 +311,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
         $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
+        $paymentMock->shouldReceive('getMethod');
 
         /**
          * Build a currency mock
