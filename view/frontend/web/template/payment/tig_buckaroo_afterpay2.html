@@ -78,7 +78,7 @@
                                    class="input-text field"
                                    data-bind="
                                    valueUpdate: 'keyup',
-                                   attr: { 'data-validate': JSON.stringify({ 'required': true, validate-date: true })}"
+                                   attr: { 'data-validate': JSON.stringify({ 'required': true })}"
                                    name="payment[tig_buckaroo_afterpay2][customer_telephone]">
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                                             changeMonth: true,
                                             changeYear: true,
                                             yearRange: ((new Date()).getFullYear()-120) + ':' + (new Date()).getFullYear(),
-                                            dateFormat: 'yy-mm-dd'
+                                            dateFormat: 'dd/mm/yy'
                                         }
                                    },
                                    valueUpdate: 'blur',

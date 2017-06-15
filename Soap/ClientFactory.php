@@ -39,23 +39,28 @@
 
 namespace TIG\Buckaroo\Soap;
 
+use TIG\Buckaroo\Model\ConfigProvider\PrivateKey;
+
 class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
 {
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     * @var PrivateKey
      */
-    public $configProviderFactory;
+    public $configProviderPrivateKey;
+
+    /** @var null|\Magento\Store\Model\Store */
+    private $store = null;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
+     * @param PrivateKey $configProviderPrivateKey
      */
-    public function __construct(\TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory)
+    public function __construct(PrivateKey $configProviderPrivateKey)
     {
-        $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderPrivateKey = $configProviderPrivateKey;
     }
 
     /**
-     * Factory method for \TIG\Buckaroo\Soap\Client\SoapClientWSSEC
+     * Factory method for Client\SoapClientWSSEC
      *
      * @param string $wsdl
      * @param array  $options
@@ -65,15 +70,31 @@ class ClientFactory extends \Magento\Framework\Webapi\Soap\ClientFactory
      */
     public function create($wsdl, array $options = [])
     {
+        $privateKey = $this->configProviderPrivateKey->getPrivateKey($this->getStore());
+
         $client = new Client\SoapClientWSSEC($wsdl, $options);
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\PrivateKey $privateKeyConfig
-         */
-        $privateKeyConfig = $this->configProviderFactory->get('private_key');
-
-        $client->loadPem($privateKeyConfig->getPrivateKey());
+        $client->loadPem($privateKey);
 
         return $client;
+    }
+
+    /**
+     * @param $store
+     *
+     * @return $this
+     */
+    public function setStore($store)
+    {
+        $this->store = $store;
+
+        return $this;
+    }
+
+    /**
+     * @return \Magento\Store\Model\Store|null
+     */
+    public function getStore()
+    {
+        return $this->store;
     }
 }

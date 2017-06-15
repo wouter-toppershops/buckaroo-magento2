@@ -55,7 +55,8 @@ class Toolbar
         'tig_buckaroo_paypal',
         'tig_buckaroo_sepadirectdebit',
         'tig_buckaroo_sofortbanking',
-        'tig_buckaroo_transfer'
+        'tig_buckaroo_transfer',
+        'tig_buckaroo_paymentguarantee'
     ];
 
     /**

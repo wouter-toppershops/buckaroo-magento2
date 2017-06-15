@@ -39,51 +39,53 @@
  */
 namespace TIG\Buckaroo\Gateway\Http;
 
+use Magento\Payment\Gateway\Http\TransferBuilder;
+use TIG\Buckaroo\Debug\Debugger;
+use TIG\Buckaroo\Gateway\Http\Client\Soap;
+use TIG\Buckaroo\Model\ConfigProvider\Predefined;
+use TIG\Buckaroo\Model\ConfigProvider\Refund;
+
 class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
 {
-    /**
-     * @var \Magento\Payment\Gateway\Http\Client\Soap
-     */
+    /** @var Soap */
     protected $client;
 
-    /**
-     * @var \Magento\Framework\Data\ObjectFactory
-     */
-    protected $objectFactory;
+    /** @var TransferBuilder */
+    protected $transferBuilder;
 
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory #configProviderFactory
-     */
-    protected $configProviderFactory;
+    /** @var Predefined */
+    protected $configProviderPredefined;
 
-    /**
-     * @var int
-     */
+    /** @var Refund */
+    protected $configProviderRefund;
+
+    /** @var int */
     protected $mode;
 
-    /**
-     * @var \TIG\Buckaroo\Debug\Debugger $debugger
-     */
+    /** @var Debugger $debugger */
     public $debugger;
 
     /**
      * Bpe3 constructor.
      *
-     * @param \TIG\Buckaroo\Gateway\Http\Client\Soap     $client
-     * @param \Magento\Framework\Data\ObjectFactory      $objectFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
-     * @param \TIG\Buckaroo\Debug\Debugger               $debugger
+     * @param Soap            $client
+     * @param TransferBuilder $transferBuilder
+     * @param Predefined      $configProviderPredefined
+     * @param Refund          $configProviderRefund
+     * @param Debugger        $debugger
      */
     public function __construct(
-        \TIG\Buckaroo\Gateway\Http\Client\Soap $client,
-        \Magento\Framework\Data\ObjectFactory $objectFactory,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Debug\Debugger $debugger
+        Soap $client,
+        TransferBuilder $transferBuilder,
+        Predefined $configProviderPredefined,
+        Refund $configProviderRefund,
+        Debugger $debugger
     ) {
-        $this->client                = $client;
-        $this->objectFactory         = $objectFactory;
-        $this->configProviderFactory = $configProviderFactory;
-        $this->debugger              = $debugger;
+        $this->client                   = $client;
+        $this->transferBuilder          = $transferBuilder;
+        $this->configProviderPredefined = $configProviderPredefined;
+        $this->configProviderRefund     = $configProviderRefund;
+        $this->debugger                 = $debugger;
     }
 
     /**
@@ -139,12 +141,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function refund(Transaction $transaction)
     {
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Refund $refundConfig
-         */
-        $refundConfig = $this->configProviderFactory->get('refund');
-
-        if ($refundConfig->getEnabled()) {
+        if ($this->configProviderRefund->getEnabled()) {
             return $this->doRequest($transaction);
         }
 
@@ -185,17 +182,12 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
             throw new \LogicException("Cannot do a Buckaroo transaction when 'mode' is not set or set to 0.");
         }
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Predefined $predefinedConfig
-         */
-        $predefinedConfig = $this->configProviderFactory->get('predefined');
-
         switch ($this->mode) {
             case \TIG\Buckaroo\Helper\Data::MODE_TEST:
-                $wsdl = $predefinedConfig->getWsdlTestWeb();
+                $wsdl = $this->configProviderPredefined->getWsdlTestWeb();
                 break;
             case \TIG\Buckaroo\Helper\Data::MODE_LIVE:
-                $wsdl = $predefinedConfig->getWsdlLiveWeb();
+                $wsdl = $this->configProviderPredefined->getWsdlLiveWeb();
                 break;
             default:
                 throw new \TIG\Buckaroo\Exception(
@@ -219,23 +211,22 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      */
     public function doRequest(Transaction $transaction)
     {
-        /**
-         * @var \Magento\Payment\Gateway\Http\Transfer $transfer
-         */
-        $transfer = $this->objectFactory->create(
-            '\Magento\Payment\Gateway\Http\Transfer',
-            [
-                'clientConfig' => [
-                    'wsdl' => $this->getWsdl()
-                ],
-                'headers'  => $transaction->getHeaders(),
-                'body'     => $transaction->getBody(),
-                'auth'     => [], // The authorization is done by the request headers and encryption.
-                'method'   => $transaction->getMethod(),
-                'uri'      => '', // The URI is part of the wsdl file.
-                'encode'   => false
-            ]
-        );
+        $clientConfig = [
+            'wsdl' => $this->getWsdl()
+        ];
+
+        $transfer = $this->transferBuilder->setClientConfig($clientConfig);
+        $transfer->setHeaders($transaction->getHeaders());
+        $transfer->setBody($transaction->getBody());
+        $transfer->setAuthUsername(null); // The authorization is done by the request headers and encryption.
+        $transfer->setAuthPassword(null);
+        $transfer->setMethod($transaction->getMethod());
+        $transfer->setUri(''); // The URI is part of the wsdl file.
+        $transfer->shouldEncode(false);
+
+        $transfer = $transfer->build();
+
+        $this->client->setStore($transaction->getStore());
 
         return $this->client->placeRequest($transfer);
     }

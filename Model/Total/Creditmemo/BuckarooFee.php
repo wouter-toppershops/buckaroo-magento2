@@ -50,29 +50,20 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
     public function collect(\Magento\Sales\Model\Order\Creditmemo $creditmemo)
     {
         $order = $creditmemo->getOrder();
+        $invoice = $creditmemo->getInvoice();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        if ($order->getBaseBuckarooFeeInvoiced()
-            && $order->getBaseBuckarooFeeInvoiced() != $order->getBaseBuckarooFeeRefunded()
+        if ($invoice
+            && $invoice->getBaseBuckarooFee()
+            && $order->getBaseBuckarooFeeInvoiced() > $order->getBaseBuckarooFeeRefunded()
         ) {
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $order->setBaseBuckarooFeeRefunded($order->getBaseBuckarooFeeInvoiced());
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $order->setBuckarooFeeRefunded($order->getBuckarooFeeInvoiced());
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $creditmemo->setBaseBuckarooFee($order->getBaseBuckarooFeeInvoiced());
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $creditmemo->setBuckarooFee($order->getBuckarooFeeInvoiced());
+            $baseBuckarooFee = $invoice->getBaseBuckarooFee();
+            $buckarooFee = $invoice->getBuckarooFee();
+
+            $order->setBaseBuckarooFeeRefunded($order->getBaseBuckarooFeeRefunded() + $baseBuckarooFee);
+            $order->setBuckarooFeeRefunded($order->getBuckarooFeeRefunded() + $buckarooFee);
+
+            $creditmemo->setBaseBuckarooFee($baseBuckarooFee);
+            $creditmemo->setBuckarooFee($buckarooFee);
         }
 
         /**

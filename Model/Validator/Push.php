@@ -40,6 +40,9 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
+use TIG\Buckaroo\Debug\Debugger;
+use TIG\Buckaroo\Helper\Data;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
 use \TIG\Buckaroo\Model\ValidatorInterface;
 
 /**
@@ -49,24 +52,13 @@ use \TIG\Buckaroo\Model\ValidatorInterface;
  */
 class Push implements ValidatorInterface
 {
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public $scopeConfig;
+    /** @var Account $configProviderAccount */
+    public $configProviderAccount;
 
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory
-     */
-    public $configProviderFactory;
-
-    /**
-     * @var \TIG\Buckaroo\Helper\Data $helper
-     */
+    /** @var Data $helper */
     public $helper;
 
-    /**
-     * @var \TIG\Buckaroo\Debug\Debugger $debugger
-     */
+    /** @var Debugger $debugger */
     public $debugger;
 
     public $bpeResponseMessages = [
@@ -84,20 +76,17 @@ class Push implements ValidatorInterface
     ];
 
     /**
-     * @param \TIG\Buckaroo\Helper\Data                          $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
-     * @param \TIG\Buckaroo\Debug\Debugger                       $debugger
+     * @param Data     $helper
+     * @param Account  $configProviderAccount
+     * @param Debugger $debugger
      */
     public function __construct(
-        \TIG\Buckaroo\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Debug\Debugger $debugger
+        Data $helper,
+        Account $configProviderAccount,
+        Debugger $debugger
     ) {
         $this->helper                   = $helper;
-        $this->scopeConfig              = $scopeConfig;
-        $this->configProviderFactory    = $configProviderFactory;
+        $this->configProviderAccount    = $configProviderAccount;
         $this->debugger                 = $debugger;
     }
 
@@ -186,12 +175,7 @@ class Push implements ValidatorInterface
             $signatureString .= $brq_key. '=' . $value;
         }
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
-
-        $digitalSignature = $accountConfig->getSecretKey();
+        $digitalSignature = $this->configProviderAccount->getSecretKey();
 
         $signatureString .= $digitalSignature;
 

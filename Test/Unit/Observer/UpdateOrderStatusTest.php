@@ -87,6 +87,7 @@ class UpdateOrderStatusTest extends BaseTest
         $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();
         $this->observer->shouldReceive('getMethod')->once()->andReturn('tig_buckaroo');
         $this->observer->shouldReceive('getOrder')->once()->andReturnSelf();
+        $this->observer->shouldReceive('getStore')->once()->andReturnSelf();
         $this->observer->shouldReceive('setStatus')->once()->with('tig_buckaroo_pending_payment');
 
         $this->object->execute($this->observer);

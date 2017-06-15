@@ -38,7 +38,10 @@
  */
 namespace TIG\Buckaroo\Model;
 
-class Giftcard extends \Magento\Framework\Model\AbstractModel
+use Magento\Framework\Model\AbstractModel;
+use TIG\Buckaroo\Api\Data\GiftcardInterface;
+
+class Giftcard extends AbstractModel implements GiftcardInterface
 {
     /**
      * @var string

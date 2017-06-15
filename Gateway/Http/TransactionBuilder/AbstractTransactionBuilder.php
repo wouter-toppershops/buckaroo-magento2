@@ -40,18 +40,13 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\UrlInterface;
+use TIG\Buckaroo\Gateway\Http\Transaction;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Service\Software\Data as SoftwareData;
+
 abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface
 {
-    /**
-     * Module supplier.
-     */
-    const MODULE_SUPPLIER = 'TIG';
-
-    /**
-     * Module code.
-     */
-    const MODULE_CODE = 'TIG_Buckaroo';
-
     /**
      * @var \Magento\Sales\Model\Order
      */
@@ -78,39 +73,27 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     protected $type = false;
 
     /**
-     * @var \Magento\Framework\App\ProductMetadataInterface
+     * @var null|string
      */
-    protected $productMetadata;
+    protected $returnUrl = null;
 
     /**
-     * @var \Magento\Framework\Module\ModuleListInterface
+     * @var SoftwareData
      */
-    protected $moduleList;
+    protected $softwareData;
 
     /**
-     * @var \Magento\Framework\UrlInterface
+     * @var Account
      */
+    protected $configProviderAccount;
+
+    /**
+     * @var Transaction
+     */
+    protected $transaction;
+
+    /** @var UrlInterface */
     protected $urlBuilder;
-
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
-
-    /**
-     * @var \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress
-     */
-    protected $remoteAddress;
-
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
-     */
-    protected $configProviderMethodFactory;
-
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $objectManager;
 
     /**
      * @var bool
@@ -215,6 +198,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getInvoiceId()
     {
+        if (empty($this->invoiceId)) {
+            $order = $this->getOrder();
+            $this->setInvoiceId($order->getIncrementId());
+        }
+
         return $this->invoiceId;
     }
 
@@ -253,34 +241,25 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     /**
      * TransactionBuilder constructor.
      *
-     * @param \Magento\Framework\App\ProductMetadataInterface      $productMetadata
-     * @param \Magento\Framework\Module\ModuleListInterface        $moduleList
-     * @param \Magento\Framework\UrlInterface                      $urlBuilder
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory           $configProviderFactory
-     * @param \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory    $configProviderMethodFactory
-     * @param \Magento\Framework\ObjectManagerInterface            $objectManager
-     * @param null                                                 $amount
-     * @param null                                                 $currency
+     * @param SoftwareData          $softwareData
+     * @param Account               $configProviderAccount
+     * @param Transaction           $transaction
+     * @param UrlInterface          $urlBuilder
+     * @param null|int|float|double $amount
+     * @param null|string           $currency
      */
     public function __construct(
-        \Magento\Framework\App\ProductMetadataInterface $productMetadata,
-        \Magento\Framework\Module\ModuleListInterface $moduleList,
-        \Magento\Framework\UrlInterface $urlBuilder,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \Magento\Framework\HTTP\PhpEnvironment\RemoteAddress $remoteAddress,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
+        SoftwareData $softwareData,
+        Account $configProviderAccount,
+        Transaction $transaction,
+        UrlInterface $urlBuilder,
         $amount = null,
         $currency = null
     ) {
-        $this->productMetadata             = $productMetadata;
-        $this->moduleList                  = $moduleList;
-        $this->urlBuilder                  = $urlBuilder;
-        $this->configProviderFactory       = $configProviderFactory;
-        $this->remoteAddress               = $remoteAddress;
-        $this->configProviderMethodFactory = $configProviderMethodFactory;
-        $this->objectManager               = $objectManager;
+        $this->softwareData          = $softwareData;
+        $this->configProviderAccount = $configProviderAccount;
+        $this->transaction           = $transaction;
+        $this->urlBuilder            = $urlBuilder;
 
         if ($amount !== null) {
             $this->amount = $amount;
@@ -382,18 +361,43 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     }
 
     /**
-     * @return \TIG\Buckaroo\Gateway\Http\Transaction
+     * {@inheritdoc}
+     */
+    public function setReturnUrl($url)
+    {
+        $routeUrl = $this->urlBuilder->getRouteUrl($url);
+
+        $this->returnUrl = $routeUrl;
+
+        return $this;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getReturnUrl()
+    {
+        if ($this->returnUrl === null) {
+            $url = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
+
+            $this->setReturnUrl($url);
+        }
+
+        return $this->returnUrl;
+    }
+
+    /**
+     * @return Transaction
      */
     public function build()
     {
-        $transaction = $this->objectManager->create(
-            '\TIG\Buckaroo\Gateway\Http\Transaction',
-            [
-                'body'    => $this->getBody(),
-                'headers' => $this->getHeaders(),
-                'method'  => $this->getMethod(),
-            ]
-        );
+        $transaction = $this->transaction->setBody($this->getBody());
+        $transaction->setHeaders($this->getHeaders());
+        $transaction->setMethod($this->getMethod());
+
+        $store = $this->getOrder()->getStore();
+
+        $transaction->setStore($store);
 
         return $transaction;
     }
@@ -408,31 +412,19 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      */
     public function getHeaders()
     {
-        $module = $this->moduleList->getOne(self::MODULE_CODE);
-
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
+        /** @var \Magento\Store\Model\Store $store */
+        $store = $this->getOrder()->getStore();
 
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
             'MessageControlBlock',
             [
                 'Id'                => '_control',
-                'WebsiteKey'        => $accountConfig->getMerchantKey(),
+                'WebsiteKey'        => $this->configProviderAccount->getMerchantKey($store),
                 'Culture'           => 'nl-NL',
                 'TimeStamp'         => time(),
                 'Channel'           => $this->channel,
-                'Software'          => [
-                    'PlatformName'      => $this->productMetadata->getName()
-                                         . ' - '
-                                         . $this->productMetadata->getEdition(),
-                    'PlatformVersion'   => $this->productMetadata->getVersion(),
-                    'ModuleSupplier'    => self::MODULE_SUPPLIER,
-                    'ModuleName'        => $module['name'],
-                    'ModuleVersion'     => $module['setup_version'],
-                ]
+                'Software'          => $this->softwareData->get()
             ],
             false
         );

@@ -38,20 +38,30 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class Giftcards implements \Magento\Framework\Option\ArrayInterface
-{
-    /**
-     * @var \TIG\Buckaroo\Model\GiftcardFactory $giftcardModel
-     */
-    protected $giftcardModel;
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Api\SortOrderBuilder;
+use Magento\Framework\Option\ArrayInterface;
+use TIG\Buckaroo\Api\GiftcardRepositoryInterface;
 
-    /**
-     * @param \TIG\Buckaroo\Model\GiftcardFactory $modelGiftcardFactory
-     */
+class Giftcards implements ArrayInterface
+{
+    /** @var SortOrderBuilder */
+    private $sortOrderBuilder;
+
+    /** @var SearchCriteriaBuilder */
+    private $searchCriteriaBuilder;
+
+    /** @var GiftcardRepositoryInterface */
+    private $giftcardRepository;
+
     public function __construct(
-        \TIG\Buckaroo\Model\GiftcardFactory $modelGiftcardFactory
+        SortOrderBuilder $sortOrderBuilder,
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        GiftcardRepositoryInterface $giftcardRepository
     ) {
-        $this->giftcardModel = $modelGiftcardFactory;
+        $this->sortOrderBuilder = $sortOrderBuilder;
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->giftcardRepository = $giftcardRepository;
     }
 
     /**
@@ -74,10 +84,11 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
             return $options;
         }
 
-        foreach ($giftcardData as $index => $data) {
+        /** @var \TIG\Buckaroo\Api\Data\GiftcardInterface $model */
+        foreach ($giftcardData as $model) {
             $options[] = [
-                'value' => $data['servicecode'],
-                'label' => $data['label']
+                'value' => $model->getServicecode(),
+                'label' => $model->getLabel()
             ];
         }
 
@@ -91,15 +102,14 @@ class Giftcards implements \Magento\Framework\Option\ArrayInterface
      */
     protected function getGiftcardData()
     {
-        /**
-         * @var \TIG\Buckaroo\Model\Giftcard $giftcardModel
-         */
-        $giftcardModel = $this->giftcardModel->create();
-        $giftcardCollection = $giftcardModel->getCollection()->setOrder(
-            'label',
-            \Magento\Framework\Data\Collection::SORT_ORDER_ASC
-        );
+        $sortOrder = $this->sortOrderBuilder->setField('label')->setAscendingDirection();
+        $searchCriteria = $this->searchCriteriaBuilder->addSortOrder($sortOrder->create());
+        $list = $this->giftcardRepository->getList($searchCriteria->create());
 
-        return $giftcardCollection->getData();
+        if (!$list->getTotalCount()) {
+            return [];
+        }
+
+        return $list->getItems();
     }
 }
