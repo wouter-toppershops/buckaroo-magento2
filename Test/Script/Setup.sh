@@ -42,6 +42,7 @@ if [ -d "$HOME/.cache/composer/files/tig/" ]; then
 fi
 
 ( cd "${BUILD_DIR}/" && cat composer.json | jq 'del(.repositories)' | cat > composer.tmp && mv composer.tmp composer.json )
+( cd "${BUILD_DIR}/" && cat composer.json | jq '."minimum-stability"="dev"' | cat > composer.tmp && mv composer.tmp composer.json )
 ( cd "${BUILD_DIR}/" && composer config minimum-stability dev )
 ( cd "${BUILD_DIR}/" && composer config repositories.buckaroo "${REPOSITORY_CONFIG}" )
 ( cd "${BUILD_DIR}/" && composer require tig/buckaroo --ignore-platform-reqs )
