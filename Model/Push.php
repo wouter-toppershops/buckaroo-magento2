@@ -41,10 +41,19 @@
 namespace TIG\Buckaroo\Model;
 
 use Magento\Framework\Webapi\Rest\Request;
+use Magento\Sales\Api\Data\TransactionInterface;
 use Magento\Sales\Model\Order;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
+use Magento\Sales\Model\Order\Payment\Transaction;
 use TIG\Buckaroo\Api\PushInterface;
-use \TIG\Buckaroo\Model\Method\AbstractMethod;
+use TIG\Buckaroo\Debug\Debugger;
+use TIG\Buckaroo\Helper\Data;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+use TIG\Buckaroo\Model\Method\AbstractMethod;
+use TIG\Buckaroo\Model\OrderStatusFactory;
+use TIG\Buckaroo\Model\Refund\Push as RefundPush;
+use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 
 /**
  * Class Push
@@ -60,12 +69,12 @@ class Push implements PushInterface
     const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
 
     /**
-     * @var \Magento\Framework\Webapi\Rest\Request $request
+     * @var Request $request
      */
     public $request;
 
     /**
-     * @var \TIG\Buckaroo\Model\Validator\Push $validator
+     * @var ValidatorPush $validator
      */
     public $validator;
 
@@ -74,8 +83,11 @@ class Push implements PushInterface
      */
     public $order;
 
+    /** @var Transaction */
+    private $transaction;
+
     /**
-     * @var \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
+     * @var OrderSender $orderSender
      */
     public $orderSender;
 
@@ -95,74 +107,63 @@ class Push implements PushInterface
     public $refundPush;
 
     /**
-     * @var \TIG\Buckaroo\Helper\Data
+     * @var Data
      */
     public $helper;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     */
-    public $scopeConfig;
-
-    /**
-     * @var \TIG\Buckaroo\Debug\Debugger $debugger
+     * @var Debugger $debugger
      */
     public $debugger;
 
     /**
-     * @var \TIG\Buckaroo\Model\OrderStatusFactory OrderStatusFactory
+     * @var OrderStatusFactory OrderStatusFactory
      */
     public $orderStatusFactory;
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
+     * @var Account
      */
-    public $objectManager;
+    public $configAccount;
 
     /**
-     * @var ConfigProvider\Factory
-     */
-    public $configProviderFactory;
-
-    /**
-     * @var ConfigProvider\Method\Factory
+     * @var Factory
      */
     public $configProviderMethodFactory;
 
     /**
-     * @param \Magento\Framework\ObjectManagerInterface          $objectManager
-     * @param Request                                            $request
-     * @param Validator\Push                                     $validator
-     * @param Order\Email\Sender\OrderSender                     $orderSender
-     * @param \TIG\Buckaroo\Helper\Data                          $helper
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \TIG\Buckaroo\Helper\Data                          $helper
-     * @param ConfigProvider\Factory                             $configProviderFactory
-     * @param Refund\Push                                        $refundPush
-     * @param \TIG\Buckaroo\Debug\Debugger                       $debugger
-     * @param ConfigProvider\Method\Factory                      $configProviderMethodFactory
-     * @param OrderStatusFactory                                 $orderStatusFactory
+     * @param Order                $order
+     * @param TransactionInterface $transaction
+     * @param Request              $request
+     * @param ValidatorPush        $validator
+     * @param OrderSender          $orderSender
+     * @param Data                 $helper
+     * @param Account              $configAccount
+     * @param RefundPush           $refundPush
+     * @param Debugger             $debugger
+     * @param Factory              $configProviderMethodFactory
+     * @param OrderStatusFactory   $orderStatusFactory
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Webapi\Rest\Request $request,
-        \TIG\Buckaroo\Model\Validator\Push $validator,
-        \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
-        \TIG\Buckaroo\Helper\Data $helper,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Model\Refund\Push $refundPush,
-        \TIG\Buckaroo\Debug\Debugger $debugger,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory,
-        \TIG\Buckaroo\Model\OrderStatusFactory $orderStatusFactory
+        Order $order,
+        TransactionInterface $transaction,
+        Request $request,
+        ValidatorPush $validator,
+        OrderSender $orderSender,
+        Data $helper,
+        Account $configAccount,
+        RefundPush $refundPush,
+        Debugger $debugger,
+        Factory $configProviderMethodFactory,
+        OrderStatusFactory $orderStatusFactory
     ) {
-        $this->objectManager                = $objectManager;
+        $this->order                        = $order;
+        $this->transaction                  = $transaction;
         $this->request                      = $request;
         $this->validator                    = $validator;
         $this->orderSender                  = $orderSender;
         $this->helper                       = $helper;
-        $this->scopeConfig                  = $scopeConfig;
-        $this->configProviderFactory        = $configProviderFactory;
+        $this->configAccount                = $configAccount;
         $this->refundPush                   = $refundPush;
         $this->debugger                     = $debugger;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
@@ -186,7 +187,7 @@ class Push implements PushInterface
         if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
             return;
         }
-        
+
         //Start debug mailing/logging with the postdata.
         $this->debugger->addToMessage($this->originalPostData);
 
@@ -196,12 +197,21 @@ class Push implements PushInterface
         //Check if the push can be processed and if the order can be updated IMPORTANT => use the original post data.
         $validSignature = $this->validator->validateSignature($this->originalPostData);
 
+        $brqOrderId = 0;
+
+        if (isset($this->postData['brq_invoicenumber']) && strlen($this->postData['brq_invoicenumber']) > 0) {
+            $brqOrderId = $this->postData['brq_invoicenumber'];
+        }
+
+        if (isset($this->postData['brq_ordernumber']) && strlen($this->postData['brq_ordernumber']) > 0) {
+            $brqOrderId = $this->postData['brq_ordernumber'];
+        }
+
         //Check if the order can receive further status updates
-        $this->order = $this->objectManager->create(Order::class)
-            ->loadByIncrementId($this->postData['brq_ordernumber']);
+        $this->order->loadByIncrementId($brqOrderId);
 
         if (!$this->order->getId()) {
-            $this->debugger->addToMessage('Order could not be loaded by brq_ordernumber');
+            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
@@ -368,12 +378,9 @@ class Push implements PushInterface
     protected function getOrderByTransactionKey($transactionId)
     {
         if ($transactionId) {
-            /**
-             * @var \Magento\Sales\Model\Order\Payment\Transaction $transaction
-             */
-            $transaction = $this->objectManager->create('Magento\Sales\Model\Order\Payment\Transaction');
-            $transaction->load($transactionId, 'txn_id');
-            $order = $transaction->getOrder();
+            $this->transaction->load($transactionId, 'txn_id');
+            $order = $this->transaction->getOrder();
+
             if ($order) {
                 return $order;
             }
@@ -425,16 +432,13 @@ class Push implements PushInterface
     {
         $description = 'Payment status : '.$message;
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
+        $store = $this->order->getStore();
 
-        $buckarooCancelOnFailed = $accountConfig->getCancelOnFailed();
+        $buckarooCancelOnFailed = $this->configAccount->getCancelOnFailed($store);
 
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
-            
+
             //Do not cancel order on a failed authorize, because it will send a cancel authorize message to
             //Buckaroo, this is not needed/correct.
             if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE) {
@@ -461,12 +465,9 @@ class Push implements PushInterface
     {
         $amount = floatval($this->originalPostData['brq_amount']);
 
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $accountConfig
-         */
-        $accountConfig = $this->configProviderFactory->get('account');
+        $store = $this->order->getStore();
 
-        if (!$this->order->getEmailSent() && $accountConfig->getOrderConfirmationEmail()) {
+        if (!$this->order->getEmailSent() && $this->configAccount->getOrderConfirmationEmail($store)) {
             $this->orderSender->send($this->order);
         }
 
@@ -483,7 +484,7 @@ class Push implements PushInterface
                 . ' has been authorized. Please create an invoice to capture the authorized amount.';
         }
 
-        if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $accountConfig->getAutoInvoice()) {
+        if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $this->configAccount->getAutoInvoice($store)) {
             $this->saveInvoice();
         }
 
@@ -531,7 +532,7 @@ class Push implements PushInterface
      * @param $newStatus
      */
     protected function updateOrderStatus($orderState, $newStatus, $description)
-    {       
+    {
         if ($this->order->getState() == $orderState) {
             $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
@@ -639,7 +640,7 @@ class Push implements PushInterface
          * @noinspection PhpUndefinedMethodInspection
          */
         $payment->setTransactionAdditionalInfo(
-            \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
+            Transaction::RAW_DETAILS,
             $rawInfo
         );
 

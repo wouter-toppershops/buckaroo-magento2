@@ -40,6 +40,9 @@
 namespace TIG\Buckaroo\Helper;
 
 use \Magento\Framework\App\Helper\AbstractHelper;
+use Magento\Framework\App\Helper\Context;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 
 /**
  * Class Data
@@ -79,28 +82,28 @@ class Data extends AbstractHelper
     protected $debugConfig = [];
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
+     * @var Account
      */
-    public $configProviderFactory;
+    public $configProviderAccount;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var Factory
      */
     public $configProviderMethodFactory;
 
     /**
-     * @param \Magento\Framework\App\Helper\Context             $context
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory        $configProviderFactory
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+     * @param Context $context
+     * @param Account $configProviderAccount
+     * @param Factory $configProviderMethodFactory
      */
     public function __construct(
-        \Magento\Framework\App\Helper\Context $context,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+        Context $context,
+        Account $configProviderAccount,
+        Factory $configProviderMethodFactory
     ) {
         parent::__construct($context);
 
-        $this->configProviderFactory = $configProviderFactory;
+        $this->configProviderAccount = $configProviderAccount;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
     }
 
@@ -180,11 +183,7 @@ class Data extends AbstractHelper
      */
     public function getMode($paymentMethod = null)
     {
-        /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Account $configProvider
-         */
-        $configProvider = $this->configProviderFactory->get('account');
-        $baseMode = $configProvider->getActive();
+        $baseMode =  $this->configProviderAccount->getActive();
 
         if (!$paymentMethod || !$baseMode) {
             return $baseMode;

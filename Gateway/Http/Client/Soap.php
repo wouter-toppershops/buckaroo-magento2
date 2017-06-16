@@ -50,6 +50,11 @@ use TIG\Buckaroo\Soap\ClientFactory;
 class Soap extends \Magento\Payment\Gateway\Http\Client\Soap
 {
     /**
+     * @var ClientFactory
+     */
+    private $clientFactory;
+
+    /**
      * @param Logger                $logger
      * @param ClientFactory         $clientFactory
      * @param EmptyConverter | null $converter
@@ -60,5 +65,19 @@ class Soap extends \Magento\Payment\Gateway\Http\Client\Soap
         EmptyConverter $converter
     ) {
         parent::__construct($logger, $clientFactory, $converter);
+
+        $this->clientFactory = $clientFactory;
+    }
+
+    /**
+     * @param null|\Magento\Store\Model\Store $store
+     *
+     * @return $this
+     */
+    public function setStore($store)
+    {
+        $this->clientFactory->setStore($store);
+
+        return $this;
     }
 }

@@ -78,6 +78,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $scopeConfig;
 
     /**
+     * @var \Mockery\MockInterface|\Magento\Developer\Helper\Data
+     */
+    protected $developmentHelper;
+
+    /**
      * @var \Mockery\MockInterface
      */
     protected $account;
@@ -111,6 +116,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->developmentHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
         $this->account = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
         $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
         $this->configMethodProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
@@ -135,6 +141,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             'objectManager' => $this->objectManager,
             'configProviderFactory' => $this->configProvider,
             'scopeConfig' => $this->scopeConfig,
+            'developmentHelper' => $this->developmentHelper,
             'configProviderMethodFactory' => $this->configMethodProvider,
             'validatorFactory' => $this->validatorFactory,
             'gateway' => $this->gateway,
@@ -221,7 +228,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager->shouldReceive('getAreaCode')->andReturn('adminhtml');
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [
                 'objectManager' => $this->objectManager,
                 'configProviderFactory' => $this->configProvider,
@@ -256,16 +263,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->scopeConfig->shouldReceive('getValue');
 
-        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(false);
+        $this->developmentHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(false);
 
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')
-            ->once()
-            ->with(\Magento\Developer\Helper\Data::class)
-            ->andReturn($developerHelper);
         $this->objectManager->shouldReceive('get')
             ->once()
             ->with(\Magento\Framework\App\State::class)
@@ -333,16 +335,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
 
-        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+        $this->developmentHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')
-            ->once()
-            ->with(\Magento\Developer\Helper\Data::class)
-            ->andReturn($developerHelper);
         $this->objectManager->shouldReceive('get')
             ->once()
             ->with(\Magento\Framework\App\State::class)
@@ -369,15 +366,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $quote->shouldReceive('getStoreId')->andReturn(1);
         $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
 
-        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+        $this->developmentHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
 
         $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
         $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
 
-        $this->objectManager->shouldReceive('create')
-            ->once()->with(\Magento\Developer\Helper\Data::class)
-            ->andReturn($developerHelper);
         $this->objectManager->shouldReceive('get')
             ->once()
             ->with(\Magento\Framework\App\State::class)
@@ -615,7 +608,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configMethodProvider->shouldReceive('has')->with($method)->andReturn(false);
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [
                 'objectManager' => $this->objectManager,
                 'configProviderFactory' => $this->configProvider,
@@ -655,7 +648,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $priceHelperMock->shouldReceive('currency')->with($fee, true, false)->andReturn($fee);
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [
                 'objectManager' => $this->objectManager,
                 'configProviderFactory' => $this->configProvider,
@@ -725,7 +718,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         }
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [
                 'objectManager' => $this->objectManager,
                 'configProviderFactory' => $this->configProvider,
@@ -822,7 +815,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         }
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [
                 'objectManager' => $this->objectManager,
                 'configProviderFactory' => $this->configProvider,
@@ -928,7 +921,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         );
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [
                 'objectManager' => $this->objectManager,
                 'configProviderFactory' => $this->configProvider,
@@ -1191,7 +1184,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
          */
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [],
             ['void', 'cancel']
         );
@@ -1265,7 +1258,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
          */
 
         $partialMock = $this->getPartialObject(
-            AbstractMethod::class,
+            AbstractMethodMock::class,
             [],
             ['getTransactionAdditionalInfo','saveTransactionData']
         );

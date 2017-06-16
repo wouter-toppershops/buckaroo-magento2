@@ -38,9 +38,12 @@
  */
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\View\Asset\Repository;
 use Magento\Checkout\Model\ConfigProviderInterface as CheckoutConfigProvider;
+use TIG\Buckaroo\Helper\PaymentFee;
 use TIG\Buckaroo\Model\ConfigProvider\AbstractConfigProvider as BaseAbstractConfigProvider;
+use TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies;
 
 /**
  * @method string getActiveStatus()
@@ -72,7 +75,7 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
     protected $issuers = [];
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
@@ -82,41 +85,29 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
     protected $allowedCurrencies = null;
 
     /**
-     * @var \TIG\Buckaroo\Helper\PaymentFee
+     * @var PaymentFee
      */
     protected $paymentFeeHelper;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
-
-    /**
-     * @param Repository                                         $assetRepo
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory         $configProviderFactory
-     * @param \TIG\Buckaroo\Helper\PaymentFee                    $paymentFeeHelper
+     * @param Repository           $assetRepo
+     * @param ScopeConfigInterface $scopeConfig
+     * @param AllowedCurrencies    $allowedCurrencies
+     * @param PaymentFee           $paymentFeeHelper
      */
     public function __construct(
-        \Magento\Framework\View\Asset\Repository $assetRepo,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
-        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
-        \TIG\Buckaroo\Helper\PaymentFee $paymentFeeHelper
+        Repository $assetRepo,
+        ScopeConfigInterface $scopeConfig,
+        AllowedCurrencies $allowedCurrencies,
+        PaymentFee $paymentFeeHelper
     ) {
         parent::__construct($scopeConfig);
 
         $this->assetRepo = $assetRepo;
-        $this->configProviderFactory = $configProviderFactory;
         $this->paymentFeeHelper = $paymentFeeHelper;
 
         if (!$this->allowedCurrencies) {
-            /**
-             * @var \TIG\Buckaroo\Model\ConfigProvider\AllowedCurrencies $allowedCurrenciesConfig
-             */
-            $allowedCurrenciesConfig = $this->configProviderFactory->get('allowed_currencies');
-            if ($allowedCurrenciesConfig) {
-                $this->allowedCurrencies = $allowedCurrenciesConfig->getAllowedCurrencies();
-            }
+            $this->allowedCurrencies = $allowedCurrencies->getAllowedCurrencies();
         }
     }
 

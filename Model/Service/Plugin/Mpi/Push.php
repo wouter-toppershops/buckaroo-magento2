@@ -39,20 +39,22 @@
 
 namespace TIG\Buckaroo\Model\Service\Plugin\Mpi;
 
+use TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard;
+
 class Push
 {
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var Creditcard
      */
-    protected $configProviderMethodFactory;
+    protected $configProviderCreditcard;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+     * @param Creditcard $configProviderCreditcard
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+        Creditcard $configProviderCreditcard
     ) {
-        $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->configProviderCreditcard = $configProviderCreditcard;
     }
 
     /**
@@ -87,25 +89,13 @@ class Push
         if ($push->postData["brq_service_{$card}_authentication"] != 'Y') {
             switch ($card) {
                 case 'maestro':
-                    /**
-                     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider
-                     */
-                    $configProvider = $this->configProviderMethodFactory ->get('creditcard');
-                    $putOrderOnHold = (bool) $configProvider->getMaestroUnsecureHold();
+                    $putOrderOnHold = (bool) $this->configProviderCreditcard->getMaestroUnsecureHold();
                     break;
                 case 'visa':
-                    /**
-                     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider
-                     */
-                    $configProvider = $this->configProviderMethodFactory ->get('creditcard');
-                    $putOrderOnHold = (bool) $configProvider->getVisaUnsecureHold();
+                    $putOrderOnHold = (bool) $this->configProviderCreditcard->getVisaUnsecureHold();
                     break;
                 case 'mastercard':
-                    /**
-                     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard $configProvider
-                     */
-                    $configProvider = $this->configProviderMethodFactory ->get('creditcard');
-                    $putOrderOnHold = (bool) $configProvider->getMastercardUnsecureHold();
+                    $putOrderOnHold = (bool) $this->configProviderCreditcard->getMastercardUnsecureHold();
                     break;
                 default:
                     $putOrderOnHold = false;
