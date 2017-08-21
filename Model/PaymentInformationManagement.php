@@ -95,7 +95,18 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
         \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
     ) {
-        $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
+
+        try {
+            $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
+        } catch (\Exception $e) {
+            if ($e instanceof \Magento\Framework\Exception\LocalizedException) {
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __('The requested Payment Method is not available for the given billing address.')
+                );
+            }
+        }
+
+
 
         $this->logger->debug('-[RESULT]----------------------------------------');
         $this->logger->debug(print_r($this->registry->registry('buckaroo_response'), true));
