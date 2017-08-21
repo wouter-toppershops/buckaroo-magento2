@@ -467,14 +467,19 @@ class Push implements PushInterface
 
         $store = $this->order->getStore();
 
-        if (!$this->order->getEmailSent() && $this->configAccount->getOrderConfirmationEmail($store)) {
-            $this->orderSender->send($this->order);
-        }
-
         /**
          * @var \Magento\Payment\Model\MethodInterface $paymentMethod
          */
         $paymentMethod = $this->order->getPayment()->getMethodInstance();
+
+        if (!$this->order->getEmailSent()
+            && ($this->configAccount->getOrderConfirmationEmail($store)
+                || $paymentMethod->getConfigData('order_email', $store)
+            )
+        ) {
+            $this->orderSender->send($this->order);
+        }
+
         if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
             $description = 'Payment status : <strong>' . $message . "</strong><br/>";
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
