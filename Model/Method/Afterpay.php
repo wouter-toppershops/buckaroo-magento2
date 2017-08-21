@@ -61,6 +61,7 @@ class Afterpay extends AbstractMethod
      * Check if the tax calculation includes tax.
      */
     const TAX_CALCULATION_INCLUDES_TAX = 'tax/calculation/price_includes_tax';
+    const TAX_CALCULATION_SHIPPING_INCLUDES_TAX = 'tax/calculation/shipping_includes_tax';
 
     /**
      * @var string
@@ -660,9 +661,9 @@ class Afterpay extends AbstractMethod
             $count++;
         }
 
+        $taxLine = $this->getTaxLine($count, $payment);
 
-        if (!$includesTax) {
-            $taxLine = $this->getTaxLine($count, $payment);
+        if (!empty($taxLine)) {
             $requestData = array_merge($requestData, $taxLine);
             $count++;
         }
@@ -861,20 +862,40 @@ class Afterpay extends AbstractMethod
             );
         }
         // Add aditional shippin costs.
-        $shippingCost = [];
-
-        if ($order->getShippingAmount() > 0) {
-            $shippingCost = [
-                [
-                    '_'       => $order->getShippingAmount() + $order->getShippingTaxAmount(),
-                    'Name'    => 'ShippingCosts',
-                ]
-            ];
-        }
-
-        $article = array_merge($article, $shippingCost);
+        $shippingCosts = $this->getShippingCostsLine($order);
+        $article = array_merge($article, $shippingCosts);
 
         return $article;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return array
+     */
+    private function getShippingCostsLine($order)
+    {
+        $shippingCostsArticle = [];
+
+        if ($order->getShippingAmount() <= 0) {
+            return $shippingCostsArticle;
+        }
+
+        $shippingIncludesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_SHIPPING_INCLUDES_TAX);
+        $shippingAmount = $order->getShippingAmount();
+
+        if ($shippingIncludesTax) {
+            $shippingAmount += $order->getShippingTaxAmount();
+        }
+
+        $shippingCostsArticle = [
+            [
+                '_'       => $shippingAmount,
+                'Name'    => 'ShippingCosts',
+            ]
+        ];
+
+        return $shippingCostsArticle;
     }
 
     /**
@@ -918,21 +939,44 @@ class Afterpay extends AbstractMethod
      */
     public function getTaxLine($latestKey, $payment)
     {
-        /**
-         * @var \Magento\Sales\Model\Order $order
-         */
-        $order      = $payment->getOrder();
+        $taxes = $this->getTaxes($payment->getOrder());
+        $article = [];
 
-        $article = $this->getArticleArrayLine(
-            $latestKey,
-            'BTW',
-            2,
-            1,
-            number_format($order->getTaxAmount(), 2),
-            4
-        );
+        if ($taxes > 0) {
+            $article = $this->getArticleArrayLine(
+                $latestKey,
+                'BTW',
+                2,
+                1,
+                number_format($taxes, 2),
+                4
+            );
+        }
 
         return $article;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return float|int|null
+     */
+    private function getTaxes($order)
+    {
+        $catalogIncludesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+        $shippingIncludesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_SHIPPING_INCLUDES_TAX);
+
+        $taxes = 0;
+
+        if (!$catalogIncludesTax) {
+            $taxes += $order->getTaxAmount() - $order->getShippingTaxAmount();
+        }
+
+        if (!$shippingIncludesTax) {
+            $taxes += $order->getShippingTaxAmount();
+        }
+
+        return $taxes;
     }
 
     /**

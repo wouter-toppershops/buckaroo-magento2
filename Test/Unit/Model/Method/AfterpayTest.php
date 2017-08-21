@@ -31,6 +31,7 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Address;
 use Magento\Sales\Model\Order\Creditmemo;
@@ -181,6 +182,164 @@ class AfterpayTest extends BaseTest
 
         $instance = $this->getInstance();
         $result = $instance->isAddressDataDifferent($paymentMock);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getTaxLineProvider()
+    {
+        return [
+            'no tax by config' => [
+                3,
+                2,
+                1,
+                1,
+                null
+            ],
+            'no tax by amount' => [
+                0,
+                0,
+                0,
+                0,
+                null
+            ],
+            'only catalog tax' => [
+                6,
+                4,
+                0,
+                1,
+                2
+            ],
+            'only shipping tax' => [
+                8,
+                5,
+                1,
+                0,
+                5
+            ],
+            'both catalog and shipping tax' => [
+                15,
+                10,
+                0,
+                0,
+                15
+            ],
+        ];
+    }
+
+    /**
+     * @param $taxAmount
+     * @param $shippingTaxAmount
+     * @param $catalogIncludesTax
+     * @param $shippingIncludesTax
+     * @param $expected
+     *
+     * @dataProvider getTaxLineProvider
+     */
+    public function testGetTaxLine($taxAmount, $shippingTaxAmount, $catalogIncludesTax, $shippingIncludesTax, $expected)
+    {
+        $orderTaxinvokedAtMost = new \PHPUnit_Framework_MockObject_Matcher_InvokedAtMostCount(1);
+        $shippingTaxinvokedAtMost = new \PHPUnit_Framework_MockObject_Matcher_InvokedAtMostCount(2);
+
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['getTaxAmount', 'getShippingTaxAmount'])
+            ->getMock();
+        $orderMock->expects($orderTaxinvokedAtMost)->method('getTaxAmount')->willReturn($taxAmount);
+        $orderMock->expects($shippingTaxinvokedAtMost)->method('getShippingTaxAmount')->willReturn($shippingTaxAmount);
+
+        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
+        $paymentMock->expects($this->exactly(1))->method('getOrder')->willReturn($orderMock);
+
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)->getMock();
+        $scopeConfigMock->expects($this->exactly(2))
+            ->method('getValue')
+            ->withConsecutive(
+                [Afterpay::TAX_CALCULATION_INCLUDES_TAX],
+                [Afterpay::TAX_CALCULATION_SHIPPING_INCLUDES_TAX]
+            )
+            ->willReturnOnConsecutiveCalls($catalogIncludesTax, $shippingIncludesTax);
+
+        $instance = $this->getInstance(['scopeConfig' => $scopeConfigMock]);
+        $result = $instance->getTaxLine(rand(0, 10), $paymentMock);
+        $this->assertInternalType('array', $result);
+
+        if ($expected === null) {
+            $this->assertEmpty($result);
+        }
+
+        foreach ($result as $item) {
+            if ($item['Name'] == 'ArticleUnitPrice') {
+                $this->assertEquals($expected, $item['_']);
+            }
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function getShippingCostsLineProvider()
+    {
+        return [
+            'no shipping costs' => [
+                0,
+                1,
+                1,
+                []
+            ],
+            'shipping costs without tax' => [
+                2,
+                3,
+                0,
+                [
+                    [
+                        '_' => 2,
+                        'Name' => 'ShippingCosts',
+                    ]
+                ]
+            ],
+            'shipping costs with tax' => [
+                4,
+                5,
+                1,
+                [
+                    [
+                        '_' => 9,
+                        'Name' => 'ShippingCosts',
+                    ]
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @param $shippingAmount
+     * @param $taxAmount
+     * @param $includesTax
+     * @param $expected
+     *
+     * @dataProvider getShippingCostsLineProvider
+     */
+    public function testGetShippingCostsLine($shippingAmount, $taxAmount, $includesTax, $expected)
+    {
+        $invokedAtMost = new \PHPUnit_Framework_MockObject_Matcher_InvokedAtMostCount(1);
+
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['getShippingAmount', 'getShippingTaxAmount'])
+            ->getMock();
+        $orderMock->expects($this->atLeastOnce())->method('getShippingAmount')->willReturn($shippingAmount);
+        $orderMock->expects($invokedAtMost)->method('getShippingTaxAmount')->willReturn($taxAmount);
+
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)->getMock();
+        $scopeConfigMock->expects($this->exactly(($shippingAmount ? 1 : 0)))
+            ->method('getValue')
+            ->with(Afterpay::TAX_CALCULATION_SHIPPING_INCLUDES_TAX)
+            ->willReturn($includesTax);
+
+        $instance = $this->getInstance(['scopeConfig' => $scopeConfigMock]);
+        $result = $this->invokeArgs('getShippingCostsLine', [$orderMock], $instance);
 
         $this->assertEquals($expected, $result);
     }
