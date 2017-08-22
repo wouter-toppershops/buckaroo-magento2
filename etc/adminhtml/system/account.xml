@@ -130,14 +130,21 @@
                 <config_path>tig_buckaroo/account/order_confirmation_email</config_path>
             </field>
 
-            <field id="auto_invoice" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="invoice_email" translate="label comment" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Send transactional invoice email</label>
+                <comment><![CDATA[Send a mail after successful payment.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>tig_buckaroo/account/invoice_email</config_path>
+            </field>
+
+            <field id="auto_invoice" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Create invoice after success</label>
                 <comment><![CDATA[If set to 'No' the order is not invoiced.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>tig_buckaroo/account/auto_invoice</config_path>
             </field>
 
-            <field id="auto_invoice_status" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="auto_invoice_status" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Payment success status without invoice</label>
                 <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
                 <config_path>tig_buckaroo/account/auto_invoice_status</config_path>
@@ -146,33 +153,33 @@
                 </depends>
             </field>
 
-            <field id="success_redirect" translate="label comment" type="text" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="success_redirect" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Redirect url after 'Success'</label>
                 <comment><![CDATA[Redirect after successful payments.]]></comment>
                 <config_path>tig_buckaroo/account/success_redirect</config_path>
             </field>
 
-            <field id="failure_redirect" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="failure_redirect" translate="label comment" type="text" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Redirect url after 'Failure'</label>
                 <comment><![CDATA[Redirect after failed payments.]]></comment>
                 <config_path>tig_buckaroo/account/failure_redirect</config_path>
             </field>
 
-            <field id="cancel_on_failed" translate="label comment" type="select" sortOrder="100" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="cancel_on_failed" translate="label comment" type="select" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>'Canceled' state on failed payment</label>
                 <comment><![CDATA[Orders will stay open after failed payments.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>tig_buckaroo/account/cancel_on_failed</config_path>
             </field>
 
-            <field id="debug_mode" translate="label comment" type="select" sortOrder="105" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="debug_mode" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Debug mode</label>
                 <comment><![CDATA[Decide whether to debug and where to send the log]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\DebugModes</source_model>
                 <config_path>tig_buckaroo/account/debug_mode</config_path>
             </field>
 
-            <field id="debug_email" translate="label comment" type="text" sortOrder="110" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="debug_email" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Debug email</label>
                 <comment><![CDATA[Debug information will be sent to these comma-separated email addresses]]></comment>
                 <config_path>tig_buckaroo/account/debug_email</config_path>
@@ -181,27 +188,27 @@
                 </depends>
             </field>
 
-            <field id="limit_by_ip" translate="label comment" type="select" sortOrder="120" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="limit_by_ip" translate="label comment" type="select" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Display only for selected IPs</label>
                 <comment><![CDATA[Show method only to Magento set IPs.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>tig_buckaroo/account/limit_by_ip</config_path>
             </field>
 
-            <field id="fee_percentage_mode" translate="label comment" type="select" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="fee_percentage_mode" translate="label comment" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Fee percentage mode</label>
                 <comment><![CDATA[This setting only applies to percentage-based Buckaroo fees.<br />Please choose over which amount the fee percentage is calculated.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\FeePercentageMode</source_model>
                 <config_path>tig_buckaroo/account/fee_percentage_mode</config_path>
             </field>
 
-            <field id="payment_fee_label" translate="label comment" type="text" sortOrder="140" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="payment_fee_label" translate="label comment" type="text" sortOrder="160" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Payment fee frontend label</label>
                 <comment><![CDATA[This label will be displayed next to the fee on the checkout, order, invoice and creditmemo pages and pdfs.]]></comment>
                 <config_path>tig_buckaroo/account/payment_fee_label</config_path>
             </field>
 
-            <field id="create_order_before_transaction" translate="label comment" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="create_order_before_transaction" translate="label comment" type="select" sortOrder="170" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Create order before transaction</label>
                 <comment><![CDATA[This will create an order before setting up the transaction with Buckaroo.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
