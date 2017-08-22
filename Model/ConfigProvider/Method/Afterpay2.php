@@ -47,6 +47,9 @@ class Afterpay2 extends AbstractConfigProvider
 {
     const XPATH_ALLOWED_CURRENCIES               = 'buckaroo/tig_buckaroo_afterpay2/allowed_currencies';
 
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_afterpay/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_afterpay/specificcountry';
+
     const XPATH_AFTERPAY2_ACTIVE                 = 'payment/tig_buckaroo_afterpay2/active';
     const XPATH_AFTERPAY2_PAYMENT_FEE            = 'payment/tig_buckaroo_afterpay2/payment_fee';
     const XPATH_AFTERPAY2_PAYMENT_FEE_LABEL      = 'payment/tig_buckaroo_afterpay2/payment_fee_label';

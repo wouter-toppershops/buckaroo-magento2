@@ -438,15 +438,16 @@ class Push implements PushInterface
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
 
-            //Do not cancel order on a failed authorize, because it will send a cancel authorize message to
-            //Buckaroo, this is not needed/correct.
-            if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE) {
-                $payment = $this->order->getPayment();
+            // BUCKM2-78: Never automatically cancelauthorize via push for afterpay
+            // setting parameter which will cause to stop the cancel process on
+            // Buckaroo/Model/Method/AbstractMethod.php:880
+            $payment = $this->order->getPayment();
+            if ($payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay') {
                 $payment->setAdditionalInformation('buckaroo_failed_authorize', 1);
                 $payment->save();
             }
-                $this->order->cancel()->save();
 
+            $this->order->cancel()->save();
         }
 
         $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $description);
