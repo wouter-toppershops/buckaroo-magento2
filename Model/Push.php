@@ -414,7 +414,6 @@ class Push implements PushInterface
             && $cancelledStateAndStatus != $currentStateAndStatus
             && $holdedStateAndStatus    != $currentStateAndStatus
             && $closedStateAndStatus    != $currentStateAndStatus
-            && $this->order->canInvoice()
         ) {
             return true;
         }
