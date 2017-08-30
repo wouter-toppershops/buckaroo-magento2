@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Model;
 
 use Magento\Checkout\Model\PaymentInformationManagement as MagentoPaymentInformationManagement;
 use TIG\Buckaroo\Api\PaymentInformationManagementInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 
 // @codingStandardsIgnoreStart
 class PaymentInformationManagement extends MagentoPaymentInformationManagement implements PaymentInformationManagementInterface
@@ -51,6 +52,11 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
     protected $logger = null;
 
     /**
+     * @var Factory
+     */
+    public $configProviderMethodFactory;
+
+    /**
      * @param \Magento\Quote\Api\BillingAddressManagementInterface $billingAddressManagement
      * @param \Magento\Quote\Api\PaymentMethodManagementInterface  $paymentMethodManagement
      * @param \Magento\Quote\Api\CartManagementInterface           $cartManagement
@@ -58,6 +64,7 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
      * @param \Magento\Quote\Api\CartTotalRepositoryInterface      $cartTotalsRepository
      * @param \Magento\Framework\Registry                          $registry
      * @param \Psr\Log\LoggerInterface                             $logger
+     * @param Factory                                              $configProviderMethodFactory
      *
      * @codeCoverageIgnore
      */
@@ -68,7 +75,8 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
         \Magento\Checkout\Model\PaymentDetailsFactory $paymentDetailsFactory,
         \Magento\Quote\Api\CartTotalRepositoryInterface $cartTotalsRepository,
         \Magento\Framework\Registry $registry,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        Factory $configProviderMethodFactory
     ) {
         parent::__construct(
             $billingAddressManagement,
@@ -79,6 +87,7 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
         );
         $this->registry = $registry;
         $this->logger = $logger;
+        $this->configProviderMethodFactory  = $configProviderMethodFactory;
     }
 
     /**
@@ -119,7 +128,6 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
     public function checkSpecificCountry($paymentMethod, $billingAddress)
     {
         $paymentMethodCode = $this->normalizePaymentMethodCode($paymentMethod->getMethod());
-        xdebug_break();
 
         $configAllowSpecific = $this->configProviderMethodFactory->get($paymentMethodCode)->getAllowSpecific();
 

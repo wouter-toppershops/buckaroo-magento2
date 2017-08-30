@@ -133,7 +133,6 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
     public function checkSpecificCountry($paymentMethod, $billingAddress)
     {
         $paymentMethodCode = $this->normalizePaymentMethodCode($paymentMethod->getMethod());
-        xdebug_break();
 
         $configAllowSpecific = $this->configProviderMethodFactory->get($paymentMethodCode)->getAllowSpecific();
 

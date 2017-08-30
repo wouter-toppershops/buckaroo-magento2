@@ -52,8 +52,8 @@ class Giftcards extends AbstractConfigProvider
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_giftcards/allowed_currencies';
 
-    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_afterpay/allowspecific';
-    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_afterpay/specificcountry';
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_giftcards/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_giftcards/specificcountry';
 
     /**
      * @var array

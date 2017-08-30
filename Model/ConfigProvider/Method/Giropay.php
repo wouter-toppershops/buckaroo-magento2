@@ -51,8 +51,8 @@ class Giropay extends AbstractConfigProvider
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_giropay/allowed_currencies';
 
-    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_afterpay/allowspecific';
-    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_afterpay/specificcountry';
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_giropay/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_giropay/specificcountry';
 
     /**
      * @return array|void
