@@ -54,7 +54,7 @@
             <config_path>payment/tig_buckaroo_paymentguarantee/sort_order</config_path>
         </field>
 
-        <field id="payment_method" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="payment_method" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Payment Guarantee payment method</label>
             <comment><![CDATA[Select which paymethod must be used at Payment Guarantee]]></comment>
             <source_model>TIG\Buckaroo\Model\Config\Source\PaymentGuaranteePaymentMethods</source_model>

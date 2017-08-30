@@ -35,6 +35,9 @@ class PaymentGuarantee extends AbstractConfigProvider
 {
     const XPATH_ALLOWED_CURRENCIES                    = 'buckaroo/tig_buckaroo_paymentguarantee/allowed_currencies';
 
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_afterpay/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_afterpay/specificcountry';
+
     const XPATH_PAYMENTGUARANTEE_PAYMENT_FEE          = 'payment/tig_buckaroo_paymentguarantee/payment_fee';
     const XPATH_PAYMENTGUARANTEE_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_paymentguarantee/payment_fee_label';
     const XPATH_PAYMENTGUARANTEE_ACTIVE               = 'payment/tig_buckaroo_paymentguarantee/active';
@@ -81,23 +84,36 @@ class PaymentGuarantee extends AbstractConfigProvider
         ];
     }
 
+    /**
+     * @return string
+     */
     public function getPaymentMethodToUse()
     {
-        $code = $this->getPaymentMethod();
-        return $this->paymentNames[$code];
+        $paymentMethodConfiguredKeys =  array_combine($this->getPaymentMethod(), $this->getPaymentMethod()); //set value as key
+        $paymentMethodConfigured = array_intersect_key($this->paymentNames, $paymentMethodConfiguredKeys);
+
+        $paymentMethodString = implode(',', $paymentMethodConfigured);
+
+        return $paymentMethodString;
     }
 
     /**
-     * @return bool|int
+     * @return array
      */
     public function getPaymentMethod()
     {
-        $paymentMethod = (int) $this->scopeConfig->getValue(
+        $paymentMethod = $this->scopeConfig->getValue(
             self::XPATH_PAYMENTGUARANTEE_PAYMENT_METHOD,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+        if (empty($paymentMethod)) {
+            return array_keys($this->paymentNames);  // Default use both
+        }
 
-        return $paymentMethod ? $paymentMethod : '2'; // Default use ideal
+        $paymentMethodConfigured = explode(',', $paymentMethod);
+
+
+        return $paymentMethodConfigured;
     }
 
     /**

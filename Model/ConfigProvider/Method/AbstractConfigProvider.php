@@ -61,6 +61,12 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
     const XPATH_ALLOWED_CURRENCIES = '';
 
     /**
+     * This xpath should be overridden in child classes.
+     */
+    const XPATH_ALLOW_SPECIFIC    = '';
+    const XPATH_SPECIFIC_COUNTRY    = '';
+
+    /**
      * The asset repository to generate the correct url to our assets.
      *
      * @var Repository
@@ -177,12 +183,36 @@ abstract class AbstractConfigProvider extends BaseAbstractConfigProvider impleme
         return $configuredAllowedCurrencies;
     }
 
+
     /**
      * @return array
      */
     public function getBaseAllowedCurrencies()
     {
         return $this->allowedCurrencies;
+    }
+
+    /**
+     * @param null|int|\Magento\Store\Model\Store $store
+     *
+     * @return array
+     */
+    public function getSpecificCountry($store = null)
+    {
+        $configuredSpecificCountry = trim($this->getConfigFromXpath(static::XPATH_SPECIFIC_COUNTRY, $store));
+        $configuredSpecificCountry = explode(',', $configuredSpecificCountry);
+
+        return $configuredSpecificCountry;
+    }
+
+    /**
+     * @param null|int|\Magento\Store\Model\Store $store
+     *
+     * @return mixed
+     */
+    public function getAllowSpecific($store = null)
+    {
+        return $this->getConfigFromXpath(static::XPATH_ALLOW_SPECIFIC, $store);
     }
 
     /**

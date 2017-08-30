@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Model;
 
 use Magento\Checkout\Model\GuestPaymentInformationManagement as MagentoGuestPaymentInformationManagement;
 use TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 
 // @codingStandardsIgnoreStart
 class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationManagement implements GuestPaymentInformationManagementInterface
@@ -51,6 +52,11 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
     protected $logger = null;
 
     /**
+     * @var Factory
+     */
+    public $configProviderMethodFactory;
+
+    /**
      * @param \Magento\Quote\Api\GuestBillingAddressManagementInterface   $billingAddressManagement
      * @param \Magento\Quote\Api\GuestPaymentMethodManagementInterface    $paymentMethodManagement
      * @param \Magento\Quote\Api\GuestCartManagementInterface             $cartManagement
@@ -59,6 +65,7 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
      * @param \Magento\Quote\Api\CartRepositoryInterface                  $cartRepository
      * @param \Magento\Framework\Registry                                 $registry
      * @param \Psr\Log\LoggerInterface                                    $logger
+     * @param Factory                                                     $configProviderMethodFactory
      *
      * @codeCoverageIgnore
      */
@@ -70,7 +77,8 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
         \Magento\Quote\Model\QuoteIdMaskFactory $quoteIdMaskFactory,
         \Magento\Quote\Api\CartRepositoryInterface $cartRepository,
         \Magento\Framework\Registry $registry,
-        \Psr\Log\LoggerInterface $logger
+        \Psr\Log\LoggerInterface $logger,
+        Factory $configProviderMethodFactory
     ) {
         parent::__construct(
             $billingAddressManagement,
@@ -82,6 +90,7 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
         );
         $this->registry = $registry;
         $this->logger = $logger;
+        $this->configProviderMethodFactory  = $configProviderMethodFactory;
     }
 
     /**
@@ -100,6 +109,9 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
         \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
     ) {
+
+        $this->checkSpecificCountry($paymentMethod, $billingAddress);
+
         $this->savePaymentInformationAndPlaceOrder($cartId, $email, $paymentMethod, $billingAddress);
 
         $this->logger->debug('-[RESULT]----------------------------------------');
@@ -111,5 +123,39 @@ class GuestPaymentInformationManagement extends MagentoGuestPaymentInformationMa
             $response = $this->registry->registry('buckaroo_response')[0];
         }
         return json_encode($response);
+    }
+
+    /**
+     * @param $paymentMethod
+     * @param $billingAddress
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function checkSpecificCountry($paymentMethod, $billingAddress)
+    {
+        $paymentMethodCode = $this->normalizePaymentMethodCode($paymentMethod->getMethod());
+        xdebug_break();
+
+        $configAllowSpecific = $this->configProviderMethodFactory->get($paymentMethodCode)->getAllowSpecific();
+
+        if ($configAllowSpecific == 1) {
+            $countryId = $billingAddress->getCountryId();
+            $configSpecificCountry = $this->configProviderMethodFactory->get($paymentMethodCode)->getSpecificCountry();
+
+            if (!in_array($countryId, $configSpecificCountry))
+            {
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __('The requested Payment Method is not available for the given billing country.')
+                );
+            }
+        }
+    }
+
+    /**
+     * @param string $methodCode
+     * @return string
+     */
+    public function normalizePaymentMethodCode($methodCode = '')
+    {
+        return strtolower(str_replace('tig_buckaroo_','', $methodCode));
     }
 }

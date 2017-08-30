@@ -95,6 +95,9 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
         \Magento\Quote\Api\Data\PaymentInterface $paymentMethod,
         \Magento\Quote\Api\Data\AddressInterface $billingAddress = null
     ) {
+
+        $this->checkSpecificCountry($paymentMethod, $billingAddress);
+
         $this->savePaymentInformationAndPlaceOrder($cartId, $paymentMethod, $billingAddress);
 
         $this->logger->debug('-[RESULT]----------------------------------------');
@@ -106,5 +109,39 @@ class PaymentInformationManagement extends MagentoPaymentInformationManagement i
             $response = $this->registry->registry('buckaroo_response')[0];
         }
         return json_encode($response);
+    }
+
+    /**
+     * @param $paymentMethod
+     * @param $billingAddress
+     * @throws \Magento\Framework\Exception\LocalizedException
+     */
+    public function checkSpecificCountry($paymentMethod, $billingAddress)
+    {
+        $paymentMethodCode = $this->normalizePaymentMethodCode($paymentMethod->getMethod());
+        xdebug_break();
+
+        $configAllowSpecific = $this->configProviderMethodFactory->get($paymentMethodCode)->getAllowSpecific();
+
+        if ($configAllowSpecific == 1) {
+            $countryId = $billingAddress->getCountryId();
+            $configSpecificCountry = $this->configProviderMethodFactory->get($paymentMethodCode)->getSpecificCountry();
+
+            if (!in_array($countryId, $configSpecificCountry))
+            {
+                throw new \Magento\Framework\Exception\LocalizedException(
+                    __('The requested Payment Method is not available for the given billing country.')
+                );
+            }
+        }
+    }
+
+    /**
+     * @param string $methodCode
+     * @return string
+     */
+    public function normalizePaymentMethodCode($methodCode = '')
+    {
+        return strtolower(str_replace('tig_buckaroo_','', $methodCode));
     }
 }
