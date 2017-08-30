@@ -283,6 +283,14 @@
     content: ' ';
 }
 
+.tig_buckaroo_afterpay .payment-method-second-col input:disabled,
+.tig_buckaroo_afterpay2 .payment-method-second-col input:disabled {
+    color: #999;
+    background: #f2f2f2;
+    border: 1px solid #b6b6b6;
+    opacity: 1;
+}
+
 #Saluation {
     /*float:left; */
     /*width: 100%; */
@@ -317,6 +325,13 @@
     height            : 26px;
     background-size   : auto 23px;
     content           : ' ';
+}
+
+.tig_buckaroo_paymentguarantee .payment-method-second-col input:disabled {
+    color: #999;
+    background: #f2f2f2;
+    border: 1px solid #b6b6b6;
+    opacity: 1;
 }
 
 /* ======================= EPS ======================== */
