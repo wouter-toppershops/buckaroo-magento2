@@ -280,6 +280,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $this->configAccount->shouldReceive('getOrderConfirmationEmail')
             ->andReturn($sendOrderConfirmationEmail);
         $this->configAccount->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
+        $this->configAccount->shouldReceive('getInvoiceEmail');
 
         /**
          * Build an order mock and set several non mandatory method calls
@@ -309,6 +310,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
         $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
+        $paymentMock->shouldReceive('getConfigData');
         $paymentMock->shouldReceive('getMethod');
 
         /**
@@ -399,6 +401,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 $objectMock->postData = $postData;
 
                 $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
+                $invoiceMock->shouldReceive('getEmailSent')->andReturn(false);
 
                 /**
                  * Invoice collection should be array iterable so a simple array is used for a mock collection
