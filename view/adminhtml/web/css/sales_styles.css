@@ -152,15 +152,15 @@
     content: ' ';
 }
 
-/* Sofort Banking */
+/* Sofort */
 .tig_buckaroo_payment_sofortbanking:before {
     background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
-    margin-top: 1px;
+    margin-top: -7px;
     float: left;
     margin-right: 10px;
-    background-size: auto 17px;
+    background-size: auto 37px;
     width: 55px;
-    height: 30px;
+    height: 37px;
     content: ' ';
 }
 

@@ -169,7 +169,7 @@
                 <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Sofortbanking</model>
                 <order_status>pending</order_status>
-                <title>TIG Buckaroo Sofortbanking</title>
+                <title>TIG Buckaroo Sofort</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>150</sort_order>
                 <payment_fee_label>Fee</payment_fee_label>
