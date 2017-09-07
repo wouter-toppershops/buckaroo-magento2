@@ -176,6 +176,28 @@
                 <config_path>payment/tig_buckaroo_afterpay/active_status</config_path>
             </field>
 
+            <field id="order_status_success" translate="label comment tooltip" type="select" sortOrder="75" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Method specific success status</label>
+                <comment><![CDATA[Leave empty to use default 'success' status.]]></comment>
+                <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
+                <config_path>payment/tig_buckaroo_ideal/order_status_success</config_path>
+                <depends>
+                    <field id="active_status">1</field>
+                </depends>
+            </field>
+
+            <field id="order_status_failed" translate="label comment tooltip" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Method specific failed status</label>
+                <comment><![CDATA[Leave empty to use default 'failed' status.]]></comment>
+                <tooltip>To make a new status available it needs to be assigned to the correct state. See Magento documentation about state and status.</tooltip>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesFailed</source_model>
+                <config_path>payment/tig_buckaroo_ideal/order_status_failed</config_path>
+                <depends>
+                    <field id="active_status">1</field>
+                </depends>
+            </field>
+
             <field id="allowed_currencies" translate="label comment tooltip" type="multiselect" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Allowed currencies</label>
                 <comment><![CDATA[Select payment method specific currencies.]]></comment>
