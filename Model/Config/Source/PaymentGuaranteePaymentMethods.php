@@ -36,7 +36,7 @@ class PaymentGuaranteePaymentMethods implements \Magento\Framework\Option\ArrayI
     public function toOptionArray()
     {
         return [
-            ['value' => '1', 'label' => __('Acceptgiro')],
+            ['value' => '1', 'label' => __('Transfer')],
             ['value' => '2', 'label' => __('Ideal')]
         ];
     }
