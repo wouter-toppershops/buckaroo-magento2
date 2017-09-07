@@ -234,15 +234,15 @@
     content: ' ';
 }
 
-/* ===================== Sofort Banking ======================= */
+/* ===================== Sofort ======================= */
 .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:after {
     background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
-    margin-top: 5px;
+    margin-top: -7px;
     float: right;
     margin-right: 10px;
-    background-size: auto 16px;
+    background-size: auto 37px;
     width: 55px;
-    height: 20px;
+    height: 37px;
     content: ' ';
 }
 
@@ -427,7 +427,7 @@
         content: ' ';
     }
 
-    /* Sofort Banking */
+    /* Sofort */
     .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:before {
         background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
         margin-top: 5px;
