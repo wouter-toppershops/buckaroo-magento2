@@ -72,8 +72,9 @@ class Afterpay2
         \Magento\Sales\Model\Order $subject
     ) {
         $payment = $subject->getPayment();
+        $orderIsCanceled = $payment->getOrder()->isCanceled();
 
-        if ($payment->getMethod() !== self::AFTERPAY_METHOD_NAME) {
+        if ($payment->getMethod() !== self::AFTERPAY_METHOD_NAME || $orderIsCanceled) {
             return $subject;
         }
 

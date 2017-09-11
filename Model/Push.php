@@ -451,7 +451,9 @@ class Push implements PushInterface
             // setting parameter which will cause to stop the cancel process on
             // Buckaroo/Model/Method/AbstractMethod.php:880
             $payment = $this->order->getPayment();
-            if ($payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay') {
+            if ($payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay'
+                || $payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay2'
+            ) {
                 $payment->setAdditionalInformation('buckaroo_failed_authorize', 1);
                 $payment->save();
             }
