@@ -88,6 +88,10 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
         $methodInstance = $payment->getMethodInstance();
         $sendOrderConfirmationEmail = $this->accountConfig->getOrderConfirmationEmail($order->getStore())
             || $methodInstance->getConfigData('order_email', $order->getStoreId());
+
+
+        $createOrderBeforeTransaction = $this->accountConfig->getCreateOrderBeforeTransaction($order->getStore());
+
         /**
          * @noinspection PhpUndefinedFieldInspection
          */
@@ -95,6 +99,7 @@ class SendOrderConfirmation implements \Magento\Framework\Event\ObserverInterfac
             && !$order->getEmailSent()
             && $sendOrderConfirmationEmail
             && $order->getIncrementId()
+            && !$createOrderBeforeTransaction
         ) {
             $this->orderSender->send($order, true);
         }
