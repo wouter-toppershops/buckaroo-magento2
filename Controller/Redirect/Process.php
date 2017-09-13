@@ -177,11 +177,19 @@ class Process extends \Magento\Framework\App\Action\Action
                     }
                 }
 
+                /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
+                $paymentMethod = $this->order->getPayment()->getMethodInstance();
+                $store = $this->order->getStore();
+
                 // Send order confirmation mail if we're supposed to
                 /**
                  * @noinspection PhpUndefinedMethodInspection
                  */
-                if (!$this->order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail() === "1") {
+                if (!$this->order->getEmailSent()
+                    && ($this->accountConfig->getOrderConfirmationEmail($store) === "1"
+                        || $paymentMethod->getConfigData('order_email', $store) === "1"
+                    )
+                ) {
                     $this->orderSender->send($this->order, true);
                 }
 
@@ -278,10 +286,12 @@ class Process extends \Magento\Framework\App\Action\Action
             return true;
         }
 
+        $store = $this->order->getStore();
+
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        if (!$this->accountConfig->getCancelOnFailed()) {
+        if (!$this->accountConfig->getCancelOnFailed($store)) {
             return true;
         }
 
@@ -310,10 +320,12 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectSuccess()
     {
+        $store = $this->order->getStore();
+
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $url = $this->accountConfig->getSuccessRedirect();
+        $url = $this->accountConfig->getSuccessRedirect($store);
 
         return $this->_redirect($url);
     }
@@ -325,10 +337,12 @@ class Process extends \Magento\Framework\App\Action\Action
      */
     protected function redirectFailure()
     {
+        $store = $this->order->getStore();
+
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $url = $this->accountConfig->getFailureRedirect();
+        $url = $this->accountConfig->getFailureRedirect($store);
 
         return $this->_redirect($url);
     }

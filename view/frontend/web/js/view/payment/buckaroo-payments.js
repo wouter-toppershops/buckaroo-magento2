@@ -107,6 +107,10 @@ define(
             {
                 type: 'tig_buckaroo_giftcards',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/giftcards'
+            },
+            {
+                type: 'tig_buckaroo_paymentguarantee',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/paymentguarantee'
             }
         );
         /**

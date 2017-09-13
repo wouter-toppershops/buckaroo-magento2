@@ -162,6 +162,18 @@ interface TransactionBuilderInterface
     public function getType();
 
     /**
+     * @param $url
+     *
+     * @return TransactionBuilderInterface
+     */
+    public function setReturnUrl($url);
+
+    /**
+     * @return string
+     */
+    public function getReturnUrl();
+
+    /**
      * @return \TIG\Buckaroo\Gateway\Http\Transaction
      */
     public function build();

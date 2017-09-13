@@ -41,7 +41,11 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
  * @method getPaymentFeeLabel()
+ * @method getSellersProtection()
+ * @method getSellersProtectionEligible()
  * @method getSellersProtectionIneligible()
+ * @method getSellersProtectionItemnotreceivedEligible()
+ * @method getSellersProtectionUnauthorizedpaymentEligible()
  */
 class Paypal extends AbstractConfigProvider
 {
@@ -53,9 +57,15 @@ class Paypal extends AbstractConfigProvider
     const XPATH_PAYPAL_ORDER_STATUS_FAILED              = 'payment/tig_buckaroo_paypal/order_status_failed';
     const XPATH_PAYPAL_AVAILABLE_IN_BACKEND             = 'payment/tig_buckaroo_paypal/available_in_backend';
     const XPATH_PAYPAL_SELLERS_PROTECTION               = 'payment/tig_buckaroo_paypal/sellers_protection';
+    const XPATH_PAYPAL_SELLERS_PROTECTION_ELIGIBLE      = 'payment/tig_buckaroo_paypal/sellers_protection_eligible';
     const XPATH_PAYPAL_SELLERS_PROTECTION_INELIGIBLE    = 'payment/tig_buckaroo_paypal/sellers_protection_ineligible';
+    const XPATH_PAYPAL_SELLERS_PROTECTION_ITEMNOTRECEIVED_ELIGIBLE = 'payment/tig_buckaroo_paypal/sellers_protection_itemnotreceived_eligible';
+    const XPATH_PAYPAL_SELLERS_PROTECTION_UNAUTHORIZEDPAYMENT_ELIGIBLE = 'payment/tig_buckaroo_paypal/sellers_protection_unauthorizedpayment_eligible';
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_paypal/allowed_currencies';
+
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_paypal/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_paypal/specificcountry';
 
     /**
      * @return array|void

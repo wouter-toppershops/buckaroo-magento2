@@ -76,19 +76,22 @@ class Creditcard extends AbstractConfigProvider
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_creditcard/allowed_currencies';
 
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_creditcard/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_creditcard/specificcountry';
+
     protected $issuers = [
         [
             'name' => 'American Express',
             'code' => self::CREDITCARD_SERVICE_CODE_AMEX,
         ],
-//        [
-//            'name' => 'Carte Bancaire',
-//            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
-//        ],
-//        [
-//            'name' => 'Carte Bleue',
-//            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
-//        ],
+        [
+            'name' => 'Carte Bancaire',
+            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBANCAIRE,
+        ],
+        [
+            'name' => 'Carte Bleue',
+            'code' => self::CREDITCARD_SERVICE_CODE_CARTEBLEUE,
+        ],
         [
             'name' => 'Maestro',
             'code' => self::CREDITCARD_SERVICE_CODE_MAESTRO,

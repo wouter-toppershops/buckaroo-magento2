@@ -38,50 +38,66 @@
  */
 namespace TIG\Buckaroo\Model\Config\Backend;
 
+use Magento\Framework\App\Cache\TypeListInterface;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\Data\Collection\AbstractDb;
+use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Filesystem\File\ReadFactory;
+use Magento\Framework\Model\Context;
+use Magento\Framework\Model\ResourceModel\AbstractResource;
+use Magento\Framework\Registry;
+use TIG\Buckaroo\Api\CertificateRepositoryInterface;
+use TIG\Buckaroo\Model\CertificateFactory;
+
 class Certificate extends \Magento\Framework\App\Config\Value
 {
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
-     * @var \Magento\Framework\Filesystem\File\ReadFactory
+     * @var ReadFactory
      */
     protected $readFactory;
 
-    /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
-     */
-    protected $scopeConfig;
+    /** @var WriterInterface */
+    protected $writer;
+
+    /** @var CertificateFactory */
+    protected $certificateFactory;
+
+    /** @var CertificateRepositoryInterface */
+    protected $certificateRepository;
 
     /**
-     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
-     * @param \Magento\Framework\Model\Context                        $context
-     * @param \Magento\Framework\Registry                             $registry
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $config
-     * @param \Magento\Framework\App\Cache\TypeListInterface          $cacheTypeList
-     * @param \Magento\Framework\Filesystem\File\ReadFactory          $readFactory
-     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
-     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
-     * @param array                                                   $data
+     * @param Context                                   $context
+     * @param Registry                                  $registry
+     * @param ScopeConfigInterface                      $config
+     * @param TypeListInterface                         $cacheTypeList
+     * @param ReadFactory                               $readFactory
+     * @param WriterInterface                           $writer
+     * @param CertificateFactory                        $certificateFactory
+     * @param CertificateRepositoryInterface            $certificateRepository
+     * @param AbstractResource                          $resource
+     * @param AbstractDb                                $resourceCollection
+     * @param array                                     $data
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\Model\Context $context,
-        \Magento\Framework\Registry $registry,
-        \Magento\Framework\App\Config\ScopeConfigInterface $config,
-        \Magento\Framework\App\Cache\TypeListInterface $cacheTypeList,
-        \Magento\Framework\Filesystem\File\ReadFactory $readFactory,
-        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
-        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        Context $context,
+        Registry $registry,
+        ScopeConfigInterface $config,
+        TypeListInterface $cacheTypeList,
+        ReadFactory $readFactory,
+        WriterInterface $writer,
+        CertificateFactory $certificateFactory,
+        CertificateRepositoryInterface $certificateRepository,
+        AbstractResource $resource = null,
+        AbstractDb $resourceCollection = null,
         array $data = []
     ) {
         parent::__construct($context, $registry, $config, $cacheTypeList, $resource, $resourceCollection, $data);
 
         $this->readFactory = $readFactory;
-        $this->objectManager = $objectManager;
-        $this->scopeConfig = $config;
+        $this->writer = $writer;
+        $this->certificateFactory = $certificateFactory;
+        $this->certificateRepository = $certificateRepository;
     }
 
     /**
@@ -98,11 +114,11 @@ class Certificate extends \Magento\Framework\App\Config\Value
             $certLabel = $this->getFieldsetDataValue('certificate_label');
 
             if (!$this->validExtension($certFile['name'])) {
-                throw new \Magento\Framework\Exception\LocalizedException(__('Disallowed file type.'));
+                throw new LocalizedException(__('Disallowed file type.'));
             }
 
             if (strlen(trim($certLabel)) <= 0) {
-                throw new \Magento\Framework\Exception\LocalizedException(__('Enter a name for the certificate.'));
+                throw new LocalizedException(__('Enter a name for the certificate.'));
             }
 
             /**
@@ -113,19 +129,16 @@ class Certificate extends \Magento\Framework\App\Config\Value
              */
             $read = $this->readFactory->create($certFile['tmp_name'], \Magento\Framework\Filesystem\DriverPool::FILE);
 
-            /**
-             * @var \TIG\Buckaroo\Model\Certificate $certDB
-             */
-            $certDB = $this->objectManager->create('TIG\Buckaroo\Model\Certificate');
-            $certDB->setCertificate($read->readAll());
-            $certDB->setName($certLabel);
-            $certDB->save();
+            $certificate = $this->certificateFactory->create();
+            $certificate->setCertificate($read->readAll());
+            $certificate->setName($certLabel);
+            $this->certificateRepository->save($certificate);
 
             /**
              * Only update the selected certificate when there is a new certificate uploaded, and the user did not
              * change the selected value.
              */
-            $oldValue = $this->scopeConfig->getValue(
+            $oldValue = $this->_config->getValue(
                 'tig_buckaroo/account/certificate_file',
                 $this->getScope(),
                 $this->getScopeId()
@@ -136,14 +149,12 @@ class Certificate extends \Magento\Framework\App\Config\Value
                 /**
                  * Set the current configuration value to this new uploaded certificate.
                  */
-                $this->objectManager
-                    ->get('\Magento\Framework\App\Config\Storage\WriterInterface')
-                    ->save(
-                        'tig_buckaroo/account/certificate_file',
-                        $certDB->getId(),
-                        $this->getScope() ? $this->getScope() : 'default',
-                        $this->getScopeId()
-                    );
+                $this->writer->save(
+                    'tig_buckaroo/account/certificate_file',
+                    $certificate->getId(),
+                    $this->getScope() ? $this->getScope() : 'default',
+                    $this->getScopeId()
+                );
             }
         }
 

@@ -186,6 +186,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('canCancel')->once()->andReturn(true);
         $this->order->shouldReceive('cancel')->once()->andReturnSelf();
         $this->order->shouldReceive('setStatus')->once()->with($failureStatus)->andReturnSelf();
+        $this->order->shouldReceive('getStore')->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
 
         $this->orderStatusFactory
@@ -222,6 +223,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(false);
+        $this->order->shouldReceive('getStore')->andReturnSelf();
 
         $this->messageManager->shouldReceive('addErrorMessage');
 
@@ -263,6 +265,9 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('setStatus')->once()->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
         $this->order->shouldReceive('getEmailSent')->once()->andReturn(1);
+        $this->order->shouldReceive('getStore')->andReturnSelf();
+        $this->order->shouldReceive('getPayment')->once()->andReturnSelf();
+        $this->order->shouldReceive('getMethodInstance')->once()->andReturnSelf();
 
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 

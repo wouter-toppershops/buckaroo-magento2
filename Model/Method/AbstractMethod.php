@@ -69,11 +69,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $validatorFactory;
 
     /**
-     * @var \Magento\Framework\Message\ManagerInterface
-     */
-    public $messageManager;
-
-    /**
      * @var \TIG\Buckaroo\Helper\Data
      */
     public $helper;
@@ -161,6 +156,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     protected $developmentHelper;
 
     /**
+     * @var null
+     */
+    public $remoteAddress = null;
+
+    /**
      * @param \Magento\Framework\ObjectManagerInterface               $objectManager
      * @param \Magento\Framework\Model\Context                        $context
      * @param \Magento\Framework\Registry                             $registry
@@ -169,12 +169,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
      * @param \Magento\Payment\Helper\Data                            $paymentData
      * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
      * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
      * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
      * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
      * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
      * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory    $transactionBuilderFactory
      * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
-     * @param \Magento\Framework\Message\ManagerInterface             $messageManager
      * @param \TIG\Buckaroo\Helper\Data                               $helper
      * @param \Magento\Framework\App\RequestInterface                 $request
      * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
@@ -193,19 +193,18 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         \Magento\Payment\Helper\Data $paymentData,
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Developer\Helper\Data $developmentHelper,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
         \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
-        \Magento\Framework\Message\ManagerInterface $messageManager = null,
         \TIG\Buckaroo\Helper\Data $helper = null,
         \Magento\Framework\App\RequestInterface $request = null,
         \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
-        \Magento\Developer\Helper\Data $developmentHelper = null,
         array $data = []
     ) {
         parent::__construct(
@@ -226,13 +225,12 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->objectManager                = $objectManager;
         $this->gateway                      = $gateway;
         $this->transactionBuilderFactory    = $transactionBuilderFactory;
-        $this->validatorFactory             = $validatorFactory;
-        $this->messageManager               = $messageManager;
+        $this->validatorFactory             = $validatorFactory; //Move to gateway?
         $this->helper                       = $helper;
         $this->request                      = $request;
         $this->refundFieldsFactory          = $refundFieldsFactory;
-        $this->configProviderFactory        = $configProviderFactory;
-        $this->configProviderMethodFactory  = $configProviderMethodFactory;
+        $this->configProviderFactory        = $configProviderFactory; //Account and Refund used
+        $this->configProviderMethodFactory  = $configProviderMethodFactory; //Load interface, inject childs via di?
         $this->priceHelper                  = $priceHelper;
         $this->developmentHelper            = $developmentHelper;
 
@@ -283,38 +281,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * Older version expect different formatted $data
-     *
      * @param  \Magento\Framework\DataObject $data
-     * @todo   Think of a nicer way to implement the version differences in one codebase
+     *
      * @return array
      */
-    public function assignDataConvertAllVersionsArray(\Magento\Framework\DataObject $data)
+    public function assignDataConvertToArray(\Magento\Framework\DataObject $data)
     {
         if (!is_array($data)) {
-            $data->convertToArray();
-        }
-
-        $magentoVersion = str_replace('.', '', $this->getMagentoVersion());
-
-        // Below 2.0.5 versions do not consists the key additional_data.
-        if ($magentoVersion < '205') {
-            $data['additional_data'] = $data;
+            $data = $data->convertToArray();
         }
 
         return $data;
-    }
-
-    /**
-     * Determine Magento 2 Version used for changing assignData output data on differences
-     * between 2.0.4 and 2.0.7+
-     *
-     * @return string
-     */
-    public function getMagentoVersion()
-    {
-        $productMetadata = $this->objectManager->get('Magento\Framework\App\ProductMetadataInterface');
-        return $productMetadata->getVersion();
     }
 
     /**
@@ -336,7 +313,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return false;
         }
 
-        $areaCode = $this->objectManager->get('Magento\Framework\App\State')->getAreaCode();
+        $areaCode = $this->_appState->getAreaCode();
         if ('adminhtml' === $areaCode
             && $this->getConfigData('available_in_backend') !== null
             && $this->getConfigData('available_in_backend') == 0
@@ -442,6 +419,34 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             return $this->getOrderPlaceRedirectUrl();
         }
         return parent::getConfigData($field, $storeId);
+    }
+
+    /**
+     * @param bool  $ipToLong
+     * @param array $alternativeHeaders
+     *
+     * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface
+     */
+    public function getRemoteAddress($ipToLong = false, $alternativeHeaders = [])
+    {
+        if ($this->remoteAddress === null) {
+            foreach ($alternativeHeaders as $var) {
+                if ($this->request->getServer($var, false)) {
+                    $this->remoteAddress = $this->request->getServer($var);
+                    break;
+                }
+            }
+
+            if (!$this->remoteAddress) {
+                $this->remoteAddress = $this->request->getServer('REMOTE_ADDR');
+            }
+        }
+
+        if (!$this->remoteAddress) {
+            return false;
+        }
+
+        return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
 
     /**
@@ -875,7 +880,6 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         if ($this->payment->getAdditionalInformation('buckaroo_failed_authorize') == 1) {
             return $this;
         }
-        
 
         $transactionBuilder = $this->getVoidTransactionBuilder($payment);
 

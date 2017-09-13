@@ -61,6 +61,7 @@ class Afterpay extends AbstractMethod
      * Check if the tax calculation includes tax.
      */
     const TAX_CALCULATION_INCLUDES_TAX = 'tax/calculation/price_includes_tax';
+    const TAX_CALCULATION_SHIPPING_INCLUDES_TAX = 'tax/calculation/shipping_includes_tax';
 
     /**
      * @var string
@@ -141,13 +142,91 @@ class Afterpay extends AbstractMethod
      */
     public $closeAuthorizeTransaction   = false;
 
+    /** @var \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee */
+    protected $configProviderBuckarooFee;
+
+    /**
+     * @param \Magento\Framework\ObjectManagerInterface               $objectManager
+     * @param \Magento\Framework\Model\Context                        $context
+     * @param \Magento\Framework\Registry                             $registry
+     * @param \Magento\Framework\Api\ExtensionAttributesFactory       $extensionFactory
+     * @param \Magento\Framework\Api\AttributeValueFactory            $customAttributeFactory
+     * @param \Magento\Payment\Helper\Data                            $paymentData
+     * @param \Magento\Framework\App\Config\ScopeConfigInterface      $scopeConfig
+     * @param \Magento\Payment\Model\Method\Logger                    $logger
+     * @param \Magento\Developer\Helper\Data                          $developmentHelper
+     * @param \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee          $configProviderBuckarooFee
+     * @param \Magento\Framework\Model\ResourceModel\AbstractResource $resource
+     * @param \Magento\Framework\Data\Collection\AbstractDb           $resourceCollection
+     * @param \TIG\Buckaroo\Gateway\GatewayInterface                  $gateway
+     * @param \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory    $transactionBuilderFactory
+     * @param \TIG\Buckaroo\Model\ValidatorFactory                    $validatorFactory
+     * @param \TIG\Buckaroo\Helper\Data                               $helper
+     * @param \Magento\Framework\App\RequestInterface                 $request
+     * @param \TIG\Buckaroo\Model\RefundFieldsFactory                 $refundFieldsFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Factory              $configProviderFactory
+     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
+     * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
+     * @param array                                                   $data
+     */
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Developer\Helper\Data $developmentHelper,
+        \TIG\Buckaroo\Model\ConfigProvider\BuckarooFee $configProviderBuckarooFee,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $objectManager,
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $developmentHelper,
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $helper,
+            $request,
+            $refundFieldsFactory,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
+            $data
+        );
+
+        $this->configProviderBuckarooFee = $configProviderBuckarooFee;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function assignData(\Magento\Framework\DataObject $data)
     {
         parent::assignData($data);
-        $data = $this->assignDataConvertAllVersionsArray($data);
+        $data = $this->assignDataConvertToArray($data);
 
         if (isset($data['additional_data']['termsCondition'])) {
             $additionalData = $data['additional_data'];
@@ -157,8 +236,12 @@ class Afterpay extends AbstractMethod
                 'customer_billingName',
                 $additionalData['customer_billingName']
             );
-            $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $additionalData['customer_DoB']);
             $this->getInfoInstance()->setAdditionalInformation('customer_iban', $additionalData['customer_iban']);
+
+            $dobDate = \DateTime::createFromFormat('d/m/Y', $additionalData['customer_DoB']);
+            $dobDate = (!$dobDate ? $additionalData['customer_DoB'] : $dobDate->format('Y-m-d'));
+            $this->getInfoInstance()->setAdditionalInformation('customer_DoB', $dobDate);
+
             if (isset($additionalData['selectedBusiness'])
                 && $additionalData['selectedBusiness'] == self::BUSINESS_METHOD_B2B
             ) {
@@ -578,9 +661,9 @@ class Afterpay extends AbstractMethod
             $count++;
         }
 
+        $taxLine = $this->getTaxLine($count, $payment);
 
-        if (!$includesTax) {
-            $taxLine = $this->getTaxLine($count, $payment);
+        if (!empty($taxLine)) {
             $requestData = array_merge($requestData, $taxLine);
             $count++;
         }
@@ -764,11 +847,6 @@ class Afterpay extends AbstractMethod
             $buckarooFeeLine = $order->getBaseBuckarooFee();
         }
 
-        /**
-         * @var \TIG\Buckaroo\Helper\PaymentFee $feeHelper
-         */
-        $feeHelper = $this->objectManager->create('\TIG\Buckaroo\Helper\PaymentFee');
-
         $article = [];
 
         if (false !== $buckarooFee && (double)$buckarooFee > 0) {
@@ -780,24 +858,44 @@ class Afterpay extends AbstractMethod
                 1,
                 1,
                 round($buckarooFeeLine, 2),
-                $this->getTaxCategory($feeHelper->getBuckarooFeeTaxClass($storeId))
+                $this->getTaxCategory($this->configProviderBuckarooFee->getTaxClass($storeId))
             );
         }
         // Add aditional shippin costs.
-        $shippingCost = [];
-
-        if ($order->getShippingAmount() > 0) {
-            $shippingCost = [
-                [
-                    '_'       => $order->getShippingAmount() + $order->getShippingTaxAmount(),
-                    'Name'    => 'ShippingCosts',
-                ]
-            ];
-        }
-
-        $article = array_merge($article, $shippingCost);
+        $shippingCosts = $this->getShippingCostsLine($order);
+        $article = array_merge($article, $shippingCosts);
 
         return $article;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return array
+     */
+    private function getShippingCostsLine($order)
+    {
+        $shippingCostsArticle = [];
+
+        if ($order->getShippingAmount() <= 0) {
+            return $shippingCostsArticle;
+        }
+
+        $shippingIncludesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_SHIPPING_INCLUDES_TAX);
+        $shippingAmount = $order->getShippingAmount();
+
+        if ($shippingIncludesTax) {
+            $shippingAmount += $order->getShippingTaxAmount();
+        }
+
+        $shippingCostsArticle = [
+            [
+                '_'       => $shippingAmount,
+                'Name'    => 'ShippingCosts',
+            ]
+        ];
+
+        return $shippingCostsArticle;
     }
 
     /**
@@ -841,21 +939,44 @@ class Afterpay extends AbstractMethod
      */
     public function getTaxLine($latestKey, $payment)
     {
-        /**
-         * @var \Magento\Sales\Model\Order $order
-         */
-        $order      = $payment->getOrder();
+        $taxes = $this->getTaxes($payment->getOrder());
+        $article = [];
 
-        $article = $this->getArticleArrayLine(
-            $latestKey,
-            'BTW',
-            2,
-            1,
-            number_format($order->getTaxAmount(), 2),
-            4
-        );
+        if ($taxes > 0) {
+            $article = $this->getArticleArrayLine(
+                $latestKey,
+                'BTW',
+                2,
+                1,
+                number_format($taxes, 2),
+                4
+            );
+        }
 
         return $article;
+    }
+
+    /**
+     * @param \Magento\Sales\Model\Order $order
+     *
+     * @return float|int|null
+     */
+    private function getTaxes($order)
+    {
+        $catalogIncludesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
+        $shippingIncludesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_SHIPPING_INCLUDES_TAX);
+
+        $taxes = 0;
+
+        if (!$catalogIncludesTax) {
+            $taxes += $order->getTaxAmount() - $order->getShippingTaxAmount();
+        }
+
+        if (!$shippingIncludesTax) {
+            $taxes += $order->getShippingTaxAmount();
+        }
+
+        return $taxes;
     }
 
     /**
@@ -1161,10 +1282,30 @@ class Afterpay extends AbstractMethod
      */
     public function isAddressDataDifferent($payment)
     {
-        $billingAddress  = $payment->getOrder()->getBillingAddress()->getData();
-        $shippingAddress = $payment->getOrder()->getShippingAddress()->getData();
+        $billingAddress = $payment->getOrder()->getBillingAddress();
+        $shippingAddress = $payment->getOrder()->getShippingAddress();
 
-        $keysToExclude = [
+        if ($billingAddress === null || $shippingAddress === null) {
+            return false;
+        }
+
+        $billingAddressData = $billingAddress->getData();
+        $shippingAddressData = $shippingAddress->getData();
+
+        $arrayDifferences = $this->calculateAddressDataDifference($billingAddressData, $shippingAddressData);
+
+        return !empty($arrayDifferences);
+    }
+
+    /**
+     * @param array $addressOne
+     * @param array $addressTwo
+     *
+     * @return array
+     */
+    private function calculateAddressDataDifference($addressOne, $addressTwo)
+    {
+        $keysToExclude = array_flip([
             'prefix',
             'telephone',
             'fax',
@@ -1177,18 +1318,13 @@ class Afterpay extends AbstractMethod
             'vat_is_valid',
             'vat_id',
             'address_type'
-        ];
+        ]);
 
-        $filteredBillingAddress  = array_diff_key($billingAddress, array_flip($keysToExclude));
-        $filteredShippingAddress = array_diff_key($shippingAddress, array_flip($keysToExclude));
+        $filteredAddressOne = array_diff_key($addressOne, $keysToExclude);
+        $filteredAddressTwo = array_diff_key($addressTwo, $keysToExclude);
+        $arrayDiff = array_diff($filteredAddressOne, $filteredAddressTwo);
 
-        $arrayDiff = array_diff($filteredBillingAddress, $filteredShippingAddress);
-
-        if (empty($arrayDiff)) {
-            return false;
-        }
-
-        return true;
+        return $arrayDiff;
     }
 
     /**
@@ -1225,34 +1361,6 @@ class Afterpay extends AbstractMethod
         }
 
         return $format;
-    }
-
-    /**
-     * @param bool  $ipToLong
-     * @param array $alternativeHeaders
-     *
-     * @return bool|int|mixed|null|\Zend\Stdlib\ParametersInterface
-     */
-    public function getRemoteAddress($ipToLong = false, $alternativeHeaders = [])
-    {
-        if ($this->remoteAddress === null) {
-            foreach ($alternativeHeaders as $var) {
-                if ($this->request->getServer($var, false)) {
-                    $this->remoteAddress = $this->request->getServer($var);
-                    break;
-                }
-            }
-
-            if (!$this->remoteAddress) {
-                $this->remoteAddress = $this->request->getServer('REMOTE_ADDR');
-            }
-        }
-
-        if (!$this->remoteAddress) {
-            return false;
-        }
-
-        return $ipToLong ? ip2long($this->remoteAddress) : $this->remoteAddress;
     }
 
     /**

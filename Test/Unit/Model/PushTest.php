@@ -63,7 +63,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
     /**
      * @var \Mockery\MockInterface
      */
-    protected $configProviderFactory;
+    protected $configAccount;
 
     /**
      * @var \Mockery\MockInterface
@@ -85,7 +85,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->request = \Mockery::mock(\Magento\Framework\Webapi\Rest\Request::class);
         $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
-        $this->configProviderFactory = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->configAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
         $this->debugger = \Mockery::mock(\TIG\Buckaroo\Debug\Debugger::class);
 
         /**
@@ -105,7 +105,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 'objectManager' => $this->objectManager,
                 'request' => $this->request,
                 'helper' => $this->helper,
-                'configProviderFactory' => $this->configProviderFactory,
+                'configAccount' => $this->configAccount,
                 'debugger' => $this->debugger,
                 'orderSender' => $this->orderSender,
             ]
@@ -167,11 +167,11 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
 
         $canceledPaymentState = \Magento\Sales\Model\Order::STATE_CANCELED;
 
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
+        $this->configAccount->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
 
         $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
+        $orderMock->shouldReceive('getStore')->once()->andReturnSelf();
 
         if ($state == $canceledPaymentState) {
             $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
@@ -266,8 +266,6 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderHasInvoices = false,
         $postData = false
     ) {
-        $this->markTestSkipped('Needs revision');
-
         $message = 'testMessage';
         $status = 'testStatus';
 
@@ -279,10 +277,10 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         /**
          * Set config values on config provider mock
          */
-        $this->configProviderFactory->shouldReceive('get')->with('account')->andReturnSelf();
-        $this->configProviderFactory->shouldReceive('getOrderConfirmationEmail')
+        $this->configAccount->shouldReceive('getOrderConfirmationEmail')
             ->andReturn($sendOrderConfirmationEmail);
-        $this->configProviderFactory->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
+        $this->configAccount->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
+        $this->configAccount->shouldReceive('getInvoiceEmail');
 
         /**
          * Build an order mock and set several non mandatory method calls
@@ -292,6 +290,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getTotalDue')->andReturn($amount);
+        $orderMock->shouldReceive('getStore')->andReturnSelf();
 
         /**
          * The order state has to be checked at least once
@@ -311,6 +310,8 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
         $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
+        $paymentMock->shouldReceive('getConfigData');
+        $paymentMock->shouldReceive('getMethod');
 
         /**
          * Build a currency mock
@@ -357,7 +358,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 'objectManager' => $this->objectManager,
                 'request' => $this->request,
                 'helper' => $this->helper,
-                'configProviderFactory' => $this->configProviderFactory,
+                'configAccount' => $this->configAccount,
                 'debugger' => $this->debugger,
                 'orderSender' => $this->orderSender,
             ],
@@ -400,6 +401,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
                 $objectMock->postData = $postData;
 
                 $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
+                $invoiceMock->shouldReceive('getEmailSent')->andReturn(false);
 
                 /**
                  * Invoice collection should be array iterable so a simple array is used for a mock collection

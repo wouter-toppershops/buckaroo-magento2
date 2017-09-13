@@ -234,15 +234,15 @@
     content: ' ';
 }
 
-/* ===================== Sofort Banking ======================= */
+/* ===================== Sofort ======================= */
 .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:after {
     background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
-    margin-top: 5px;
+    margin-top: -7px;
     float: right;
     margin-right: 10px;
-    background-size: auto 16px;
+    background-size: auto 37px;
     width: 55px;
-    height: 20px;
+    height: 37px;
     content: ' ';
 }
 
@@ -283,6 +283,14 @@
     content: ' ';
 }
 
+.tig_buckaroo_afterpay .payment-method-second-col input:disabled,
+.tig_buckaroo_afterpay2 .payment-method-second-col input:disabled {
+    color: #999;
+    background: #f2f2f2;
+    border: 1px solid #b6b6b6;
+    opacity: 1;
+}
+
 #Saluation {
     /*float:left; */
     /*width: 100%; */
@@ -309,14 +317,21 @@
 
 /* ======================= PaymentGuarantee ======================== */
 .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:after {
-    background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
-    float: right;
-    margin-right: 10px;
-    margin-top: -7px;
-    background-size: auto 35px;
-    width: 41px;
-    height: 35px;
-    content: ' ';
+    background: url(../images/tig_buckaroo_paymentguarantee_title.png) no-repeat;
+    float             : right;
+    margin-right      : 10px;
+    margin-top        : -2px;
+    width             : 68px;
+    height            : 26px;
+    background-size   : auto 23px;
+    content           : ' ';
+}
+
+.tig_buckaroo_paymentguarantee .payment-method-second-col input:disabled {
+    color: #999;
+    background: #f2f2f2;
+    border: 1px solid #b6b6b6;
+    opacity: 1;
 }
 
 /* ======================= EPS ======================== */
@@ -412,7 +427,7 @@
         content: ' ';
     }
 
-    /* Sofort Banking */
+    /* Sofort */
     .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:before {
         background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
         margin-top: 5px;
@@ -475,13 +490,13 @@
 
     /* PaymentGuarantee */
     .tig_buckaroo_paymentguarantee .tig_buckaroo_image_title:before {
-        background: url(../images/tig_buckaroo_paymentguarantee_small_title.png) no-repeat;
         margin-top: -4px;
         float: left;
         margin-right: 10px;
-        background-size: auto 30px;
         width: 40px;
-        height: 30px;
+        height: 31px;
+        background :url(../images/tig_buckaroo_paymentguarantee_title_small.png) no-repeat 5px 0;
+        background-size: auto 27px;
         content: ' ';
     }
 

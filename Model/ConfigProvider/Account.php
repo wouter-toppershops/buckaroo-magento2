@@ -39,7 +39,8 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider;
 
-use \TIG\Buckaroo\Model\ConfigProvider;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
 
 /**
  * @method mixed getActive()
@@ -48,6 +49,7 @@ use \TIG\Buckaroo\Model\ConfigProvider;
  * @method mixed getTransactionLabel()
  * @method mixed getCertificateFile()
  * @method mixed getOrderConfirmationEmail()
+ * @method mixed getInvoiceEmail()
  * @method mixed getAutoInvoice()
  * @method mixed getAutoInvoiceStatus()
  * @method mixed getSuccessRedirect()
@@ -74,6 +76,7 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_TRANSACTION_LABEL               = 'tig_buckaroo/account/transaction_label';
     const XPATH_ACCOUNT_CERTIFICATE_FILE                = 'tig_buckaroo/account/certificate_file';
     const XPATH_ACCOUNT_ORDER_CONFIRMATION_EMAIL        = 'tig_buckaroo/account/order_confirmation_email';
+    const XPATH_ACCOUNT_INVOICE_EMAIL                   = 'tig_buckaroo/account/invoice_email';
     const XPATH_ACCOUNT_AUTO_INVOICE                    = 'tig_buckaroo/account/auto_invoice';
     const XPATH_ACCOUNT_AUTO_INVOICE_STATUS             = 'tig_buckaroo/account/auto_invoice_status';
     const XPATH_ACCOUNT_SUCCESS_REDIRECT                = 'tig_buckaroo/account/success_redirect';
@@ -92,33 +95,25 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_CREATE_ORDER_BEFORE_TRANSACTION = 'tig_buckaroo/account/create_order_before_transaction';
 
     /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $objectManager;
-
-    /**
-     * @var Method\Factory
+     * @var MethodFactory
      */
     protected $methodConfigProviderFactory;
 
     /**
-     * @var \Magento\Framework\App\Config\ScopeConfigInterface
+     * @var ScopeConfigInterface
      */
     protected $scopeConfig;
 
     /**
-     * @param \Magento\Framework\ObjectManagerInterface          $objectManager
-     * @param Method\Factory                                     $methodConfigProviderFactory
-     * @param \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+     * @param MethodFactory        $methodConfigProviderFactory
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $methodConfigProviderFactory,
-        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig
+        MethodFactory $methodConfigProviderFactory,
+        ScopeConfigInterface $scopeConfig
     ) {
         parent::__construct($scopeConfig);
 
-        $this->objectManager = $objectManager;
         $this->methodConfigProviderFactory = $methodConfigProviderFactory;
     }
 
@@ -134,6 +129,7 @@ class Account extends AbstractConfigProvider
             'transaction_label'                 => $this->getTransactionLabel($store),
             'certificate_file'                  => $this->getCertificateFile($store),
             'order_confirmation_email'          => $this->getOrderConfirmationEmail($store),
+            'invoice_email'                     => $this->getInvoiceEmail($store),
             'auto_invoice'                      => $this->getAutoInvoice($store),
             'auto_invoice_status'               => $this->getAutoInvoiceStatus($store),
             'success_redirect'                  => $this->getSuccessRedirect($store),

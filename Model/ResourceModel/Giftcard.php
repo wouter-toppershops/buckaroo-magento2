@@ -55,27 +55,6 @@ class Giftcard extends \Magento\Framework\Model\ResourceModel\Db\VersionControl\
      */
     protected $_eventObject = 'resource';
 
-
-    /**
-     * @param \Magento\Framework\Model\ResourceModel\Db\Context                          $context
-     * @param \Magento\Framework\Model\ResourceModel\Db\VersionControl\Snapshot          $entitySnapshot
-     * @param \Magento\Framework\Model\ResourceModel\Db\VersionControl\RelationComposite $entityRelationComposite
-     * @param string                                                                     $connectionName
-     */
-    public function __construct(
-        \Magento\Framework\Model\ResourceModel\Db\Context $context,
-        \Magento\Framework\Model\ResourceModel\Db\VersionControl\Snapshot $entitySnapshot,
-        \Magento\Framework\Model\ResourceModel\Db\VersionControl\RelationComposite $entityRelationComposite,
-        $connectionName = null
-    ) {
-        parent::__construct(
-            $context,
-            $entitySnapshot,
-            $entityRelationComposite,
-            $connectionName
-        );
-    }
-
     /**
      * Model Initialization
      *

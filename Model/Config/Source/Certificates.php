@@ -38,26 +38,28 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class Certificates implements \Magento\Framework\Option\ArrayInterface
+use Magento\Framework\Api\SearchCriteriaBuilder;
+use Magento\Framework\Option\ArrayInterface;
+use TIG\Buckaroo\Api\CertificateRepositoryInterface;
+
+class Certificates implements ArrayInterface
 {
-    /**
-     * @noinspection PhpUndefinedClassInspection
-     */
+    /** @var SearchCriteriaBuilder */
+    private $searchCriteriaBuilder;
+
+    /** @var CertificateRepositoryInterface */
+    private $certificateRepository;
 
     /**
-     * @var \TIG\Buckaroo\Model\CertificateFactory $certificateModel
+     * @param SearchCriteriaBuilder          $searchCriteriaBuilder
+     * @param CertificateRepositoryInterface $certificateRepository
      */
-    protected $modelCertificateFactory;
-
-    /**
-     * @noinspection PhpUndefinedClassInspection
-     */
-    /**
-     * @param \TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory
-     */
-    public function __construct(\TIG\Buckaroo\Model\CertificateFactory $modelCertificateFactory)
-    {
-        $this->modelCertificateFactory = $modelCertificateFactory;
+    public function __construct(
+        SearchCriteriaBuilder $searchCriteriaBuilder,
+        CertificateRepositoryInterface $certificateRepository
+    ) {
+        $this->searchCriteriaBuilder = $searchCriteriaBuilder;
+        $this->certificateRepository = $certificateRepository;
     }
 
     /**
@@ -82,10 +84,11 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
 
         $options[] = ['value' => '', 'label' => __('No certificate selected')];
 
-        foreach ($certificateData as $index => $data) {
+        /** @var \TIG\Buckaroo\Model\Certificate $model */
+        foreach ($certificateData as $model) {
             $options[] = [
-                'value' => $data['entity_id'],
-                'label' => $data['name'] . ' (' . $data['created_at'] . ')'
+                'value' => $model->getEntityId(),
+                'label' => $model->getName() . ' (' . $model->getCreatedAt() . ')'
             ];
         }
 
@@ -99,12 +102,13 @@ class Certificates implements \Magento\Framework\Option\ArrayInterface
      */
     protected function getCertificateData()
     {
-        /** @noinspection PhpUndefinedMethodInspection */
-        $certificateModel = $this->modelCertificateFactory->create();
-        /** @noinspection PhpUndefinedMethodInspection */
-        $certificateCollection = $certificateModel->getCollection();
+        $searchCriteria = $this->searchCriteriaBuilder->create();
+        $list = $this->certificateRepository->getList($searchCriteria);
 
-        /** @noinspection PhpUndefinedMethodInspection */
-        return $certificateCollection->getData();
+        if (!$list->getTotalCount()) {
+            return [];
+        }
+
+        return $list->getItems();
     }
 }

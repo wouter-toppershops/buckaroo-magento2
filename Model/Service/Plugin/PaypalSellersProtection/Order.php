@@ -39,20 +39,22 @@
 
 namespace TIG\Buckaroo\Model\Service\Plugin\PaypalSellersProtection;
 
+use TIG\Buckaroo\Model\ConfigProvider\Method\Paypal;
+
 class Order
 {
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Factory
+     * @var Paypal
      */
-    protected $configProviderMethodFactory;
+    protected $configProviderPaypal;
 
     /**
-     * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+     * @param Paypal $configProviderPaypal
      */
     public function __construct(
-        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory
+        Paypal $configProviderPaypal
     ) {
-        $this->configProviderMethodFactory = $configProviderMethodFactory;
+        $this->configProviderPaypal = $configProviderPaypal;
     }
 
     /**
@@ -65,13 +67,8 @@ class Order
         \TIG\Buckaroo\Model\Method\Paypal $paymentMethod,
         \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface $result
     ) {
+        $sellersProtectionActive = (bool) $this->configProviderPaypal->getSellersProtection();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $sellersProtectionActive = (bool) $this->configProviderMethodFactory
-            ->get(\TIG\Buckaroo\Model\Method\Paypal::PAYMENT_METHOD_CODE)
-            ->getSellersProtection();
         if (!$sellersProtectionActive) {
             return $result;
         }
