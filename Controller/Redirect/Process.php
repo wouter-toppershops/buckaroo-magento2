@@ -177,13 +177,19 @@ class Process extends \Magento\Framework\App\Action\Action
                     }
                 }
 
+                /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
+                $paymentMethod = $this->order->getPayment()->getMethodInstance();
                 $store = $this->order->getStore();
 
                 // Send order confirmation mail if we're supposed to
                 /**
                  * @noinspection PhpUndefinedMethodInspection
                  */
-                if (!$this->order->getEmailSent() && $this->accountConfig->getOrderConfirmationEmail($store) === "1") {
+                if (!$this->order->getEmailSent()
+                    && ($this->accountConfig->getOrderConfirmationEmail($store) === "1"
+                        || $paymentMethod->getConfigData('order_email', $store) === "1"
+                    )
+                ) {
                     $this->orderSender->send($this->order, true);
                 }
 

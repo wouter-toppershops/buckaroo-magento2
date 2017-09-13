@@ -57,7 +57,7 @@ class SendOrderConfirmationTest extends BaseTest
 
     public function testExecuteIsBuckarooNoOrderSend()
     {
-        $orderMock = $this->getFakeMock(Order::class)->setMethods(['save'])->getMock();
+        $orderMock = $this->getFakeMock(Order::class)->setMethods(['save', 'getStore'])->getMock();
         $orderMock->expects($this->once())->method('save')->willReturnSelf();
 
         $methodInstanceMock = $this->getFakeMock(MethodInterface::class)->getMock();

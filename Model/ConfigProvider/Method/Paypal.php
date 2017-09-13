@@ -64,6 +64,9 @@ class Paypal extends AbstractConfigProvider
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_paypal/allowed_currencies';
 
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_paypal/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_paypal/specificcountry';
+
     /**
      * @return array|void
      */

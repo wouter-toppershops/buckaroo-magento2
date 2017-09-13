@@ -66,7 +66,8 @@
                                            attr: { 'data-validate': JSON.stringify({ 'required': true, 'min-words': 2 }) },
                                            value: BillingName,
                                            textInput: CustomerName()"
-                               name="payment[tig_buckaroo_paymentguarantee][customer_billingName]">
+                               name="payment[tig_buckaroo_paymentguarantee][customer_billingName]"
+                               disabled >
                     </div>
                 </div>
 
@@ -111,9 +112,7 @@
                     </div>
                 </div>
 
-                    <!-- Show IBAN field when Acceptgiro (paymentMethod: 1) is activated in the backend -->
-
-                    <!-- ko if: paymentMethod == '1' -->
+                    <!-- Default -->
                     <div class="field required">
                         <label class="label" for="tig_buckaroo_paymentguarantee_IBAN"> <span data-bind="i18n: 'Bank Account Number:'"> </span> </label>
                         <div class="control">
@@ -127,7 +126,7 @@
                                    name="payment[tig_buckaroo_paymentguarantee][customer_iban]">
                         </div>
                     </div>
-                    <!-- /ko -->
+
                     <!-- Default -->
                     <div class="field required">
                         <label class="label" for="tig_buckaroo_paymentguarantee_TermsCondition"> <span data-bind="i18n: 'Terms and Conditions:'"> </span> </label>

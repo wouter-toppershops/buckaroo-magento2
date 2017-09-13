@@ -56,7 +56,7 @@ define(
     ) {
         'use strict';
 
-        var PAYMENT_METHOD_ACCEPTGIRO = 1;
+        var PAYMENT_METHOD_TRANSFER = 1;
         var PAYMENT_METHOD_IDEAL      = 2;
 
         /**

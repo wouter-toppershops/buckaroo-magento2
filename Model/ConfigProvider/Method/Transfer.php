@@ -57,6 +57,9 @@ class Transfer extends AbstractConfigProvider
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_transfer/allowed_currencies';
 
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_transfer/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_transfer/specificcountry';
+
     /**
      * @return array
      */

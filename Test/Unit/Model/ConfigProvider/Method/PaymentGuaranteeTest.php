@@ -96,7 +96,7 @@ class PaymentGuaranteeTest extends BaseTest
                 '',
                 'ideal'
             ],
-            'acceptgiro method' => [
+            'transfer method' => [
                 '1',
                 'transfer'
             ],

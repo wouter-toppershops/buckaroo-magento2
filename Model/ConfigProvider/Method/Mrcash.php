@@ -51,6 +51,9 @@ class Mrcash extends AbstractConfigProvider
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_mrcash/allowed_currencies';
 
+    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_mrcash/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_mrcash/specificcountry';
+
     /**
      * @return array|void
      */

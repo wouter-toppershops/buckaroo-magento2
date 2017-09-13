@@ -45,7 +45,7 @@ class PaymentGuaranteePaymentMethodsTest extends BaseTest
     {
         return [
             [
-                ['value' => '1', 'label' => 'Acceptgiro']
+                ['value' => '1', 'label' => 'Transfer']
             ],
             [
                 ['value' => '2', 'label' => 'Ideal']

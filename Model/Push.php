@@ -43,6 +43,7 @@ namespace TIG\Buckaroo\Model;
 use Magento\Framework\Webapi\Rest\Request;
 use Magento\Sales\Api\Data\TransactionInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use TIG\Buckaroo\Api\PushInterface;
@@ -92,6 +93,11 @@ class Push implements PushInterface
     public $orderSender;
 
     /**
+     * @var InvoiceSender $invoiceSender
+     */
+    public $invoiceSender;
+
+    /**
      * @var array $postData
      */
     public $postData;
@@ -137,6 +143,7 @@ class Push implements PushInterface
      * @param Request              $request
      * @param ValidatorPush        $validator
      * @param OrderSender          $orderSender
+     * @param InvoiceSender        $invoiceSender
      * @param Data                 $helper
      * @param Account              $configAccount
      * @param RefundPush           $refundPush
@@ -150,6 +157,7 @@ class Push implements PushInterface
         Request $request,
         ValidatorPush $validator,
         OrderSender $orderSender,
+        InvoiceSender $invoiceSender,
         Data $helper,
         Account $configAccount,
         RefundPush $refundPush,
@@ -162,6 +170,7 @@ class Push implements PushInterface
         $this->request                      = $request;
         $this->validator                    = $validator;
         $this->orderSender                  = $orderSender;
+        $this->invoiceSender                = $invoiceSender;
         $this->helper                       = $helper;
         $this->configAccount                = $configAccount;
         $this->refundPush                   = $refundPush;
@@ -414,7 +423,6 @@ class Push implements PushInterface
             && $cancelledStateAndStatus != $currentStateAndStatus
             && $holdedStateAndStatus    != $currentStateAndStatus
             && $closedStateAndStatus    != $currentStateAndStatus
-            && $this->order->canInvoice()
         ) {
             return true;
         }
@@ -439,15 +447,18 @@ class Push implements PushInterface
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
             $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
 
-            //Do not cancel order on a failed authorize, because it will send a cancel authorize message to
-            //Buckaroo, this is not needed/correct.
-            if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE) {
-                $payment = $this->order->getPayment();
+            // BUCKM2-78: Never automatically cancelauthorize via push for afterpay
+            // setting parameter which will cause to stop the cancel process on
+            // Buckaroo/Model/Method/AbstractMethod.php:880
+            $payment = $this->order->getPayment();
+            if ($payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay'
+                || $payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay2'
+            ) {
                 $payment->setAdditionalInformation('buckaroo_failed_authorize', 1);
                 $payment->save();
             }
-                $this->order->cancel()->save();
 
+            $this->order->cancel()->save();
         }
 
         $this->updateOrderStatus(Order::STATE_CANCELED, $newStatus, $description);
@@ -467,14 +478,19 @@ class Push implements PushInterface
 
         $store = $this->order->getStore();
 
-        if (!$this->order->getEmailSent() && $this->configAccount->getOrderConfirmationEmail($store)) {
-            $this->orderSender->send($this->order);
-        }
-
         /**
          * @var \Magento\Payment\Model\MethodInterface $paymentMethod
          */
         $paymentMethod = $this->order->getPayment()->getMethodInstance();
+
+        if (!$this->order->getEmailSent()
+            && ($this->configAccount->getOrderConfirmationEmail($store)
+                || $paymentMethod->getConfigData('order_email', $store)
+            )
+        ) {
+            $this->orderSender->send($this->order);
+        }
+
         if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
             $description = 'Payment status : <strong>' . $message . "</strong><br/>";
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
@@ -595,16 +611,18 @@ class Push implements PushInterface
 
         $this->order->save();
 
+        /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         foreach ($this->order->getInvoiceCollection() as $invoice) {
             if (!isset($this->postData['brq_transactions'])) {
                 continue;
             }
 
-            /**
-             * @var \Magento\Sales\Model\Order\Invoice $invoice
-             */
             $invoice->setTransactionId($this->postData['brq_transactions'])
                 ->save();
+
+            if (!$invoice->getEmailSent() && $this->configAccount->getInvoiceEmail($this->order->getStore())) {
+                $this->invoiceSender->send($invoice, true);
+            }
         }
 
         return true;

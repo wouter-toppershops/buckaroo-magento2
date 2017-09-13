@@ -266,6 +266,8 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('save')->once()->andReturnSelf();
         $this->order->shouldReceive('getEmailSent')->once()->andReturn(1);
         $this->order->shouldReceive('getStore')->andReturnSelf();
+        $this->order->shouldReceive('getPayment')->once()->andReturnSelf();
+        $this->order->shouldReceive('getMethodInstance')->once()->andReturnSelf();
 
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 
