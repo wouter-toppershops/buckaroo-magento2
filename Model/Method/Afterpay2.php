@@ -368,9 +368,13 @@ class Afterpay2 extends AbstractMethod
         // For the first invoice possible add payment fee
         if (is_array($articles) && $numberOfInvoices == 1) {
             $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
-            $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $payment, $includesTax);
+            $serviceLine = $this->getServiceCostLine((count($articles)/5)+1, $currentInvoice, $includesTax);
             $articles = array_merge($articles, $serviceLine);
         }
+
+        // Add aditional shippin costs.
+        $shippingCosts = $this->getShippingCostsLine($currentInvoice);
+        $articles = array_merge($articles, $shippingCosts);
 
         $services['RequestParameter'] = $articles;
 
@@ -640,13 +644,20 @@ class Afterpay2 extends AbstractMethod
             break;
         }
 
-        $serviceLine = $this->getServiceCostLine($count, $payment, $includesTax);
+        $serviceLine = $this->getServiceCostLine($count, $payment->getOrder(), $includesTax);
 
         if (!empty($serviceLine)) {
             $requestData = array_merge($articles, $serviceLine);
             $count++;
         } else {
             $requestData = $articles;
+        }
+
+        // Add aditional shippin costs.
+        $shippingCosts = $this->getShippingCostsLine($payment->getOrder());
+
+        if (!empty($shippingCosts)) {
+            $requestData = array_merge($requestData, $shippingCosts);
         }
 
         $discountline = $this->getDiscountLine($count, $payment);
@@ -764,9 +775,13 @@ class Afterpay2 extends AbstractMethod
         // hasCreditmemos only counts actually saved creditmemos.
         // The current creditmemo is still "in progress" and thus has yet to be saved.
         if (count($articles) > 0 && $payment->getOrder()->hasCreditmemos() == 0) {
-            $serviceLine = $this->getServiceCostLine($count, $payment, $includesTax);
+            $serviceLine = $this->getServiceCostLine($count, $creditmemo, $includesTax);
             $articles = array_merge($articles, $serviceLine);
         }
+
+        // Add aditional shippin costs.
+        $shippingCosts = $this->getShippingCostsLine($creditmemo);
+        $articles = array_merge($articles, $shippingCosts);
 
         return $articles;
     }
@@ -813,18 +828,14 @@ class Afterpay2 extends AbstractMethod
      * Get the service cost lines (buckfee)
      *
      * @param (int)                                                                              $latestKey
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param \Magento\Sales\Model\Order|\Magento\Sales\Model\Order\Invoice|\Magento\Sales\Model\Order\Creditmemo $order
      * @param $includesTax
      *
      * @return   array
      * @internal param $ (int) $latestKey
      */
-    public function getServiceCostLine($latestKey, $payment, $includesTax)
+    public function getServiceCostLine($latestKey, $order, $includesTax)
     {
-        /**
-         * @var \Magento\Sales\Model\Order $order
-         */
-        $order = $payment->getOrder();
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
@@ -856,15 +867,12 @@ class Afterpay2 extends AbstractMethod
                 $this->getTaxCategory($this->configProviderBuckarooFee->getTaxClass($storeId))
             );
         }
-        // Add aditional shippin costs.
-        $shippingCosts = $this->getShippingCostsLine($order);
-        $article = array_merge($article, $shippingCosts);
 
         return $article;
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Model\Order|\Magento\Sales\Model\Order\Invoice|\Magento\Sales\Model\Order\Creditmemo $order
      *
      * @return array
      */
