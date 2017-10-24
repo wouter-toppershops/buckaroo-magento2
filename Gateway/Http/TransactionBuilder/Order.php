@@ -40,6 +40,7 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Framework\UrlInterface;
 use TIG\Buckaroo\Gateway\Http\Transaction;
@@ -56,6 +57,7 @@ class Order extends AbstractTransactionBuilder
     protected $configProviderMethodFactory;
 
     /**
+     * @param ScopeConfigInterface $scopeConfig
      * @param SoftwareData  $softwareData
      * @param Account       $configProviderAccount
      * @param Transaction   $transaction
@@ -66,6 +68,7 @@ class Order extends AbstractTransactionBuilder
      * @param null          $currency
      */
     public function __construct(
+        ScopeConfigInterface $scopeConfig,
         SoftwareData $softwareData,
         Account $configProviderAccount,
         Transaction $transaction,
@@ -75,7 +78,7 @@ class Order extends AbstractTransactionBuilder
         $amount = null,
         $currency = null
     ) {
-        parent::__construct($softwareData, $configProviderAccount, $transaction, $urlBuilder, $amount, $currency);
+        parent::__construct($scopeConfig, $softwareData, $configProviderAccount, $transaction, $urlBuilder, $amount, $currency);
 
         $this->remoteAddress = $remoteAddress;
         $this->configProviderMethodFactory = $configProviderMethodFactory;
