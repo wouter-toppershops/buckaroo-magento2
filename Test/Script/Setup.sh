@@ -52,10 +52,11 @@ mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT
 
 chmod 777 "${BUILD_DIR}/var/"
 chmod 777 "${BUILD_DIR}/pub/"
+chmod 777 "${BUILD_DIR}/vendor/phpunit/phpunit/phpunit"
 
 ( cd ${BUILD_DIR} && php -d memory_limit=2048M bin/magento setup:upgrade )
 ( cd ${BUILD_DIR} && php -d memory_limit=2048M bin/magento setup:static-content:deploy )
 
 cd ${BUILD_DIR}
 
-phpunit -c "${BUILD_DIR}/vendor/tig/buckaroo/phpunit.xml.dist" --testsuite unit
+"${BUILD_DIR}/vendor/phpunit/phpunit/phpunit" -c "${BUILD_DIR}/vendor/tig/buckaroo/phpunit.xml.dist" --testsuite unit
