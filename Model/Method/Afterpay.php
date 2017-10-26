@@ -644,6 +644,11 @@ class Afterpay extends AbstractMethod
                 $this->getTaxCategory($item->getTaxClassId())
             );
 
+            /*
+             * @todo: Find better way to make taxClassId available by invoice and creditmemo creating for Afterpay
+             */
+            $payment->setAdditionalInformation('tax_pid_' . $item->getProductId(), $item->getTaxClassId());
+
             $articles = array_merge($articles, $article);
 
             if ($count < self::AFTERPAY_MAX_ARTICLE_COUNT) {
@@ -696,6 +701,8 @@ class Afterpay extends AbstractMethod
     {
         $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
 
+        $payment = $invoice->getPayment();
+
         // Set loop variables
         $articles = array();
         $count    = 1;
@@ -705,13 +712,16 @@ class Afterpay extends AbstractMethod
                 continue;
             }
 
+            $itemTaxClassId = $invoice->getOrder()->getPayment()
+                                                  ->getAdditionalInformation('tax_pid_' . $item->getProductId());
+
             $article = $this->getArticleArrayLine(
                 $count,
                 (int) $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
                 $this->calculateProductPrice($item, $includesTax),
-                $this->getTaxCategory($item->getTaxClassId())
+                $this->getTaxCategory($itemTaxClassId)
             );
 
             $articles = array_merge($articles, $article);
@@ -736,6 +746,13 @@ class Afterpay extends AbstractMethod
             }
 
             break;
+        }
+
+        $taxLine = $this->getTaxLine($count, $payment, 'invoice');
+
+        if (!empty($taxLine)) {
+            $articles = array_merge($articles, $taxLine);
+            $count++;
         }
 
         $requestData = $articles;
@@ -763,13 +780,15 @@ class Afterpay extends AbstractMethod
                 continue;
             }
 
+            $itemTaxClassId = $payment->getAdditionalInformation('tax_pid_' . $item->getProductId());
+
             $article = $this->getArticleArrayLine(
                 $count,
                 $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
                 $this->calculateProductPrice($item, $includesTax),
-                $this->getTaxCategory($item->getTaxClassId())
+                $this->getTaxCategory($itemTaxClassId)
             );
 
             $articles = array_merge($articles, $article);
@@ -780,6 +799,13 @@ class Afterpay extends AbstractMethod
             }
 
             break;
+        }
+
+        $taxLine = $this->getTaxLine($count, $payment, 'creditmemo');
+
+        if (!empty($taxLine)) {
+            $articles = array_merge($articles, $taxLine);
+            $count++;
         }
 
         // hasCreditmemos only counts actually saved creditmemos.
@@ -855,7 +881,7 @@ class Afterpay extends AbstractMethod
             /**
              * @noinspection PhpUndefinedMethodInspection
              */
-            $buckarooFeeLine = $order->getBaseBuckarooFeeInclTax();
+            $buckarooFeeLine = $order->getBaseBuckarooFee() + $order->getBuckarooFeeTaxAmount();
         } else {
             /**
              * @noinspection PhpUndefinedMethodInspection
@@ -947,12 +973,24 @@ class Afterpay extends AbstractMethod
      *
      * @param (int)                                                                              $latestKey
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param string                                                                             $type
      *
      * @return array
      */
-    public function getTaxLine($latestKey, $payment)
+    public function getTaxLine($latestKey, $payment, $type = 'order')
     {
-        $taxes = $this->getTaxes($payment->getOrder());
+        switch($type) {
+            case 'creditmemo' :
+                $taxes = $this->getTaxes($payment->getCreditmemo());
+                break;
+            case 'invoice' :
+                $taxes = $this->getTaxes($payment); //invoiceCollectionItem
+                break;
+            case 'order':
+            default:
+                $taxes = $this->getTaxes($payment->getOrder());
+                break;
+        }
         $article = [];
 
         if ($taxes > 0) {
