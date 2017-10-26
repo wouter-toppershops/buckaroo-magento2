@@ -315,7 +315,7 @@ class Push
             /**
              * @noinspection PhpUndefinedMethodInspection
              */
-            $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced();
+            $totalAmount = $totalAmount - $this->order->getBaseBuckarooFeeInvoiced() - $this->order->getBuckarooFeeBaseTaxAmountInvoiced();
         }
 
         return $totalAmount;
