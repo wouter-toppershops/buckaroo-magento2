@@ -38,6 +38,9 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model;
 
+use Magento\Payment\Model\MethodInterface;
+use Magento\Sales\Model\Order\Payment;
+
 class Push extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
@@ -180,7 +183,15 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         }
 
         if ($cancelOnFailed) {
+            $methodInstanceMock = $this->getMockForAbstractClass(MethodInterface::class);
+            $paymentMock = $this->getMockBuilder(Payment::class)
+                ->disableOriginalConstructor()
+                ->setMethods(['getMethodInstance'])
+                ->getMock();
+            $paymentMock->method('getMethodInstance')->willReturn($methodInstanceMock);
+
             $orderMock->shouldReceive('canCancel')->once()->andReturn($canCancel);
+            $orderMock->shouldReceive('getPayment')->times((int)$canCancel)->andReturn($paymentMock);
             if ($canCancel) {
                 $this->debugger->shouldReceive('addToMessage')->withAnyArgs()->andReturnSelf();
                 $this->debugger->shouldReceive('log')->andReturnSelf();
@@ -307,7 +318,7 @@ class Push extends \TIG\Buckaroo\Test\BaseTest
         /**
          * Build a payment mock and set the payment action
          */
-        $paymentMock = \Mockery::mock(\Magento\Sales\Model\Order\Payment::class);
+        $paymentMock = \Mockery::mock(Payment::class);
         $paymentMock->shouldReceive('getMethodInstance')->andReturnSelf();
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
         $paymentMock->shouldReceive('getConfigData');

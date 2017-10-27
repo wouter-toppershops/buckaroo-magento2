@@ -91,11 +91,13 @@ class OrderTest extends BaseTest
 
         $this->configProviderAccount->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
         $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
+        $this->configProviderAccount->shouldReceive('getOrderStatusNew')->andReturn(1);
 
         $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $order->shouldReceive('getStore')->once();
+        $order->shouldReceive('setStatus')->once();
         $order->shouldReceive('save');
 
         $this->object->setOrder($order);

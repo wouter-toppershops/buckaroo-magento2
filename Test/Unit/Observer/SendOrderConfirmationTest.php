@@ -84,7 +84,7 @@ class SendOrderConfirmationTest extends BaseTest
             ->getMock();
         $orderMock->expects($this->once())->method('save')->willReturnSelf();
         $orderMock->expects($this->once())->method('getEmailSent')->willReturn(false);
-        $orderMock->expects($this->once())->method('getStore');
+        $orderMock->expects($this->exactly(2))->method('getStore');
         $orderMock->expects($this->once())->method('getIncrementId')->willReturn(rand(1, 100));
 
         $methodInstanceMock = $this->getFakeMock(MethodInterface::class)->getMock();

@@ -60,7 +60,7 @@ class PaymentGuarantee extends AbstractConfigProvider
     ];
 
     /**
-     * @return array|void
+     * @return array
      */
     public function getConfig()
     {

@@ -90,10 +90,12 @@ class AllTest extends BaseTest
     {
         $this->configProviderAccount->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
         $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
+        $this->configProviderAccount->shouldReceive('getOrderStatusNew')->andReturn(1);
 
         $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
-        $this->order->shouldReceive('getStore');
+        $this->order->shouldReceive('getStore')->once();
+        $this->order->shouldReceive('setStatus');
         $this->object->setOrder($this->order);
 
         return $this;
