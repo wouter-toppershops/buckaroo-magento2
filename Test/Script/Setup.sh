@@ -57,4 +57,4 @@ chmod 777 "${BUILD_DIR}/vendor/phpunit/phpunit/phpunit"
 
 cd ${BUILD_DIR}
 
-"${BUILD_DIR}/vendor/phpunit/phpunit/phpunit" -c "${BUILD_DIR}/vendor/tig/buckaroo/phpunit.xml.dist" --testsuite unit
+"${BUILD_DIR}/vendor/phpunit/phpunit/phpunit" -c "${BUILD_DIR}/vendor/tig/buckaroo-travis/phpunit.xml.dist" --testsuite unit
