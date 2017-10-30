@@ -38,17 +38,13 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Observer;
 
+use Magento\Framework\Event\Observer;
 use Mockery as m;
 use TIG\Buckaroo\Observer\UpdateOrderStatus;
 use TIG\Buckaroo\Test\BaseTest;
 
 class UpdateOrderStatusTest extends BaseTest
 {
-    /**
-     * @var m\MockInterface
-     */
-    protected $observer;
-
     /**
      * @var UpdateOrderStatus
      */
@@ -65,7 +61,6 @@ class UpdateOrderStatusTest extends BaseTest
         $account->shouldReceive('getOrderStatusNew')->andReturn('tig_buckaroo_pending_payment');
         $account->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(0);
 
-        $this->observer = m::mock('Magento\Framework\Event\Observer');
         $this->object = new UpdateOrderStatus($account);
     }
 
@@ -74,10 +69,11 @@ class UpdateOrderStatusTest extends BaseTest
      */
     public function testExecuteNotBuckaroo()
     {
-        $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();
-        $this->observer->shouldReceive('getMethod')->once()->andReturn('other_payment_method');
+        $observerMock = $this->getMockBuilder(Observer::class)->setMethods(['getPayment', 'getMethod'])->getMock();
+        $observerMock->expects($this->once())->method('getPayment')->willReturnSelf();
+        $observerMock->expects($this->once())->method('getMethod')->willReturn('other_payment_method');
 
-        $this->object->execute($this->observer);
+        $this->object->execute($observerMock);
     }
 
     /**
@@ -85,12 +81,15 @@ class UpdateOrderStatusTest extends BaseTest
      */
     public function testExecuteIsBuckaroo()
     {
-        $this->observer->shouldReceive('getPayment')->once()->andReturnSelf();
-        $this->observer->shouldReceive('getMethod')->once()->andReturn('tig_buckaroo');
-        $this->observer->shouldReceive('getOrder')->once()->andReturnSelf();
-        $this->observer->shouldReceive('getStore')->twice()->andReturnSelf();
-        $this->observer->shouldReceive('setStatus')->once()->with('tig_buckaroo_pending_payment');
+        $observerMock = $this->getMockBuilder(Observer::class)
+            ->setMethods(['getPayment', 'getMethod', 'getOrder', 'getStore', 'setStatus'])
+            ->getMock();
+        $observerMock->expects($this->once())->method('getPayment')->willReturnSelf();
+        $observerMock->expects($this->once())->method('getMethod')->willReturn('tig_buckaroo');
+        $observerMock->expects($this->once())->method('getOrder')->willReturnSelf();
+        $observerMock->method('getStore')->willReturnSelf();
+        $observerMock->expects($this->once())->method('setStatus')->willReturn('tig_buckaroo_pending_payment');
 
-        $this->object->execute($this->observer);
+        $this->object->execute($observerMock);
     }
 }

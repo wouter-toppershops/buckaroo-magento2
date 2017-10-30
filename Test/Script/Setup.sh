@@ -35,27 +35,25 @@ sed -i -e "s/MAGENTO_DB_NAME/${MAGENTO_DB_NAME}/g" "${BUILD_DIR}/app/etc/env.php
 
 zip --exclude=node_modules/* --exclude=vendor/* --exclude=.git/* -r build.zip .
 
-REPOSITORY_CONFIG="{\"type\": \"package\",\"package\": { \"name\": \"tig/buckaroo\", \"version\": \"master\", \"dist\": {\"type\": \"zip\",\"url\": \"${TRAVIS_BUILD_DIR}/build.zip\",\"reference\": \"master\" }, \"autoload\": {\"files\": [\"registration.php\"],\"psr-4\": {\"TIG\\\\Buckaroo\\\\\": \"\"}},\"require\": {\"mockery/mockery\": \"^0.9.4\"}}}"
+REPOSITORY_CONFIG="{\"type\": \"package\",\"package\": { \"name\": \"tig/buckaroo-travis\", \"version\": \"master\", \"dist\": {\"type\": \"zip\",\"url\": \"${TRAVIS_BUILD_DIR}/build.zip\",\"reference\": \"master\" }, \"autoload\": {\"files\": [\"registration.php\"],\"psr-4\": {\"TIG\\\\Buckaroo\\\\\": \"\"}},\"require\": {\"mockery/mockery\": \"^0.9.4\"}}}"
 
 if [ -d "$HOME/.cache/composer/files/tig/" ]; then
     rm -rf $HOME/.cache/composer/files/tig/;
 fi
 
-( cd "${BUILD_DIR}/" && cat composer.json | jq 'del(.repositories)' | cat > composer.tmp && mv composer.tmp composer.json )
-( cd "${BUILD_DIR}/" && cat composer.json | jq '."minimum-stability"="dev"' | cat > composer.tmp && mv composer.tmp composer.json )
 ( cd "${BUILD_DIR}/" && composer config minimum-stability dev )
 ( cd "${BUILD_DIR}/" && composer config repositories.buckaroo "${REPOSITORY_CONFIG}" )
-( cd "${BUILD_DIR}/" && composer require tig/buckaroo --ignore-platform-reqs )
+( cd "${BUILD_DIR}/" && composer require tig/buckaroo-travis --ignore-platform-reqs )
 
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} -e "DROP DATABASE IF EXISTS \`${MAGENTO_DB_NAME}\`; CREATE DATABASE \`${MAGENTO_DB_NAME}\`;"
 mysql -u${MAGENTO_DB_USER} ${MYSQLPASS} -h${MAGENTO_DB_HOST} -P${MAGENTO_DB_PORT} ${MAGENTO_DB_NAME} < Test/Fixtures/tig-buckaroo-fixture.sql
 
 chmod 777 "${BUILD_DIR}/var/"
 chmod 777 "${BUILD_DIR}/pub/"
+chmod 777 "${BUILD_DIR}/vendor/phpunit/phpunit/phpunit"
 
 ( cd ${BUILD_DIR} && php -d memory_limit=2048M bin/magento setup:upgrade )
-( cd ${BUILD_DIR} && php -d memory_limit=2048M bin/magento setup:static-content:deploy )
 
 cd ${BUILD_DIR}
 
-phpunit -c "${BUILD_DIR}/vendor/tig/buckaroo/phpunit.xml.dist" --testsuite unit
+"${BUILD_DIR}/vendor/phpunit/phpunit/phpunit" -c "${BUILD_DIR}/vendor/tig/buckaroo-travis/phpunit.xml.dist" --testsuite unit

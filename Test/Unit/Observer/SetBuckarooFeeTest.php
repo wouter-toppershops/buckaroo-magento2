@@ -39,6 +39,8 @@
 namespace TIG\Buckaroo\Test\Unit\Observer;
 
 use Magento\Framework\Event\Observer;
+use Magento\Quote\Model\Quote;
+use Magento\Sales\Model\Order;
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Observer\SetBuckarooFee;
@@ -51,21 +53,6 @@ class SetBuckarooFeeTest extends BaseTest
     protected $object;
 
     /**
-     * @var m\MockInterface|Observer
-     */
-    protected $observer;
-
-    /**
-     * @var m\MockInterface|Observer
-     */
-    protected $order;
-
-    /**
-     * @var m\MockInterface|Observer
-     */
-    protected $quote;
-
-    /**
      * Setup the basic mock object.
      */
     public function setUp()
@@ -73,13 +60,6 @@ class SetBuckarooFeeTest extends BaseTest
         parent::setUp();
 
         $this->object = $this->objectManagerHelper->getObject(SetBuckarooFee::class);
-        $this->observer = m::mock(Observer::class);
-        $this->observer->shouldReceive('getEvent')->twice()->andReturnSelf();
-
-        $this->order = m::mock();
-        $this->quote = m::mock();
-        $this->observer->shouldReceive('getOrder')->once()->andReturn($this->order);
-        $this->observer->shouldReceive('getQuote')->once()->andReturn($this->quote);
     }
 
     /**
@@ -87,9 +67,17 @@ class SetBuckarooFeeTest extends BaseTest
      */
     public function testInvoiceRegisterHappyPath()
     {
-        $this->quote->shouldReceive('getBaseBuckarooFee')->once()->andReturn(false);
+        $quoteMock = $this->getMockBuilder(Quote::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getBaseBuckarooFee'])
+            ->getMock();
+        $quoteMock->expects($this->once())->method('getBaseBuckarooFee')->willReturn(false);
 
-        $this->object->execute($this->observer);
+        $observerMock = $this->getMockBuilder(Observer::class)->setMethods(['getEvent', 'getQuote'])->getMock();
+        $observerMock->expects($this->exactly(2))->method('getEvent')->willReturnSelf();
+        $observerMock->expects($this->once())->method('getQuote')->willReturn($quoteMock);
+
+        $this->object->execute($observerMock);
     }
 
     /**
@@ -104,20 +92,49 @@ class SetBuckarooFeeTest extends BaseTest
         $getBaseBuckarooFeeInclTax = rand(1, 1000);
         $getBuckarooFeeBaseTaxAmount = rand(1, 1000);
 
-        $this->order->shouldReceive('setBuckarooFee')->with($buckarooFee)->once();
-        $this->order->shouldReceive('setBaseBuckarooFee')->with($buckarooBaseFee)->once();
-        $this->order->shouldReceive('setBuckarooFeeInclTax')->with($getBuckarooFeeInclTax)->once();
-        $this->order->shouldReceive('setBuckarooFeeTaxAmount')->with($getBuckarooFeeTaxAmount)->once();
-        $this->order->shouldReceive('setBaseBuckarooFeeInclTax')->with($getBaseBuckarooFeeInclTax)->once();
-        $this->order->shouldReceive('setBuckarooFeeBaseTaxAmount')->with($getBuckarooFeeBaseTaxAmount)->once();
+        $orderMock = $this->getMockBuilder(Order::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'setBuckarooFee',
+                'setBaseBuckarooFee',
+                'setBuckarooFeeInclTax',
+                'setBuckarooFeeTaxAmount',
+                'setBaseBuckarooFeeInclTax',
+                'setBuckarooFeeBaseTaxAmount'
+            ])
+            ->getMock();
+        $orderMock->expects($this->once())->method('setBuckarooFee')->with($buckarooFee);
+        $orderMock->expects($this->once())->method('setBaseBuckarooFee')->with($buckarooBaseFee);
+        $orderMock->expects($this->once())->method('setBuckarooFeeInclTax')->with($getBuckarooFeeInclTax);
+        $orderMock->expects($this->once())->method('setBuckarooFeeTaxAmount')->with($getBuckarooFeeTaxAmount);
+        $orderMock->expects($this->once())->method('setBaseBuckarooFeeInclTax')->with($getBaseBuckarooFeeInclTax);
+        $orderMock->expects($this->once())->method('setBuckarooFeeBaseTaxAmount')->with($getBuckarooFeeBaseTaxAmount);
 
-        $this->quote->shouldReceive('getBuckarooFee')->times()->andReturn($buckarooFee);
-        $this->quote->shouldReceive('getBaseBuckarooFee')->twice()->andReturn($buckarooBaseFee);
-        $this->quote->shouldReceive('getBuckarooFeeInclTax')->times()->andReturn($getBuckarooFeeInclTax);
-        $this->quote->shouldReceive('getBuckarooFeeTaxAmount')->times()->andReturn($getBuckarooFeeTaxAmount);
-        $this->quote->shouldReceive('getBaseBuckarooFeeInclTax')->times()->andReturn($getBaseBuckarooFeeInclTax);
-        $this->quote->shouldReceive('getBuckarooFeeBaseTaxAmount')->times()->andReturn($getBuckarooFeeBaseTaxAmount);
+        $quoteMock = $this->getMockBuilder(Quote::class)
+            ->disableOriginalConstructor()
+            ->setMethods([
+                'getBuckarooFee',
+                'getBaseBuckarooFee',
+                'getBuckarooFeeInclTax',
+                'getBuckarooFeeTaxAmount',
+                'getBaseBuckarooFeeInclTax',
+                'getBuckarooFeeBaseTaxAmount'
+            ])
+            ->getMock();
+        $quoteMock->method('getBuckarooFee')->willReturn($buckarooFee);
+        $quoteMock->expects($this->exactly(2))->method('getBaseBuckarooFee')->willReturn($buckarooBaseFee);
+        $quoteMock->method('getBuckarooFeeInclTax')->willReturn($getBuckarooFeeInclTax);
+        $quoteMock->method('getBuckarooFeeTaxAmount')->willReturn($getBuckarooFeeTaxAmount);
+        $quoteMock->method('getBaseBuckarooFeeInclTax')->willReturn($getBaseBuckarooFeeInclTax);
+        $quoteMock->method('getBuckarooFeeBaseTaxAmount')->willReturn($getBuckarooFeeBaseTaxAmount);
 
-        $this->object->execute($this->observer);
+        $observerMock = $this->getMockBuilder(Observer::class)
+            ->setMethods(['getEvent', 'getOrder', 'getQuote'])
+            ->getMock();
+        $observerMock->expects($this->exactly(2))->method('getEvent')->willReturnSelf();
+        $observerMock->expects($this->once())->method('getOrder')->willReturn($orderMock);
+        $observerMock->expects($this->once())->method('getQuote')->willReturn($quoteMock);
+
+        $this->object->execute($observerMock);
     }
 }
