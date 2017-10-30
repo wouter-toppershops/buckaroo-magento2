@@ -39,6 +39,8 @@
 
 namespace TIG\Buckaroo\Controller\Redirect;
 
+use TIG\Buckaroo\Logging\Log;
+
 class Process extends \Magento\Framework\App\Action\Action
 {
     /**
@@ -87,9 +89,9 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $orderStatusFactory;
 
     /**
-     * @var \TIG\Buckaroo\Debug\Debugger
+     * @var Log
      */
-    protected $debugger;
+    protected $logger;
 
     /**
      * @param \Magento\Framework\App\Action\Context               $context
@@ -97,7 +99,7 @@ class Process extends \Magento\Framework\App\Action\Action
      * @param \Magento\Checkout\Model\Cart                        $cart
      * @param \Magento\Sales\Model\Order                          $order
      * @param \Magento\Quote\Model\Quote                          $quote
-     * @param \TIG\Buckaroo\Debug\Debugger                        $debugger
+     * @param Log                                                 $logger
      * @param \TIG\Buckaroo\Model\ConfigProvider\Factory          $configProviderFactory
      * @param \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender
      * @param \TIG\Buckaroo\Model\OrderStatusFactory              $orderStatusFactory
@@ -110,7 +112,7 @@ class Process extends \Magento\Framework\App\Action\Action
         \Magento\Checkout\Model\Cart $cart,
         \Magento\Sales\Model\Order $order,
         \Magento\Quote\Model\Quote $quote,
-        \TIG\Buckaroo\Debug\Debugger $debugger,
+        Log $logger,
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory,
         \Magento\Sales\Model\Order\Email\Sender\OrderSender $orderSender,
         \TIG\Buckaroo\Model\OrderStatusFactory $orderStatusFactory
@@ -120,7 +122,7 @@ class Process extends \Magento\Framework\App\Action\Action
         $this->cart                     = $cart;
         $this->order                    = $order;
         $this->quote                    = $quote;
-        $this->debugger                 = $debugger;
+        $this->logger                   = $logger;
         $this->configProviderFactory    = $configProviderFactory;
         $this->orderSender              = $orderSender;
         $this->orderStatusFactory       = $orderStatusFactory;
@@ -214,11 +216,11 @@ class Process extends \Magento\Framework\App\Action\Action
                 );
 
                 if (!$this->recreateQuote()) {
-                    $this->debugger->log('Could not recreate the quote.', \TIG\Buckaroo\Debug\Logger::ERROR);
+                    $this->logger->addError('Could not recreate the quote.');
                 }
 
                 if (!$this->cancelOrder($statusCode)) {
-                    $this->debugger->log('Could not cancel the order.', \TIG\Buckaroo\Debug\Logger::ERROR);
+                    $this->logger->addError('Could not cancel the order.');
                 }
 
                 $this->redirectFailure();

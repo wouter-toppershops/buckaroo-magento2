@@ -40,8 +40,8 @@
 
 namespace TIG\Buckaroo\Model\Validator;
 
-use TIG\Buckaroo\Debug\Debugger;
 use TIG\Buckaroo\Helper\Data;
+use TIG\Buckaroo\Logging\Log;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use \TIG\Buckaroo\Model\ValidatorInterface;
 
@@ -58,8 +58,8 @@ class Push implements ValidatorInterface
     /** @var Data $helper */
     public $helper;
 
-    /** @var Debugger $debugger */
-    public $debugger;
+    /** @var Log $logging */
+    public $logging;
 
     public $bpeResponseMessages = [
         190 => 'Success',
@@ -76,18 +76,18 @@ class Push implements ValidatorInterface
     ];
 
     /**
-     * @param Data     $helper
-     * @param Account  $configProviderAccount
-     * @param Debugger $debugger
+     * @param Data    $helper
+     * @param Account $configProviderAccount
+     * @param Log     $logging
      */
     public function __construct(
         Data $helper,
         Account $configProviderAccount,
-        Debugger $debugger
+        Log $logging
     ) {
         $this->helper                   = $helper;
         $this->configProviderAccount    = $configProviderAccount;
-        $this->debugger                 = $debugger;
+        $this->logging                  = $logging;
     }
 
     /**
@@ -181,7 +181,7 @@ class Push implements ValidatorInterface
 
         $signature = SHA1($signatureString);
 
-        $this->debugger->addToMessage($signature);
+        $this->logging->addDebug($signature);
 
         return $signature;
     }

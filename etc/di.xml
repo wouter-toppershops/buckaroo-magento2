@@ -254,9 +254,13 @@
         </arguments>
     </type>
 
-    <type name="TIG\Buckaroo\Debug\Logger">
+    <type name="TIG\Buckaroo\Logging\Log">
         <arguments>
-            <argument name="name" xsi:type="string">TIG_Buckaroo</argument>
+            <argument name="name" xsi:type="string">buckaroo_logging</argument>
+            <argument name="handlers"  xsi:type="array">
+                <item name="exception" xsi:type="object">TIG\Buckaroo\Logging\CriticalHandler</item>
+                <item name="debug" xsi:type="object">TIG\Buckaroo\Logging\DebugHandler</item>
+            </argument>
         </arguments>
     </type>
 

@@ -47,12 +47,11 @@ use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use TIG\Buckaroo\Api\PushInterface;
-use TIG\Buckaroo\Debug\Debugger;
 use TIG\Buckaroo\Helper\Data;
+use TIG\Buckaroo\Logging\Log;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Model\Method\AbstractMethod;
-use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 
@@ -118,9 +117,9 @@ class Push implements PushInterface
     public $helper;
 
     /**
-     * @var Debugger $debugger
+     * @var Log $logging
      */
-    public $debugger;
+    public $logging;
 
     /**
      * @var OrderStatusFactory OrderStatusFactory
@@ -147,7 +146,7 @@ class Push implements PushInterface
      * @param Data                 $helper
      * @param Account              $configAccount
      * @param RefundPush           $refundPush
-     * @param Debugger             $debugger
+     * @param Log                  $logging
      * @param Factory              $configProviderMethodFactory
      * @param OrderStatusFactory   $orderStatusFactory
      */
@@ -161,7 +160,7 @@ class Push implements PushInterface
         Data $helper,
         Account $configAccount,
         RefundPush $refundPush,
-        Debugger $debugger,
+        Log $logging,
         Factory $configProviderMethodFactory,
         OrderStatusFactory $orderStatusFactory
     ) {
@@ -174,7 +173,7 @@ class Push implements PushInterface
         $this->helper                       = $helper;
         $this->configAccount                = $configAccount;
         $this->refundPush                   = $refundPush;
-        $this->debugger                     = $debugger;
+        $this->logging                      = $logging;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->orderStatusFactory           = $orderStatusFactory;
     }
@@ -198,7 +197,7 @@ class Push implements PushInterface
         }
 
         //Start debug mailing/logging with the postdata.
-        $this->debugger->addToMessage($this->originalPostData);
+        $this->logging->addDebug(print_r($this->originalPostData, true));
 
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
@@ -220,7 +219,7 @@ class Push implements PushInterface
         $this->order->loadByIncrementId($brqOrderId);
 
         if (!$this->order->getId()) {
-            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
+            $this->logging->addDebug('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
@@ -247,12 +246,12 @@ class Push implements PushInterface
 
         //Last validation before push can be completed
         if (!$validSignature) {
-            $this->debugger->addToMessage('Invalid push signature');
+            $this->logging->addDebug('Invalid push signature');
             throw new \TIG\Buckaroo\Exception(__('Signature from push is incorrect'));
             //If the signature is valid but the order cant be updated, try to add a notification to the order comments.
         } elseif ($validSignature && !$canUpdateOrder) {
             $this->setOrderNotificationNote(__('The order has already been processed.'));
-            $this->debugger->addToMessage('Order can not receive updates');
+            $this->logging->addDebug('Order can not receive updates');
             throw new \TIG\Buckaroo\Exception(
                 __('Signature from push is correct but the order can not receive updates')
             );
@@ -261,8 +260,6 @@ class Push implements PushInterface
         $this->setTransactionKey();
         $this->processPush($response);
         $this->order->save();
-
-        $this->debugger->log();
 
         return true;
     }
@@ -274,15 +271,13 @@ class Push implements PushInterface
      */
     public function processCancelAuthorize()
     {
-        $this->debugger->addToMessage('Order autorize has been canceld, trying to update payment transactions');
-
         try {
             $this->setTransactionKey();
         } catch (\TIG\Buckaroo\Exception $e) {
-            $this->debugger->addToMessage($e->getLogMessage());
+            $this->logging->addDebug($e->getLogMessage());
         }
 
-        $this->debugger->log();
+        $this->logging->addDebug('Order autorize has been canceld, trying to update payment transactions');
 
         return true;
     }
@@ -296,7 +291,7 @@ class Push implements PushInterface
      */
     public function processPush($response)
     {
-        $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
+        $this->logging->addDebug('RESPONSE STATUS: '.$response['status']);
 
         $newStatus = $this->orderStatusFactory->get($this->postData['brq_statuscode'], $this->order);
 
@@ -445,7 +440,7 @@ class Push implements PushInterface
         $buckarooCancelOnFailed = $this->configAccount->getCancelOnFailed($store);
 
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
-            $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
+            $this->logging->addDebug('Buckaroo push failed : '.$message.' : Cancel order.');
 
             // BUCKM2-78: Never automatically cancelauthorize via push for afterpay
             // setting parameter which will cause to stop the cancel process on
@@ -536,7 +531,7 @@ class Push implements PushInterface
             $this->order->addStatusHistoryComment($note);
             $this->order->save();
         } catch (\TIG\Buckaroo\Exception $e) {
-            $this->debugger->addToMessage($e->getLogMessage());
+            $this->logging->addDebug($e->getLogMessage());
         }
     }
 
@@ -566,7 +561,7 @@ class Push implements PushInterface
     protected function saveInvoice()
     {
         if (!$this->order->canInvoice() || $this->order->hasInvoices()) {
-            $this->debugger->addToMessage(__('Order can not be invoiced'));
+            $this->logging->addDebug('Order can not be invoiced');
             throw new \TIG\Buckaroo\Exception(__('Order can not be invoiced'));
         }
 

@@ -40,8 +40,8 @@
 namespace TIG\Buckaroo\Gateway\Http;
 
 use Magento\Payment\Gateway\Http\TransferBuilder;
-use TIG\Buckaroo\Debug\Debugger;
 use TIG\Buckaroo\Gateway\Http\Client\Soap;
+use TIG\Buckaroo\Logging\Log;
 use TIG\Buckaroo\Model\ConfigProvider\Predefined;
 use TIG\Buckaroo\Model\ConfigProvider\Refund;
 
@@ -62,8 +62,8 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
     /** @var int */
     protected $mode;
 
-    /** @var Debugger $debugger */
-    public $debugger;
+    /** @var Log $logger */
+    public $logger;
 
     /**
      * Bpe3 constructor.
@@ -72,20 +72,20 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
      * @param TransferBuilder $transferBuilder
      * @param Predefined      $configProviderPredefined
      * @param Refund          $configProviderRefund
-     * @param Debugger        $debugger
+     * @param Log             $logger
      */
     public function __construct(
         Soap $client,
         TransferBuilder $transferBuilder,
         Predefined $configProviderPredefined,
         Refund $configProviderRefund,
-        Debugger $debugger
+        Log $logger
     ) {
         $this->client                   = $client;
         $this->transferBuilder          = $transferBuilder;
         $this->configProviderPredefined = $configProviderPredefined;
         $this->configProviderRefund     = $configProviderRefund;
-        $this->debugger                 = $debugger;
+        $this->logger                   = $logger;
     }
 
     /**
@@ -145,7 +145,7 @@ class Bpe3 implements \TIG\Buckaroo\Gateway\GatewayInterface
             return $this->doRequest($transaction);
         }
 
-        $this->debugger->addToMessage('Failed to refund because the configuration is set to disabled')->log();
+        $this->logger->addDebug('Failed to refund because the configuration is set to disabled');
         throw new \TIG\Buckaroo\Exception(__("Online refunds are currently disabled for Buckaroo payment methods."));
     }
 
