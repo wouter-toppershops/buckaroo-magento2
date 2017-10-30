@@ -41,7 +41,7 @@ namespace TIG\Buckaroo\Test\Unit\Model;
 use Magento\Payment\Model\MethodInterface;
 use Magento\Sales\Model\Order\Payment;
 
-class Push extends \TIG\Buckaroo\Test\BaseTest
+class PushTest extends \TIG\Buckaroo\Test\BaseTest
 {
     /**
      * @var \TIG\Buckaroo\Model\Push
