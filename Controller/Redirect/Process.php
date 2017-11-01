@@ -206,10 +206,25 @@ class Process extends \Magento\Framework\App\Action\Action
                 * 2) cancel the order we had to create to even get here
                 * 3) redirect back to the checkout page to offer the user feedback & the option to try again
                 */
+
+                // StatusCode specified error messages
+                $statusCodeAddErrorMessage = array();
+                $statusCodeAddErrorMessage[$this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED')] =
+                    'Unfortunately an error occurred while processing your payment. Please try again. If this' .
+                    ' error persists, please choose a different payment method.';
+                $statusCodeAddErrorMessage[$this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_FAILED')] =
+                    'Unfortunately an error occurred while processing your payment. Please try again. If this' .
+                    ' error persists, please choose a different payment method.';
+                $statusCodeAddErrorMessage[$this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_REJECTED')] =
+                    'Unfortunately an error occurred while processing your payment. Please try again. If this' .
+                    ' error persists, please choose a different payment method.';
+                $statusCodeAddErrorMessage[$this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_CANCELLED_BY_USER')] =
+                    'According to our system, you have canceled the payment. If this' .
+                    ' is not the case, please contact us.';
+
                 $this->messageManager->addErrorMessage(
                     __(
-                        'Unfortunately an error occurred while processing your payment. Please try again. If this' .
-                        ' error persists, please choose a different payment method.'
+                        $statusCodeAddErrorMessage[$statusCode]
                     )
                 );
 
