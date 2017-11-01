@@ -262,7 +262,7 @@
                 <auto_invoice>1</auto_invoice>
                 <auto_invoice_status>tig_buckaroo_pending_payment</auto_invoice_status>
                 <success_redirect>checkout/onepage/success</success_redirect>
-                <failure_redirect>checkout</failure_redirect>
+                <failure_redirect>checkout/cart</failure_redirect>
                 <cancel_on_failed>1</cancel_on_failed>
                 <payment_fee_label>Payment Fee</payment_fee_label>
                 <order_status_new>tig_buckaroo_new</order_status_new>

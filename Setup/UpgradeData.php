@@ -39,8 +39,10 @@
 
 namespace TIG\Buckaroo\Setup;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
+use Magento\Store\Model\Store;
 
 class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
 {
@@ -478,6 +480,10 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '1.3.0', '<')) {
             $this->installBaseGiftcards($setup, $this->giftcardAdditionalArray);
+        }
+
+        if (version_compare($context->getVersion(), '1.5.0', '<')) {
+            $this->updateFailureRedirectConfiguration($setup);
         }
     }
 
@@ -960,6 +966,32 @@ class UpgradeData implements \Magento\Framework\Setup\UpgradeDataInterface
                 );
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Update failure_redirect to the correct value
+     *
+     * @param ModuleDataSetupInterface $setup
+     *
+     * @return $this
+     */
+    protected function updateFailureRedirectConfiguration(ModuleDataSetupInterface $setup)
+    {
+        $path = 'tig_buckaroo/account/failure_redirect';
+        $data = [
+            'scope' => ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            'scope_id' => Store::DEFAULT_STORE_ID,
+            'path' => $path,
+            'value' => 'checkout/cart',
+        ];
+
+        $setup->getConnection()->update(
+            $setup->getTable('core_config_data'),
+            $data,
+            $setup->getConnection()->quoteInto('path = ?', $path)
+        );
 
         return $this;
     }
