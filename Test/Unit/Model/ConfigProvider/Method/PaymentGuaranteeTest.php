@@ -90,11 +90,11 @@ class PaymentGuaranteeTest extends BaseTest
         return [
             'null value' => [
                 null,
-                'ideal'
+                'transfer,ideal'
             ],
             'empty value' => [
                 '',
-                'ideal'
+                'transfer,ideal'
             ],
             'transfer method' => [
                 '1',
@@ -103,6 +103,14 @@ class PaymentGuaranteeTest extends BaseTest
             'iDEAL method' => [
                 '2',
                 'ideal'
+            ],
+            'both methods' => [
+                '2,1',
+                'transfer,ideal'
+            ],
+            'with incorrect methods' => [
+                '3,1,5',
+                'transfer'
             ],
         ];
     }
@@ -116,7 +124,7 @@ class PaymentGuaranteeTest extends BaseTest
     public function testGetPaymentMethodToUse($value, $expected)
     {
         $scopeConfigMock = $this->getMockBuilder(ScopeConfigInterface::class)->getMock();
-        $scopeConfigMock->expects($this->once())
+        $scopeConfigMock->expects($this->exactly(2))
             ->method('getValue')
             ->with(PaymentGuarantee::XPATH_PAYMENTGUARANTEE_PAYMENT_METHOD, ScopeInterface::SCOPE_STORE)
             ->willReturn($value);

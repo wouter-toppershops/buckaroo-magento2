@@ -23,13 +23,18 @@ env:
     - MAGENTO_VERSION=2.1.1
     - MAGENTO_VERSION=2.1.2
     - MAGENTO_VERSION=2.1.3
+    - MAGENTO_VERSION=2.1.5
+    - MAGENTO_VERSION=2.1.6
+    - MAGENTO_VERSION=2.1.7
+    - MAGENTO_VERSION=2.1.8
+    - MAGENTO_VERSION=2.1.9
 
 matrix:
   include:
     env: MAGENTO_VERSION=2.1.5 CODE_COVERAGE=true
 
 before_script:
-  - echo "{\"http-basic\":{\"repo.magento.com\":{\"username\":\"${MAGENTO_USERNAME}\",\"password\":\"${MAGENTO_PASSWORD}\"}}}" > auth.json
+  - composer config -a -g http-basic.repo.magento.com $MAGENTO_USERNAME $MAGENTO_PASSWORD
   - bash Test/Script/ManageDependencies.sh
 
 script:
@@ -41,5 +46,3 @@ after_success:
 cache:
   directories:
   - $HOME/.composer/cache
-
-after_script: travis-notify-geckoboard -a $GECKOBOARD_API_KEY -w $GECKOBOARD_WIDGET_KEY

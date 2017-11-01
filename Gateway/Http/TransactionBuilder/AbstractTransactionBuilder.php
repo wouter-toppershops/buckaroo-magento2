@@ -40,7 +40,9 @@
 
 namespace TIG\Buckaroo\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\UrlInterface;
+use Magento\Store\Model\ScopeInterface;
 use TIG\Buckaroo\Gateway\Http\Transaction;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Service\Software\Data as SoftwareData;
@@ -76,6 +78,11 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      * @var null|string
      */
     protected $returnUrl = null;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    protected $scopeConfig;
 
     /**
      * @var SoftwareData
@@ -241,6 +248,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     /**
      * TransactionBuilder constructor.
      *
+     * @param ScopeConfigInterface $scopeConfig
      * @param SoftwareData          $softwareData
      * @param Account               $configProviderAccount
      * @param Transaction           $transaction
@@ -249,6 +257,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
      * @param null|string           $currency
      */
     public function __construct(
+        ScopeConfigInterface $scopeConfig,
         SoftwareData $softwareData,
         Account $configProviderAccount,
         Transaction $transaction,
@@ -256,6 +265,7 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         $amount = null,
         $currency = null
     ) {
+        $this->scopeConfig           = $scopeConfig;
         $this->softwareData          = $softwareData;
         $this->configProviderAccount = $configProviderAccount;
         $this->transaction           = $transaction;
@@ -415,13 +425,16 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
         /** @var \Magento\Store\Model\Store $store */
         $store = $this->getOrder()->getStore();
 
+        $localeCountry = $this->scopeConfig->getValue('general/locale/code', ScopeInterface::SCOPE_STORE);
+        $localeCountry = str_replace('_', '-', $localeCountry);
+
         $headers[] = new \SoapHeader(
             'https://checkout.buckaroo.nl/PaymentEngine/',
             'MessageControlBlock',
             [
                 'Id'                => '_control',
                 'WebsiteKey'        => $this->configProviderAccount->getMerchantKey($store),
-                'Culture'           => 'nl-NL',
+                'Culture'           => $localeCountry,
                 'TimeStamp'         => time(),
                 'Channel'           => $this->channel,
                 'Software'          => $this->softwareData->get()

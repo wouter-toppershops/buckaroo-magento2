@@ -41,7 +41,7 @@ namespace TIG\Buckaroo\Test;
 use Mockery as m;
 use Magento\Framework\TestFramework\Unit\Helper\ObjectManager;
 
-class BaseTest extends \PHPUnit_Framework_TestCase
+class BaseTest extends TestCaseFinder
 {
     /**
      * @var null|string
