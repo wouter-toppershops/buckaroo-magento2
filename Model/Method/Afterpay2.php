@@ -39,6 +39,8 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+use Magento\Catalog\Model\Product\Type;
+
 class Afterpay2 extends AbstractMethod
 {
     /**
@@ -617,7 +619,10 @@ class Afterpay2 extends AbstractMethod
 
         foreach ($cartData as $item) {
             // Child objects of configurable products should not be requested because afterpay will fail on unit prices.
-            if (empty($item) || $this->calculateProductPrice($item, $includesTax) == 0) {
+            if (empty($item)
+                || $this->calculateProductPrice($item, $includesTax) == 0
+                | $item->getProductType() == Type::TYPE_BUNDLE
+            ) {
                 continue;
             }
 
