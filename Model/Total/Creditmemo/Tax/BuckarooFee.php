@@ -51,26 +51,32 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
         $order = $creditmemo->getOrder();
         $invoice = $creditmemo->getInvoice();
 
-        if ($invoice
-            && $invoice->getBuckarooFeeBaseTaxAmount()
+        $salesModel = ($invoice ? $invoice : $order);
+
+        if ($salesModel->getBuckarooFeeBaseTaxAmount()
             && $order->getBuckarooFeeBaseTaxAmountInvoiced() > $order->getBuckarooFeeBaseTaxAmountRefunded()
         ) {
-            $baseBuckarooFeeTax = $invoice->getBuckarooFeeBaseTaxAmount();
-            $buckarooFeeTax = $invoice->getBuckarooFeeTaxAmount();
+            $baseBuckarooFeeTax = $salesModel->getBuckarooFeeBaseTaxAmount();
+            $buckarooFeeTax = $salesModel->getBuckarooFeeTaxAmount();
 
             $order->setBuckarooFeeBaseTaxAmountRefunded(
                 $order->getBuckarooFeeBaseTaxAmountRefunded() +  $baseBuckarooFeeTax
             );
             $order->setBuckarooFeeTaxAmountRefunded($order->getBuckarooFeeTaxAmountRefunded() + $buckarooFeeTax);
 
-            $creditmemo->setBaseTaxAmount($creditmemo->getBaseTaxAmount() + $baseBuckarooFeeTax);
-            $creditmemo->setTaxAmount($creditmemo->getTaxAmount() + $buckarooFeeTax);
-
             $creditmemo->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTax);
             $creditmemo->setBuckarooFeeTaxAmount($buckarooFeeTax);
 
-            $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseBuckarooFeeTax);
-            $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $buckarooFeeTax);
+            // Partial refunds are OK, magento did not add the payment fee tax yet so we do it
+            // Full refunds there is double payment fee tax, because magento already added the tax
+            // We check if the tax is not more than it should be..
+            if ($creditmemo->getBaseTaxAmount() < $order->getBaseTaxAmount()) {
+                $creditmemo->setBaseTaxAmount($creditmemo->getBaseTaxAmount() + $baseBuckarooFeeTax);
+                $creditmemo->setTaxAmount($creditmemo->getTaxAmount() + $buckarooFeeTax);
+
+                $creditmemo->setBaseGrandTotal($creditmemo->getBaseGrandTotal() + $baseBuckarooFeeTax);
+                $creditmemo->setGrandTotal($creditmemo->getGrandTotal() + $buckarooFeeTax);
+            }
         }
 
         return $this;
