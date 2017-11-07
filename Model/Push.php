@@ -52,6 +52,7 @@ use TIG\Buckaroo\Helper\Data;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Model\Method\AbstractMethod;
+use TIG\Buckaroo\Model\Method\Giftcards;
 use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
@@ -192,11 +193,6 @@ class Push implements PushInterface
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
 
-        //Skip informational messages for group processing giftcards
-        if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
-            return;
-        }
-
         //Start debug mailing/logging with the postdata.
         $this->debugger->addToMessage($this->originalPostData);
 
@@ -298,6 +294,10 @@ class Push implements PushInterface
     {
         $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
 
+        if ($this->giftcardPartialPayment()) {
+            return;
+        }
+
         $newStatus = $this->orderStatusFactory->get($this->postData['brq_statuscode'], $this->order);
 
         switch ($response['status']) {
@@ -334,6 +334,28 @@ class Push implements PushInterface
                 $this->processPendingPaymentPush($newStatus, $response['message']);
                 break;
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function giftcardPartialPayment()
+    {
+        $payment = $this->order->getPayment();
+
+        if ($payment->getMethod() != Giftcards::PAYMENT_METHOD_CODE
+            || $this->postData['brq_amount'] >= $this->order->getGrandTotal()
+            || empty($this->postData['brq_relatedtransaction_partialpayment'])
+        ) {
+            return false;
+        }
+
+        $payment->setAdditionalInformation(
+            AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY,
+            $this->postData['brq_relatedtransaction_partialpayment']
+        );
+
+        return true;
     }
 
     /**
@@ -581,7 +603,7 @@ class Push implements PushInterface
          */
         $payment = $this->order->getPayment();
 
-        if ($payment->getMethod() == \TIG\Buckaroo\Model\Method\Giftcards::PAYMENT_METHOD_CODE) {
+        if ($payment->getMethod() == Giftcards::PAYMENT_METHOD_CODE) {
             $this->setReceivedPaymentFromBuckaroo();
 
             $invoiceAmount = floatval($this->postData['brq_amount']);
