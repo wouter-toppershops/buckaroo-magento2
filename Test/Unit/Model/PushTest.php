@@ -118,7 +118,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     /**
      * @param $state
      *
-     * @dataProvider testProcessPendingPaymentPushDataProvider
+     * @dataProvider processPendingPaymentPushDataProvider
      */
     public function testProcessPendingPaymentPush($state)
     {
@@ -142,7 +142,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertTrue($this->object->processPendingPaymentPush($status, $message));
     }
 
-    public function testProcessPendingPaymentPushDataProvider()
+    public function processPendingPaymentPushDataProvider()
     {
         return [
             [
@@ -159,7 +159,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
      * @param $canCancel
      * @param $cancelOnFailed
      *
-     * @dataProvider testProcessFailedPushDataProvider
+     * @dataProvider processFailedPushDataProvider
      */
     public function testProcessFailedPush($state, $canCancel, $cancelOnFailed)
     {
@@ -172,14 +172,19 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->configAccount->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
 
-        $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
-        $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
-        $orderMock->shouldReceive('getStore')->once()->andReturnSelf();
+        $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)
+            ->setMethods(['getState', 'getStore', 'addStatusHistoryComment', 'canCancel', 'getPayment', 'cancel', 'save'])
+            ->getMock();
+        $orderMock->expects($this->atLeastOnce())->method('getState')->willReturn($state);
+        $orderMock->expects($this->once())->method('getStore')->willReturnSelf();
+
+        $addHistoryCommentExpects = $orderMock->expects($this->once());
+        $addHistoryCommentExpects->method('addStatusHistoryComment');
 
         if ($state == $canceledPaymentState) {
-            $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
+            $addHistoryCommentExpects->with($expectedDescription, $status);
         } else {
-            $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription);
+            $addHistoryCommentExpects->with($expectedDescription);
         }
 
         if ($cancelOnFailed) {
@@ -190,13 +195,15 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 ->getMock();
             $paymentMock->method('getMethodInstance')->willReturn($methodInstanceMock);
 
-            $orderMock->shouldReceive('canCancel')->once()->andReturn($canCancel);
-            $orderMock->shouldReceive('getPayment')->times((int)$canCancel)->andReturn($paymentMock);
+            $orderMock->expects($this->once())->method('canCancel')->willReturn($canCancel);
+            $orderMock->expects($this->exactly((int)$canCancel))->method('getPayment')->willReturn($paymentMock);
+
             if ($canCancel) {
                 $this->debugger->shouldReceive('addToMessage')->withAnyArgs()->andReturnSelf();
                 $this->debugger->shouldReceive('log')->andReturnSelf();
-                $orderMock->shouldReceive('cancel')->once()->andReturnSelf();
-                $orderMock->shouldReceive('save')->once()->andReturnSelf();
+
+                $orderMock->expects($this->once())->method('cancel')->willReturnSelf();
+                $orderMock->expects($this->once())->method('save')->willReturnSelf();
             }
         }
 
@@ -205,7 +212,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertTrue($this->object->processFailedPush($status, $message));
     }
 
-    public function testProcessFailedPushDataProvider()
+    public function processFailedPushDataProvider()
     {
         return [
             [

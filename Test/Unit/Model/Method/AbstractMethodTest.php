@@ -68,7 +68,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $configMethodProvider;
 
     /**
-     * @var \TIG\Buckaroo\Model\Method\AbstractMethodMock
+     * @var \TIG\Buckaroo\Test\Unit\Model\Method\AbstractMethodMock
      */
     protected $object;
 
@@ -498,7 +498,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
-     * @dataProvider testProcessInvalidArgumentDataProvider
+     * @dataProvider processInvalidArgumentDataProvider
      *
      * @param $method
      */
@@ -514,7 +514,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->$method($payment, 0);
     }
 
-    public function testProcessInvalidArgumentDataProvider()
+    public function processInvalidArgumentDataProvider()
     {
         return [
             [
@@ -539,7 +539,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      * @param $method
      * @param $canMethod
      *
-     * @dataProvider testCantProcessDataProvider
+     * @dataProvider cantProcessDataProvider
      */
     public function testCantProcess($method, $canMethod)
     {
@@ -562,7 +562,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->$method($payment, 0);
     }
 
-    public function testCantProcessDataProvider()
+    public function cantProcessDataProvider()
     {
         return [
             [
@@ -628,7 +628,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
-     * @dataProvider testGetTitleNoPaymentFeeDataProvider
+     * @dataProvider getTitleNoPaymentFeeDataProvider
      *
      * @param $title
      * @param $expectedTitle
@@ -668,7 +668,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertEquals($expectedTitle, $partialMock->getTitle());
     }
 
-    public function testGetTitleNoPaymentFeeDataProvider()
+    public function getTitleNoPaymentFeeDataProvider()
     {
         return [
             [
@@ -696,7 +696,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @param bool $canMethod
      *
-     * @dataProvider testTransactionBuilderFalseTrueDataProvider
+     * @dataProvider transactionBuilderFalseTrueDataProvider
      */
     public function testTransactionBuilderFalse($method, $setCanMethod, $methodTransactionBuilder, $canMethod = false)
     {
@@ -755,7 +755,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertSame($payment, $partialMock->payment);
     }
 
-    public function testTransactionBuilderFalseTrueDataProvider()
+    public function transactionBuilderFalseTrueDataProvider()
     {
         return [
             [
@@ -794,7 +794,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @param $canMethod
      *
-     * @dataProvider testTransactionBuilderFalseTrueDataProvider
+     * @dataProvider transactionBuilderFalseTrueDataProvider
      */
     public function testTransactionBuilderTrue($method, $setCanMethod, $methodTransactionBuilder, $canMethod = false)
     {
@@ -863,7 +863,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @param bool $saveId
      *
-     * @dataProvider testFullFlowDataProvider
+     * @dataProvider fullFlowDataProvider
      */
     public function testFullFlow(
         $method,
@@ -983,7 +983,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertSame($payment, $partialMock->payment);
     }
 
-    public function testFullFlowDataProvider()
+    public function fullFlowDataProvider()
     {
         return [
             [
@@ -1041,7 +1041,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @param $gatewayMethod
      *
-     * @dataProvider testProcessTransactionDataProvider
+     * @dataProvider processTransactionDataProvider
      */
     public function testProcessTransactionResponseNotValid($method, $gatewayMethod)
     {
@@ -1069,7 +1069,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->$method($transactionMock);
     }
 
-    public function testProcessTransactionDataProvider()
+    public function processTransactionDataProvider()
     {
         return [
             [
@@ -1100,7 +1100,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @param $gatewayMethod
      *
-     * @dataProvider testProcessTransactionDataProvider
+     * @dataProvider processTransactionDataProvider
      */
     public function testProcessTransactionResponseStatusNotValid($method, $gatewayMethod)
     {
@@ -1139,7 +1139,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      *
      * @param $gatewayMethod
      *
-     * @dataProvider testProcessTransactionDataProvider
+     * @dataProvider processTransactionDataProvider
      */
     public function testProcessTransactionSuccessful($method, $gatewayMethod)
     {
@@ -1200,8 +1200,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     public function testGetTransactionAdditionalInfo()
     {
         $data = [];
-        $this->helper->shouldReceive('getTransactionAdditionalInfo')->once()->with($data);
-        $this->object->getTransactionAdditionalInfo($data);
+        $this->helper->shouldReceive('getTransactionAdditionalInfo')->once()->with($data)->andReturn([]);
+        $result = $this->object->getTransactionAdditionalInfo($data);
+        $this->assertInternalType('array', $result);
     }
 
     public function testSaveTransactionDataResponseKeyEmpty()
@@ -1215,14 +1216,15 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
          * @var \Magento\Payment\Model\InfoInterface $payment
          */
 
-        $this->object->saveTransactionData($response, $payment, true, false);
+        $result = $this->object->saveTransactionData($response, $payment, true, false);
+        $this->assertEquals($payment, $result);
     }
 
     /**
      * @param $close
      * @param $saveId
      *
-     * @dataProvider testSaveTransactionDataDataProvider
+     * @dataProvider saveTransactionDataDataProvider
      */
     public function testSaveTransactionData($close, $saveId)
     {
@@ -1274,7 +1276,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $partialMock->saveTransactionData($response, $payment, $close, $saveId);
     }
 
-    public function testSaveTransactionDataDataProvider()
+    public function saveTransactionDataDataProvider()
     {
         return [
             [

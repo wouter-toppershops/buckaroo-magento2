@@ -170,6 +170,10 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->order->shouldReceive('getItemsCollection')->andReturn($this->creditmemoFactory);
 
         $this->object->createCreditmemo();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 
     /**
@@ -239,8 +243,9 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->order->shouldReceive('getBaseToOrderRate')->once()->andReturn(1);
         $this->order->shouldReceive('getBaseTotalRefunded')->once()->andReturn(null);
         $this->order->shouldReceive('getBaseBuckarooFeeInvoiced')->andReturn(10);
+        $this->order->shouldReceive('getBuckarooFeeBaseTaxAmountInvoiced')->andReturn(5);
 
-        $this->assertEquals(90, $this->object->getAdjustmentRefundData());
+        $this->assertEquals(85, $this->object->getAdjustmentRefundData());
     }
 
     /**
