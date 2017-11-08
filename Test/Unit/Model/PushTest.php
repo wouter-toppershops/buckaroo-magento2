@@ -268,7 +268,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
      * @param bool                       $autoInvoice
      * @param bool                       $orderCanInvoice
      * @param bool                       $orderHasInvoices
-     * @param bool                       $postData
+     * @param array                      $postData
      *
      * @dataProvider processSucceededPushDataProvider
      */
@@ -282,7 +282,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $autoInvoice = false,
         $orderCanInvoice = false,
         $orderHasInvoices = false,
-        $postData = false
+        $postData = []
     ) {
         $message = 'testMessage';
         $status = 'testStatus';
@@ -330,6 +330,10 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $paymentMock->shouldReceive('getConfigData')->with('payment_action')->andReturn($paymentAction);
         $paymentMock->shouldReceive('getConfigData');
         $paymentMock->shouldReceive('getMethod');
+        $paymentMock->shouldReceive('setTransactionAdditionalInfo');
+        $paymentMock->shouldReceive('setTransactionId');
+        $paymentMock->shouldReceive('setParentTransactionId');
+        $paymentMock->shouldReceive('setAdditionalInformation');
 
         /**
          * Build a currency mock
@@ -368,22 +372,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         }
 
         /**
-         * Build a PHP_Unit (not Mockery) partial mock to capture internal calls to public method addTransactionData
-         */
-        $objectMock = $this->getPartialObject(
-            get_class($this->object),
-            [
-                'objectManager' => $this->objectManager,
-                'request' => $this->request,
-                'helper' => $this->helper,
-                'configAccount' => $this->configAccount,
-                'debugger' => $this->debugger,
-                'orderSender' => $this->orderSender,
-            ],
-            ['addTransactionData']
-        );
-
-        /**
          * If autoInvoice is required, also test protected method saveInvoice
          */
         if ($autoInvoice) {
@@ -397,10 +385,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 $this->setExpectedException(\TIG\Buckaroo\Exception::class);
                 $this->debugger->shouldReceive('addToMessage')->withAnyArgs();
             } else {
-                /**
-                 * Order can be invoice, so test invoice flow
-                 */
-                $objectMock->expects($this->once())->method('addTransactionData');
 
                 /**
                  * Payment should receive register capture notification only once and payment should be saved
@@ -413,10 +397,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                  */
                 $orderMock->shouldReceive('save')->atLeast(1)->withNoArgs();
 
-                /**
-                 * @noinspection PhpUndefinedFieldInspection
-                 */
-                $objectMock->postData = $postData;
+                $this->object->postData = $postData;
 
                 $invoiceMock = \Mockery::mock(\Magento\Sales\Model\Order\Invoice::class);
                 $invoiceMock->shouldReceive('getEmailSent')->andReturn(false);
@@ -438,15 +419,15 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
             }
         }
 
-        /**
-         * @noinspection PhpUndefinedFieldInspection
-         */
-        $objectMock->order = $orderMock;
+
+        $this->helper->shouldReceive('getTransactionAdditionalInfo');
+
+        $this->object->order = $orderMock;
 
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
-        $this->assertTrue($objectMock->processSucceededPush($status, $message));
+        $this->assertTrue($this->object->processSucceededPush($status, $message));
     }
 
     public function processSucceededPushDataProvider()
@@ -495,7 +476,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             1 => [
                 /**
@@ -537,7 +518,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             2 => [
                 /**
@@ -579,7 +560,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             3 => [
                 /**
@@ -621,7 +602,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             /**
              * CANCELED && NOT AUTHORIZE
@@ -666,7 +647,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             5 => [
                 /**
@@ -708,7 +689,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             6 => [
                 /**
@@ -750,7 +731,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             7 => [
                 /**
@@ -792,7 +773,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             /**
              * CANCELED && NOT AUTHORIZE && AUTO INVOICE
@@ -837,7 +818,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             9 => [
                 /**
@@ -879,7 +860,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                ['brq_transactions' => 'test_transaction_id'],
             ],
             10 => [
                 /**
@@ -963,7 +944,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             12 => [
                 /**
@@ -1005,7 +986,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             /**
              * PROCESSING && AUTHORIZE
@@ -1050,7 +1031,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             14 => [
                 /**
@@ -1092,7 +1073,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             15 => [
                 /**
@@ -1134,7 +1115,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             16 => [
                 /**
@@ -1176,7 +1157,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             /**
              * PROCESSING && NOT AUTHORIZE
@@ -1221,7 +1202,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             18 => [
                 /**
@@ -1263,7 +1244,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             19 => [
                 /**
@@ -1305,7 +1286,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             20 => [
                 /**
@@ -1347,7 +1328,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             /**
              * PROCESSING && NOT AUTHORIZE && AUTO INVOICE
@@ -1392,7 +1373,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             22 => [
                 /**
@@ -1434,7 +1415,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                ['brq_transactions' => 'test_transaction_id'],
             ],
             23 => [
                 /**
@@ -1518,7 +1499,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
             25 => [
                 /**
@@ -1560,7 +1541,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $postData
                  */
-                false,
+                [],
             ],
         ];
     }
