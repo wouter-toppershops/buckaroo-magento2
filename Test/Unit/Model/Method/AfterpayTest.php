@@ -57,7 +57,7 @@ class AfterpayTest extends BaseTest
 
         $paymentMock = $this->getFakeMock(Payment::class)->getMock();
         $paymentMock->expects($this->any())->method('getOrder')->willReturn($creditmemoMock);
-        $paymentMock->expects($this->once())->method('getCreditmemo')->willReturn($creditmemoMock);
+        $paymentMock->expects($this->exactly(2))->method('getCreditmemo')->willReturn($creditmemoMock);
 
         $instance = $this->getInstance();
         $result = $instance->getCreditmemoArticleData($paymentMock);

@@ -44,7 +44,7 @@ use TIG\Buckaroo\Test\BaseTest;
 class DeleteTest extends BaseTest
 {
     /**
-     * @var Index
+     * @var Delete
      */
     protected $controller;
 
@@ -70,6 +70,12 @@ class DeleteTest extends BaseTest
 
     public function testExecute()
     {
+        $this->markTestSkipped('Figure out how to perform assertions');
+
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 }

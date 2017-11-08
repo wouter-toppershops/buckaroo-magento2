@@ -36,4 +36,17 @@ class TestCaseFinder extends \PHPUnit\Framework\TestCase {
     {
         return $this->createMock($className);
     }
+
+    public function setExpectedException($exceptionName, $exceptionMessage = '', $exceptionCode = null)
+    {
+        $this->expectException($exceptionName);
+
+        if (strlen($exceptionMessage) > 0) {
+            $this->expectExceptionMessage($exceptionMessage);
+        }
+
+        if ($exceptionCode !== null) {
+            $this->expectExceptionCode($exceptionCode);
+        }
+    }
 }
