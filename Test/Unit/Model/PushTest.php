@@ -170,11 +170,11 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
             ->setMethods(['getMethod', 'setAdditionalInformation'])
             ->getMock();
         $paymentMock->expects($this->once())->method('getMethod')->willReturn($methodCode);
-        $paymentMock->expects($this->atMost(1))->method('setAdditionalInformation');
+        $paymentMock->method('setAdditionalInformation');
 
         $orderMock = $this->getFakeMock(Order::class)->setMethods(['getPayment', 'getGrandTotal'])->getMock();
         $orderMock->expects($this->once())->method('getPayment')->willReturn($paymentMock);
-        $orderMock->expects($this->atMost(1))->method('getGrandTotal')->willReturn($orderAmount);
+        $orderMock->method('getGrandTotal')->willReturn($orderAmount);
 
         $this->object->order = $orderMock;
         $this->object->postData = [
