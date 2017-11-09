@@ -516,7 +516,7 @@ class Afterpay extends AbstractMethod
         if ($this->canRefundPartialPerInvoice() && $creditmemo) {
             $invoice = $creditmemo->getInvoice();
 
-            $transactionBuilder->setInvoiceId('CM' . $invoice->getIncrementId())
+            $transactionBuilder->setInvoiceId($invoice->getOrder()->getIncrementId())
                 ->setOriginalTransactionKey($payment->getParentTransactionId());
         }
 
