@@ -27,7 +27,7 @@
  */
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:TIG_Buckaroo:etc/tig_module.xsd">
-    <module name="TIG_Buckaroo" setup_version="1.5.1" build_number="1230" stability="stable">
+    <module name="TIG_Buckaroo" setup_version="1.5.2" build_number="1233" stability="alpha">
         <sequence>
             <module name="Magento_Payment"/>
         </sequence>
