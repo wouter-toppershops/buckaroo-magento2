@@ -478,10 +478,24 @@ class Push implements PushInterface
 
         $store = $this->order->getStore();
 
+        $payment = $this->order->getPayment();
+
+        $skipFirstPush = $payment->getAdditionalInformation('skip_push');
+
+        /**
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * for some payment methods
+         * @todo when buckaroo changes the push / response order this can be removed
+         */
+        if ($skipFirstPush > 0) {
+            $payment->setAdditionalInformation('skip_push', 0);
+            throw new \TIG\Buckaroo\Exception(__('Skipped handling this push, first handle response, action will be taken on the next push.'));
+        }
+
         /**
          * @var \Magento\Payment\Model\MethodInterface $paymentMethod
          */
-        $paymentMethod = $this->order->getPayment()->getMethodInstance();
+        $paymentMethod = $payment->getMethodInstance();
 
         if (!$this->order->getEmailSent()
             && ($this->configAccount->getOrderConfirmationEmail($store)
