@@ -40,6 +40,9 @@
 namespace TIG\Buckaroo\Model\Method;
 
 use Magento\Catalog\Model\Product\Type;
+use Magento\Sales\Api\Data\CreditmemoInterface;
+use Magento\Sales\Api\Data\InvoiceInterface;
+use Magento\Sales\Api\Data\OrderInterface;
 
 class Afterpay extends AbstractMethod
 {
@@ -682,7 +685,7 @@ class Afterpay extends AbstractMethod
             $count++;
         }
 
-        $taxLine = $this->getTaxLine($count, $payment);
+        $taxLine = $this->getTaxLine($count, $payment->getOrder());
 
         if (!empty($taxLine)) {
             $requestData = array_merge($requestData, $taxLine);
@@ -693,15 +696,13 @@ class Afterpay extends AbstractMethod
     }
 
     /**
-     * @param \Magento\Payment\Model\Order\Invoice $invoice
+     * @param \Magento\Sales\Model\Order\Invoice $invoice
      *
      * @return array
      */
     public function getInvoiceArticleData($invoice)
     {
         $includesTax = $this->_scopeConfig->getValue(static::TAX_CALCULATION_INCLUDES_TAX);
-
-        $payment = $invoice->getPayment();
 
         // Set loop variables
         $articles = array();
@@ -748,7 +749,7 @@ class Afterpay extends AbstractMethod
             break;
         }
 
-        $taxLine = $this->getTaxLine($count, $payment, 'invoice');
+        $taxLine = $this->getTaxLine($count, $invoice);
 
         if (!empty($taxLine)) {
             $articles = array_merge($articles, $taxLine);
@@ -801,7 +802,7 @@ class Afterpay extends AbstractMethod
             break;
         }
 
-        $taxLine = $this->getTaxLine($count, $payment, 'creditmemo');
+        $taxLine = $this->getTaxLine($count, $payment->getCreditmemo());
 
         if (!empty($taxLine)) {
             $articles = array_merge($articles, $taxLine);
@@ -971,26 +972,14 @@ class Afterpay extends AbstractMethod
     /**
      * Get the tax line
      *
-     * @param (int)                                                                              $latestKey
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param string                                                                             $type
+     * @param (int)                                               $latestKey
+     * @param InvoiceInterface|OrderInterface|CreditmemoInterface $payment
      *
      * @return array
      */
-    public function getTaxLine($latestKey, $payment, $type = 'order')
+    public function getTaxLine($latestKey, $payment)
     {
-        switch($type) {
-            case 'creditmemo' :
-                $taxes = $this->getTaxes($payment->getCreditmemo());
-                break;
-            case 'invoice' :
-                $taxes = $this->getTaxes($payment); //invoiceCollectionItem
-                break;
-            case 'order':
-            default:
-                $taxes = $this->getTaxes($payment->getOrder());
-                break;
-        }
+        $taxes = $this->getTaxes($payment);
         $article = [];
 
         if ($taxes > 0) {
@@ -1008,7 +997,7 @@ class Afterpay extends AbstractMethod
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * @param InvoiceInterface|OrderInterface|CreditmemoInterface $order
      *
      * @return float|int|null
      */
