@@ -250,9 +250,6 @@ class Afterpay2Test extends BaseTest
         $orderMock->expects($orderTaxinvokedAtMost)->method('getTaxAmount')->willReturn($taxAmount);
         $orderMock->expects($shippingTaxinvokedAtMost)->method('getShippingTaxAmount')->willReturn($shippingTaxAmount);
 
-        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
-        $paymentMock->expects($this->exactly(1))->method('getOrder')->willReturn($orderMock);
-
         $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)->getMock();
         $scopeConfigMock->expects($this->exactly(2))
             ->method('getValue')
@@ -263,7 +260,7 @@ class Afterpay2Test extends BaseTest
             ->willReturnOnConsecutiveCalls($catalogIncludesTax, $shippingIncludesTax);
 
         $instance = $this->getInstance(['scopeConfig' => $scopeConfigMock]);
-        $result = $instance->getTaxLine(rand(0, 10), $paymentMock);
+        $result = $instance->getTaxLine(rand(0, 10), $orderMock);
         $this->assertInternalType('array', $result);
 
         if ($expected === null) {
