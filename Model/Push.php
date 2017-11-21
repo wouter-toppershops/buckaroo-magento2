@@ -488,7 +488,8 @@ class Push implements PushInterface
          * @todo when buckaroo changes the push / response order this can be removed
          */
         if ($skipFirstPush > 0) {
-            $payment->setAdditionalInformation('skip_push', 0);
+            $payment->unsAdditionalInformation('skip_push');
+            $payment->save();
             throw new \TIG\Buckaroo\Exception(__('Skipped handling this push, first handle response, action will be taken on the next push.'));
         }
 
