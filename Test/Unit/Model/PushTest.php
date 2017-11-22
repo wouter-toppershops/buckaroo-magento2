@@ -131,6 +131,10 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
+        $orderMock->shouldReceive('getStore')->andReturn(0);
+        $orderMock->shouldReceive('getPayment')->andReturnSelf();
+        $orderMock->shouldReceive('getMethodInstance')->andReturnSelf();
+        $orderMock->shouldReceive('getEmailSent')->andReturn(true);
 
         if ($state == $pendingPaymentState) {
             $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
