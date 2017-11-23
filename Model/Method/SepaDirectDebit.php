@@ -234,7 +234,7 @@ class SepaDirectDebit extends AbstractMethod
         ];
 
         if ($this->getInfoInstance()->getAdditionalInformation('customer_bic')) {
-            $services[0]['RequestParameter'][0][] = [
+            $services['RequestParameter'][] = [
                 '_'    => $this->getInfoInstance()->getAdditionalInformation('customer_bic'),
                 'Name' => 'CustomerBIC',
             ];
@@ -358,15 +358,13 @@ class SepaDirectDebit extends AbstractMethod
             $billingCountry = $paymentInfo->getQuote()->getBillingAddress()->getCountryId();
         }
 
-        if ($billingCountry == 'NL') {
-            $ibanValidator = $this->objectManager->create(\Zend\Validator\Iban::class);
-            if (empty($customerIban) || !$ibanValidator->isValid($customerIban)) {
-                throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account number'));
-            }
-        } else {
-            if (!preg_match(self::BIC_NUMBER_REGEX, $customerBic)) {
-                throw new \TIG\Buckaroo\Exception(__('Please enter a valid BIC number'));
-            }
+        $ibanValidator = $this->objectManager->create(\Zend\Validator\Iban::class);
+        if (empty($customerIban) || !$ibanValidator->isValid($customerIban)) {
+            throw new \TIG\Buckaroo\Exception(__('Please enter a valid bank account number'));
+        }
+
+        if ($billingCountry != 'NL' && !preg_match(self::BIC_NUMBER_REGEX, $customerBic)) {
+            throw new \TIG\Buckaroo\Exception(__('Please enter a valid BIC number'));
         }
 
         return $this;
