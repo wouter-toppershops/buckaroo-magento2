@@ -212,13 +212,28 @@
                 <available_in_backend>0</available_in_backend>
             </tig_buckaroo_afterpay2>
 
+            <tig_buckaroo_payperemail>
+                <active>0</active>
+                <model>TIG\Buckaroo\Model\Method\PayPerEmail</model>
+                <order_status>pending</order_status>
+                <title>TIG Buckaroo PayPerEmail</title>
+                <allowspecific>0</allowspecific>
+                <sort_order>170</sort_order>
+                <order_email>1</order_email>
+                <payment_fee_label>Fee</payment_fee_label>
+                <group>tig_buckaroo</group>
+                <payment_action>order</payment_action>
+                <can_capture_partial>1</can_capture_partial>
+                <available_in_backend>1</available_in_backend>
+            </tig_buckaroo_payperemail>
+
             <tig_buckaroo_eps>
                 <active>0</active>
                 <model>TIG\Buckaroo\Model\Method\Eps</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo EPS</title>
                 <allowspecific>0</allowspecific>
-                <sort_order>170</sort_order>
+                <sort_order>180</sort_order>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
                 <group>tig_buckaroo</group>
@@ -231,7 +246,7 @@
                 <model>TIG\Buckaroo\Model\Method\Giftcards</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Giftcards</title>
-                <sort_order>180</sort_order>
+                <sort_order>190</sort_order>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
                 <group>tig_buckaroo</group>
@@ -244,7 +259,7 @@
                 <model>TIG\Buckaroo\Model\Method\PaymentGuarantee</model>
                 <order_status>pending</order_status>
                 <title>TIG Buckaroo Payment Guarantee</title>
-                <sort_order>190</sort_order>
+                <sort_order>200</sort_order>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
                 <group>tig_buckaroo</group>
