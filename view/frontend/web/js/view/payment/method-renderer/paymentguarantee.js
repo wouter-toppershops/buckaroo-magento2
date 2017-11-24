@@ -91,8 +91,8 @@ define(
                 paymentMethod : null,
                 telephoneNumber : null,
                 selectedGender : null,
-                firstname : null,
-                lastname : null,
+                firstname : '',
+                lastname : '',
                 CustomerName : null,
                 BillingName : null,
                 dateValidate : null,
@@ -135,17 +135,40 @@ define(
                 ]);
 
                 this.paymentMethod  = window.checkoutConfig.payment.buckaroo.paymentguarantee.paymentMethod;
-                this.firstName      = quote.billingAddress().firstname;
-                this.lastName       = quote.billingAddress().lastname;
 
                 /**
                  * Observe customer first & lastname
                  * bind them together, so they could appear in the frontend
                  */
-                this.CustomerName = ko.computed(function() {
-                    return this.firstName + " " + this.lastName;
-                }, this);
-                this.BillingName(this.CustomerName());
+                this.updateBillingName = function(firstname, lastname) {
+                    this.firstName = firstname;
+                    this.lastName = lastname;
+
+                    this.CustomerName = ko.computed(
+                        function () {
+                            return this.firstName + " " + this.lastName;
+                        },
+                        this
+                    );
+
+                    this.BillingName(this.CustomerName());
+                };
+
+                if (quote.billingAddress()) {
+                    this.updateBillingName(quote.billingAddress().firstname, quote.billingAddress().lastname);
+                }
+
+                quote.billingAddress.subscribe(
+                    function(newAddress) {
+                        if (this.getCode() === this.isChecked() &&
+                            newAddress &&
+                            newAddress.getKey() &&
+                            (newAddress.firstname !== this.firstName || newAddress.lastname !== this.lastName)
+                        ) {
+                            this.updateBillingName(newAddress.firstname, newAddress.lastname);
+                        }
+                    }.bind(this)
+                );
 
                 /**
                  * observe radio buttons
@@ -178,7 +201,6 @@ define(
                     additionalValidators.validate();
                 };
 
-                this.BillingName.subscribe(runValidation,this);
                 this.dateValidate.subscribe(runValidation,this);
                 this.bankaccountnumber.subscribe(runValidation,this);
                 this.termsValidate.subscribe(runValidation,this);
@@ -291,6 +313,11 @@ define(
 
                 selectPaymentMethodAction(this.getData());
                 checkoutData.setSelectedPaymentMethod(this.item.method);
+
+                if (quote.billingAddress()) {
+                    this.updateBillingName(quote.billingAddress().firstname, quote.billingAddress().lastname);
+                }
+
                 return true;
             },
 
