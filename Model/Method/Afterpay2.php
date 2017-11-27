@@ -403,16 +403,8 @@ class Afterpay2 extends AbstractMethod
 
         // Partial Capture Settings
         if ($capturePartial) {
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $transactionBuilder->setInvoiceId(
-                $payment->getOrder()->getIncrementId(). '-' .
-                $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
-            )
-                ->setOriginalTransactionKey(
-                    $payment->getParentTransactionId()
-                );
+            $transactionBuilder->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices)
+                ->setOriginalTransactionKey($payment->getParentTransactionId());
         }
 
         return $transactionBuilder;
