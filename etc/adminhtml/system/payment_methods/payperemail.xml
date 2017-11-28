@@ -66,60 +66,36 @@
         <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Default Configuration</label>
 
-            <field id="payment_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="scheme_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit Management Scheme Key</label>
+                <comment><![CDATA[Credit Management Scheme Key]]></comment>
+                <config_path>payment/tig_buckaroo_payperemail/scheme_key</config_path>
+            </field>
+
+            <field id="max_step_index" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit management steps</label>
+                <comment><![CDATA[Max niveau of the credit management steps]]></comment>
+                <config_path>payment/tig_buckaroo_payperemail/max_step_index</config_path>
+            </field>
+
+            <field id="due_date" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Payment term expiry</label>
+                <comment><![CDATA[Payment term expiry in days]]></comment>
+                <config_path>payment/tig_buckaroo_payperemail/due_date</config_path>
+            </field>
+
+            <field id="payment_method" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PayPerEmail payment method</label>
-                <comment><![CDATA[Select which paymethod must be used at PayPerEmail]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmailPaymentMethods</source_model>
+                <comment><![CDATA[Select which payment methods can be used at PayPerEmail]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethods</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/payment_method</config_path>
             </field>
 
-            <field id="business" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>PayPerEmail payment method</label>
-                <comment><![CDATA[Select which paymethod must be used at PayPerEmail]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\Business</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/business</config_path>
-            </field>
-
-            <field id="high_tax" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> High VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'high' VAT]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/high_tax</config_path>
-            </field>
-
-            <field id="middle_tax" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> Middle VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'middle' VAT]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/middle_tax</config_path>
-            </field>
-
-            <field id="low_tax" translate="label comment" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> Low VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'low' VAT]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/low_tax</config_path>
-            </field>
-
-            <field id="zero_tax" translate="label comment" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> Zero VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'zero' VAT]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/zero_tax</config_path>
-            </field>
-
-            <field id="no_tax" translate="label comment" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label> No VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'no' VAT]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/no_tax</config_path>
-            </field>
-
-            <field id="payment_email" translate="label comment" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Send payment email</label>
-                <comment><![CDATA[Buckaroo sends an email to the customer with the payment procedures.]]></comment>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>payment/tig_buckaroo_payperemail/payment_email</config_path>
+            <field id="payment_method_after_expiry" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>PayPerEmail payment method after expiry</label>
+                <comment><![CDATA[Select which payment methods can be used after the payment expiry]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethodsAfterExpiry</source_model>
+                <config_path>payment/tig_buckaroo_payperemail/payment_method_after_expiry</config_path>
             </field>
         </group>
 
@@ -131,13 +107,6 @@
                 <comment><![CDATA[Enable to send an order confirmation email to the customer when the creating of the order is successful. Specific for this payment method.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/order_email</config_path>
-            </field>
-
-            <field id="payment_flow" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Payment flow</label>
-                <comment><![CDATA[Whether to use separate authorize and capture calls or to use a combined 'pay' call.]]></comment>
-                <config_path>payment/tig_buckaroo_payperemail/payment_action</config_path>
-                <source_model>TIG\Buckaroo\Model\Config\Source\PaymentFlow</source_model>
             </field>
 
             <field id="payment_fee" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
