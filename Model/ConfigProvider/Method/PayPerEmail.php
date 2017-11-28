@@ -39,34 +39,33 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+use TIG\Buckaroo\Model\Method\PayPerEmail as MethodPayPerEmail;
+
 /**
  * @method getDueDate()
- * @method getSendEmail()
  */
 class PayPerEmail extends AbstractConfigProvider
 {
-    const XPATH_ALLOWED_CURRENCIES              = 'buckaroo/tig_buckaroo_payperemail/allowed_currencies';
+    const XPATH_ALLOWED_CURRENCIES               = 'buckaroo/tig_buckaroo_payperemail/allowed_currencies';
 
-    const XPATH_ALLOW_SPECIFIC                  = 'payment/tig_buckaroo_payperemail/allowspecific';
-    const XPATH_SPECIFIC_COUNTRY                = 'payment/tig_buckaroo_payperemail/specificcountry';
+    const XPATH_ALLOW_SPECIFIC                   = 'payment/tig_buckaroo_payperemail/allowspecific';
+    const XPATH_SPECIFIC_COUNTRY                 = 'payment/tig_buckaroo_payperemail/specificcountry';
 
-    const XPATH_PAYPEREMAIL_ACTIVE                 = 'payment/tig_buckaroo_payperemail/active';
-    const XPATH_PAYPEREMAIL_PAYMENT_FEE            = 'payment/tig_buckaroo_payperemail/payment_fee';
-    const XPATH_PAYPEREMAIL_PAYMENT_FEE_LABEL      = 'payment/tig_buckaroo_payperemail/payment_fee_label';
-    const XPATH_PAYPEREMAIL_SEND_EMAIL             = 'payment/tig_buckaroo_payperemail/send_email';
-    const XPATH_PAYPEREMAIL_ACTIVE_STATUS          = 'payment/tig_buckaroo_payperemail/active_status';
-    const XPATH_PAYPEREMAIL_ORDER_STATUS_SUCCESS   = 'payment/tig_buckaroo_payperemail/order_status_success';
-    const XPATH_PAYPEREMAIL_ORDER_STATUS_FAILED    = 'payment/tig_buckaroo_payperemail/order_status_failed';
-    const XPATH_PAYPEREMAIL_AVAILABLE_IN_BACKEND   = 'payment/tig_buckaroo_payperemail/available_in_backend';
-    const XPATH_PAYPEREMAIL_DUE_DATE               = 'payment/tig_buckaroo_payperemail/due_date';
-    const XPATH_PAYPEREMAIL_ALLOWED_CURRENCIES     = 'payment/tig_buckaroo_payperemail/allowed_currencies';
-    const XPATH_PAYPEREMAIL_BUSINESS               = 'payment/tig_buckaroo_payperemail/business';
-    const XPATH_PAYPEREMAIL_PAYMENT_METHODS        = 'payment/tig_buckaroo_payperemail/payment_method';
-    const XPATH_PAYPEREMAIL_HIGH_TAX               = 'payment/tig_buckaroo_payperemail/high_tax';
-    const XPATH_PAYPEREMAIL_MIDDLE_TAX             = 'payment/tig_buckaroo_payperemail/middle_tax';
-    const XPATH_PAYPEREMAIL_LOW_TAX                = 'payment/tig_buckaroo_payperemail/low_tax';
-    const XPATH_PAYPEREMAIL_ZERO_TAX               = 'payment/tig_buckaroo_payperemail/zero_tax';
-    const XPATH_PAYPEREMAIL_NO_TAX                 = 'payment/tig_buckaroo_payperemail/no_tax';
+    const XPATH_PAYPEREMAIL_ACTIVE               = 'payment/tig_buckaroo_payperemail/active';
+    const XPATH_PAYPEREMAIL_PAYMENT_FEE          = 'payment/tig_buckaroo_payperemail/payment_fee';
+    const XPATH_PAYPEREMAIL_PAYMENT_FEE_LABEL    = 'payment/tig_buckaroo_payperemail/payment_fee_label';
+    const XPATH_PAYPEREMAIL_ACTIVE_STATUS        = 'payment/tig_buckaroo_payperemail/active_status';
+    const XPATH_PAYPEREMAIL_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_payperemail/order_status_success';
+    const XPATH_PAYPEREMAIL_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_payperemail/order_status_failed';
+
+    const XPATH_PAYPEREMAIL_SCHEME_KEY                  = 'payment/tig_buckaroo_payperemail/scheme_key';
+    const XPATH_PAYPEREMAIL_MAX_STEP_INDEX              = 'payment/tig_buckaroo_payperemail/max_step_index';
+    const XPATH_PAYPEREMAIL_DUE_DATE                    = 'payment/tig_buckaroo_payperemail/due_date';
+    const XPATH_PAYPEREMAIL_PAYMENT_METHOD              = 'payment/tig_buckaroo_payperemail/payment_method';
+    const XPATH_PAYPEREMAIL_PAYMENT_METHOD_AFTER_EXPIRY = 'payment/tig_buckaroo_payperemail/payment_method_after_expiry';
+
+
+
 
     /**
      * @return array
@@ -77,126 +76,19 @@ class PayPerEmail extends AbstractConfigProvider
             return [];
         }
 
-        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(\TIG\Buckaroo\Model\Method\PayPerEmail::PAYMENT_METHOD_CODE);
+        $paymentFeeLabel = $this->getBuckarooPaymentFeeLabel(MethodPayPerEmail::PAYMENT_METHOD_CODE);
 
         return [
             'payment' => [
                 'buckaroo' => [
                     'payperemail' => [
-                        'sendEmail'         => (bool) $this->getSendEmail(),
                         'paymentFeeLabel'   => $paymentFeeLabel,
                         'allowedCurrencies' => $this->getAllowedCurrencies(),
-                        'paymentMethod'     => $this->getPaymentMethod(),
                     ],
                     'response' => [],
                 ],
             ],
         ];
-    }
-
-    /**
-     * paymentMethod 1 = payperemailacceptgiro
-     * paymentMethod 2 = payperemaildigiaccept
-     *
-     * @return bool|int
-     */
-    public function getPaymentMethod()
-    {
-        $paymentMethod = (int) $this->scopeConfig->getValue(
-            self::XPATH_PAYPEREMAIL_PAYMENT_METHODS,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        return $paymentMethod ? $paymentMethod : false;
-    }
-
-    /**
-     * Get the config values for the high tax classes.
-     *
-     * @return bool|mixed
-     */
-    public function getHighTaxClasses()
-    {
-        $taxClasses = $this->scopeConfig->getValue(
-            self::XPATH_PAYPEREMAIL_HIGH_TAX,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        return $taxClasses ? $taxClasses : false;
-    }
-
-    /**
-     * Get the config values for the middle tax classes
-     *
-     * @return bool|mixed
-     */
-    public function getMiddleTaxClasses()
-    {
-        $taxClasses = $this->scopeConfig->getValue(
-            self::XPATH_PAYPEREMAIL_MIDDLE_TAX,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        return $taxClasses ? $taxClasses : false;
-    }
-
-    /**
-     * Get the config values for the low tax classes
-     *
-     * @return bool|mixed
-     */
-    public function getLowTaxClasses()
-    {
-        $taxClasses = $this->scopeConfig->getValue(
-            self::XPATH_PAYPEREMAIL_LOW_TAX,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        return $taxClasses ? $taxClasses : false;
-    }
-
-    /**
-     * Get the config values for the zero tax classes
-     *
-     * @return bool|mixed
-     */
-    public function getZeroTaxClasses()
-    {
-        $taxClasses = $this->scopeConfig->getValue(
-            self::XPATH_PAYPEREMAIL_ZERO_TAX,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        return $taxClasses ? $taxClasses : false;
-    }
-
-    /**
-     * Get the config values for the no tax classes
-     *
-     * @return bool|mixed
-     */
-    public function getNoTaxClasses()
-    {
-        $taxClasses = $this->scopeConfig->getValue(
-            self::XPATH_PAYPEREMAIL_NO_TAX,
-            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
-        );
-
-        return $taxClasses ? $taxClasses : false;
-    }
-
-    /**
-     * Get the methods name
-     *
-     * @param int $method
-     *
-     * @return bool|string
-     */
-    public function getPaymentMethodName($method = null)
-    {
-        $paymentMethodName = 'payperemail';
-
-        return $paymentMethodName;
     }
 
     /**

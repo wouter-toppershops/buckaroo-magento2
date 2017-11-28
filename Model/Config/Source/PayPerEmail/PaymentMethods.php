@@ -37,14 +37,14 @@
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
-namespace TIG\Buckaroo\Model\Config\Source;
+namespace TIG\Buckaroo\Model\Config\Source\PayPerEmail;
 
 /**
  * Class AfterpayPaymentMethods
  *
  * @package TIG\Buckaroo\Model\Config\Source
  */
-class PayPerEmailPaymentMethods implements \Magento\Framework\Option\ArrayInterface
+class PaymentMethods implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * Options getter
@@ -53,7 +53,22 @@ class PayPerEmailPaymentMethods implements \Magento\Framework\Option\ArrayInterf
      */
     public function toOptionArray()
     {
-        $options = [];
+        $options = [
+            ['value' => 'amex',               'label' => __('American Express')],
+            ['value' => 'eps',                'label' => __('EPS')],
+            ['value' => 'directdebit',        'label' => __('Direct Debit')],
+            ['value' => 'giftcard',           'label' => __('Giftcards')],
+            ['value' => 'giropay',            'label' => __('Giropay')],
+            ['value' => 'ideal',              'label' => __('iDeal')],
+            ['value' => 'mastercard',         'label' => __('Mastercard')],
+            ['value' => 'paypal',             'label' => __('PayPal')],
+            ['value' => 'sofortueberweisung', 'label' => __('Sofort Banking')],
+            ['value' => 'transfer',           'label' => __('Bank Transfer')],
+            ['value' => 'visa',               'label' => __('Visa')],
+            ['value' => 'maestro',            'label' => __('eMaestro')],
+            ['value' => 'visaelectron',       'label' => __('Visa Electron')],
+            ['value' => 'vpay',               'label' => __('V PAY')]
+        ];
 
         return $options;
     }
