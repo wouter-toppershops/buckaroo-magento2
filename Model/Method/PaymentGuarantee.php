@@ -790,8 +790,7 @@ class PaymentGuarantee extends AbstractMethod
     private function getPartialInvoiceId($order)
     {
         return $order->getIncrementId() . '-'
-            . $order->hasInvoices() . '-'
-            . substr(md5(date("YMDHis")), 0, 6);
+            . $order->hasInvoices();
     }
 
     /**
@@ -802,8 +801,7 @@ class PaymentGuarantee extends AbstractMethod
     private function getPartialCreditmemoId($order)
     {
         return $order->getIncrementId() . '-'
-        . ($order->hasCreditmemos() + 1) . '-'
-        . substr(md5(date("YMDHis")), 0, 6);
+        . ($order->hasCreditmemos() + 1);
     }
 
     /**
