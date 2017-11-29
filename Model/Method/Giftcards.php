@@ -249,14 +249,9 @@ class Giftcards extends AbstractMethod
              * @noinspection PhpUndefinedMethodInspection
              */
             $transactionBuilder->setAmount($currentInvoiceTotal)
-                ->setInvoiceId(
-                    $payment->getOrder()->getIncrementId(). '-' .
-                    $numberOfInvoices . '-' . substr(md5(date("YMDHis")), 0, 6)
-                )
+                ->setInvoiceId($payment->getOrder()->getIncrementId(). '-' . $numberOfInvoices)
                 ->setCurrency($this->payment->getOrder()->getOrderCurrencyCode())
-                ->setOriginalTransactionKey(
-                    $payment->getParentTransactionId()
-                );
+                ->setOriginalTransactionKey($payment->getParentTransactionId());
         }
 
         return $transactionBuilder;
