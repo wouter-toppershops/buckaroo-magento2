@@ -179,11 +179,15 @@ define(
                      */
                     this.accountNumberIsValid = ko.computed(
                         function () {
-                            if (this.isnl()) {
-                                return (this.bankaccountholder().length >= this.minimumWords() && this.bankaccountnumber().length > 0 && this.validate());
-                            } else {
-                                return (this.bankaccountholder().length >= this.minimumWords() && this.bicnumber().length > 0 && this.validate());
+                            var isValid = (this.bankaccountholder().length >= this.minimumWords() && this.bankaccountnumber().length > 0);
+
+                            if (!this.isnl()) {
+                                isValid = (isValid && this.bicnumber().length > 0);
                             }
+
+                            isValid = (isValid && this.validate());
+
+                            return isValid;
                         },
                         this
                     );
