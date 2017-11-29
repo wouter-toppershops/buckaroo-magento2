@@ -120,21 +120,30 @@ class PayPerEmail extends AbstractMethod
         parent::assignData($data);
         $data = $this->assignDataConvertToArray($data);
 
-        if (isset($data['additional_data'])) {
-            $additionalData = $data['additional_data'];
-            $this->getInfoInstance()->setAdditionalInformation('customer_gender', $additionalData['customer_gender']);
-            $this->getInfoInstance()->setAdditionalInformation(
-                'customer_billingFirstName',
-                $additionalData['customer_billingFirstName']
-            );
-            $this->getInfoInstance()->setAdditionalInformation(
-                'customer_billingLastName',
-                $additionalData['customer_billingLastName']
-            );
-            $this->getInfoInstance()->setAdditionalInformation(
-                'customer_email',
-                $additionalData['customer_email']
-            );
+        if (isset($data['additional_data']['customer_gender'])) {
+            $this->getInfoInstance()
+                ->setAdditionalInformation('customer_gender', $data['additional_data']['customer_gender']);
+        }
+
+        if (isset($data['additional_data']['customer_billingFirstName'])) {
+            $this->getInfoInstance()
+                ->setAdditionalInformation(
+                    'customer_billingFirstName',
+                    $data['additional_data']['customer_billingFirstName']
+                );
+        }
+
+        if (isset($data['additional_data']['customer_billingLastName'])) {
+            $this->getInfoInstance()
+                ->setAdditionalInformation(
+                    'customer_billingLastName',
+                    $data['additional_data']['customer_billingLastName']
+                );
+        }
+
+        if (isset($data['additional_data']['customer_email'])) {
+            $this->getInfoInstance()
+                ->setAdditionalInformation('customer_email', $data['additional_data']['customer_email']);
         }
 
         return $this;
@@ -221,44 +230,5 @@ class PayPerEmail extends AbstractMethod
     public function getVoidTransactionBuilder($payment)
     {
         return true;
-    }
-
-    /**
-     * Validate that we received a valid issuer ID.
-     *
-     * @return $this
-     * @throws \Magento\Framework\Exception\LocalizedException
-     */
-    public function validate()
-    {
-        parent::validate();
-
-        /**
-         * @var PayPerEmailConfig $config
-         */
-        $config = $this->objectManager->get(PayPerEmailConfig::class);
-
-        $paymentInfo = $this->getInfoInstance();
-
-        $skipValidation = $paymentInfo->getAdditionalInformation('buckaroo_skip_validation');
-        if ($skipValidation) {
-            return $this;
-        }
-
-        $chosenIssuer = $paymentInfo->getAdditionalInformation('issuer');
-
-        $valid = false;
-        foreach ($config->getIssuers() as $issuer) {
-            if ($issuer['code'] == $chosenIssuer) {
-                $valid = true;
-                break;
-            }
-        }
-
-        if (!$valid) {
-            throw new \Magento\Framework\Exception\LocalizedException(__('Please select a issuer from the list'));
-        }
-
-        return $this;
     }
 }
