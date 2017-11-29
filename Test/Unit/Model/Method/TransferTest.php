@@ -109,6 +109,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $fixture = [
             'firstname' => 'John',
             'lastname'  => 'Doe',
+            'country'   => 'NL',
             'email'     => 'john@doe.com',
         ];
 
@@ -120,13 +121,15 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $billingAddress = \Mockery::mock(\Magento\Sales\Model\Order\Address::class);
         $billingAddress->shouldReceive('getFirstname')->andReturn($fixture['firstname']);
         $billingAddress->shouldReceive('getLastname')->andReturn($fixture['lastname']);
+        $billingAddress->shouldReceive('getCountryId')->andReturn($fixture['country']);
         $order->shouldReceive('getBillingAddress')->andReturn($billingAddress);
 
         $order->shouldReceive('setServices')->andReturnUsing(
             function ($services) use ($fixture, $order) {
                 $this->assertEquals($fixture['firstname'], $services['RequestParameter'][0]['_']);
                 $this->assertEquals($fixture['lastname'], $services['RequestParameter'][1]['_']);
-                $this->assertEquals($fixture['email'], $services['RequestParameter'][2]['_']);
+                $this->assertEquals($fixture['country'], $services['RequestParameter'][2]['_']);
+                $this->assertEquals($fixture['email'], $services['RequestParameter'][3]['_']);
 
                 $this->assertEquals('transfer', $services['Name']);
                 $this->assertEquals('Pay', $services['Action']);

@@ -154,6 +154,10 @@ class Transfer extends AbstractMethod
                     'Name' => 'CustomerLastName',
                 ],
                 [
+                    '_'    => $billingAddress->getCountryId(),
+                    'Name' => 'CustomerCountry',
+                ],
+                [
                     '_'    => $payment->getOrder()->getCustomerEmail(),
                     'Name' => 'CustomerEmail',
                 ],
