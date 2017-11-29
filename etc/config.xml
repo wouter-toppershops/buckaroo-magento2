@@ -270,6 +270,7 @@
                 <order_status_success>processing</order_status_success>
                 <order_status_failed>canceled</order_status_failed>
                 <create_order_before_transaction>1</create_order_before_transaction>
+                <debug_types>300,400,500,550,600</debug_types>
             </account>
 
             <refund>
