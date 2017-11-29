@@ -526,6 +526,11 @@ class Push implements PushInterface
             $this->orderSender->send($this->order);
         }
 
+        /** force state eventhough this can lead to a transition of the order
+         *  like new -> processing
+         */
+        $forceState = false;
+
         if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
             $description = 'Payment status : <strong>' . $message . "</strong><br/>";
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
@@ -533,13 +538,14 @@ class Push implements PushInterface
             $description = 'Authorization status : <strong>' . $message . "</strong><br/>";
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue())
                 . ' has been authorized. Please create an invoice to capture the authorized amount.';
+            $forceState = true;
         }
 
         if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $this->configAccount->getAutoInvoice($store)) {
             $this->saveInvoice();
         }
 
-        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description, $forceState);
 
         return true;
     }
@@ -597,10 +603,11 @@ class Push implements PushInterface
      * @param $orderState
      * @param $description
      * @param $newStatus
+     * @param $force
      */
-    protected function updateOrderStatus($orderState, $newStatus, $description)
+    protected function updateOrderStatus($orderState, $newStatus, $description, $force = false)
     {
-        if ($this->order->getState() == $orderState) {
+        if ($this->order->getState() == $orderState || $force == true) {
             $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
             $this->order->addStatusHistoryComment($description);
