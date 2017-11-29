@@ -788,7 +788,7 @@ class Afterpay extends AbstractMethod
                 $item->getQty() . ' x ' . $item->getName(),
                 $item->getProductId(),
                 1,
-                $this->calculateProductPrice($item, $includesTax),
+                $this->calculateProductPrice($item, $includesTax) - $item->getDiscountAmount(),
                 $this->getTaxCategory($itemTaxClassId)
             );
 
