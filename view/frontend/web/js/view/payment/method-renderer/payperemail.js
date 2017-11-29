@@ -46,10 +46,7 @@ define(
         'Magento_Checkout/js/model/quote',
         'ko',
         'Magento_Checkout/js/checkout-data',
-        'Magento_Checkout/js/action/select-payment-method',
-        'Magento_Ui/js/lib/knockout/bindings/datepicker'
-        /*,
-         'jquery/validate'*/
+        'Magento_Checkout/js/action/select-payment-method'
     ],
     function (
         $,
@@ -67,13 +64,11 @@ define(
             {
                 defaults                : {
                     template : 'TIG_Buckaroo/payment/tig_buckaroo_payperemail',
-                    businessMethod: null,
-                    paymentMethod: null,
                     selectedGender: null,
                     firstName: null,
                     lastName: null,
                     email: null,
-                    CustomerFirsName: null,
+                    CustomerFirstName: null,
                     CustomerLastName: null,
                     CustomerEmail: null,
                     BillingFirstName: null,
@@ -100,11 +95,9 @@ define(
                 initObservable: function () {
                     this._super().observe(
                         [
-                            'businessMethod',
-                            'paymentMethod',
                             'selectedGender',
-                            'firstname',
-                            'lastname',
+                            'firstName',
+                            'lastName',
                             'email',
                             'CustomerFirstName',
                             'CustomerLastName',
@@ -117,7 +110,6 @@ define(
                         ]
                     );
 
-                    this.paymentMethod  = window.checkoutConfig.payment.buckaroo.payperemail.paymentMethod;
                     this.firstName      = quote.billingAddress().firstname;
                     this.lastName       = quote.billingAddress().lastname;
                     this.email          = customerData.email || quote.guestEmail;
@@ -132,7 +124,6 @@ define(
                         this
                     );
                     this.BillingFirstName(this.CustomerFirstName());
-
 
                     this.CustomerLastName = ko.computed(
                         function () {
@@ -160,12 +151,9 @@ define(
                         return true;
                     };
 
-                    this.setSelectedGender(customerData.gender);
-
                     /**
                      * Validation on the input fields
                      */
-
                     var runValidation = function () {
                         $('.' + this.getCode() + ' [data-validate]').filter(':not([name*="agreement"])').valid();
                         additionalValidators.validate();
@@ -173,37 +161,36 @@ define(
 
                     this.BillingFirstName.subscribe(runValidation,this);
                     this.BillingLastName.subscribe(runValidation,this);
+                    this.BillingEmail.subscribe(runValidation,this);
                     this.genderValidate.subscribe(runValidation,this);
 
+                    var check = function ()
+                    {
+                        return (
+                            this.selectedGender() !== null &&
+                            this.BillingFirstName() !== null &&
+                            this.BillingLastName() !== null &&
+                            this.BillingEmail() !== null &&
+                            this.genderValidate() !== null &&
+                            this.validate()
+                        );
+                    };
 
                     /**
                      * Check if the required fields are filled. If so: enable place order button (true) | if not: disable place order button (false)
                      */
                     this.buttoncheck = ko.computed(
                         function () {
-                            return this.selectedGender() !== null &&
-                            this.BillingFirstName() !== null &&
-                            this.BillingLastName() !== null &&
-                            this.genderValidate() !== null &&
-                            this.validate()
+                            this.selectedGender();
+                            this.BillingFirstName();
+                            this.BillingLastName();
+                            this.BillingEmail();
+                            this.genderValidate();
+                            this.dummy();
+                            additionalValidators.validate();
+                            return check.bind(this)();
                         },
                         this
-                    );
-
-                    /**
-                     * The agreement checkbox won't force an update of our bindings. So check for changes manually and notify
-                     * the bindings if something happend. Use $.proxy() to access the local this object. The dummy property is
-                     * used to notify the bindings.
-                     */
-                    $('.payment-methods').on(
-                        'click',
-                        '.' + this.getCode() + ' [name*="agreement"]',
-                        $.proxy(
-                            function () {
-                                this.dummy.notifySubscribers();
-                            },
-                            this
-                        )
                     );
 
                     return this;
@@ -275,9 +262,21 @@ define(
                             "customer_gender" : this.genderValidate(),
                             "customer_billingFirstName" : this.BillingFirstName(),
                             "customer_billingLastName" : this.BillingLastName(),
-                            "customer_email" : this.BillingLastName()
+                            "customer_email" : this.BillingEmail()
                         }
                     };
+                },
+
+                payWithBaseCurrency: function () {
+                    var allowedCurrencies = window.checkoutConfig.payment.buckaroo.payperemail.allowedCurrencies;
+
+                    return allowedCurrencies.indexOf(this.currencyCode) < 0;
+                },
+
+                getPayWithBaseCurrencyText: function () {
+                    var text = $.mage.__('The transaction will be processed using %s.');
+
+                    return text.replace('%s', this.baseCurrencyCode);
                 }
             }
         );
