@@ -287,10 +287,10 @@
             </states>
 
             <predefined>
-                <location_live_web>http://checkout.buckaroo.nl/soap/Soap.svc</location_live_web>
-                <location_test_web>http://testcheckout.buckaroo.nl/soap/Soap.svc</location_test_web>
-                <wsdl_live_web>https://checkout.buckaroo.nl/soap/soap.svc?wsdl</wsdl_live_web>
-                <wsdl_test_web>https://testcheckout.buckaroo.nl/soap/soap.svc?wsdl</wsdl_test_web>
+                <location_live_web>https://checkout.buckaroo.nl/soap/Soap.svc</location_live_web>
+                <location_test_web>https://testcheckout.buckaroo.nl/soap/Soap.svc</location_test_web>
+                <wsdl_live_web>https://checkout.buckaroo.nl/soap/soap.svc?singleWsdl</wsdl_live_web>
+                <wsdl_test_web>https://testcheckout.buckaroo.nl/soap/soap.svc?singleWsdl</wsdl_test_web>
             </predefined>
         </tig_buckaroo>
 
