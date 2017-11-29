@@ -135,6 +135,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         );
 
         $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
+        $payment->shouldReceive('setAdditionalInformation')->withArgs(['skip_push', 1]);
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();

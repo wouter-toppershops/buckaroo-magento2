@@ -53,6 +53,7 @@ use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Model\Method\AbstractMethod;
 use TIG\Buckaroo\Model\Method\Giftcards;
+use TIG\Buckaroo\Model\Method\Transfer;
 use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
@@ -294,6 +295,20 @@ class Push implements PushInterface
             return;
         }
 
+        $payment = $this->order->getPayment();
+        $skipFirstPush = $payment->getAdditionalInformation('skip_push');
+
+        /**
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * for some payment methods
+         * @todo when buckaroo changes the push / response order this can be removed
+         */
+        if ($skipFirstPush > 0) {
+            $payment->unsAdditionalInformation('skip_push');
+            $payment->save();
+            throw new \TIG\Buckaroo\Exception(__('Skipped handling this push, first handle response, action will be taken on the next push.'));
+        }
+
         $newStatus = $this->orderStatusFactory->get($this->postData['brq_statuscode'], $this->order);
 
         switch ($response['status']) {
@@ -496,10 +511,12 @@ class Push implements PushInterface
 
         $store = $this->order->getStore();
 
+        $payment = $this->order->getPayment();
+
         /**
          * @var \Magento\Payment\Model\MethodInterface $paymentMethod
          */
-        $paymentMethod = $this->order->getPayment()->getMethodInstance();
+        $paymentMethod = $payment->getMethodInstance();
 
         if (!$this->order->getEmailSent()
             && ($this->configAccount->getOrderConfirmationEmail($store)
@@ -535,6 +552,22 @@ class Push implements PushInterface
      */
     public function processPendingPaymentPush($newStatus, $message)
     {
+        $store = $this->order->getStore();
+        $payment = $this->order->getPayment();
+
+        /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
+        $paymentMethod = $payment->getMethodInstance();
+
+        // Transfer has a slightly different flow where a succesful order has a 792 status code instead of an 190 one
+        if (!$this->order->getEmailSent()
+            && $payment->getMethod() == Transfer::PAYMENT_METHOD_CODE
+            && ($this->configAccount->getOrderConfirmationEmail($store)
+                || $paymentMethod->getConfigData('order_email', $store)
+            )
+        ) {
+            $this->orderSender->send($this->order);
+        }
+
         $description = 'Payment push status : '.$message;
 
         $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);

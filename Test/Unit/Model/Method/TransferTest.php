@@ -148,6 +148,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProviderMethodFactory->shouldReceive('getDueDate')->once()->andReturn('7');
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($order);
+        $this->paymentInterface->shouldReceive('setAdditionalInformation')->withArgs(['skip_push', 1]);
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
         $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
