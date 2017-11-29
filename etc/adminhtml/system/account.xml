@@ -98,7 +98,7 @@
             <field id="order_status_new" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>New status</label>
                 <comment><![CDATA[This status will be given to new orders.]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
+                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesNew</source_model>
                 <config_path>tig_buckaroo/account/order_status_new</config_path>
             </field>
 

@@ -88,7 +88,7 @@ class Push
 
         $authentication = $push->postData["brq_service_{$card}_authentication"];
 
-        if ($authentication != 'Y' || $authentication != 'U' || $authentication != 'N') {
+        if ($authentication == 'U' || $authentication == 'N') {
             switch ($card) {
                 case 'maestro':
                     $putOrderOnHold = (bool) $this->configProviderCreditcard->getMaestroUnsecureHold();
@@ -118,8 +118,8 @@ class Push
         $paymentMethodInstance->getInfoInstance()->setAdditionalInformation(
             'buckaroo_mpi_status',
             [
-                'enrolled'       => $push->postData["brq_service_{$card}_authentication"],
-                'authentication' => 'test',
+                'enrolled'       => $push->postData["brq_service_{$card}_enrolled"],
+                'authentication' => $push->postData["brq_service_{$card}_authentication"],
             ]
         );
 
