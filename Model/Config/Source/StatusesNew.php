@@ -38,7 +38,7 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
+class StatusesNew implements \Magento\Framework\Option\ArrayInterface
 {
     /**
      * Core order config
@@ -75,7 +75,7 @@ class StatusesFailed implements \Magento\Framework\Option\ArrayInterface
          * @var \TIG\Buckaroo\Model\ConfigProvider\States $statesConfig
          */
         $statesConfig = $this->configProviderFactory->get('states');
-        $state = $statesConfig->getOrderStateFailed();
+        $state = $statesConfig->getOrderStateNew();
 
         $statuses = $this->orderConfig->getStateStatuses($state);
 
