@@ -67,6 +67,17 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Creditmemo\Total\AbstractTo
             $creditmemo->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTax);
             $creditmemo->setBuckarooFeeTaxAmount($buckarooFeeTax);
 
+            $buckarooFeeInclTax = $salesModel->getBuckarooFeeInclTax();
+            $baseBuckarooFeeInclTax = $salesModel->getBaseBuckarooFeeInclTax();
+
+            $order->setBuckarooFeeInclTaxRefunded($order->getBuckarooFeeInclTaxRefunded() + $buckarooFeeInclTax);
+            $order->setBaseBuckarooFeeInclTaxRefunded(
+                $order->getBaseBuckarooFeeInclTaxRefunded() + $baseBuckarooFeeInclTax
+            );
+
+            $creditmemo->setBuckarooFeeInclTax($buckarooFeeInclTax);
+            $creditmemo->setBaseBuckarooFeeInclTax($baseBuckarooFeeInclTax);
+
             // Partial refunds are OK, magento did not add the payment fee tax yet so we do it
             // Full refunds there is double payment fee tax, because magento already added the tax
             // We check if the tax is not more than it should be..

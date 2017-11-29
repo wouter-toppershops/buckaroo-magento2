@@ -88,25 +88,26 @@ class InvoiceRegisterTest extends BaseTest
             'getBuckarooFee',
             'getBaseBuckarooFee',
             'getBuckarooFeeTaxAmount',
-            'getBuckarooFeeBaseTaxAmount'
+            'getBuckarooFeeBaseTaxAmount',
+            'getBuckarooFeeInclTax',
+            'getBaseBuckarooFeeInclTax'
         )->once();
 
         $order = m::mock();
-        /**
-         * These MUST be called.
-         */
+
         $order->shouldReceive('setBuckarooFeeInvoiced')->once();
         $order->shouldReceive('setBaseBuckarooFeeInvoiced')->once();
         $order->shouldReceive('setBuckarooFeeTaxAmountInvoiced')->once();
         $order->shouldReceive('setBuckarooFeeBaseTaxAmountInvoiced')->once();
+        $order->shouldReceive('setBuckarooFeeInclTaxInvoiced')->once();
+        $order->shouldReceive('setBaseBuckarooFeeInclTaxInvoiced')->once();
 
+        $order->shouldReceive('getBuckarooFeeInvoiced')->once();
+        $order->shouldReceive('getBaseBuckarooFeeInvoiced')->once();
         $order->shouldReceive('getBuckarooFeeTaxAmountInvoiced')->once();
         $order->shouldReceive('getBuckarooFeeBaseTaxAmountInvoiced')->once();
-
-        /**
-         * Only needed for the test.
-         */
-        $order->shouldReceive('getBuckarooFeeInvoiced', 'getBaseBuckarooFeeInvoiced');
+        $order->shouldReceive('getBuckarooFeeInclTaxInvoiced')->once();
+        $order->shouldReceive('getBaseBuckarooFeeInclTaxInvoiced')->once();
 
         $this->observer->shouldReceive('getOrder')->once()->andReturn($order);
 
