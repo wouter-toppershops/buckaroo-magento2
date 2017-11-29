@@ -86,7 +86,9 @@ class Push
             return $result;
         }
 
-        if ($push->postData["brq_service_{$card}_authentication"] != 'Y') {
+        $authentication = $push->postData["brq_service_{$card}_authentication"];
+
+        if ($authentication != 'Y' || $authentication != 'U' || $authentication != 'N') {
             switch ($card) {
                 case 'maestro':
                     $putOrderOnHold = (bool) $this->configProviderCreditcard->getMaestroUnsecureHold();
