@@ -38,8 +38,19 @@
  */
 namespace TIG\Buckaroo\Model\Config\Source;
 
-class DebugModes implements \Magento\Framework\Option\ArrayInterface
+class DebugTypes implements \Magento\Framework\Option\ArrayInterface
 {
+    private $levels = [
+        100 => 'DEBUG',
+        200 => 'INFO',
+        250 => 'NOTICE',
+        300 => 'WARNING',
+        400 => 'ERROR',
+        500 => 'CRITICAL',
+        550 => 'ALERT',
+        600 => 'EMERGENCY',
+    ];
+
     /**
      * Options getter
      *
@@ -48,10 +59,14 @@ class DebugModes implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $options = [];
-        $options[] = ['value' => '',        'label' => __('Do not log debug information')];
-        $options[] = ['value' => 'log',     'label' => __('Log to file')];
-        $options[] = ['value' => 'mail',    'label' => __('Mail to debug email')];
-        $options[] = ['value' => 'maillog', 'label' => __('Log to file and mail to debug email')];
+
+        foreach ($this->levels as $key => $value) {
+            $options[] = [
+                'value' => $key,
+                'label' => $value
+            ];
+        }
+
         return $options;
     }
 }

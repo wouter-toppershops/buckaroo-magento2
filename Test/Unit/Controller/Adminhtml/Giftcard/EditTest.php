@@ -84,5 +84,9 @@ class EditTest extends BaseTest
     public function testExecute()
     {
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 }

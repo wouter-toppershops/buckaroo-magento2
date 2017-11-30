@@ -156,6 +156,10 @@ class ProcessTest extends BaseTest
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), '/', []);
 
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 
     /**
@@ -198,6 +202,10 @@ class ProcessTest extends BaseTest
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'failure_url', []);
 
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 
     /**
@@ -230,6 +238,10 @@ class ProcessTest extends BaseTest
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'failure_url', []);
 
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 
     /**
@@ -272,5 +284,9 @@ class ProcessTest extends BaseTest
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 }

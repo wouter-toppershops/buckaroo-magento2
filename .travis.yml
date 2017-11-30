@@ -31,7 +31,7 @@ env:
 
 matrix:
   include:
-    env: MAGENTO_VERSION=2.1.5 CODE_COVERAGE=true
+    env: MAGENTO_VERSION=2.2.0 CODE_COVERAGE=true
 
 before_script:
   - composer config -a -g http-basic.repo.magento.com $MAGENTO_USERNAME $MAGENTO_PASSWORD

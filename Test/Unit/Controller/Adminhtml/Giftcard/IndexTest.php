@@ -82,5 +82,9 @@ class IndexTest extends \TIG\Buckaroo\Test\BaseTest
     public function testExecute()
     {
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 }

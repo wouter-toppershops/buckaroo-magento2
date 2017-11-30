@@ -67,13 +67,6 @@ class BuckarooFeeTest extends BaseTest
                 2,
                 0,
                 2
-            ],
-            'new tax to refund' => [
-                5,
-                10,
-                2,
-                5,
-                7
             ]
         ];
     }

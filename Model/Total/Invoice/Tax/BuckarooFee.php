@@ -50,19 +50,13 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
     {
         $order = $invoice->getOrder();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $buckarooFeeTaxAmountLeft = $order->getBuckarooFeeTaxAmount() - $order->getBuckarooFeeTaxAmountInvoiced();
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $baseBuckarooFeeTaxAmountLeft = $order->getBuckarooFeeBaseTaxAmount()
             - $order->getBuckarooFeeBaseTaxAmountInvoiced();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
+        $buckarooFeeInclTaxLeft = $order->getBuckarooFeeInclTax() - $order->getBuckarooFeeInclTaxInvoiced();
+        $baseBuckarooFeeInclTaxLeft = $order->getBaseBuckarooFeeInclTax() - $order->getBaseBuckarooFeeInclTaxInvoiced();
+
         if ($order->getBuckarooFeeBaseTaxAmount() && $baseBuckarooFeeTaxAmountLeft > 0) {
             if ($baseBuckarooFeeTaxAmountLeft < $invoice->getBaseGrandTotal()) {
                 $invoice->setGrandTotal($invoice->getGrandTotal() + $buckarooFeeTaxAmountLeft);
@@ -78,14 +72,11 @@ class BuckarooFee extends \Magento\Sales\Model\Order\Invoice\Total\AbstractTotal
             $invoice->setTaxAmount($invoice->getTaxAmount() + $buckarooFeeTaxAmountLeft);
             $invoice->setBaseTaxAmount($invoice->getBaseTaxAmount() + $baseBuckarooFeeTaxAmountLeft);
 
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
             $invoice->setBuckarooFeeTaxAmount($buckarooFeeTaxAmountLeft);
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
             $invoice->setBuckarooFeeBaseTaxAmount($baseBuckarooFeeTaxAmountLeft);
+
+            $invoice->setBuckarooFeeInclTax($buckarooFeeInclTaxLeft);
+            $invoice->setBaseBuckarooFeeInclTax($baseBuckarooFeeInclTaxLeft);
         }
 
         return $this;

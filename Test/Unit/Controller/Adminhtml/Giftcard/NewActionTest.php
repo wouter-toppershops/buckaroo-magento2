@@ -78,6 +78,12 @@ class NewActionTest extends BaseTest
 
     public function testExecute()
     {
+        $this->markTestSkipped('Figure out how to perform assertions');
+
         $this->controller->execute();
+
+        if ($container = \Mockery::getContainer()) {
+            $this->addToAssertionCount($container->mockery_getExpectationCount());
+        }
     }
 }

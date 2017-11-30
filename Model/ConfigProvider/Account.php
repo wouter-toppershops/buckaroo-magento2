@@ -56,7 +56,7 @@ use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
  * @method mixed getFailureRedirect()
  * @method mixed getCancelOnFailed()
  * @method mixed getDigitalSignature()
- * @method mixed getDebugMode()
+ * @method mixed getDebugTypes()
  * @method mixed getDebugEmail()
  * @method mixed getLimitByIp()
  * @method mixed getFeePercentageMode()
@@ -83,7 +83,7 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_FAILURE_REDIRECT                = 'tig_buckaroo/account/failure_redirect';
     const XPATH_ACCOUNT_CANCEL_ON_FAILED                = 'tig_buckaroo/account/cancel_on_failed';
     const XPATH_ACCOUNT_DIGITAL_SIGNATURE               = 'tig_buckaroo/account/digital_signature';
-    const XPATH_ACCOUNT_DEBUG_MODE                      = 'tig_buckaroo/account/debug_mode';
+    const XPATH_ACCOUNT_DEBUG_TYPES                     = 'tig_buckaroo/account/debug_types';
     const XPATH_ACCOUNT_DEBUG_EMAIL                     = 'tig_buckaroo/account/debug_email';
     const XPATH_ACCOUNT_LIMIT_BY_IP                     = 'tig_buckaroo/account/limit_by_ip';
     const XPATH_ACCOUNT_FEE_PERCENTAGE_MODE             = 'tig_buckaroo/account/fee_percentage_mode';
@@ -136,7 +136,7 @@ class Account extends AbstractConfigProvider
             'failure_redirect'                  => $this->getFailureRedirect($store),
             'cancel_on_failed'                  => $this->getCancelOnFailed($store),
             'digital_signature'                 => $this->getDigitalSignature($store),
-            'debug_mode'                        => $this->getDebugMode($store),
+            'debug_types'                       => $this->getDebugTypes($store),
             'debug_email'                       => $this->getDebugEmail($store),
             'limit_by_ip'                       => $this->getLimitByIp($store),
             'fee_percentage_mode'               => $this->getFeePercentageMode($store),

@@ -1069,6 +1069,18 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
             if ($saveId) {
                 $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $transactionKey);
             }
+
+            $skipFirstPush = $payment->getAdditionalInformation('skip_push');
+
+            /**
+             * Buckaroo Push is send before Response, for correct flow we skip the first push
+             * for some payment methods
+             * @todo when buckaroo changes the push / response order this can be removed
+             */
+            if ($skipFirstPush > 0) {
+                $payment->unsAdditionalInformation('skip_push');
+                $payment->save();
+            }
         }
 
         return $payment;
