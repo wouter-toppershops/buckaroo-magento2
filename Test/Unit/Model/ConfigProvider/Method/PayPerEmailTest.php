@@ -119,4 +119,41 @@ class PayPerEmailTest extends BaseTest
 
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     * @return array
+     */
+    public function getSendMailProvider()
+    {
+        return [
+            'yes selected' => [
+                '1',
+                true
+            ],
+            'no selected' => [
+                '0',
+                false
+            ],
+        ];
+    }
+
+    /**
+     * @param $option
+     * @param $expected
+     *
+     * @dataProvider getSendMailProvider
+     */
+    public function testGetSendMail($option, $expected)
+    {
+        $scopeConfigMock = $this->getMockBuilder(ScopeConfigInterface::class)->getMock();
+        $scopeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->with(PayPerEmail::XPATH_PAYPEREMAIL_SEND_MAIL, ScopeInterface::SCOPE_STORE)
+            ->willReturn($option);
+
+        $instance = $this->getInstance(['scopeConfig' => $scopeConfigMock]);
+        $result = $instance->getSendMail();
+
+        $this->assertEquals($expected, $result);
+    }
 }

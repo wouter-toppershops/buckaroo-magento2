@@ -33,6 +33,11 @@ namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
 use Magento\Framework\DataObject;
 use Magento\Payment\Model\InfoInterface;
+use Magento\Sales\Model\Order\Payment;
+use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
+use TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
+use TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail as PayPerEmailConfig;
 use TIG\Buckaroo\Model\Method\PayPerEmail;
 use TIG\Buckaroo\Test\BaseTest;
 
@@ -86,5 +91,75 @@ class PayPerEmailTest extends BaseTest
 
         $result = $instance->assignData($dataObject);
         $this->assertInstanceOf(PayPerEmail::class, $result);
+    }
+
+    public function testGetOrderTransactionBuilder()
+    {
+        $payPerMailConfigMock = $this->getFakeMock(PayPerEmailConfig::class)->getMock();
+
+        $factoryMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $factoryMock->expects($this->once())->method('get')->with('payperemail')->willReturn($payPerMailConfigMock);
+
+        $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
+        $infoInstanceMock->expects($this->once())->method('getOrder');
+
+        $orderTransactionMock = $this->getFakeMock(Order::class)->setMethods(['setMethod'])->getMock();
+        $orderTransactionMock->expects($this->once())->method('setMethod')->with('TransactionRequest');
+
+        $transactionBuilderMock = $this->getFakeMock(TransactionBuilderFactory::class)->setMethods(['get'])->getMock();
+        $transactionBuilderMock->expects($this->once())
+            ->method('get')
+            ->with('order')
+            ->willReturn($orderTransactionMock);
+
+        $instance = $this->getInstance([
+            'configProviderMethodFactory' => $factoryMock,
+            'transactionBuilderFactory' => $transactionBuilderMock
+        ]);
+
+        $result = $instance->getOrderTransactionBuilder($infoInstanceMock);
+        $this->assertInstanceOf(Order::class, $result);
+
+        $services = $result->getServices();
+        $this->assertInternalType('array', $services);
+        $this->assertEquals('payperemail', $services['Name']);
+        $this->assertEquals('PaymentInvitation', $services['Action']);
+        $this->assertEquals(1, $services['Version']);
+        $this->assertCount(6, $services['RequestParameter']);
+
+        $possibleParameters = ['customergender', 'CustomerEmail', 'CustomerFirstName', 'CustomerLastName', 'MerchantSendsEmail', 'PaymentMethodsAllowed'];
+
+        foreach ($services['RequestParameter'] as $array) {
+            $this->assertArrayHasKey('_', $array);
+            $this->assertArrayHasKey('Name', $array);
+            $this->assertContains($array['Name'], $possibleParameters);
+        }
+    }
+
+    public function testGetCaptureTransactionBuilder()
+    {
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
+        $instance = $this->getInstance();
+
+        $result = $instance->getCaptureTransactionBuilder($infoInstanceMock);
+        $this->assertFalse($result);
+    }
+
+    public function testGetAuthorizeTransactionBuilder()
+    {
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
+        $instance = $this->getInstance();
+
+        $result = $instance->getAuthorizeTransactionBuilder($infoInstanceMock);
+        $this->assertFalse($result);
+    }
+
+    public function testGetVoidTransactionBuilder()
+    {
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
+        $instance = $this->getInstance();
+
+        $result = $instance->getVoidTransactionBuilder($infoInstanceMock);
+        $this->assertTrue($result);
     }
 }
