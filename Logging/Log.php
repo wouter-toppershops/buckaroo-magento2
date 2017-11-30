@@ -31,6 +31,7 @@
  */
 namespace TIG\Buckaroo\Logging;
 
+use Monolog\Handler\HandlerInterface;
 use Monolog\Logger;
 use TIG\Buckaroo\Model\ConfigProvider\DebugConfiguration;
 
@@ -48,8 +49,11 @@ class Log extends Logger
     /**
      * Log constructor.
      *
-     * {@inheritdoc}
-     * @param DebugConfiguration $debugModes
+     * @param string             $name
+     * @param DebugConfiguration $debugConfiguration
+     * @param Mail               $mail
+     * @param HandlerInterface[] $handlers
+     * @param callable[]         $processors
      */
     public function __construct(
         $name,
