@@ -41,8 +41,8 @@ namespace TIG\Buckaroo\Model\Refund;
 use Magento\Sales\Api\CreditmemoManagementInterface;
 use Magento\Sales\Model\Order\CreditmemoFactory;
 use Magento\Sales\Model\Order\Email\Sender\CreditmemoSender;
-use TIG\Buckaroo\Debug\Debugger;
 use TIG\Buckaroo\Exception;
+use TIG\Buckaroo\Logging\Log;
 use TIG\Buckaroo\Model\ConfigProvider\Refund;
 
 /**
@@ -80,28 +80,28 @@ class Push
     public $configRefund;
 
     /**
-     * @var Debugger $debugger
+     * @var Log $logging
      */
-    public $debugger;
+    public $logging;
 
     /**
      * @param CreditmemoFactory             $creditmemoFactory
      * @param CreditmemoManagementInterface $creditmemoManagement
      * @param CreditmemoSender              $creditEmailSender
      * @param Refund                        $configRefund
-     * @param Debugger                      $debugger
+     * @param Log                           $logging
      */
     public function __construct(
         CreditmemoFactory $creditmemoFactory,
         CreditmemoManagementInterface $creditmemoManagement,
         CreditmemoSender $creditEmailSender,
         Refund $configRefund,
-        Debugger $debugger
+        Log $logging
     ) {
         $this->creditmemoFactory     = $creditmemoFactory;
         $this->creditmemoManagement  = $creditmemoManagement;
         $this->creditEmailSender     = $creditEmailSender;
-        $this->debugger              = $debugger;
+        $this->logging               = $logging;
         $this->configRefund          = $configRefund;
     }
 
@@ -121,26 +121,25 @@ class Push
         $this->postData = $postData;
         $this->order    = $order;
 
-        $this->debugger->addToMessage('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza. ');
+        $this->logging->addDebug('Trying to refund order ' . $this->order->getId(). ' out of paymentplaza. ');
 
         if (!$this->configRefund->getAllowPush()) {
-            $this->debugger->addToMessage(
-                'But failed, the configuration is set not to accept refunds out of Payment Plaza'
-            )->log();
+            $this->logging->addDebug('But failed, the configuration is set not to accept refunds out of Payment Plaza');
             throw new Exception(
                 __('Buckaroo refund is disabled')
             );
         }
 
         if (!$signatureValidation && !$this->order->canCreditmemo()) {
-            $this->debugger->addToMessage('Validation incorrect :');
-            $this->debugger->addToMessage(
+            $debugMessage = 'Validation incorrect: ' . PHP_EOL;
+            $debugMessage .= print_r(
                 [
                     'signature'      => $signatureValidation,
                     'canOrderCredit' => $this->order->canCreditmemo()
-                ]
+                ],
+                true
             );
-            $this->debugger->log();
+            $this->logging->addDebug($debugMessage);
             throw new Exception(
                 __('Buckaroo refund push validation failed')
             );
@@ -153,16 +152,14 @@ class Push
         );
 
         if (count($creditmemosByTransactionId) > 0) {
-            $this->debugger->addToMessage('The transaction has already been refunded.');
-            $this->debugger->log();
+            $this->logging->addDebug('The transaction has already been refunded.');
 
             return false;
         }
 
         $creditmemo = $this->createCreditmemo();
 
-        $this->debugger->addToMessage('Order successful refunded = '. $creditmemo);
-        $this->debugger->log();
+        $this->logging->addDebug('Order successful refunded = '. $creditmemo);
 
         return $creditmemo;
     }
@@ -178,7 +175,7 @@ class Push
         try {
             if ($creditmemo) {
                 if (!$creditmemo->isValidGrandTotal()) {
-                    $this->debugger->addToMessage('The credit memo\'s total must be positive.')->log();
+                    $this->logging->addDebug('The credit memo\'s total must be positive.');
                     throw new \Magento\Framework\Exception\LocalizedException(
                         __('The credit memo\'s total must be positive.')
                     );
@@ -195,15 +192,15 @@ class Push
                 }
                 return true;
             } else {
-                $this->debugger->addToMessage('Failed to create the creditmemo, method saveCreditmemo return value :');
-                $this->debugger->addToMessage($creditmemo)->log();
+                $debugMessage = 'Failed to create the creditmemo, method saveCreditmemo return value: ' . PHP_EOL;
+                $debugMessage .= print_r($creditmemo, true);
+                $this->logging->addDebug($debugMessage);
                 throw new Exception(
                     __('Failed to create the creditmemo')
                 );
             }
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            $this->debugger->addToMessage('Buckaroo failed to create the credit memo\'s { '. $e->getLogMessage().' }')
-                ->log();
+            $this->logging->addDebug('Buckaroo failed to create the credit memo\'s { '. $e->getLogMessage().' }');
         }
         return false;
     }
@@ -234,9 +231,8 @@ class Push
 
             return $creditmemo;
         } catch (\Magento\Framework\Exception\LocalizedException $e) {
-            $this->debugger->addToMessage(
-                'Buckaroo can not initialize the credit memo\'s by order { '. $e->getLogMessage().' }'
-            )->log();
+            $this->logging
+                ->addDebug('Buckaroo can not initialize the credit memo\'s by order { '. $e->getLogMessage().' }');
         }
         return false;
     }
@@ -259,16 +255,14 @@ class Push
 
         if ($this->creditAmount != $this->order->getBaseGrandTotal()) {
             $adjustment = $this->getAdjustmentRefundData();
-            $this->debugger->addToMessage('This is an adjustment refund of '. $totalAmountToRefund);
+            $this->logging->addDebug('This is an adjustment refund of '. $totalAmountToRefund);
             $data['shipping_amount']     = '0';
             $data['adjustment_negative'] = '0';
             $data['adjustment_positive'] = $adjustment;
             $data['items']               = $this->getCreditmemoDataItems();
             $data['qtys']                = '0';
         } else {
-            $this->debugger->addToMessage(
-                'With this refund of '. $this->creditAmount.' the grand total will be refunded.'
-            );
+            $this->logging->addDebug('With this refund of '. $this->creditAmount.' the grand total will be refunded.');
             $data['shipping_amount']     = $this->caluclateShippingCostToRefund();
             $data['adjustment_negative'] = $this->getTotalCreditAdjustments();
             $data['adjustment_positive'] = $this->calculateRemainder();
@@ -276,8 +270,9 @@ class Push
             $data['qtys']                = $this->setCreditQtys($data['items']);
         }
 
-        $this->debugger->addToMessage('Data used for credit nota : ');
-        $this->debugger->addToMessage($data)->log();
+        $debugMessage = 'Data used for credit nota: ' . PHP_EOL;
+        $debugMessage .= print_r($data, true);
+        $this->logging->addDebug($debugMessage);
 
         return $data;
     }
@@ -395,8 +390,9 @@ class Push
             }
         }
 
-        $this->debugger->addToMessage('Total items to be refunded : ');
-        $this->debugger->addToMessage($items)->log();
+        $debugMessage = 'Total items to be refunded: ' . PHP_EOL;
+        $debugMessage .= print_r($items, true);
+        $this->logging->addDebug($debugMessage);
 
         return $items;
     }

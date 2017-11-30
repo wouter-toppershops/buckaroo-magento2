@@ -39,7 +39,10 @@
 namespace TIG\Buckaroo\Test\Unit\Model;
 
 use Magento\Payment\Model\MethodInterface;
+use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
+use TIG\Buckaroo\Model\Method\AbstractMethod;
+use TIG\Buckaroo\Model\Method\Giftcards;
 
 class PushTest extends \TIG\Buckaroo\Test\BaseTest
 {
@@ -116,6 +119,75 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
+     * @return array
+     */
+    public function giftcardPartialPaymentProvider()
+    {
+        return [
+            'processed partial giftcard payment' => [
+                Giftcards::PAYMENT_METHOD_CODE,
+                5,
+                2,
+                'abc',
+                true
+            ],
+            'incorrect method code' => [
+                'fake_method_code',
+                4,
+                1,
+                'def',
+                false
+            ],
+            'push amount equals order amount' => [
+                Giftcards::PAYMENT_METHOD_CODE,
+                3,
+                6,
+                'ghi',
+                false
+            ],
+            'no related transaction key' => [
+                Giftcards::PAYMENT_METHOD_CODE,
+                8,
+                7,
+                null,
+                false
+            ],
+        ];
+    }
+
+    /**
+     * @param $methodCode
+     * @param $orderAmount
+     * @param $pushAmount
+     * @param $relatedTransaction
+     * @param $expected
+     *
+     * @dataProvider giftcardPartialPaymentProvider
+     */
+    public function testGiftcardPartialPayment($methodCode, $orderAmount, $pushAmount, $relatedTransaction, $expected)
+    {
+        $paymentMock = $this->getFakeMock(Payment::class)
+            ->setMethods(['getMethod', 'setAdditionalInformation'])
+            ->getMock();
+        $paymentMock->expects($this->once())->method('getMethod')->willReturn($methodCode);
+        $paymentMock->method('setAdditionalInformation');
+
+        $orderMock = $this->getFakeMock(Order::class)->setMethods(['getPayment', 'getGrandTotal'])->getMock();
+        $orderMock->expects($this->once())->method('getPayment')->willReturn($paymentMock);
+        $orderMock->method('getGrandTotal')->willReturn($orderAmount);
+
+        $this->object->order = $orderMock;
+        $this->object->postData = [
+            'brq_amount' => $pushAmount,
+            'brq_relatedtransaction_partialpayment' => $relatedTransaction
+        ];
+
+        $result = $this->invoke('giftcardPartialPayment', $this->object);
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * @param $state
      *
      * @dataProvider processPendingPaymentPushDataProvider
@@ -127,10 +199,14 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $expectedDescription = 'Payment push status : '.$message;
 
-        $pendingPaymentState = \Magento\Sales\Model\Order::STATE_PROCESSING;
+        $pendingPaymentState = Order::STATE_PROCESSING;
 
-        $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $orderMock = \Mockery::mock(Order::class);
         $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
+        $orderMock->shouldReceive('getStore')->andReturn(0);
+        $orderMock->shouldReceive('getPayment')->andReturnSelf();
+        $orderMock->shouldReceive('getMethodInstance')->andReturnSelf();
+        $orderMock->shouldReceive('getEmailSent')->andReturn(true);
 
         if ($state == $pendingPaymentState) {
             $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
@@ -146,10 +222,10 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     {
         return [
             [
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_NEW,
+                Order::STATE_NEW,
             ],
         ];
     }
@@ -168,7 +244,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $expectedDescription = 'Payment status : '.$message;
 
-        $canceledPaymentState = \Magento\Sales\Model\Order::STATE_CANCELED;
+        $canceledPaymentState = Order::STATE_CANCELED;
 
         $this->configAccount->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
 
@@ -216,42 +292,42 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     {
         return [
             [
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 true,
                 true,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 true,
                 false,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 false,
                 true,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 false,
                 false,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 true,
                 true,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 true,
                 false,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 false,
                 true,
             ],
             [
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 false,
                 false,
             ],
@@ -290,7 +366,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         /**
          * Only orders with this state should have their status updated
          */
-        $successPaymentState = \Magento\Sales\Model\Order::STATE_PROCESSING;
+        $successPaymentState = Order::STATE_PROCESSING;
 
         /**
          * Set config values on config provider mock
@@ -303,7 +379,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         /**
          * Build an order mock and set several non mandatory method calls
          */
-        $orderMock = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $orderMock = \Mockery::mock(Order::class);
         $orderMock->shouldReceive('getEmailSent')->andReturn($orderEmailSent);
         $orderMock->shouldReceive('getGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
@@ -440,7 +516,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -482,7 +558,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -524,7 +600,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -566,7 +642,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -611,7 +687,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -653,7 +729,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -695,7 +771,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -737,7 +813,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -782,7 +858,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -824,7 +900,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -866,7 +942,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -908,7 +984,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -950,7 +1026,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_CANCELED,
+                Order::STATE_CANCELED,
                 /**
                  * $orderEmailSent
                  */
@@ -995,7 +1071,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1037,7 +1113,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1079,7 +1155,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1121,7 +1197,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1166,7 +1242,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1208,7 +1284,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1250,7 +1326,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1292,7 +1368,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1337,7 +1413,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1379,7 +1455,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1421,7 +1497,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1463,7 +1539,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */
@@ -1505,7 +1581,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $state
                  */
-                \Magento\Sales\Model\Order::STATE_PROCESSING,
+                Order::STATE_PROCESSING,
                 /**
                  * $orderEmailSent
                  */

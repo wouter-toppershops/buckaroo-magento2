@@ -109,10 +109,13 @@ class Order extends AbstractTransactionBuilder
         if ($this->configProviderAccount->getCreateOrderBeforeTransaction($store)) {
 
             $newStatus = $this->configProviderAccount->getOrderStatusNew($store);
-            if ($newStatus) {
-                $order->setStatus($newStatus);
+            $orderState = 'new';
+            if (!$newStatus) {
+                $newStatus = $order->getConfig()->getStateDefaultStatus($orderState);
             }
 
+            $order->setState($orderState);
+            $order->setStatus($newStatus);
             $order->save();
         }
 

@@ -154,6 +154,10 @@ class Transfer extends AbstractMethod
                     'Name' => 'CustomerLastName',
                 ],
                 [
+                    '_'    => $billingAddress->getCountryId(),
+                    'Name' => 'CustomerCountry',
+                ],
+                [
                     '_'    => $payment->getOrder()->getCustomerEmail(),
                     'Name' => 'CustomerEmail',
                 ],
@@ -170,6 +174,14 @@ class Transfer extends AbstractMethod
         $transactionBuilder->setOrder($payment->getOrder())
             ->setServices($services)
             ->setMethod('TransactionRequest');
+
+        /**
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * @todo when buckaroo changes the push / response order this can be removed
+         */
+        $payment->setAdditionalInformation(
+            'skip_push', 1
+        );
 
         return $transactionBuilder;
     }

@@ -135,6 +135,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         );
 
         $payment->shouldReceive('getOrder')->andReturn($fixture['order']);
+        $payment->shouldReceive('setAdditionalInformation')->withArgs(['skip_push', 1]);
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();
@@ -143,7 +144,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         $order->shouldReceive('setServices')->andReturnUsing(
             function ($services) use ($fixture, $order) {
                 $this->assertEquals('sepadirectdebit', $services['Name']);
-                $this->assertEquals($fixture['customer_bic'], $services[0]['RequestParameter'][0][0]['_']);
+                $this->assertEquals($fixture['customer_bic'], $services['RequestParameter'][2]['_']);
                 $this->assertEquals($fixture['customer_iban'], $services['RequestParameter'][1]['_']);
                 $this->assertEquals($fixture['customer_account_name'], $services['RequestParameter'][0]['_']);
 

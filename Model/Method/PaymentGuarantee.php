@@ -281,6 +281,14 @@ class PaymentGuarantee extends AbstractMethod
             ->setMethod('TransactionRequest')
             ->setReturnUrl('');
 
+        /**
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * @todo when buckaroo changes the push / response order this can be removed
+         */
+        $payment->setAdditionalInformation(
+            'skip_push', 1
+        );
+
         return $transactionBuilder;
     }
 
@@ -360,6 +368,14 @@ class PaymentGuarantee extends AbstractMethod
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setReturnUrl('');
+
+        /**
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * @todo when buckaroo changes the push / response order this can be removed
+         */
+        $payment->setAdditionalInformation(
+            'skip_push', 1
+        );
 
         return $transactionBuilder;
     }
@@ -790,8 +806,7 @@ class PaymentGuarantee extends AbstractMethod
     private function getPartialInvoiceId($order)
     {
         return $order->getIncrementId() . '-'
-            . $order->hasInvoices() . '-'
-            . substr(md5(date("YMDHis")), 0, 6);
+            . $order->hasInvoices();
     }
 
     /**
@@ -802,8 +817,7 @@ class PaymentGuarantee extends AbstractMethod
     private function getPartialCreditmemoId($order)
     {
         return $order->getIncrementId() . '-'
-        . ($order->hasCreditmemos() + 1) . '-'
-        . substr(md5(date("YMDHis")), 0, 6);
+        . ($order->hasCreditmemos() + 1);
     }
 
     /**

@@ -82,6 +82,14 @@ class InvoiceRegister implements \Magento\Framework\Event\ObserverInterface
             $order->setBuckarooFeeBaseTaxAmountInvoiced(
                 $order->getBuckarooFeeBaseTaxAmountInvoiced() + $invoice->getBuckarooFeeBaseTaxAmount()
             );
+
+            $order->setBuckarooFeeInclTaxInvoiced(
+                $order->getBuckarooFeeInclTaxInvoiced() + $invoice->getBuckarooFeeInclTax()
+            );
+
+            $order->setBaseBuckarooFeeInclTaxInvoiced(
+                $order->getBaseBuckarooFeeInclTaxInvoiced() + $invoice->getBaseBuckarooFeeInclTax()
+            );
         }
 
         return $this;

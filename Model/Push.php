@@ -47,11 +47,13 @@ use Magento\Sales\Model\Order\Email\Sender\InvoiceSender;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment\Transaction;
 use TIG\Buckaroo\Api\PushInterface;
-use TIG\Buckaroo\Debug\Debugger;
 use TIG\Buckaroo\Helper\Data;
+use TIG\Buckaroo\Logging\Log;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Model\Method\AbstractMethod;
+use TIG\Buckaroo\Model\Method\Giftcards;
+use TIG\Buckaroo\Model\Method\Transfer;
 use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
@@ -118,9 +120,9 @@ class Push implements PushInterface
     public $helper;
 
     /**
-     * @var Debugger $debugger
+     * @var Log $logging
      */
-    public $debugger;
+    public $logging;
 
     /**
      * @var OrderStatusFactory OrderStatusFactory
@@ -147,7 +149,7 @@ class Push implements PushInterface
      * @param Data                 $helper
      * @param Account              $configAccount
      * @param RefundPush           $refundPush
-     * @param Debugger             $debugger
+     * @param Log                  $logging
      * @param Factory              $configProviderMethodFactory
      * @param OrderStatusFactory   $orderStatusFactory
      */
@@ -161,7 +163,7 @@ class Push implements PushInterface
         Data $helper,
         Account $configAccount,
         RefundPush $refundPush,
-        Debugger $debugger,
+        Log $logging,
         Factory $configProviderMethodFactory,
         OrderStatusFactory $orderStatusFactory
     ) {
@@ -174,7 +176,7 @@ class Push implements PushInterface
         $this->helper                       = $helper;
         $this->configAccount                = $configAccount;
         $this->refundPush                   = $refundPush;
-        $this->debugger                     = $debugger;
+        $this->logging                      = $logging;
         $this->configProviderMethodFactory  = $configProviderMethodFactory;
         $this->orderStatusFactory           = $orderStatusFactory;
     }
@@ -192,13 +194,8 @@ class Push implements PushInterface
         //Create post data array, change key values to lower case.
         $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
 
-        //Skip informational messages for group processing giftcards
-        if ($this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
-            return;
-        }
-
         //Start debug mailing/logging with the postdata.
-        $this->debugger->addToMessage($this->originalPostData);
+        $this->logging->addDebug(print_r($this->originalPostData, true));
 
         //Validate status code and return response
         $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
@@ -220,7 +217,7 @@ class Push implements PushInterface
         $this->order->loadByIncrementId($brqOrderId);
 
         if (!$this->order->getId()) {
-            $this->debugger->addToMessage('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
+            $this->logging->addDebug('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
@@ -247,12 +244,12 @@ class Push implements PushInterface
 
         //Last validation before push can be completed
         if (!$validSignature) {
-            $this->debugger->addToMessage('Invalid push signature');
+            $this->logging->addDebug('Invalid push signature');
             throw new \TIG\Buckaroo\Exception(__('Signature from push is incorrect'));
             //If the signature is valid but the order cant be updated, try to add a notification to the order comments.
         } elseif ($validSignature && !$canUpdateOrder) {
             $this->setOrderNotificationNote(__('The order has already been processed.'));
-            $this->debugger->addToMessage('Order can not receive updates');
+            $this->logging->addDebug('Order can not receive updates');
             throw new \TIG\Buckaroo\Exception(
                 __('Signature from push is correct but the order can not receive updates')
             );
@@ -261,8 +258,6 @@ class Push implements PushInterface
         $this->setTransactionKey();
         $this->processPush($response);
         $this->order->save();
-
-        $this->debugger->log();
 
         return true;
     }
@@ -274,15 +269,13 @@ class Push implements PushInterface
      */
     public function processCancelAuthorize()
     {
-        $this->debugger->addToMessage('Order autorize has been canceld, trying to update payment transactions');
-
         try {
             $this->setTransactionKey();
         } catch (\TIG\Buckaroo\Exception $e) {
-            $this->debugger->addToMessage($e->getLogMessage());
+            $this->logging->addDebug($e->getLogMessage());
         }
 
-        $this->debugger->log();
+        $this->logging->addDebug('Order autorize has been canceld, trying to update payment transactions');
 
         return true;
     }
@@ -296,7 +289,25 @@ class Push implements PushInterface
      */
     public function processPush($response)
     {
-        $this->debugger->addToMessage('RESPONSE STATUS: '.$response['status']);
+        $this->logging->addDebug('RESPONSE STATUS: '.$response['status']);
+
+        if ($this->giftcardPartialPayment()) {
+            return;
+        }
+
+        $payment = $this->order->getPayment();
+        $skipFirstPush = $payment->getAdditionalInformation('skip_push');
+
+        /**
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * for some payment methods
+         * @todo when buckaroo changes the push / response order this can be removed
+         */
+        if ($skipFirstPush > 0) {
+            $payment->unsAdditionalInformation('skip_push');
+            $payment->save();
+            throw new \TIG\Buckaroo\Exception(__('Skipped handling this push, first handle response, action will be taken on the next push.'));
+        }
 
         $newStatus = $this->orderStatusFactory->get($this->postData['brq_statuscode'], $this->order);
 
@@ -334,6 +345,28 @@ class Push implements PushInterface
                 $this->processPendingPaymentPush($newStatus, $response['message']);
                 break;
         }
+    }
+
+    /**
+     * @return bool
+     */
+    private function giftcardPartialPayment()
+    {
+        $payment = $this->order->getPayment();
+
+        if ($payment->getMethod() != Giftcards::PAYMENT_METHOD_CODE
+            || $this->postData['brq_amount'] >= $this->order->getGrandTotal()
+            || empty($this->postData['brq_relatedtransaction_partialpayment'])
+        ) {
+            return false;
+        }
+
+        $payment->setAdditionalInformation(
+            AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY,
+            $this->postData['brq_relatedtransaction_partialpayment']
+        );
+
+        return true;
     }
 
     /**
@@ -445,7 +478,7 @@ class Push implements PushInterface
         $buckarooCancelOnFailed = $this->configAccount->getCancelOnFailed($store);
 
         if ($buckarooCancelOnFailed && $this->order->canCancel()) {
-            $this->debugger->addToMessage('Buckaroo push failed : '.$message.' : Cancel order.')->log();
+            $this->logging->addDebug('Buckaroo push failed : '.$message.' : Cancel order.');
 
             // BUCKM2-78: Never automatically cancelauthorize via push for afterpay
             // setting parameter which will cause to stop the cancel process on
@@ -478,10 +511,12 @@ class Push implements PushInterface
 
         $store = $this->order->getStore();
 
+        $payment = $this->order->getPayment();
+
         /**
          * @var \Magento\Payment\Model\MethodInterface $paymentMethod
          */
-        $paymentMethod = $this->order->getPayment()->getMethodInstance();
+        $paymentMethod = $payment->getMethodInstance();
 
         if (!$this->order->getEmailSent()
             && ($this->configAccount->getOrderConfirmationEmail($store)
@@ -491,6 +526,11 @@ class Push implements PushInterface
             $this->orderSender->send($this->order);
         }
 
+        /** force state eventhough this can lead to a transition of the order
+         *  like new -> processing
+         */
+        $forceState = false;
+
         if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
             $description = 'Payment status : <strong>' . $message . "</strong><br/>";
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($amount) . ' has been paid';
@@ -498,13 +538,14 @@ class Push implements PushInterface
             $description = 'Authorization status : <strong>' . $message . "</strong><br/>";
             $description .= 'Total amount of ' . $this->order->getBaseCurrency()->formatTxt($this->order->getTotalDue())
                 . ' has been authorized. Please create an invoice to capture the authorized amount.';
+            $forceState = true;
         }
 
         if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $this->configAccount->getAutoInvoice($store)) {
             $this->saveInvoice();
         }
 
-        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
+        $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description, $forceState);
 
         return true;
     }
@@ -517,6 +558,22 @@ class Push implements PushInterface
      */
     public function processPendingPaymentPush($newStatus, $message)
     {
+        $store = $this->order->getStore();
+        $payment = $this->order->getPayment();
+
+        /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
+        $paymentMethod = $payment->getMethodInstance();
+
+        // Transfer has a slightly different flow where a successful order has a 792 status code instead of an 190 one
+        if (!$this->order->getEmailSent()
+            && $payment->getMethod() == Transfer::PAYMENT_METHOD_CODE
+            && ($this->configAccount->getOrderConfirmationEmail($store)
+                || $paymentMethod->getConfigData('order_email', $store)
+            )
+        ) {
+            $this->orderSender->send($this->order);
+        }
+
         $description = 'Payment push status : '.$message;
 
         $this->updateOrderStatus(Order::STATE_PROCESSING, $newStatus, $description);
@@ -536,7 +593,7 @@ class Push implements PushInterface
             $this->order->addStatusHistoryComment($note);
             $this->order->save();
         } catch (\TIG\Buckaroo\Exception $e) {
-            $this->debugger->addToMessage($e->getLogMessage());
+            $this->logging->addDebug($e->getLogMessage());
         }
     }
 
@@ -546,10 +603,11 @@ class Push implements PushInterface
      * @param $orderState
      * @param $description
      * @param $newStatus
+     * @param $force
      */
-    protected function updateOrderStatus($orderState, $newStatus, $description)
+    protected function updateOrderStatus($orderState, $newStatus, $description, $force = false)
     {
-        if ($this->order->getState() == $orderState) {
+        if ($this->order->getState() == $orderState || $force == true) {
             $this->order->addStatusHistoryComment($description, $newStatus);
         } else {
             $this->order->addStatusHistoryComment($description);
@@ -566,7 +624,7 @@ class Push implements PushInterface
     protected function saveInvoice()
     {
         if (!$this->order->canInvoice() || $this->order->hasInvoices()) {
-            $this->debugger->addToMessage(__('Order can not be invoiced'));
+            $this->logging->addDebug('Order can not be invoiced');
             throw new \TIG\Buckaroo\Exception(__('Order can not be invoiced'));
         }
 
@@ -581,7 +639,7 @@ class Push implements PushInterface
          */
         $payment = $this->order->getPayment();
 
-        if ($payment->getMethod() == \TIG\Buckaroo\Model\Method\Giftcards::PAYMENT_METHOD_CODE) {
+        if ($payment->getMethod() == Giftcards::PAYMENT_METHOD_CODE) {
             $this->setReceivedPaymentFromBuckaroo();
 
             $invoiceAmount = floatval($this->postData['brq_amount']);
