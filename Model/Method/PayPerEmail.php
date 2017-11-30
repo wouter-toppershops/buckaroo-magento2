@@ -154,16 +154,39 @@ class PayPerEmail extends AbstractMethod
      */
     public function getOrderTransactionBuilder($payment)
     {
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail $config */
+        $config = $this->configProviderMethodFactory->get('payperemail');
+
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
         $services = [
             'Name'             => 'payperemail',
-            'Action'           => 'Pay',
-            'Version'          => 2,
+            'Action'           => 'PaymentInvitation',
+            'Version'          => 1,
             'RequestParameter' => [
                 [
-                    '_'    => $payment->getAdditionalInformation('issuer'),
-                    'Name' => 'issuer',
+                    '_'    => $payment->getAdditionalInformation('customer_gender'),
+                    'Name' => 'customergender',
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('customer_email'),
+                    'Name' => 'CustomerEmail',
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('customer_billingFirstName'),
+                    'Name' => 'CustomerFirstName',
+                ],
+                [
+                    '_'    => $payment->getAdditionalInformation('customer_billingLastName'),
+                    'Name' => 'CustomerLastName',
+                ],
+                [
+                    '_'    => $config->getSendMail() ? 'false' : 'true',
+                    'Name' => 'MerchantSendsEmail',
+                ],
+                [
+                    '_'    => $config->getPaymentMethod(),
+                    'Name' => 'PaymentMethodsAllowed',
                 ],
             ],
         ];

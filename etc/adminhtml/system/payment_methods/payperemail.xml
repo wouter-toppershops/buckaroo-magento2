@@ -63,7 +63,15 @@
             <config_path>payment/tig_buckaroo_payperemail/sort_order</config_path>
         </field>
 
-        <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="send_mail" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Send payment email</label>
+            <comment><![CDATA[Buckaroo sends an email to the customer with the payment procedures.]]></comment>
+            <tooltip>Set to 'No' leaves the customer uninformed on the payment obligations.</tooltip>
+            <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+            <config_path>payment/tig_buckaroo_payperemail/send_mail</config_path>
+        </field>
+
+        <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Default Configuration</label>
 
             <field id="scheme_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
@@ -99,7 +107,7 @@
             </field>
         </group>
 
-        <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
+        <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Advanced Configuration</label>
 
             <field id="order_email" translate="label comment" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
