@@ -58,6 +58,7 @@ class PayPerEmail extends AbstractConfigProvider
     const XPATH_PAYPEREMAIL_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_payperemail/order_status_success';
     const XPATH_PAYPEREMAIL_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_payperemail/order_status_failed';
 
+    const XPATH_PAYPEREMAIL_SEND_MAIL                   = 'payment/tig_buckaroo_payperemail/send_mail';
     const XPATH_PAYPEREMAIL_SCHEME_KEY                  = 'payment/tig_buckaroo_payperemail/scheme_key';
     const XPATH_PAYPEREMAIL_MAX_STEP_INDEX              = 'payment/tig_buckaroo_payperemail/max_step_index';
     const XPATH_PAYPEREMAIL_DUE_DATE                    = 'payment/tig_buckaroo_payperemail/due_date';
@@ -102,5 +103,18 @@ class PayPerEmail extends AbstractConfigProvider
         );
 
         return $paymentFee ? $paymentFee : false;
+    }
+
+    /**
+     * @return bool
+     */
+    public function getSendMail()
+    {
+        $sendMail = $this->scopeConfig->getValue(
+            self::XPATH_PAYPEREMAIL_SEND_MAIL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $sendMail ? true : false;
     }
 }
