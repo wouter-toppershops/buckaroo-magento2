@@ -265,8 +265,8 @@
                 <failure_redirect>checkout/cart</failure_redirect>
                 <cancel_on_failed>1</cancel_on_failed>
                 <payment_fee_label>Payment Fee</payment_fee_label>
-                <order_status_new>tig_buckaroo_new</order_status_new>
-                <order_status_pending>tig_buckaroo_pending_payment</order_status_pending>
+                <order_status_new>pending</order_status_new>
+                <order_status_pending>pending_payment</order_status_pending>
                 <order_status_success>processing</order_status_success>
                 <order_status_failed>canceled</order_status_failed>
                 <create_order_before_transaction>1</create_order_before_transaction>
