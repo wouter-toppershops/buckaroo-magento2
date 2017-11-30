@@ -564,7 +564,7 @@ class Push implements PushInterface
         /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
         $paymentMethod = $payment->getMethodInstance();
 
-        // Transfer has a slightly different flow where a succesful order has a 792 status code instead of an 190 one
+        // Transfer has a slightly different flow where a successful order has a 792 status code instead of an 190 one
         if (!$this->order->getEmailSent()
             && $payment->getMethod() == Transfer::PAYMENT_METHOD_CODE
             && ($this->configAccount->getOrderConfirmationEmail($store)

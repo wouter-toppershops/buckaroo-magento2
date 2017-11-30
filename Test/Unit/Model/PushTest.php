@@ -248,7 +248,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->configAccount->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
 
-<<<<<<< HEAD
         $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)
             ->setMethods(['getState', 'getStore', 'addStatusHistoryComment', 'canCancel', 'getPayment', 'cancel', 'save'])
             ->getMock();
@@ -257,11 +256,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $addHistoryCommentExpects = $orderMock->expects($this->once());
         $addHistoryCommentExpects->method('addStatusHistoryComment');
-=======
-        $orderMock = \Mockery::mock(Order::class);
-        $orderMock->shouldReceive('getState')->atLeast(1)->andReturn($state);
-        $orderMock->shouldReceive('getStore')->once()->andReturnSelf();
->>>>>>> origin/sprint72_giftcards_group_transaction
 
         if ($state == $canceledPaymentState) {
             $addHistoryCommentExpects->with($expectedDescription, $status);
