@@ -89,7 +89,7 @@ class PayPerEmail extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefund               = true;
+    protected $_canRefund               = false;
 
     /**
      * @var bool
@@ -109,7 +109,7 @@ class PayPerEmail extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefundInvoicePartial = true;
+    protected $_canRefundInvoicePartial = false;
     // @codingStandardsIgnoreEnd
 
     /**
@@ -222,29 +222,7 @@ class PayPerEmail extends AbstractMethod
      */
     public function getRefundTransactionBuilder($payment)
     {
-        $transactionBuilder = $this->transactionBuilderFactory->get('refund');
-
-        $services = [
-            'Name'    => 'payperemail',
-            'Action'  => 'Refund',
-            'Version' => 1,
-        ];
-
-        $requestParams = $this->addExtraFields($this->_code);
-        $services = array_merge($services, $requestParams);
-
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey(
-                $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
-            )
-            ->setChannel('CallCenter');
-
-        return $transactionBuilder;
+        return false;
     }
 
     /**
