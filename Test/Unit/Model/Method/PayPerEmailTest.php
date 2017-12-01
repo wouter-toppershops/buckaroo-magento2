@@ -154,6 +154,15 @@ class PayPerEmailTest extends BaseTest
         $this->assertFalse($result);
     }
 
+    public function testGetRefundTransactionBuilder()
+    {
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
+        $instance = $this->getInstance();
+
+        $result = $instance->getRefundTransactionBuilder($infoInstanceMock);
+        $this->assertFalse($result);
+    }
+
     public function testGetVoidTransactionBuilder()
     {
         $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
