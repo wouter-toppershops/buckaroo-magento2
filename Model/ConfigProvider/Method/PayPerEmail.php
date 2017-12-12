@@ -43,6 +43,10 @@ use TIG\Buckaroo\Model\Method\PayPerEmail as MethodPayPerEmail;
 
 /**
  * @method getDueDate()
+ * @method getMaxStepIndex()
+ * @method getPaymentMethod()
+ * @method getPaymentMethodAfterExpiry()
+ * @method getSchemeKey()
  */
 class PayPerEmail extends AbstractConfigProvider
 {
