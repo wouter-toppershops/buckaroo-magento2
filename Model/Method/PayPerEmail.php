@@ -508,6 +508,9 @@ class PayPerEmail extends AbstractMethod
         return $addressData;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     protected function afterOrder($payment, $response)
     {
         if (empty($response[0]->Services->Service)) {
