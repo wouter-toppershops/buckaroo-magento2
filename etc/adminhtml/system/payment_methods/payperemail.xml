@@ -40,7 +40,7 @@
  -->
 <include xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_include.xsd">
     <!-- PayPerEmail Payment method group -->
-    <group id="tig_buckaroo_payperemail" translate="label" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+    <group id="tig_buckaroo_payperemail" translate="label" type="text" sortOrder="220" showInDefault="1" showInWebsite="1" showInStore="1">
         <label>PayPerEmail</label>
         <frontend_model>TIG\Buckaroo\Block\Config\Form\Field\Fieldset</frontend_model>
 
@@ -74,34 +74,53 @@
         <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Default Configuration</label>
 
+			<field id="active_status_cm3" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit Management Enabled</label>
+                <comment><![CDATA[Enable or disable credit management.]]></comment>
+                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                <config_path>payment/tig_buckaroo_payperemail/active_status_cm3</config_path>
+            </field>
+            
             <field id="scheme_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Credit Management Scheme Key</label>
-                <comment><![CDATA[Credit Management Scheme Key]]></comment>
+                <comment><![CDATA[Credit Management Scheme Key. It can be found <a href="https://plaza.buckaroo.nl/Invoices/Scheme" target="_blank">here</a>. This requires the Buckaroo Credit Management subscription.]]></comment>
                 <config_path>payment/tig_buckaroo_payperemail/scheme_key</config_path>
+                <validate>required-entry</validate>
+                <depends>
+                    <field id="active_status_cm3">1</field>
+                </depends>
             </field>
 
-            <field id="max_step_index" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Credit management steps</label>
-                <comment><![CDATA[Max niveau of the credit management steps]]></comment>
+            <field id="max_step_index" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit Management Steps</label>
+                <comment><![CDATA[Max level of the Credit Management steps.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\DropdownCount4</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/max_step_index</config_path>
+                <depends>
+                    <field id="active_status_cm3">1</field>
+                </depends>
             </field>
 
             <field id="due_date" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Payment term expiry</label>
-                <comment><![CDATA[Payment term expiry in days]]></comment>
+                <label>Credit Management Due date</label>
+                <comment><![CDATA[Fill in the amount of days after which the Credit Management scheme should start.]]></comment>
                 <config_path>payment/tig_buckaroo_payperemail/due_date</config_path>
+                <validate>required-entry</validate>
+                <depends>
+                    <field id="active_status_cm3">1</field>
+                </depends>
             </field>
 
             <field id="payment_method" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PayPerEmail payment method</label>
-                <comment><![CDATA[Select which payment methods can be used at PayPerEmail]]></comment>
+                <comment><![CDATA[Select which payment methods can be used at PayPerEmail.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethods</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/payment_method</config_path>
             </field>
 
             <field id="payment_method_after_expiry" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>PayPerEmail payment method after expiry</label>
-                <comment><![CDATA[Select which payment methods can be used after the payment expiry]]></comment>
+                <label>PayPerEmail payment method after due date</label>
+                <comment><![CDATA[Select which payment methods can be used after the payment due date.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethodsAfterExpiry</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/payment_method_after_expiry</config_path>
             </field>
