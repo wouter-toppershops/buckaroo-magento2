@@ -361,10 +361,40 @@ class PayPerEmailTest extends BaseTest
 
     public function testGetVoidTransactionBuilder()
     {
-        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)->getMock();
-        $instance = $this->getInstance();
+        $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)->getMock();
+
+        $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
+        $infoInstanceMock->expects($this->exactly(2))->method('getOrder')->willReturn($orderMock);
+
+        $orderTransactionMock = $this->getFakeMock(Order::class)->setMethods(['setMethod'])->getMock();
+        $orderTransactionMock->expects($this->once())->method('setMethod')->with('DataRequest')->willReturnSelf();
+
+        $transactionBuilderMock = $this->getFakeMock(TransactionBuilderFactory::class)->setMethods(['get'])->getMock();
+        $transactionBuilderMock->expects($this->once())
+            ->method('get')
+            ->with('order')
+            ->willReturn($orderTransactionMock);
+
+        $instance = $this->getInstance([
+            'transactionBuilderFactory' => $transactionBuilderMock
+        ]);
 
         $result = $instance->getVoidTransactionBuilder($infoInstanceMock);
-        $this->assertTrue($result);
+        $this->assertInstanceOf(Order::class, $result);
+
+        $services = $result->getServices();
+        $this->assertInternalType('array', $services);
+        $this->assertEquals('CreditManagement3', $services['Name']);
+        $this->assertEquals('CreateCreditNote', $services['Action']);
+        $this->assertEquals(1, $services['Version']);
+        $this->assertCount(4, $services['RequestParameter']);
+
+        $possibleParameters = ['InvoiceAmount', 'InvoiceAmountVat', 'InvoiceDate', 'OriginalInvoiceNumber'];
+
+        foreach ($services['RequestParameter'] as $array) {
+            $this->assertArrayHasKey('_', $array);
+            $this->assertArrayHasKey('Name', $array);
+            $this->assertContains($array['Name'], $possibleParameters);
+        }
     }
 }
