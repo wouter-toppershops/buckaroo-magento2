@@ -39,6 +39,7 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+use Magento\Sales\Model\Order;
 use TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail as PayPerEmailConfig;
 
 class PayPerEmail extends AbstractMethod
@@ -250,7 +251,7 @@ class PayPerEmail extends AbstractMethod
      */
     private function getCmRequestParameters($payment)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /** @var Order $order */
         $order = $payment->getOrder();
 
         $requestParameters = [
@@ -287,7 +288,7 @@ class PayPerEmail extends AbstractMethod
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * @param Order $order
      *
      * @return array
      */
@@ -341,7 +342,7 @@ class PayPerEmail extends AbstractMethod
      */
     private function getPersonCmParameters($payment)
     {
-        /** @var \Magento\Sales\Model\Order $order */
+        /** @var Order $order */
         $order = $payment->getOrder();
 
         $personParameters = [
@@ -561,6 +562,49 @@ class PayPerEmail extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
-        return true;
+        /** @var Order $order */
+        $order = $payment->getOrder();
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $services = [
+            'Name'             => 'CreditManagement3',
+            'Action'           => 'CreateCreditNote',
+            'Version'          => 1,
+            'RequestParameter' => [
+                [
+                    '_'    => $order->getGrandTotal(),
+                    'Name' => 'InvoiceAmount',
+                ],
+                [
+                    '_'    => $order->getTaxAmount(),
+                    'Name' => 'InvoiceAmountVat',
+                ],
+                [
+                    '_'    => date('Y-m-d'),
+                    'Name' => 'InvoiceDate',
+                ],
+                [
+                    '_'    => $order->getIncrementId(),
+                    'Name' => 'OriginalInvoiceNumber',
+                ],
+            ],
+        ];
+
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setAmount(0)
+            ->setType('void')
+            ->setServices($services)
+            ->setMethod('DataRequest')
+            ->setInvoiceId($order->getIncrementId() . '-creditnote')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        return $transactionBuilder;
     }
 }
