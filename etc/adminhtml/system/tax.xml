@@ -48,7 +48,7 @@
     <group id="calculation">
         <field id="buckaroo_fee" translate="label" type="select" sortOrder="35" showInDefault="1" showInWebsite="0" showInStore="0">
             <label>Buckaroo Payment Fee Prices</label>
-            <comment>This sets whether buckaroo payment fee amounts entered from Magento Admin include tax</comment>
+            <comment>This sets whether buckaroo payment fee amounts entered from Magento Admin include tax.</comment>
             <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Calculation</source_model>
         </field>
     </group>

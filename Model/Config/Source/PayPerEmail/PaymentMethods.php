@@ -54,20 +54,23 @@ class PaymentMethods implements \Magento\Framework\Option\ArrayInterface
     public function toOptionArray()
     {
         $options = [
-            ['value' => 'amex',               'label' => __('American Express')],
-            ['value' => 'eps',                'label' => __('EPS')],
-            ['value' => 'directdebit',        'label' => __('Direct Debit')],
-            ['value' => 'giftcard',           'label' => __('Giftcards')],
-            ['value' => 'giropay',            'label' => __('Giropay')],
-            ['value' => 'ideal',              'label' => __('iDeal')],
-            ['value' => 'mastercard',         'label' => __('Mastercard')],
-            ['value' => 'paypal',             'label' => __('PayPal')],
-            ['value' => 'sofortueberweisung', 'label' => __('Sofort Banking')],
-            ['value' => 'transfer',           'label' => __('Bank Transfer')],
-            ['value' => 'visa',               'label' => __('Visa')],
-            ['value' => 'maestro',            'label' => __('eMaestro')],
-            ['value' => 'visaelectron',       'label' => __('Visa Electron')],
-            ['value' => 'vpay',               'label' => __('V PAY')]
+            ['value' => 'amex',                   'label' => __('American Express')],
+            ['value' => 'transfer',               'label' => __('Bank Transfer')],
+            ['value' => 'cartebancaire',          'label' => __('Carte Bancaire')],
+            ['value' => 'cartebleuevisa',         'label' => __('Carte Bleue')],
+            ['value' => 'dankort',                'label' => __('Dankort')],
+            ['value' => 'eps',                    'label' => __('EPS')],
+            ['value' => 'giftcard',               'label' => __('Giftcards')],
+            ['value' => 'giropay',                'label' => __('Giropay')],
+            ['value' => 'ideal',                  'label' => __('iDEAL')],
+            ['value' => 'maestro',                'label' => __('Maestro')],
+            ['value' => 'mastercard',             'label' => __('Mastercard')],
+            ['value' => 'paypal',                 'label' => __('PayPal')],
+            ['value' => 'sepadirectdebit',        'label' => __('SEPA Direct Debit')],
+            ['value' => 'sofortueberweisung',     'label' => __('Sofort Banking')],
+            ['value' => 'visa',                   'label' => __('Visa')],
+            ['value' => 'visaelectron',           'label' => __('Visa Electron')],
+            ['value' => 'vpay',                   'label' => __('V PAY')]
         ];
 
         return $options;
