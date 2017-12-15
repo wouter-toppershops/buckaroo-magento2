@@ -85,7 +85,6 @@
                 <label>Credit Management Scheme Key</label>
                 <comment><![CDATA[Credit Management Scheme Key. It can be found <a href="https://plaza.buckaroo.nl/Invoices/Scheme" target="_blank">here</a>. This requires the Buckaroo Credit Management subscription.]]></comment>
                 <config_path>payment/tig_buckaroo_payperemail/scheme_key</config_path>
-                <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                 <validate>required-entry</validate>
                 <depends>
                     <field id="active_status_cm3">1</field>
@@ -115,14 +114,14 @@
             <field id="payment_method" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PayPerEmail payment method</label>
                 <comment><![CDATA[Select which payment methods can be used at PayPerEmail.]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethods</source_model>
+                <source_model>TIG\Buckaroo\Model\Config\Source\PaymentMethods\PayPerEmail</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/payment_method</config_path>
             </field>
 
             <field id="payment_method_after_expiry" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>PayPerEmail payment method after due date</label>
                 <comment><![CDATA[Select which payment methods can be used after the payment due date.]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethodsAfterExpiry</source_model>
+                <source_model>TIG\Buckaroo\Model\Config\Source\PaymentMethods\AfterExpiry</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/payment_method_after_expiry</config_path>
                 <depends>
                     <field id="active_status_cm3">1</field>

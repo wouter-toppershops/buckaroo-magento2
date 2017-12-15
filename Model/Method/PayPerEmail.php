@@ -39,9 +39,6 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
-use Magento\Sales\Model\Order;
-use TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail as PayPerEmailConfig;
-
 class PayPerEmail extends AbstractMethod
 {
     /**
@@ -113,6 +110,61 @@ class PayPerEmail extends AbstractMethod
     protected $_canRefundInvoicePartial = false;
     // @codingStandardsIgnoreEnd
 
+    /** @var \TIG\Buckaroo\Service\CreditManagement\ServiceParameters */
+    private $serviceParameters;
+
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Developer\Helper\Data $developmentHelper,
+        \TIG\Buckaroo\Service\CreditManagement\ServiceParameters $serviceParameters,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $objectManager,
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $developmentHelper,
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $helper,
+            $request,
+            $refundFieldsFactory,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
+            $data
+        );
+
+        $this->serviceParameters = $serviceParameters;
+    }
+
+
     /**
      * {@inheritdoc}
      */
@@ -158,7 +210,7 @@ class PayPerEmail extends AbstractMethod
         $services = [];
         $services[] = $this->getPayperemailService($payment);
 
-        $cmService = $this->getCmService($payment);
+        $cmService = $this->serviceParameters->getCreateCombinedInvoice($payment, 'payperemail');
         if (count($cmService) > 0) {
             $services[] = $cmService;
         }
@@ -221,295 +273,6 @@ class PayPerEmail extends AbstractMethod
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     *
-     * @return array
-     */
-    private function getCmService($payment)
-    {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail $config */
-        $config = $this->configProviderMethodFactory->get('payperemail');
-
-        if (!$config->getActiveStatusCm3()) {
-            return [];
-        }
-
-        $services = [
-            'Name'             => 'CreditManagement3',
-            'Action'           => 'CreateCombinedInvoice',
-            'Version'          => 1,
-            'RequestParameter' => $this->getCmRequestParameters($payment)
-        ];
-
-        return $services;
-    }
-
-    /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     *
-     * @return array
-     */
-    private function getCmRequestParameters($payment)
-    {
-        /** @var Order $order */
-        $order = $payment->getOrder();
-
-        $requestParameters = [
-            [
-                '_'    => $order->getBillingAddress()->getEmail(),
-                'Name' => 'Code',
-                'Group' => 'Debtor',
-            ],
-            [
-                '_'    => $order->getBillingAddress()->getEmail(),
-                'Name' => 'Email',
-                'Group' => 'Email',
-            ],
-            [
-                '_'    => $order->getBillingAddress()->getTelephone(),
-                'Name' => 'Mobile',
-                'Group' => 'Phone',
-            ],
-        ];
-
-        $ungroupedParameters = $this->getUngroupedCmParameters($order);
-        $requestParameters = array_merge($requestParameters, $ungroupedParameters);
-
-        $personParameters = $this->getPersonCmParameters($payment);
-        $requestParameters = array_merge($requestParameters, $personParameters);
-
-        $addressParameters = $this->getAddressCmParameters($order->getBillingAddress());
-        $requestParameters = array_merge($requestParameters, $addressParameters);
-
-        $companyParameters = $this->getCompanyCmParameters($order->getBillingAddress());
-        $requestParameters = array_merge($requestParameters, $companyParameters);
-
-        return $requestParameters;
-    }
-
-    /**
-     * @param Order $order
-     *
-     * @return array
-     */
-    private function getUngroupedCmParameters($order)
-    {
-        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail $config */
-        $config = $this->configProviderMethodFactory->get('payperemail');
-
-        $ungroupedParameters = [
-            [
-                '_'    => $order->getGrandTotal(),
-                'Name' => 'InvoiceAmount',
-            ],
-            [
-                '_'    => $order->getTaxAmount(),
-                'Name' => 'InvoiceAmountVAT',
-            ],
-            [
-                '_'    => date('Y-m-d'),
-                'Name' => 'InvoiceDate',
-            ],
-            [
-                '_'    => date('Y-m-d', strtotime('+' . $config->getDueDate() . ' day', time())),
-                'Name' => 'DueDate',
-            ],
-            [
-                '_'    => $config->getSchemeKey(),
-                'Name' => 'SchemeKey',
-            ],
-            [
-                '_'    => $config->getMaxStepIndex(),
-                'Name' => 'MaxStepIndex',
-            ],
-            [
-                '_'    => $config->getPaymentMethod(),
-                'Name' => 'AllowedServices',
-            ],
-            [
-                '_'    => $config->getPaymentMethodAfterExpiry(),
-                'Name' => 'AllowedServicesAfterDueDate',
-            ],
-        ];
-
-        return $ungroupedParameters;
-    }
-
-    /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     *
-     * @return array
-     */
-    private function getPersonCmParameters($payment)
-    {
-        /** @var Order $order */
-        $order = $payment->getOrder();
-
-        $personParameters = [
-            [
-                '_'    => strtolower($order->getBillingAddress()->getCountryId()),
-                'Name' => 'Culture',
-                'Group' => 'Person',
-            ],
-            [
-                '_'    => $order->getBillingAddress()->getFirstname(),
-                'Name' => 'FirstName',
-                'Group' => 'Person',
-            ],
-            [
-                '_'    => $order->getBillingAddress()->getLastname(),
-                'Name' => 'LastName',
-                'Group' => 'Person',
-            ],
-            [
-                '_'    => $payment->getAdditionalInformation('customer_gender'),
-                'Name' => 'Gender',
-                'Group' => 'Person',
-            ],
-        ];
-
-        return $personParameters;
-    }
-
-    /**
-     * @param \Magento\Sales\Api\Data\OrderAddressInterface $billingAddress
-     *
-     * @return array
-     */
-    private function getAddressCmParameters($billingAddress)
-    {
-        $address = $this->getCmAddress($billingAddress->getStreet());
-
-        $addressParameters = [
-            [
-                '_'    => $address['street'],
-                'Name' => 'Street',
-                'Group' => 'Address',
-            ],
-            [
-                '_'    => $address['house_number'],
-                'Name' => 'HouseNumber',
-                'Group' => 'Address',
-            ],
-            [
-                '_'    => $billingAddress->getPostcode(),
-                'Name' => 'Zipcode',
-                'Group' => 'Address',
-            ],
-            [
-                '_'    => $billingAddress->getCity(),
-                'Name' => 'City',
-                'Group' => 'Address',
-            ],
-            [
-                '_'    => $billingAddress->getCountryId(),
-                'Name' => 'Country',
-                'Group' => 'Address',
-            ],
-        ];
-
-        if (!empty($address['number_addition']) && strlen($address['number_addition']) > 0) {
-            $addressParameters[] = [
-                '_'    => $address['number_addition'],
-                'Name' => 'HouseNumberSuffix',
-                'Group' => 'Address'
-            ];
-        }
-
-        return $addressParameters;
-    }
-
-    /**
-     * @param \Magento\Sales\Api\Data\OrderAddressInterface $billingAddress
-     *
-     * @return array
-     */
-    private function getCompanyCmParameters($billingAddress)
-    {
-        $requestParameters = [];
-        $company = $billingAddress->getCompany();
-
-        if (strlen($company) <= 0) {
-            return $requestParameters;
-        }
-
-        $requestParameters = [
-            [
-                '_' => strtolower($billingAddress->getCountryId()),
-                'Name' => 'Culture',
-                'Group' => 'Company'
-            ],
-            [
-                '_' => $company,
-                'Name' => 'Name',
-                'Group' => 'Company'
-            ]
-        ];
-
-        return $requestParameters;
-    }
-
-    /**
-     * @param $street
-     *
-     * @return array
-     */
-    private function getCmAddress($street)
-    {
-        if (is_array($street)) {
-            $street = implode(' ', $street);
-        }
-
-        $addressRegexResult = preg_match(
-            '#\A(.*?)\s+(\d+[a-zA-Z]{0,1}\s{0,1}[-]{1}\s{0,1}\d*[a-zA-Z]{0,1}|\d+[a-zA-Z-]{0,1}\d*[a-zA-Z]{0,1})#',
-            $street,
-            $matches
-        );
-        if (!$addressRegexResult || !is_array($matches)) {
-            $addressData = array(
-                'street'           => $street,
-                'house_number'          => '',
-                'number_addition' => '',
-            );
-
-            return $addressData;
-        }
-
-        $streetname = '';
-        $housenumber = '';
-        $housenumberExtension = '';
-        if (isset($matches[1])) {
-            $streetname = $matches[1];
-        }
-
-        if (isset($matches[2])) {
-            $housenumber = $matches[2];
-        }
-
-        if (!empty($housenumber)) {
-            $housenumber = trim($housenumber);
-            $housenumberRegexResult = preg_match('#^([\d]+)(.*)#s', $housenumber, $matches);
-            if ($housenumberRegexResult && is_array($matches)) {
-                if (isset($matches[1])) {
-                    $housenumber = $matches[1];
-                }
-
-                if (isset($matches[2])) {
-                    $housenumberExtension = trim($matches[2]);
-                }
-            }
-        }
-
-        $addressData = array(
-            'street'          => $streetname,
-            'house_number'    => $housenumber,
-            'number_addition' => $housenumberExtension,
-        );
-
-        return $addressData;
-    }
-
-    /**
      * {@inheritdoc}
      */
     protected function afterOrder($payment, $response)
@@ -567,49 +330,20 @@ class PayPerEmail extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
-        $savedfInvoiceKey = $payment->getAdditionalInformation('buckaroo_cm3_invoice_key');
+        $services = $this->serviceParameters->getCreateCreditNote($payment);
 
-        if (strlen($savedfInvoiceKey) <= 0) {
+        if (count($services) <= 0) {
             return true;
         }
 
-        /** @var Order $order */
-        $order = $payment->getOrder();
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
-        $services = [
-            'Name'             => 'CreditManagement3',
-            'Action'           => 'CreateCreditNote',
-            'Version'          => 1,
-            'RequestParameter' => [
-                [
-                    '_'    => $order->getGrandTotal(),
-                    'Name' => 'InvoiceAmount',
-                ],
-                [
-                    '_'    => $order->getTaxAmount(),
-                    'Name' => 'InvoiceAmountVat',
-                ],
-                [
-                    '_'    => date('Y-m-d'),
-                    'Name' => 'InvoiceDate',
-                ],
-                [
-                    '_'    => $order->getIncrementId(),
-                    'Name' => 'OriginalInvoiceNumber',
-                ],
-            ],
-        ];
-
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $transactionBuilder->setOrder($payment->getOrder())
             ->setAmount(0)
             ->setType('void')
             ->setServices($services)
             ->setMethod('DataRequest')
-            ->setInvoiceId($order->getIncrementId() . '-creditnote')
+            ->setInvoiceId($payment->getOrder()->getIncrementId() . '-creditnote')
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
