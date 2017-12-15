@@ -171,19 +171,24 @@ class PayPerEmailTest extends BaseTest
     public function testGetCmService()
     {
         $payPerMailConfigMock = $this->getFakeMock(PayPerEmailConfig::class)
-            ->setMethods(['getSchemeKey'])
+            ->setMethods(['getSchemeKey', 'getActiveStatusCm3'])
             ->getMock();
-        $payPerMailConfigMock->expects($this->exactly(2))->method('getSchemeKey')->willReturn('abc');
+        $payPerMailConfigMock->expects($this->once())->method('getSchemeKey')->willReturn('abc');
+        $payPerMailConfigMock->expects($this->once())->method('getActiveStatusCm3')->willReturn(true);
 
         $factoryMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
         $factoryMock->expects($this->exactly(2))->method('get')->with('payperemail')->willReturn($payPerMailConfigMock);
 
         $addressMock = $this->getFakeMock(\Magento\Sales\Model\Order\Address::class)->getMock();
 
-        $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)->setMethods(['getBillingAddress'])->getMock();
+        $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)
+            ->setMethods(['getBillingAddress'])
+            ->getMock();
         $orderMock->method('getBillingAddress')->willReturn($addressMock);
 
-        $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(['getAdditionalInformation', 'getOrder'])->getMock();
+        $infoInstanceMock = $this->getFakeMock(Payment::class)
+            ->setMethods(['getAdditionalInformation', 'getOrder'])
+            ->getMock();
         $infoInstanceMock->expects($this->once())->method('getAdditionalInformation');
         $infoInstanceMock->method('getOrder')->willReturn($orderMock);
 
@@ -363,8 +368,11 @@ class PayPerEmailTest extends BaseTest
     {
         $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)->getMock();
 
-        $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
+        $infoInstanceMock = $this->getFakeMock(Payment::class)
+            ->setMethods(['getOrder', 'getAdditionalInformation'])
+            ->getMock();
         $infoInstanceMock->expects($this->exactly(2))->method('getOrder')->willReturn($orderMock);
+        $infoInstanceMock->expects($this->exactly(2))->method('getAdditionalInformation')->willReturn('abc');
 
         $orderTransactionMock = $this->getFakeMock(Order::class)->setMethods(['setMethod'])->getMock();
         $orderTransactionMock->expects($this->once())->method('setMethod')->with('DataRequest')->willReturnSelf();

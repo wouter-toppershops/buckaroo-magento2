@@ -85,17 +85,18 @@
                 <label>Credit Management Scheme Key</label>
                 <comment><![CDATA[Credit Management Scheme Key. It can be found <a href="https://plaza.buckaroo.nl/Invoices/Scheme" target="_blank">here</a>. This requires the Buckaroo Credit Management subscription.]]></comment>
                 <config_path>payment/tig_buckaroo_payperemail/scheme_key</config_path>
+                <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                 <validate>required-entry</validate>
                 <depends>
                     <field id="active_status_cm3">1</field>
                 </depends>
             </field>
 
-            <field id="max_step_index" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="max_step_index" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Credit Management Steps</label>
                 <comment><![CDATA[Max level of the Credit Management steps.]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\DropdownCount4</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/max_step_index</config_path>
+                <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                 <depends>
                     <field id="active_status_cm3">1</field>
                 </depends>
@@ -123,6 +124,9 @@
                 <comment><![CDATA[Select which payment methods can be used after the payment due date.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethodsAfterExpiry</source_model>
                 <config_path>payment/tig_buckaroo_payperemail/payment_method_after_expiry</config_path>
+                <depends>
+                    <field id="active_status_cm3">1</field>
+                </depends>
             </field>
         </group>
 

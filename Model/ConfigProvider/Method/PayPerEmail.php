@@ -47,6 +47,7 @@ use TIG\Buckaroo\Model\Method\PayPerEmail as MethodPayPerEmail;
  * @method getPaymentMethod()
  * @method getPaymentMethodAfterExpiry()
  * @method getSchemeKey()
+ * @method getActiveStatusCm3()
  */
 class PayPerEmail extends AbstractConfigProvider
 {
@@ -62,6 +63,7 @@ class PayPerEmail extends AbstractConfigProvider
     const XPATH_PAYPEREMAIL_ORDER_STATUS_SUCCESS = 'payment/tig_buckaroo_payperemail/order_status_success';
     const XPATH_PAYPEREMAIL_ORDER_STATUS_FAILED  = 'payment/tig_buckaroo_payperemail/order_status_failed';
 
+    const XPATH_PAYPEREMAIL_ACTIVE_STATUS_CM3           = 'payment/tig_buckaroo_payperemail/active_status_cm3';
     const XPATH_PAYPEREMAIL_SEND_MAIL                   = 'payment/tig_buckaroo_payperemail/send_mail';
     const XPATH_PAYPEREMAIL_SCHEME_KEY                  = 'payment/tig_buckaroo_payperemail/scheme_key';
     const XPATH_PAYPEREMAIL_MAX_STEP_INDEX              = 'payment/tig_buckaroo_payperemail/max_step_index';
