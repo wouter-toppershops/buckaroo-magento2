@@ -34,7 +34,7 @@ namespace TIG\Buckaroo\Test\Unit\Model\Config\Source\PayPerEmail;
 use TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethodsAfterExpiry;
 use TIG\Buckaroo\Test\BaseTest;
 
-class PaymentGuaranteePaymentMethodsAfterExpiryTest extends BaseTest
+class PaymentMethodsAfterExpiryTest extends BaseTest
 {
     protected $instanceClass = PaymentMethodsAfterExpiry::class;
 
@@ -57,7 +57,7 @@ class PaymentGuaranteePaymentMethodsAfterExpiryTest extends BaseTest
                 ['value' => 'giropay',            'label' => 'Giropay']
             ],
             [
-                ['value' => 'ideal',              'label' => 'iDeal']
+                ['value' => 'ideal',              'label' => 'iDEAL']
             ],
             [
                 ['value' => 'mastercard',         'label' => 'Mastercard']
@@ -75,7 +75,7 @@ class PaymentGuaranteePaymentMethodsAfterExpiryTest extends BaseTest
                 ['value' => 'visa',               'label' => 'Visa']
             ],
             [
-                ['value' => 'maestro',            'label' => 'eMaestro']
+                ['value' => 'maestro',            'label' => 'Maestro']
             ],
             [
                 ['value' => 'visaelectron',       'label' => 'Visa Electron']

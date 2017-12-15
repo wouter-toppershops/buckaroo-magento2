@@ -230,7 +230,7 @@ class PayPerEmail extends AbstractMethod
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail $config */
         $config = $this->configProviderMethodFactory->get('payperemail');
 
-        if (strlen($config->getSchemeKey()) <= 0) {
+        if (!$config->getActiveStatusCm3()) {
             return [];
         }
 
@@ -519,8 +519,13 @@ class PayPerEmail extends AbstractMethod
         }
 
         $invoiceKey = '';
+        $services = $response[0]->Services->Service;
 
-        foreach ($response[0]->Services->Service as $service) {
+        if (!is_array($services)) {
+            $services = [$services];
+        }
+
+        foreach ($services as $service) {
             if ($service->Name == 'CreditManagement3' && $service->ResponseParameter->Name == 'InvoiceKey') {
                 $invoiceKey = $service->ResponseParameter->_;
             }
@@ -562,6 +567,12 @@ class PayPerEmail extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
+        $savedfInvoiceKey = $payment->getAdditionalInformation('buckaroo_cm3_invoice_key');
+
+        if (strlen($savedfInvoiceKey) <= 0) {
+            return true;
+        }
+
         /** @var Order $order */
         $order = $payment->getOrder();
         $transactionBuilder = $this->transactionBuilderFactory->get('order');

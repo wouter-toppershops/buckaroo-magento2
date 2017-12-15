@@ -34,7 +34,7 @@ namespace TIG\Buckaroo\Test\Unit\Model\Config\Source\PayPerEmail;
 use TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethods;
 use TIG\Buckaroo\Test\BaseTest;
 
-class PaymentGuaranteePaymentMethodsTest extends BaseTest
+class PaymentMethodsTest extends BaseTest
 {
     protected $instanceClass = PaymentMethods::class;
 
@@ -51,7 +51,7 @@ class PaymentGuaranteePaymentMethodsTest extends BaseTest
                 ['value' => 'eps',                'label' => 'EPS']
             ],
             [
-                ['value' => 'directdebit',        'label' => 'Direct Debit']
+                ['value' => 'sepadirectdebit',        'label' => 'SEPA Direct Debit']
             ],
             [
                 ['value' => 'giftcard',           'label' => 'Giftcards']
@@ -60,7 +60,7 @@ class PaymentGuaranteePaymentMethodsTest extends BaseTest
                 ['value' => 'giropay',            'label' => 'Giropay']
             ],
             [
-                ['value' => 'ideal',              'label' => 'iDeal']
+                ['value' => 'ideal',              'label' => 'iDEAL']
             ],
             [
                 ['value' => 'mastercard',         'label' => 'Mastercard']
@@ -78,7 +78,7 @@ class PaymentGuaranteePaymentMethodsTest extends BaseTest
                 ['value' => 'visa',               'label' => 'Visa']
             ],
             [
-                ['value' => 'maestro',            'label' => 'eMaestro']
+                ['value' => 'maestro',            'label' => 'Maestro']
             ],
             [
                 ['value' => 'visaelectron',       'label' => 'Visa Electron']
