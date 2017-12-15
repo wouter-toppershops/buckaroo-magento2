@@ -54,6 +54,9 @@ use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Model\Method\AbstractMethod;
 use TIG\Buckaroo\Model\Method\Giftcards;
 use TIG\Buckaroo\Model\Method\Transfer;
+use TIG\Buckaroo\Model\Method\Paypal;
+use TIG\Buckaroo\Model\Method\SepaDirectDebit;
+use TIG\Buckaroo\Model\Method\Sofortbanking;
 use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
@@ -566,7 +569,11 @@ class Push implements PushInterface
 
         // Transfer has a slightly different flow where a successful order has a 792 status code instead of an 190 one
         if (!$this->order->getEmailSent()
-            && $payment->getMethod() == Transfer::PAYMENT_METHOD_CODE
+            && in_array($payment->getMethod(), array(   Transfer::PAYMENT_METHOD_CODE,
+                                                        Paypal::PAYMENT_METHOD_CODE,
+                                                        SepaDirectDebit::PAYMENT_METHOD_CODE,
+                                                        Sofortbanking::PAYMENT_METHOD_CODE
+                    ))
             && ($this->configAccount->getOrderConfirmationEmail($store)
                 || $paymentMethod->getConfigData('order_email', $store)
             )
