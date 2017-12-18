@@ -205,6 +205,7 @@ define(
                 this.bankaccountnumber.subscribe(runValidation,this);
                 this.termsValidate.subscribe(runValidation,this);
                 this.genderValidate.subscribe(runValidation,this);
+                this.dummy.subscribe(runValidation,this);
 
                 var check = function ()
                 {
