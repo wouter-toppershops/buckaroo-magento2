@@ -300,6 +300,25 @@ define(
                 return false;
             },
 
+            magentoTerms: function() {
+                /**
+                 * The agreement checkbox won't force an update of our bindings. So check for changes manually and notify
+                 * the bindings if something happend. Use $.proxy() to access the local this object. The dummy property is
+                 * used to notify the bindings.
+                 **/
+                $('.payment-methods').one(
+                    'click',
+                    '.' + this.getCode() + ' [name*="agreement"]',
+                    $.proxy(
+                        function () {
+                            this.dummy.notifySubscribers();
+                        },
+                        this
+                    )
+                );
+
+            },
+
             afterPlaceOrder: function () {
                 var response = window.checkoutConfig.payment.buckaroo.response;
                 response = $.parseJSON(response);
