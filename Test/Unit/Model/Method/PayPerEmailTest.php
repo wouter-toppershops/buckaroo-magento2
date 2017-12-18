@@ -39,6 +39,7 @@ use TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail as PayPerEmailConfig;
 use TIG\Buckaroo\Model\Method\PayPerEmail;
+use TIG\Buckaroo\Service\CreditManagement\ServiceParameters;
 use TIG\Buckaroo\Test\BaseTest;
 
 class PayPerEmailTest extends BaseTest
@@ -98,7 +99,7 @@ class PayPerEmailTest extends BaseTest
         $payPerMailConfigMock = $this->getFakeMock(PayPerEmailConfig::class)->getMock();
 
         $factoryMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
-        $factoryMock->expects($this->exactly(2))->method('get')->with('payperemail')->willReturn($payPerMailConfigMock);
+        $factoryMock->expects($this->once())->method('get')->with('payperemail')->willReturn($payPerMailConfigMock);
 
         $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder'])->getMock();
         $infoInstanceMock->expects($this->once())->method('getOrder');
@@ -166,104 +167,6 @@ class PayPerEmailTest extends BaseTest
             $this->assertArrayHasKey('Name', $array);
             $this->assertContains($array['Name'], $possibleParameters);
         }
-    }
-
-    public function testGetCmService()
-    {
-        $payPerMailConfigMock = $this->getFakeMock(PayPerEmailConfig::class)
-            ->setMethods(['getSchemeKey', 'getActiveStatusCm3'])
-            ->getMock();
-        $payPerMailConfigMock->expects($this->once())->method('getSchemeKey')->willReturn('abc');
-        $payPerMailConfigMock->expects($this->once())->method('getActiveStatusCm3')->willReturn(true);
-
-        $factoryMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
-        $factoryMock->expects($this->exactly(2))->method('get')->with('payperemail')->willReturn($payPerMailConfigMock);
-
-        $addressMock = $this->getFakeMock(\Magento\Sales\Model\Order\Address::class)->getMock();
-
-        $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)
-            ->setMethods(['getBillingAddress'])
-            ->getMock();
-        $orderMock->method('getBillingAddress')->willReturn($addressMock);
-
-        $infoInstanceMock = $this->getFakeMock(Payment::class)
-            ->setMethods(['getAdditionalInformation', 'getOrder'])
-            ->getMock();
-        $infoInstanceMock->expects($this->once())->method('getAdditionalInformation');
-        $infoInstanceMock->method('getOrder')->willReturn($orderMock);
-
-        $instance = $this->getInstance(['configProviderMethodFactory' => $factoryMock]);
-        $result = $this->invokeArgs('getCmService', [$infoInstanceMock], $instance);
-
-        $this->assertInternalType('array', $result);
-        $this->assertEquals('CreditManagement3', $result['Name']);
-        $this->assertEquals('CreateCombinedInvoice', $result['Action']);
-        $this->assertEquals(1, $result['Version']);
-        $this->assertCount(20, $result['RequestParameter']);
-
-        $possibleParameters = [
-            'Code', 'Email', 'Mobile', 'InvoiceAmount', 'InvoiceAmountVAT', 'InvoiceDate', 'DueDate',
-            'SchemeKey', 'MaxStepIndex', 'AllowedServices', 'AllowedServicesAfterDueDate', 'Culture',
-            'FirstName', 'LastName', 'Gender', 'Street', 'HouseNumber', 'Zipcode', 'City', 'Country'
-        ];
-
-        foreach ($result['RequestParameter'] as $array) {
-            $this->assertArrayHasKey('_', $array);
-            $this->assertArrayHasKey('Name', $array);
-            $this->assertContains($array['Name'], $possibleParameters);
-        }
-    }
-
-    public function getCmAddressProvider()
-    {
-        return [
-            'only street' => [
-                'Kabelweg',
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '',
-                    'number_addition' => '',
-                ]
-            ],
-            'with house number' => [
-                'Kabelweg 37',
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '37',
-                    'number_addition' => '',
-                ]
-            ],
-            'with house number addition' => [
-                'Kabelweg 37A',
-                [
-                    'street'          => 'Kabelweg',
-                    'house_number'    => '37',
-                    'number_addition' => 'A',
-                ]
-            ],
-            'as array' => [
-                ['Kabel', 'Weg 37'],
-                [
-                    'street'          => 'Kabel Weg',
-                    'house_number'    => '37',
-                    'number_addition' => '',
-                ]
-            ],
-        ];
-    }
-
-    /**
-     * @param $address
-     * @param $expected
-     *
-     * @dataProvider getCmAddressProvider
-     */
-    public function testGetCmAddress($address, $expected)
-    {
-        $instance = $this->getInstance();
-        $result = $this->invokeArgs('getCmAddress', [$address], $instance);
-
-        $this->assertEquals($expected, $result);
     }
 
     public function afterOrderProvider()
@@ -372,7 +275,17 @@ class PayPerEmailTest extends BaseTest
             ->setMethods(['getOrder', 'getAdditionalInformation'])
             ->getMock();
         $infoInstanceMock->expects($this->exactly(2))->method('getOrder')->willReturn($orderMock);
-        $infoInstanceMock->expects($this->exactly(2))->method('getAdditionalInformation')->willReturn('abc');
+        $infoInstanceMock->expects($this->once())->method('getAdditionalInformation')->willReturn('abc');
+
+        $serviceParametersResult = ['Name' => 'CreditManagement', 'Action' => 'CreateCreditNote'];
+
+        $serviceParametersMock = $this->getFakeMock(ServiceParameters::class)
+            ->setMethods(['getCreateCreditNote'])
+            ->getMock();
+        $serviceParametersMock->expects($this->once())
+            ->method('getCreateCreditNote')
+            ->with($infoInstanceMock)
+            ->willReturn($serviceParametersResult);
 
         $orderTransactionMock = $this->getFakeMock(Order::class)->setMethods(['setMethod'])->getMock();
         $orderTransactionMock->expects($this->once())->method('setMethod')->with('DataRequest')->willReturnSelf();
@@ -384,6 +297,7 @@ class PayPerEmailTest extends BaseTest
             ->willReturn($orderTransactionMock);
 
         $instance = $this->getInstance([
+            'serviceParameters' => $serviceParametersMock,
             'transactionBuilderFactory' => $transactionBuilderMock
         ]);
 
@@ -391,18 +305,6 @@ class PayPerEmailTest extends BaseTest
         $this->assertInstanceOf(Order::class, $result);
 
         $services = $result->getServices();
-        $this->assertInternalType('array', $services);
-        $this->assertEquals('CreditManagement3', $services['Name']);
-        $this->assertEquals('CreateCreditNote', $services['Action']);
-        $this->assertEquals(1, $services['Version']);
-        $this->assertCount(4, $services['RequestParameter']);
-
-        $possibleParameters = ['InvoiceAmount', 'InvoiceAmountVat', 'InvoiceDate', 'OriginalInvoiceNumber'];
-
-        foreach ($services['RequestParameter'] as $array) {
-            $this->assertArrayHasKey('_', $array);
-            $this->assertArrayHasKey('Name', $array);
-            $this->assertContains($array['Name'], $possibleParameters);
-        }
+        $this->assertEquals($serviceParametersResult, $services);
     }
 }
