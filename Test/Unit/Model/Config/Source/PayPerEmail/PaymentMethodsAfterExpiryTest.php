@@ -31,12 +31,12 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Source\PayPerEmail;
 
-use TIG\Buckaroo\Model\Config\Source\PayPerEmail\PaymentMethodsAfterExpiry;
+use TIG\Buckaroo\Model\Config\Source\PaymentMethods\AfterExpiry;
 use TIG\Buckaroo\Test\BaseTest;
 
-class PaymentMethodsAfterExpiryTest extends BaseTest
+class AfterExpiryTest extends BaseTest
 {
-    protected $instanceClass = PaymentMethodsAfterExpiry::class;
+    protected $instanceClass = AfterExpiry::class;
 
     /**
      * @return array

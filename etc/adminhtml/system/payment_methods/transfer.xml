@@ -81,31 +81,40 @@
         <group id="tig_buckaroo_advanced" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Advanced Configuration</label>
 
-            <field id="use_creditmanagement" translate="label comment tooltip" type="select" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Use credit management</label>
-                <comment><![CDATA[Buckaroo sends payment reminders to the customer.]]></comment>
-                <tooltip>Contact Buckaroo before activating Credit Management. By default this is excluded in the contract.</tooltip>
+            <field id="active_status_cm3" translate="label comment" type="select" sortOrder="5" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit Management Enabled</label>
+                <comment><![CDATA[Enable or disable credit management.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>payment/tig_buckaroo_transfer/use_creditmanagement</config_path>
+                <config_path>payment/tig_buckaroo_transfer/active_status_cm3</config_path>
             </field>
 
-            <field id="due_date_invoice" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Invoice delay (in days)</label>
-                <comment><![CDATA[Specify the amount of days before Buckaroo invoices the order and sends out the payment mail.]]></comment>
-                <config_path>payment/tig_buckaroo_transfer/due_date_invoice</config_path>
-                <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
+            <field id="scheme_key" translate="label comment" type="text" sortOrder="10" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit Management Scheme Key</label>
+                <comment><![CDATA[Credit Management Scheme Key. It can be found <a href="https://plaza.buckaroo.nl/Invoices/Scheme" target="_blank">here</a>. This requires the Buckaroo Credit Management subscription.]]></comment>
+                <config_path>payment/tig_buckaroo_transfer/scheme_key</config_path>
+                <validate>required-entry</validate>
                 <depends>
-                    <field id="use_creditmanagement">1</field>
+                    <field id="active_status_cm3">1</field>
                 </depends>
             </field>
 
-            <field id="reminder_level" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Max reminder level</label>
-                <comment><![CDATA[Select the maximum reminder level buckaroo will use.]]></comment>
-                <source_model>TIG\Buckaroo\Model\Config\Source\DropdownCount4</source_model>
-                <config_path>payment/tig_buckaroo_transfer/reminder_level</config_path>
+            <field id="max_step_index" translate="label comment" type="text" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Credit Management Steps</label>
+                <comment><![CDATA[Max level of the Credit Management steps.]]></comment>
+                <config_path>payment/tig_buckaroo_transfer/max_step_index</config_path>
+                <backend_model>TIG\Buckaroo\Model\Config\Backend\Number</backend_model>
                 <depends>
-                    <field id="use_creditmanagement">1</field>
+                    <field id="active_status_cm3">1</field>
+                </depends>
+            </field>
+
+            <field id="payment_method_after_expiry" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+                <label>Transfer payment method</label>
+                <comment><![CDATA[Select which payment methods can be used at Transfer.]]></comment>
+                <source_model>TIG\Buckaroo\Model\Config\Source\PaymentMethods\AfterExpiry</source_model>
+                <config_path>payment/tig_buckaroo_transfer/payment_method_after_expiry</config_path>
+                <depends>
+                    <field id="active_status_cm3">1</field>
                 </depends>
             </field>
 
