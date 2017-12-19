@@ -89,6 +89,10 @@ class ServiceParameters
      */
     public function filterParameter($requestParameters, $filterParameter)
     {
+        if (!isset($requestParameters['RequestParameter'])) {
+            return $requestParameters;
+        }
+
         $filteredRequest = array_filter(
             $requestParameters['RequestParameter'],
             function ($parameter) use ($filterParameter) {

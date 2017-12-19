@@ -39,10 +39,18 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment;
+use TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory;
+use TIG\Buckaroo\Model\Method\SepaDirectDebit;
+use TIG\Buckaroo\Service\CreditManagement\ServiceParameters;
+
 class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 {
+    protected $instanceClass = SepaDirectDebit::class;
+
     /**
-     * @var \TIG\Buckaroo\Model\Method\SepaDirectDebit
+     * @var SepaDirectDebit
      */
     protected $object;
 
@@ -52,7 +60,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     protected $objectManager;
 
     /**
-     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory|\Mockery\MockInterface
+     * @var TransactionBuilderFactory|\Mockery\MockInterface
      */
     protected $transactionBuilderFactory;
 
@@ -69,11 +77,11 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('Magento\Framework\App\ProductMetadataInterface')
             ->andReturn($productMetadata);
 
-        $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class)
+        $this->transactionBuilderFactory = \Mockery::mock(TransactionBuilderFactory::class)
             ->makePartial();
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\SepaDirectDebit::class,
+            SepaDirectDebit::class,
             [
                 'objectManager'             => $this->objectManager,
                 'transactionBuilderFactory' => $this->transactionBuilderFactory,
@@ -142,10 +150,10 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 
         $order->shouldReceive('setServices')->andReturnUsing(
             function ($services) use ($fixture, $order) {
-                $this->assertEquals('sepadirectdebit', $services['Name']);
-                $this->assertEquals($fixture['customer_bic'], $services[0]['RequestParameter'][0][0]['_']);
-                $this->assertEquals($fixture['customer_iban'], $services['RequestParameter'][1]['_']);
-                $this->assertEquals($fixture['customer_account_name'], $services['RequestParameter'][0]['_']);
+                $this->assertEquals('sepadirectdebit', $services[0]['Name']);
+                $this->assertEquals($fixture['customer_bic'], $services[0]['RequestParameter'][2]['_']);
+                $this->assertEquals($fixture['customer_iban'], $services[0]['RequestParameter'][1]['_']);
+                $this->assertEquals($fixture['customer_account_name'], $services[0]['RequestParameter'][0]['_']);
 
                 return $order;
             }
@@ -166,6 +174,105 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
+    }
+
+    public function testGetSepaService()
+    {
+        $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(['getAdditionalInformation'])->getMock();
+        $infoInstanceMock->expects($this->exactly(4))->method('getAdditionalInformation')->willReturn('abc');
+
+        $instance = $this->getInstance();
+        $instance->setInfoInstance($infoInstanceMock);
+
+        $result = $this->invoke('getSepaService', $instance);
+
+        $this->assertInternalType('array', $result);
+        $this->assertEquals('sepadirectdebit', $result['Name']);
+        $this->assertEquals('Pay', $result['Action']);
+        $this->assertEquals(1, $result['Version']);
+        $this->assertCount(3, $result['RequestParameter']);
+
+        $possibleParameters = ['customeraccountname', 'CustomerIBAN', 'CustomerBIC'];
+
+        foreach ($result['RequestParameter'] as $array) {
+            $this->assertArrayHasKey('_', $array);
+            $this->assertArrayHasKey('Name', $array);
+            $this->assertContains($array['Name'], $possibleParameters);
+        }
+    }
+
+    /**
+     * @return array
+     */
+    public function afterOrderProvider()
+    {
+        return [
+            'no service' => [
+                [],
+                null
+            ],
+            'no invoicekey' => [
+                [
+                    (Object)[
+                        'Name' => 'CreditManagement3',
+                        'ResponseParameter' => (Object)[
+                            'Name' => 'ResponseName',
+                            '_' => 'abc'
+                        ]
+                    ]
+                ],
+                null
+            ],
+            'incorrect service' => [
+                [
+                    (Object)[
+                        'Name' => 'PayPerEmail',
+                        'ResponseParameter' => (Object)[
+                            'Name' => 'InvoiceKey',
+                            '_' => 'def'
+                        ]
+                    ]
+                ],
+                null
+            ],
+            'has invoicekey' => [
+                [
+                    (Object)[
+                        'Name' => 'CreditManagement3',
+                        'ResponseParameter' => (Object)[
+                            'Name' => 'InvoiceKey',
+                            '_' => 'ghi'
+                        ]
+                    ]
+                ],
+                'ghi'
+            ],
+        ];
+    }
+
+    /**
+     * @param $service
+     * @param $expected
+     *
+     * @dataProvider afterOrderProvider
+     */
+    public function testAfterOrder($service, $expected)
+    {
+        $infoInstanceMock = $this->getFakeMock(Payment::class)->setMethods(null)->getMock();
+
+        $respone = [
+            0 => (Object)[
+                'Services' => (Object)[
+                    'Service' => $service
+                ]
+            ]
+        ];
+
+        $instance = $this->getInstance();
+        $result = $this->invokeArgs('afterOrder', [$infoInstanceMock, $respone], $instance);
+
+        $this->assertInstanceOf(SepaDirectDebit::class, $result);
+        $this->assertEquals($expected, $infoInstanceMock->getAdditionalInformation('buckaroo_cm3_invoice_key'));
     }
 
     /**
@@ -189,7 +296,43 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testGetVoidTransactionBuilder()
     {
-        $this->assertTrue($this->object->getVoidTransactionBuilder(''));
+        $orderMock = $this->getFakeMock(Order::class)->getMock();
+
+        $infoInstanceMock = $this->getFakeMock(Payment::class)
+            ->setMethods(['getOrder', 'getAdditionalInformation'])
+            ->getMock();
+        $infoInstanceMock->expects($this->exactly(2))->method('getOrder')->willReturn($orderMock);
+        $infoInstanceMock->expects($this->once())->method('getAdditionalInformation')->willReturn('abc');
+
+        $serviceParametersResult = ['Name' => 'CreditManagement', 'Action' => 'CreateCreditNote'];
+
+        $serviceParametersMock = $this->getFakeMock(ServiceParameters::class)
+            ->setMethods(['getCreateCreditNote'])
+            ->getMock();
+        $serviceParametersMock->expects($this->once())
+            ->method('getCreateCreditNote')
+            ->with($infoInstanceMock)
+            ->willReturn($serviceParametersResult);
+
+        $orderTransactionMock = $this->getFakeMock(Order::class)->setMethods(['setMethod'])->getMock();
+        $orderTransactionMock->expects($this->once())->method('setMethod')->with('DataRequest')->willReturnSelf();
+
+        $transactionBuilderMock = $this->getFakeMock(TransactionBuilderFactory::class)->setMethods(['get'])->getMock();
+        $transactionBuilderMock->expects($this->once())
+            ->method('get')
+            ->with('order')
+            ->willReturn($orderTransactionMock);
+
+        $instance = $this->getInstance([
+            'serviceParameters' => $serviceParametersMock,
+            'transactionBuilderFactory' => $transactionBuilderMock
+        ]);
+
+        $result = $instance->getVoidTransactionBuilder($infoInstanceMock);
+        $this->assertInstanceOf(Order::class, $result);
+
+        $services = $result->getServices();
+        $this->assertEquals($serviceParametersResult, $services);
     }
 
     /**
@@ -204,7 +347,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 
         $payment->shouldReceive('getOrder')->andReturn('orderr');
         $payment->shouldReceive('getAdditionalInformation')->with(
-            \TIG\Buckaroo\Model\Method\SepaDirectDebit::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+            SepaDirectDebit::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
