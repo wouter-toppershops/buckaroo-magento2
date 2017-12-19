@@ -115,6 +115,9 @@ class SepaDirectDebit extends AbstractMethod
     /** @var \Magento\Framework\Message\ManagerInterface */
     public $messageManager;
 
+    /** @var \TIG\Buckaroo\Service\CreditManagement\ServiceParameters */
+    private $serviceParameters;
+
     /**
      * @var bool
      */
@@ -130,6 +133,7 @@ class SepaDirectDebit extends AbstractMethod
         \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
         \Magento\Payment\Model\Method\Logger $logger,
         \Magento\Developer\Helper\Data $developmentHelper,
+        \TIG\Buckaroo\Service\CreditManagement\ServiceParameters $serviceParameters,
         \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
         \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
         \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
@@ -168,6 +172,7 @@ class SepaDirectDebit extends AbstractMethod
             $data
         );
 
+        $this->serviceParameters = $serviceParameters;
         $this->messageManager = $messageManager;
     }
 
@@ -217,6 +222,31 @@ class SepaDirectDebit extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        $services = [];
+        $services[] = $this->getSepaService();
+
+        $filterParameter = [
+            ['Name' => 'AllowedServices'],
+            ['Name' => 'Gender', 'Group' => 'Person']
+        ];
+
+        $cmService = $this->serviceParameters->getCreateCombinedInvoice($payment, 'sepadirectdebit', $filterParameter);
+        if (count($cmService) > 0) {
+            $services[] = $cmService;
+        }
+
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
+
+        return $transactionBuilder;
+    }
+
+    private function getSepaService()
+    {
         $services = [
             'Name'             => 'sepadirectdebit',
             'Action'           => 'Pay',
@@ -240,14 +270,7 @@ class SepaDirectDebit extends AbstractMethod
             ];
         }
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
-
-        return $transactionBuilder;
+        return $services;
     }
 
     /**
@@ -299,6 +322,35 @@ class SepaDirectDebit extends AbstractMethod
     }
 
     /**
+     * {@inheritdoc}
+     */
+    protected function afterOrder($payment, $response)
+    {
+        if (empty($response[0]->Services->Service)) {
+            return parent::afterOrder($payment, $response);
+        }
+
+        $invoiceKey = '';
+        $services = $response[0]->Services->Service;
+
+        if (!is_array($services)) {
+            $services = [$services];
+        }
+
+        foreach ($services as $service) {
+            if ($service->Name == 'CreditManagement3' && $service->ResponseParameter->Name == 'InvoiceKey') {
+                $invoiceKey = $service->ResponseParameter->_;
+            }
+        }
+
+        if (strlen($invoiceKey) > 0) {
+            $payment->setAdditionalInformation('buckaroo_cm3_invoice_key', $invoiceKey);
+        }
+
+        return parent::afterOrder($payment, $response);
+    }
+
+    /**
      * @param \Magento\Payment\Model\InfoInterface|\Magento\Sales\Api\Data\OrderPaymentInterface $payment
      * @param array|\StdCLass                                                                    $response
      *
@@ -325,7 +377,27 @@ class SepaDirectDebit extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
-        return true;
+        $services = $this->serviceParameters->getCreateCreditNote($payment);
+
+        if (count($services) <= 0) {
+            return true;
+        }
+
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setAmount(0)
+            ->setType('void')
+            ->setServices($services)
+            ->setMethod('DataRequest')
+            ->setInvoiceId($payment->getOrder()->getIncrementId() . '-creditnote')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        return $transactionBuilder;
     }
 
     /**
