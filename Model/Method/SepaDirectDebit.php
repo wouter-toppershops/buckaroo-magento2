@@ -264,7 +264,7 @@ class SepaDirectDebit extends AbstractMethod
         ];
 
         if ($this->getInfoInstance()->getAdditionalInformation('customer_bic')) {
-            $services[0]['RequestParameter'][0][] = [
+            $services['RequestParameter'][] = [
                 '_'    => $this->getInfoInstance()->getAdditionalInformation('customer_bic'),
                 'Name' => 'CustomerBIC',
             ];
