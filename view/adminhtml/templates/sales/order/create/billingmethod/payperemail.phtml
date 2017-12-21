@@ -39,21 +39,21 @@
 
     <div class="admin__field _required">
         <label class="label admin__field-label" for="tig_buckaroo_payperemail_genderSelect">
-            <span data-bind="i18n: 'Salutation:'"> </span>
+            <span><?php echo $block->escapeHtml(__('Salutation:')); ?></span>
         </label>
         <div class="admin__field-control control">
 
             <select id="tig_buckaroo_payperemail_genderSelect" name="payment[customer_gender]"
                     class="required-entry select admin__control-select">
-                    <option value="1" data-bind="i18n: 'Mr.'"> </option>
-                    <option value="2" data-bind="i18n: 'Mrs.'"> </option>
+                    <option value="1"><?php echo $block->escapeHtml(__('Mr.')); ?></option>
+                    <option value="2"><?php echo $block->escapeHtml(__('Mrs.')); ?></option>
             </select>
         </div>
     </div>
 
     <div class="admin__field _required">
         <label class="label admin__field-label" for="tig_buckaroo_payperemail_BillingFirstName">
-            <span data-bind="i18n: 'Billing First Name:'"> </span>
+            <span><?php echo $block->escapeHtml(__('Billing First Name:')); ?></span>
         </label>
         <div class="admin__field-control control">
             <input id="tig_buckaroo_payperemail_BillingFirstName"
@@ -67,7 +67,7 @@
 
     <div class="admin__field _required">
         <label class="label admin__field-label" for="tig_buckaroo_payperemail_BillingLastName">
-            <span data-bind="i18n: 'Billing Last Name:'"> </span>
+            <span><?php echo $block->escapeHtml(__('Billing Last Name:')); ?></span>
         </label>
         <div class="admin__field-control control">
             <input id="tig_buckaroo_payperemail_BillingLastName"
@@ -81,7 +81,7 @@
 
     <div class="admin__field _required">
         <label class="label admin__field-label" for="tig_buckaroo_payperemail_Email">
-            <span data-bind="i18n: 'Email:'"> </span>
+            <span><?php echo $block->escapeHtml(__('Email:')); ?></span>
         </label>
         <div class="admin__field-control control">
             <input id="tig_buckaroo_payperemail_Email"
