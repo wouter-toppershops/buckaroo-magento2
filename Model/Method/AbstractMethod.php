@@ -790,7 +790,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $paymentCm3InvoiceKey = $payment->getAdditionalInformation('buckaroo_cm3_invoice_key');
 
         if (strlen($paymentCm3InvoiceKey) > 0) {
-            $this->void($payment);
+            $this->createCreditNoteRequest($payment);
         }
 
         $transactionBuilder = $this->getRefundTransactionBuilder($payment);
@@ -811,6 +811,32 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $this->saveTransactionData($response[0], $payment, $this->closeRefundTransaction, false);
 
         $this->afterRefund($payment, $response);
+
+        return $this;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return $this
+     */
+    public function createCreditNoteRequest($payment)
+    {
+        $paymentCm3InvoiceKey = $payment->getAdditionalInformation('buckaroo_cm3_invoice_key');
+
+        if (strlen($paymentCm3InvoiceKey) <= 0) {
+            return $this;
+        }
+
+        $originalTransactionKey = $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY);
+
+        $this->void($payment);
+
+        /** Void() saves the newly returned transaction key by default.
+         * But we don't want to save the new key with CreateCreditNote requests,
+         * therefore we reset and retain the original key.
+         */
+        $payment->setAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $originalTransactionKey);
 
         return $this;
     }
