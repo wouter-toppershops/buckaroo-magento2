@@ -58,6 +58,6 @@ class VoidCm3Payment implements ObserverInterface
             return;
         }
 
-        $payment->getMethodInstance()->void($payment);
+        $payment->getMethodInstance()->createCreditNoteRequest($payment);
     }
 }
