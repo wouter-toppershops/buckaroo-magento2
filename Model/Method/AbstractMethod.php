@@ -787,6 +787,11 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         parent::refund($payment, $amount);
 
         $this->payment = $payment;
+        $paymentCm3InvoiceKey = $payment->getAdditionalInformation('buckaroo_cm3_invoice_key');
+
+        if (strlen($paymentCm3InvoiceKey) > 0) {
+            $this->void($payment);
+        }
 
         $transactionBuilder = $this->getRefundTransactionBuilder($payment);
 
