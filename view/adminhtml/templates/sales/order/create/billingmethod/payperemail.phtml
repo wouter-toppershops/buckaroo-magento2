@@ -1,0 +1,99 @@
+<?php
+/**
+ *
+ *          ..::..
+ *     ..::::::::::::..
+ *   ::'''''':''::'''''::
+ *   ::..  ..:  :  ....::
+ *   ::::  :::  :  :   ::
+ *   ::::  :::  :  ''' ::
+ *   ::::..:::..::.....::
+ *     ''::::::::::::''
+ *          ''::''
+ *
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Creative Commons License.
+ * It is available through the world-wide-web at this URL:
+ * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * If you are unable to obtain it through the world-wide-web, please send an email
+ * to servicedesk@tig.nl so we can send you a copy immediately.
+ *
+ * DISCLAIMER
+ *
+ * Do not edit or add to this file if you wish to upgrade this module to newer
+ * versions in the future. If you wish to customize this module for your
+ * needs please contact servicedesk@tig.nl for more information.
+ *
+ * @copyright   Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
+ * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ */
+?>
+
+<?php $code = $block->escapeHtml($block->getMethodCode()); ?>
+
+<fieldset class="admin__fieldset payment-method"
+          id="payment_form_<?php /* @noEscape */ echo $code; ?>"
+          style="display:none">
+
+    <div class="admin__field _required">
+        <label class="label admin__field-label" for="tig_buckaroo_payperemail_genderSelect">
+            <span data-bind="i18n: 'Salutation:'"> </span>
+        </label>
+        <div class="admin__field-control control">
+
+            <select id="tig_buckaroo_payperemail_genderSelect" name="payment[customer_gender]"
+                    class="required-entry select admin__control-select">
+                    <option value="1" data-bind="i18n: 'Mr.'"> </option>
+                    <option value="2" data-bind="i18n: 'Mrs.'"> </option>
+            </select>
+        </div>
+    </div>
+
+    <div class="admin__field _required">
+        <label class="label admin__field-label" for="tig_buckaroo_payperemail_BillingFirstName">
+            <span data-bind="i18n: 'Billing First Name:'"> </span>
+        </label>
+        <div class="admin__field-control control">
+            <input id="tig_buckaroo_payperemail_BillingFirstName"
+                   class="input-text field"
+                   type="text"
+                   data-bind="valueUpdate: 'keyup', attr: { 'data-validate': JSON.stringify({ 'required': true }) }"
+                   name="payment[customer_billingFirstName]"
+            >
+        </div>
+    </div>
+
+    <div class="admin__field _required">
+        <label class="label admin__field-label" for="tig_buckaroo_payperemail_BillingLastName">
+            <span data-bind="i18n: 'Billing Last Name:'"> </span>
+        </label>
+        <div class="admin__field-control control">
+            <input id="tig_buckaroo_payperemail_BillingLastName"
+                   class="input-text field"
+                   type="text"
+                   data-bind="valueUpdate: 'keyup', attr: { 'data-validate': JSON.stringify({ 'required': true }) }"
+                   name="payment[customer_billingLastName]"
+            >
+        </div>
+    </div>
+
+    <div class="admin__field _required">
+        <label class="label admin__field-label" for="tig_buckaroo_payperemail_Email">
+            <span data-bind="i18n: 'Email:'"> </span>
+        </label>
+        <div class="admin__field-control control">
+            <input id="tig_buckaroo_payperemail_Email"
+                   class="input-text field"
+                   type="text"
+                   data-bind="
+                       valueUpdate: 'keyup',
+                       attr: { 'data-validate': JSON.stringify({ 'required': true, 'validate-email': true }) }
+                   "
+                   name="payment[customer_email]"
+            >
+        </div>
+    </div>
+
+</fieldset>
