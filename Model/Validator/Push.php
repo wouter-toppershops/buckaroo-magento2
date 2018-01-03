@@ -166,11 +166,7 @@ class Push implements ValidatorInterface
         $signatureString = '';
 
         foreach ($sortableArray as $brq_key => $value) {
-            if ('brq_SERVICE_masterpass_CustomerPhoneNumber' !== $brq_key
-                && 'brq_SERVICE_masterpass_ShippingRecipientPhoneNumber' !== $brq_key
-            ) {
-                $value = urldecode($value);
-            }
+            $value = $this->decodePushValue($brq_key, $value);
 
             $signatureString .= $brq_key. '=' . $value;
         }
@@ -184,6 +180,30 @@ class Push implements ValidatorInterface
         $this->logging->addDebug($signature);
 
         return $signature;
+    }
+
+    /**
+     * @param string $brq_key
+     * @param string $brq_value
+     *
+     * @return string
+     */
+    private function decodePushValue($brq_key, $brq_value)
+    {
+        switch ($brq_key) {
+            case 'brq_SERVICE_masterpass_CustomerPhoneNumber':
+            case 'brq_SERVICE_masterpass_ShippingRecipientPhoneNumber':
+            case 'brq_InvoiceDate':
+            case 'brq_DueDate':
+            case 'brq_PreviousStepDateTime':
+            case 'brq_EventDateTime':
+                $decodedValue = $brq_value;
+                break;
+            default:
+                $decodedValue = urldecode($brq_value);
+        }
+
+        return $decodedValue;
     }
 
     /**

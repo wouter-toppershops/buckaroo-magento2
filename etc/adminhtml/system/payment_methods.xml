@@ -64,6 +64,8 @@
 
         <include path="TIG_Buckaroo::system/payment_methods/afterpay2.xml"/>
 
+        <include path="TIG_Buckaroo::system/payment_methods/payperemail.xml"/>
+
         <include path="TIG_Buckaroo::system/payment_methods/eps.xml"/>
 
         <include path="TIG_Buckaroo::system/payment_methods/giftcards.xml"/>

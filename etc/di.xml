@@ -207,6 +207,10 @@
                     <item name="type" xsi:type="string">afterpay2</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay2</item>
 				</item>
+                <item name="payperemail" xsi:type="array">
+                    <item name="type" xsi:type="string">payperemail</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail</item>
+                </item>
                 <item name="eps" xsi:type="array">
                     <item name="type" xsi:type="string">eps</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Eps</item>

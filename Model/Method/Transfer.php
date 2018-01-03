@@ -39,6 +39,8 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+use Magento\Sales\Model\Order;
+
 class Transfer extends AbstractMethod
 {
     /**
@@ -115,6 +117,60 @@ class Transfer extends AbstractMethod
      */
     public $usesRedirect                = false;
 
+    /** @var \TIG\Buckaroo\Service\CreditManagement\ServiceParameters */
+    private $serviceParameters;
+
+    public function __construct(
+        \Magento\Framework\ObjectManagerInterface $objectManager,
+        \Magento\Framework\Model\Context $context,
+        \Magento\Framework\Registry $registry,
+        \Magento\Framework\Api\ExtensionAttributesFactory $extensionFactory,
+        \Magento\Framework\Api\AttributeValueFactory $customAttributeFactory,
+        \Magento\Payment\Helper\Data $paymentData,
+        \Magento\Framework\App\Config\ScopeConfigInterface $scopeConfig,
+        \Magento\Payment\Model\Method\Logger $logger,
+        \Magento\Developer\Helper\Data $developmentHelper,
+        \TIG\Buckaroo\Service\CreditManagement\ServiceParameters $serviceParameters,
+        \Magento\Framework\Model\ResourceModel\AbstractResource $resource = null,
+        \Magento\Framework\Data\Collection\AbstractDb $resourceCollection = null,
+        \TIG\Buckaroo\Gateway\GatewayInterface $gateway = null,
+        \TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory $transactionBuilderFactory = null,
+        \TIG\Buckaroo\Model\ValidatorFactory $validatorFactory = null,
+        \TIG\Buckaroo\Helper\Data $helper = null,
+        \Magento\Framework\App\RequestInterface $request = null,
+        \TIG\Buckaroo\Model\RefundFieldsFactory $refundFieldsFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
+        \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
+        \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
+        array $data = []
+    ) {
+        parent::__construct(
+            $objectManager,
+            $context,
+            $registry,
+            $extensionFactory,
+            $customAttributeFactory,
+            $paymentData,
+            $scopeConfig,
+            $logger,
+            $developmentHelper,
+            $resource,
+            $resourceCollection,
+            $gateway,
+            $transactionBuilderFactory,
+            $validatorFactory,
+            $helper,
+            $request,
+            $refundFieldsFactory,
+            $configProviderFactory,
+            $configProviderMethodFactory,
+            $priceHelper,
+            $data
+        );
+
+        $this->serviceParameters = $serviceParameters;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -122,9 +178,41 @@ class Transfer extends AbstractMethod
     {
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
 
+        $services = [];
+        $services[] = $this->getTransferService($payment);
+
+        $filterParameter = [
+            ['Name' => 'AllowedServices'],
+            ['Name' => 'Gender', 'Group' => 'Person']
+        ];
+
+        $cmService = $this->serviceParameters->getCreateCombinedInvoice($payment, 'transfer', $filterParameter);
+        if (count($cmService) > 0) {
+            $services[] = $cmService;
+        }
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig */
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setServices($services)
+            ->setMethod('TransactionRequest');
+
         /**
-         * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig
+         * Buckaroo Push is send before Response, for correct flow we skip the first push
+         * @todo when buckaroo changes the push / response order this can be removed
          */
+        $payment->setAdditionalInformation('skip_push', 1);
+
+        return $transactionBuilder;
+    }
+
+    /**
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     *
+     * @return array
+     */
+    public function getTransferService($payment)
+    {
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer $transferConfig */
         $transferConfig = $this->configProviderMethodFactory->get('transfer');
 
         $dueDays = abs($transferConfig->getDueDate());
@@ -132,14 +220,9 @@ class Transfer extends AbstractMethod
         $now = new \DateTime();
         $now->modify('+' . $dueDays . ' day');
 
-        /**
-         * @var \Magento\Sales\Model\Order\Address $billingAddress
-         */
+        /**@var \Magento\Sales\Model\Order\Address $billingAddress */
         $billingAddress = $payment->getOrder()->getBillingAddress();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $services = [
             'Name'             => 'transfer',
             'Action'           => 'Pay',
@@ -168,22 +251,36 @@ class Transfer extends AbstractMethod
             ],
         ];
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $transactionBuilder->setOrder($payment->getOrder())
-            ->setServices($services)
-            ->setMethod('TransactionRequest');
+        return $services;
+    }
 
-        /**
-         * Buckaroo Push is send before Response, for correct flow we skip the first push
-         * @todo when buckaroo changes the push / response order this can be removed
-         */
-        $payment->setAdditionalInformation(
-            'skip_push', 1
-        );
+    /**
+     * {@inheritdoc}
+     */
+    protected function afterOrder($payment, $response)
+    {
+        if (empty($response[0]->Services->Service)) {
+            return parent::afterOrder($payment, $response);
+        }
 
-        return $transactionBuilder;
+        $invoiceKey = '';
+        $services = $response[0]->Services->Service;
+
+        if (!is_array($services)) {
+            $services = [$services];
+        }
+
+        foreach ($services as $service) {
+            if ($service->Name == 'CreditManagement3' && $service->ResponseParameter->Name == 'InvoiceKey') {
+                $invoiceKey = $service->ResponseParameter->_;
+            }
+        }
+
+        if (strlen($invoiceKey) > 0) {
+            $payment->setAdditionalInformation('buckaroo_cm3_invoice_key', $invoiceKey);
+        }
+
+        return parent::afterOrder($payment, $response);
     }
 
     /**
@@ -236,6 +333,26 @@ class Transfer extends AbstractMethod
      */
     public function getVoidTransactionBuilder($payment)
     {
-        return true;
+        $services = $this->serviceParameters->getCreateCreditNote($payment);
+
+        if (count($services) <= 0) {
+            return true;
+        }
+
+        $transactionBuilder = $this->transactionBuilderFactory->get('order');
+
+        $transactionBuilder->setOrder($payment->getOrder())
+            ->setAmount(0)
+            ->setType('void')
+            ->setServices($services)
+            ->setMethod('DataRequest')
+            ->setInvoiceId($payment->getOrder()->getIncrementId() . '-creditnote')
+            ->setOriginalTransactionKey(
+                $payment->getAdditionalInformation(
+                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+                )
+            );
+
+        return $transactionBuilder;
     }
 }
