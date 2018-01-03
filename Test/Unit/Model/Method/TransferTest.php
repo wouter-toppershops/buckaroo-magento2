@@ -196,9 +196,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertEquals('transfer', $result['Name']);
         $this->assertEquals('Pay', $result['Action']);
         $this->assertEquals(2, $result['Version']);
-        $this->assertCount(4, $result['RequestParameter']);
+        $this->assertCount(5, $result['RequestParameter']);
 
-        $possibleParameters = ['CustomerEmail', 'CustomerFirstName', 'CustomerLastName', 'DateDue'];
+        $possibleParameters = ['CustomerEmail', 'CustomerFirstName', 'CustomerLastName', 'CustomerCountry', 'DateDue'];
 
         foreach ($result['RequestParameter'] as $array) {
             $this->assertArrayHasKey('_', $array);

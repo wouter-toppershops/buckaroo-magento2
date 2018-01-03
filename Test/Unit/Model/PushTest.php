@@ -522,6 +522,8 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getPayment')->andReturn($paymentMock);
         $orderMock->shouldReceive('getBaseCurrency')->andReturn($currencyMock);
 
+        $forced = false;
+
         /**
          * If no auto invoicing is required, or if auto invoice is required and the order can be invoiced and
          *  has no invoices, expect a status update
@@ -534,12 +536,13 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 $expectedDescription = 'Authorization status : <strong>' . $message . "</strong><br/>";
                 $expectedDescription .= 'Total amount of ' . $textAmount . ' has been ' .
                     'authorized. Please create an invoice to capture the authorized amount.';
+                $forced = true;
             }
 
             /**
              * Only orders with the success state should have their status updated
              */
-            if ($state == $successPaymentState) {
+            if ($state == $successPaymentState || $forced) {
                 $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
             } else {
                 $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription);

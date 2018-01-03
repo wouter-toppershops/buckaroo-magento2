@@ -100,6 +100,7 @@ class OrderTest extends BaseTest
         $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $order->shouldReceive('getStore')->once();
+        $order->shouldReceive('setState')->once();
         $order->shouldReceive('setStatus')->once();
         $order->shouldReceive('save');
 
