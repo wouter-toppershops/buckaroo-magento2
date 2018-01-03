@@ -201,12 +201,6 @@ class Push implements PushInterface
         //Start debug mailing/logging with the postdata.
         $this->logging->addDebug(print_r($this->originalPostData, true));
 
-        //Validate status code and return response
-        $postDataStatusCode = (isset($this->postData['brq_statuscode'])
-            ? $this->postData['brq_statuscode']
-            : $this->postData['brq_eventparameters_statuscode']);
-        $response = $this->validator->validateStatusCode($postDataStatusCode);
-
         //Check if the push can be processed and if the order can be updated IMPORTANT => use the original post data.
         $validSignature = $this->validator->validateSignature($this->originalPostData);
 
@@ -218,6 +212,10 @@ class Push implements PushInterface
         if ($transactionType == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
             return;
         }
+
+        //Validate status code and return response
+        $postDataStatusCode = $this->getStatusCode();
+        $response = $this->validator->validateStatusCode($postDataStatusCode);
 
         $canUpdateOrder = $this->canUpdateOrderStatus();
 
@@ -292,6 +290,35 @@ class Push implements PushInterface
             // try to get order by transaction id on payment.
             $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
         }
+    }
+
+    /**
+     * @return int|string
+     */
+    private function getStatusCode()
+    {
+        $transactionType = $this->getTransactionType();
+        $statusCode = 0;
+
+        switch ($transactionType) {
+            case self::BUCK_PUSH_TYPE_TRANSACTION:
+            case self::BUCK_PUSH_TYPE_DATAREQUEST:
+                if (isset($this->postData['brq_statuscode'])) {
+                    $statusCode = $this->postData['brq_statuscode'];
+                }
+                break;
+            case self::BUCK_PUSH_TYPE_INVOICE:
+                if (isset($this->postData['brq_eventparameters_statuscode'])) {
+                    $statusCode = $this->postData['brq_eventparameters_statuscode'];
+                }
+
+                if (isset($this->postData['brq_eventparameters_transactionstatuscode'])) {
+                    $statusCode = $this->postData['brq_eventparameters_transactionstatuscode'];
+                }
+                break;
+        }
+
+        return $statusCode;
     }
 
     /**
