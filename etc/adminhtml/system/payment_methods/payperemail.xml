@@ -63,12 +63,19 @@
             <config_path>payment/tig_buckaroo_payperemail/sort_order</config_path>
         </field>
 
-        <field id="send_mail" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+        <field id="send_mail" translate="label comment" type="select" sortOrder="40" showInDefault="0" showInWebsite="1" showInStore="1">
             <label>Send payment email</label>
             <comment><![CDATA[Buckaroo sends an email to the customer with the payment procedures.]]></comment>
             <tooltip>Set to 'No' leaves the customer uninformed on the payment obligations.</tooltip>
             <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
             <config_path>payment/tig_buckaroo_payperemail/send_mail</config_path>
+        </field>
+
+        <field id="visible_front_back" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Visible on</label>
+            <comment><![CDATA[Select where the this payment method will be available.]]></comment>
+            <source_model>TIG\Buckaroo\Model\Config\Source\VisibleFrontBack</source_model>
+            <config_path>payment/tig_buckaroo_payperemail/visible_front_back</config_path>
         </field>
 
         <group id="tig_buckaroo_default" translate="label" type="text" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">

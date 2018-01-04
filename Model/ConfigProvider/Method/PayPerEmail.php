@@ -70,8 +70,7 @@ class PayPerEmail extends AbstractConfigProvider
     const XPATH_PAYPEREMAIL_DUE_DATE                    = 'payment/tig_buckaroo_payperemail/due_date';
     const XPATH_PAYPEREMAIL_PAYMENT_METHOD              = 'payment/tig_buckaroo_payperemail/payment_method';
     const XPATH_PAYPEREMAIL_PAYMENT_METHOD_AFTER_EXPIRY = 'payment/tig_buckaroo_payperemail/payment_method_after_expiry';
-
-
+    const XPATH_PAYPEREMAIL_VISIBLE_FRONT_BACK          = 'payment/tig_buckaroo_payperemail/visible_front_back';
 
 
     /**
