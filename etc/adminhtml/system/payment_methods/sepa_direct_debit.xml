@@ -103,7 +103,7 @@
 
             <field id="due_date" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Credit Management Due date</label>
-                <comment><![CDATA[Fill in the amount of days after which the Credit Management scheme should start.]]></comment>
+                <comment><![CDATA[The amount of days after the order date, after which the Credit Management scheme will start.]]></comment>
                 <config_path>payment/tig_buckaroo_sepadirectdebit/due_date</config_path>
                 <validate>required-entry</validate>
                 <depends>
@@ -112,8 +112,8 @@
             </field>
 
             <field id="payment_method_after_expiry" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Transfer payment method</label>
-                <comment><![CDATA[Select which payment methods can be used at Transfer.]]></comment>
+                <label>Credit Management payment methods</label>
+                <comment><![CDATA[Select which payment methods can be used at Sepa.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\PaymentMethods\AfterExpiry</source_model>
                 <config_path>payment/tig_buckaroo_sepadirectdebit/payment_method_after_expiry</config_path>
                 <depends>
