@@ -41,7 +41,6 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
  * @method getDueDate()
- * @method getSendEmail()
  * @method getActiveStatusCm3()
  * @method getSchemeKey()
  * @method getMaxStepIndex()
@@ -93,6 +92,19 @@ class Transfer extends AbstractConfigProvider
                 ]
             ]
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSendEmail()
+    {
+        $sendMail = $this->scopeConfig->getValue(
+            self::XPATH_TRANSFER_SEND_EMAIL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $sendMail ? 'true' : 'false';
     }
 
     /**
