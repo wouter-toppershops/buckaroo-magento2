@@ -156,6 +156,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
          * @noinspection PhpUndefinedMethodInspection
          */
         $this->configProviderMethodFactory->shouldReceive('getDueDate')->once()->andReturn('7');
+        $this->configProviderMethodFactory->shouldReceive('getSendEmail')->once()->andReturn('true');
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($order);
         $this->paymentInterface->shouldReceive('setAdditionalInformation')->withArgs(['skip_push', 1]);
@@ -175,8 +176,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testGetTransferService()
     {
-        $TransferConfigMock = $this->getFakeMock(Transfer::class)->setMethods(['getDueDate'])->getMock();
+        $TransferConfigMock = $this->getFakeMock(Transfer::class)->setMethods(['getDueDate', 'getSendEmail'])->getMock();
         $TransferConfigMock->expects($this->once())->method('getDueDate');
+        $TransferConfigMock->expects($this->once())->method('getSendEmail');
 
         $factoryMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
         $factoryMock->expects($this->once())->method('get')->with('transfer')->willReturn($TransferConfigMock);
@@ -196,9 +198,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertEquals('transfer', $result['Name']);
         $this->assertEquals('Pay', $result['Action']);
         $this->assertEquals(2, $result['Version']);
-        $this->assertCount(5, $result['RequestParameter']);
+        $this->assertCount(6, $result['RequestParameter']);
 
-        $possibleParameters = ['CustomerEmail', 'CustomerFirstName', 'CustomerLastName', 'CustomerCountry', 'DateDue'];
+        $possibleParameters = ['CustomerEmail', 'CustomerFirstName', 'CustomerLastName', 'CustomerCountry', 'DateDue', 'SendMail'];
 
         foreach ($result['RequestParameter'] as $array) {
             $this->assertArrayHasKey('_', $array);

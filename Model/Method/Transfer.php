@@ -247,6 +247,10 @@ class Transfer extends AbstractMethod
                 [
                     '_'    => $now->format('Y-m-d'),
                     'Name' => 'DateDue'
+                ],
+                [
+                    '_'    => $transferConfig->getSendEmail(),
+                    'Name' => 'SendMail'
                 ]
             ],
         ];
