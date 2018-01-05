@@ -42,7 +42,7 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 use TIG\Buckaroo\Model\Method\PayPerEmail as MethodPayPerEmail;
 
 /**
- * @method getDueDate()
+ * @method getCm3DueDate()
  * @method getMaxStepIndex()
  * @method getPaymentMethod()
  * @method getPaymentMethodAfterExpiry()
@@ -67,7 +67,7 @@ class PayPerEmail extends AbstractConfigProvider
     const XPATH_PAYPEREMAIL_SEND_MAIL                   = 'payment/tig_buckaroo_payperemail/send_mail';
     const XPATH_PAYPEREMAIL_SCHEME_KEY                  = 'payment/tig_buckaroo_payperemail/scheme_key';
     const XPATH_PAYPEREMAIL_MAX_STEP_INDEX              = 'payment/tig_buckaroo_payperemail/max_step_index';
-    const XPATH_PAYPEREMAIL_DUE_DATE                    = 'payment/tig_buckaroo_payperemail/due_date';
+    const XPATH_PAYPEREMAIL_CM3_DUE_DATE                = 'payment/tig_buckaroo_payperemail/cm3_due_date';
     const XPATH_PAYPEREMAIL_PAYMENT_METHOD              = 'payment/tig_buckaroo_payperemail/payment_method';
     const XPATH_PAYPEREMAIL_PAYMENT_METHOD_AFTER_EXPIRY = 'payment/tig_buckaroo_payperemail/payment_method_after_expiry';
 

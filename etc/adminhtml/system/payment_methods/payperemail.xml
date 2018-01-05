@@ -101,10 +101,10 @@
                 </depends>
             </field>
 
-            <field id="due_date" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
+            <field id="cm3_due_date" translate="label" type="text" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Credit Management Due date</label>
                 <comment><![CDATA[The amount of days after the order date, after which the Credit Management scheme will start.]]></comment>
-                <config_path>payment/tig_buckaroo_payperemail/due_date</config_path>
+                <config_path>payment/tig_buckaroo_payperemail/cm3_due_date</config_path>
                 <validate>required-entry</validate>
                 <depends>
                     <field id="active_status_cm3">1</field>

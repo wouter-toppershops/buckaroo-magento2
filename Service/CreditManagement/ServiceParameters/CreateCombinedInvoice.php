@@ -138,7 +138,7 @@ class CreateCombinedInvoice
                 'Name' => 'InvoiceDate',
             ],
             [
-                '_'    => date('Y-m-d', strtotime('+' . $this->configProvider->getDueDate() . ' day', time())),
+                '_'    => date('Y-m-d', strtotime('+' . $this->configProvider->getCm3DueDate() . ' day', time())),
                 'Name' => 'DueDate',
             ],
             [

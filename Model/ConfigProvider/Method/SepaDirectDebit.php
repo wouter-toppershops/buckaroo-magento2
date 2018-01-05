@@ -53,7 +53,7 @@ class SepaDirectDebit extends AbstractConfigProvider
     const XPATH_SEPADIRECTDEBIT_ACTIVE_STATUS_CM3           = 'payment/tig_buckaroo_sepadirectdebit/active_status_cm3';
     const XPATH_SEPADIRECTDEBIT_SCHEME_KEY                  = 'payment/tig_buckaroo_sepadirectdebit/scheme_key';
     const XPATH_SEPADIRECTDEBIT_MAX_STEP_INDEX              = 'payment/tig_buckaroo_sepadirectdebit/max_step_index';
-    const XPATH_SEPADIRECTDEBIT_DUE_DATE                    = 'payment/tig_buckaroo_sepadirectdebit/due_date';
+    const XPATH_SEPADIRECTDEBIT_CM3_DUE_DATE                = 'payment/tig_buckaroo_sepadirectdebit/cm3_due_date';
     const XPATH_SEPADIRECTDEBIT_PAYMENT_METHOD_AFTER_EXPIRY = 'payment/tig_buckaroo_sepadirectdebit/payment_method_after_expiry';
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_sepadirectdebit/allowed_currencies';
