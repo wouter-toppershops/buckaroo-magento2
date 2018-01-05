@@ -71,7 +71,7 @@ class PayPerEmail extends AbstractConfigProvider
     const XPATH_PAYPEREMAIL_PAYMENT_METHOD              = 'payment/tig_buckaroo_payperemail/payment_method';
     const XPATH_PAYPEREMAIL_PAYMENT_METHOD_AFTER_EXPIRY = 'payment/tig_buckaroo_payperemail/payment_method_after_expiry';
     const XPATH_PAYPEREMAIL_VISIBLE_FRONT_BACK          = 'payment/tig_buckaroo_payperemail/visible_front_back';
-
+    const XPATH_PAYPEREMAIL_IS_VISIBLE_FOR_AREA_CODE    = 'payment/tig_buckaroo_payperemail/is_visible_for_area_code';
 
     /**
      * @return array
@@ -121,5 +121,21 @@ class PayPerEmail extends AbstractConfigProvider
         );
 
         return $sendMail ? true : false;
+    }
+
+    /**
+     * @param $areaCode
+     * @return bool
+     */
+    public function isVisibleForAreaCode($areaCode){
+
+        $forFrontend = ('frontend' === $this->getVisibleFrontBack() || 'both' === $this->getVisibleFrontBack());
+        $forBackend = ('backend' === $this->getVisibleFrontBack() || 'both' === $this->getVisibleFrontBack());
+
+        if(($areaCode == 'adminhtml' && !$forBackend) || ($areaCode != 'adminhtml' && !$forFrontend)){
+            return true;
+        }
+
+        return false;
     }
 }

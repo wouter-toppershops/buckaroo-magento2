@@ -71,8 +71,8 @@
             <config_path>payment/tig_buckaroo_payperemail/send_mail</config_path>
         </field>
 
-        <field id="visible_front_back" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
-            <label>Visible on</label>
+        <field id="visible_front_back" translate="label comment" type="select" sortOrder="41" showInDefault="1" showInWebsite="1" showInStore="1">
+            <label>Visible in</label>
             <comment><![CDATA[Select where the this payment method will be available.]]></comment>
             <source_model>TIG\Buckaroo\Model\Config\Source\VisibleFrontBack</source_model>
             <config_path>payment/tig_buckaroo_payperemail/visible_front_back</config_path>
