@@ -238,9 +238,7 @@ class PayPerEmail extends AbstractMethod
         /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail $ppeConfig */
         $ppeConfig = $this->configProviderMethodFactory->get('payperemail');
 
-        if(
-            null === $ppeConfig->getVisibleFrontBack() || $ppeConfig->isVisibleForAreaCode($areaCode)
-        ){
+        if (!$ppeConfig->isVisibleForAreaCode($areaCode)) {
             return false;
         }
 

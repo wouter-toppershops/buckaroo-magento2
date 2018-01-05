@@ -127,15 +127,19 @@ class PayPerEmail extends AbstractConfigProvider
      * @param $areaCode
      * @return bool
      */
-    public function isVisibleForAreaCode($areaCode){
+    public function isVisibleForAreaCode($areaCode)
+    {
+        if (null === $this->getVisibleFrontBack()) {
+            return false;
+        }
 
         $forFrontend = ('frontend' === $this->getVisibleFrontBack() || 'both' === $this->getVisibleFrontBack());
         $forBackend = ('backend' === $this->getVisibleFrontBack() || 'both' === $this->getVisibleFrontBack());
 
-        if(($areaCode == 'adminhtml' && !$forBackend) || ($areaCode != 'adminhtml' && !$forFrontend)){
-            return true;
+        if (($areaCode == 'adminhtml' && !$forBackend) || ($areaCode != 'adminhtml' && !$forFrontend)) {
+            return false;
         }
 
-        return false;
+        return true;
     }
 }
