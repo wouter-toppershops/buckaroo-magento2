@@ -77,7 +77,6 @@
                 <title>TIG Buckaroo SEPA Direct Debit</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>110</sort_order>
-                <send_email>1</send_email>
                 <reminder_leve1>4</reminder_leve1>
                 <order_email>1</order_email>
                 <payment_fee_lavel>Fee</payment_fee_lavel>
