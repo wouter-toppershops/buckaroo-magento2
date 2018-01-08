@@ -152,22 +152,42 @@ class Order extends AbstractTransactionBuilder
             ],
         ];
 
-        $services = $this->getServices();
-        if (isset($services['Name']) && isset($services['Action'])) {
-            if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'Order') {
-                unset($body['Invoice']);
-            }
-
-            if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'PartialInvoice') {
-                unset($body['OriginalTransactionKey']);
-            }
-        }
+        $body = $this->filterBody($body);
 
         $customVars = $this->getCustomVars();
         if (count($customVars) > 0) {
             foreach ($customVars as $key => $val) {
                 $body[$key] = $val;
             }
+        }
+
+        return $body;
+    }
+
+    /**
+     * @param array $body
+     *
+     * @return array
+     */
+    private function filterBody($body)
+    {
+        $services = $this->getServices();
+
+        if (!isset($services['Name']) || !isset($services['Action'])) {
+            return $body;
+        }
+
+        if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'Order') {
+            unset($body['Invoice']);
+        }
+
+        if ($services['Name'] == 'paymentguarantee' && $services['Action'] == 'PartialInvoice') {
+            unset($body['OriginalTransactionKey']);
+        }
+
+        if ($services['Name'] == 'CreditManagement3' && $services['Action'] == 'CreateCreditNote') {
+            unset($body['AmountCredit']);
+            unset($body['OriginalTransactionKey']);
         }
 
         return $body;

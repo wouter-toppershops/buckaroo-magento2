@@ -102,6 +102,7 @@ class SofortbankingTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $this->paymentInterface->shouldReceive('getOrder')->andReturn($fixture['order']);
+        $this->paymentInterface->shouldReceive('setAdditionalInformation')->with('skip_push', 1);
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
         $order->shouldReceive('setOrder')->with($fixture['order'])->andReturnSelf();

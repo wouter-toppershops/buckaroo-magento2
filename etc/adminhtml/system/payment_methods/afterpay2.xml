@@ -68,49 +68,49 @@
 
             <field id="payment_method" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Afterpay 2 payment method</label>
-                <comment><![CDATA[Select which paymethod must be used at Afterpay]]></comment>
+                <comment><![CDATA[Select which paymethod must be used at Afterpay.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\Afterpay2PaymentMethods</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/payment_method</config_path>
             </field>
 
             <field id="business" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Afterpay 2 payment method</label>
-                <comment><![CDATA[Select which paymethod must be used at Afterpay]]></comment>
+                <comment><![CDATA[Select which paymethod must be used at Afterpay.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\Business</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/business</config_path>
             </field>
 
             <field id="high_tax" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label> High VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'high' VAT]]></comment>
+                <comment><![CDATA[Select which tax classes count as 'high' VAT.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/high_tax</config_path>
             </field>
 
             <field id="middle_tax" translate="label comment" type="multiselect" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label> Middle VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'middle' VAT]]></comment>
+                <comment><![CDATA[Select which tax classes count as 'middle' VAT.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/middle_tax</config_path>
             </field>
 
             <field id="low_tax" translate="label comment" type="multiselect" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label> Low VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'low' VAT]]></comment>
+                <comment><![CDATA[Select which tax classes count as 'low' VAT.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/low_tax</config_path>
             </field>
 
             <field id="zero_tax" translate="label comment" type="multiselect" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label> Zero VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'zero' VAT]]></comment>
+                <comment><![CDATA[Select which tax classes count as 'zero' VAT.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/zero_tax</config_path>
             </field>
 
             <field id="no_tax" translate="label comment" type="multiselect" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label> No VAT tax classes</label>
-                <comment><![CDATA[Select which tax classes count as 'no' VAT]]></comment>
+                <comment><![CDATA[Select which tax classes count as 'no' VAT.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\TaxClass\Product</source_model>
                 <config_path>payment/tig_buckaroo_afterpay2/no_tax</config_path>
             </field>

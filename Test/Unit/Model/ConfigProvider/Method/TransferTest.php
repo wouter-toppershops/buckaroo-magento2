@@ -38,10 +38,16 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\ConfigProvider\Method;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Transfer;
+
 class TransferTest extends \TIG\Buckaroo\Test\BaseTest
 {
+    protected $instanceClass = Transfer::class;
+
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer
+     * @var Transfer
      */
     protected $object;
 
@@ -57,9 +63,9 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
+        $this->scopeConfig = \Mockery::mock(ScopeConfigInterface::class);
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::class,
+            Transfer::class,
             [
                 'scopeConfig' => $this->scopeConfig,
             ]
@@ -78,8 +84,8 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig
             ->shouldReceive('getValue')
             ->with(
-                \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::XPATH_TRANSFER_PAYMENT_FEE,
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+                Transfer::XPATH_TRANSFER_PAYMENT_FEE,
+                ScopeInterface::SCOPE_STORE
             )
             ->andReturn($value);
 
@@ -107,8 +113,7 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
             ->withArgs(
                 [
                     'payment/tig_buckaroo_transfer/send_email',
-                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
-                    null
+                    ScopeInterface::SCOPE_STORE,
                 ]
             )
             ->once()
@@ -121,6 +126,43 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
         $this->assertTrue(array_key_exists('buckaroo', $result['payment']));
         $this->assertTrue(array_key_exists('transfer', $result['payment']['buckaroo']));
         $this->assertEquals($sendEmail, $result['payment']['buckaroo']['transfer']['sendEmail']);
+    }
+
+    /**
+     * @return array
+     */
+    public function getSendMailProvider()
+    {
+        return [
+            'Do not send mail' => [
+                '0',
+                'false'
+            ],
+            'Send mail' => [
+                '1',
+                'true'
+            ]
+        ];
+    }
+
+    /**
+     * @param $value
+     * @param $expected
+     *
+     * @dataProvider getSendMailProvider
+     */
+    public function testGetSendMail($value, $expected)
+    {
+        $scopeConfigMock = $this->getMockBuilder(ScopeConfigInterface::class)->getMock();
+        $scopeConfigMock->expects($this->once())
+            ->method('getValue')
+            ->with(Transfer::XPATH_TRANSFER_SEND_EMAIL, ScopeInterface::SCOPE_STORE)
+            ->willReturn($value);
+
+        $instance = $this->getInstance(['scopeConfig' => $scopeConfigMock]);
+        $result = $instance->getSendEmail();
+
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -176,8 +218,8 @@ class TransferTest extends \TIG\Buckaroo\Test\BaseTest
             ->once()
             ->withArgs(
                 [
-                                  \TIG\Buckaroo\Model\ConfigProvider\Method\Transfer::XPATH_TRANSFER_ACTIVE,
-                                  \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                                  Transfer::XPATH_TRANSFER_ACTIVE,
+                                  ScopeInterface::SCOPE_STORE,
                                   null
                               ]
             )

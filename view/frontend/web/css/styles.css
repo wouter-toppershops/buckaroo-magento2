@@ -305,7 +305,7 @@
 
 /* ===================== PayPerEmail ============================ */
 .tig_buckaroo_payperemail .tig_buckaroo_image_title:after {
-    background: url(../images/tig_buckaroo_payperemail_title.png) no-repeat;
+    /*background: url(../images/tig_buckaroo_payperemail_title.png) no-repeat; TODO: add PPE image */
     float: right;
     margin-right: 10px;
     margin-top: -3px;
@@ -478,7 +478,7 @@
 
     /* PayPerEmail */
     .tig_buckaroo_payperemail .tig_buckaroo_image_title:before {
-        background: url(../images/tig_buckaroo_payperemail_title.png) no-repeat;
+        /*background: url(../images/tig_buckaroo_payperemail_title.png) no-repeat; TODO: add PPE image */
         margin-top: -1px;
         float: left;
         margin-right: 10px;

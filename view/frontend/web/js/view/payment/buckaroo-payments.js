@@ -73,6 +73,10 @@ define(
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/afterpay2'
             },
             {
+                type: 'tig_buckaroo_payperemail',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/payperemail'
+            },
+            {
                 type: 'tig_buckaroo_sepadirectdebit',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/sepadirectdebit'
             },

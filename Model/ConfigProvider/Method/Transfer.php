@@ -41,7 +41,11 @@ namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
 /**
  * @method getDueDate()
- * @method getSendEmail()
+ * @method getActiveStatusCm3()
+ * @method getSchemeKey()
+ * @method getMaxStepIndex()
+ * @method getCm3DueDate()
+ * @method getPaymentMethodAfterExpiry()
  */
 class Transfer extends AbstractConfigProvider
 {
@@ -54,6 +58,12 @@ class Transfer extends AbstractConfigProvider
     const XPATH_TRANSFER_ORDER_STATUS_FAILED    = 'payment/tig_buckaroo_transfer/order_status_failed';
     const XPATH_TRANSFER_AVAILABLE_IN_BACKEND   = 'payment/tig_buckaroo_transfer/available_in_backend';
     const XPATH_TRANSFER_DUE_DATE               = 'payment/tig_buckaroo_transfer/due_date';
+
+    const XPATH_TRANSFER_ACTIVE_STATUS_CM3           = 'payment/tig_buckaroo_transfer/active_status_cm3';
+    const XPATH_TRANSFER_SCHEME_KEY                  = 'payment/tig_buckaroo_transfer/scheme_key';
+    const XPATH_TRANSFER_MAX_STEP_INDEX              = 'payment/tig_buckaroo_transfer/max_step_index';
+    const XPATH_TRANSFER_CM3_DUE_DATE                = 'payment/tig_buckaroo_transfer/cm3_due_date';
+    const XPATH_TRANSFER_PAYMENT_METHOD_AFTER_EXPIRY = 'payment/tig_buckaroo_transfer/payment_method_after_expiry';
 
     const XPATH_ALLOWED_CURRENCIES = 'payment/tig_buckaroo_transfer/allowed_currencies';
 
@@ -82,6 +92,19 @@ class Transfer extends AbstractConfigProvider
                 ]
             ]
         ];
+    }
+
+    /**
+     * @return string
+     */
+    public function getSendEmail()
+    {
+        $sendMail = $this->scopeConfig->getValue(
+            self::XPATH_TRANSFER_SEND_EMAIL,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        );
+
+        return $sendMail ? 'true' : 'false';
     }
 
     /**

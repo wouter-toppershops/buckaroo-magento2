@@ -69,6 +69,10 @@ class Push implements PushInterface
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
     const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
+    const BUCK_PUSH_TYPE_TRANSACTION = 'transaction_push';
+    const BUCK_PUSH_TYPE_INVOICE     = 'invoice_push';
+    const BUCK_PUSH_TYPE_DATAREQUEST = 'datarequest_push';
+
     const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
 
     /**
@@ -197,30 +201,21 @@ class Push implements PushInterface
         //Start debug mailing/logging with the postdata.
         $this->logging->addDebug(print_r($this->originalPostData, true));
 
-        //Validate status code and return response
-        $response = $this->validator->validateStatusCode($this->postData['brq_statuscode']);
-
         //Check if the push can be processed and if the order can be updated IMPORTANT => use the original post data.
         $validSignature = $this->validator->validateSignature($this->originalPostData);
 
-        $brqOrderId = 0;
+        $this->loadOrder();
 
-        if (isset($this->postData['brq_invoicenumber']) && strlen($this->postData['brq_invoicenumber']) > 0) {
-            $brqOrderId = $this->postData['brq_invoicenumber'];
+        //Skip informational messages for group processing giftcards
+        $transactionType = $this->getTransactionType();
+
+        if ($transactionType == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
+            return;
         }
 
-        if (isset($this->postData['brq_ordernumber']) && strlen($this->postData['brq_ordernumber']) > 0) {
-            $brqOrderId = $this->postData['brq_ordernumber'];
-        }
-
-        //Check if the order can receive further status updates
-        $this->order->loadByIncrementId($brqOrderId);
-
-        if (!$this->order->getId()) {
-            $this->logging->addDebug('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
-            // try to get order by transaction id on payment.
-            $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
-        }
+        //Validate status code and return response
+        $postDataStatusCode = $this->getStatusCode();
+        $response = $this->validator->validateStatusCode($postDataStatusCode);
 
         $canUpdateOrder = $this->canUpdateOrderStatus();
 
@@ -256,10 +251,110 @@ class Push implements PushInterface
         }
 
         $this->setTransactionKey();
-        $this->processPush($response);
+
+        switch ($transactionType) {
+            case self::BUCK_PUSH_TYPE_TRANSACTION:
+            case self::BUCK_PUSH_TYPE_DATAREQUEST:
+                $this->processPush($response);
+                break;
+            case self::BUCK_PUSH_TYPE_INVOICE:
+                $this->processCm3Push();
+                break;
+        }
+
         $this->order->save();
 
         return true;
+    }
+
+    /**
+     * Try to load the order from the Push Data
+     */
+    private function loadOrder()
+    {
+        $brqOrderId = 0;
+
+        if (isset($this->postData['brq_invoicenumber']) && strlen($this->postData['brq_invoicenumber']) > 0) {
+            $brqOrderId = $this->postData['brq_invoicenumber'];
+        }
+
+        if (isset($this->postData['brq_ordernumber']) && strlen($this->postData['brq_ordernumber']) > 0) {
+            $brqOrderId = $this->postData['brq_ordernumber'];
+        }
+
+        //Check if the order can receive further status updates
+        $this->order->loadByIncrementId($brqOrderId);
+
+        if (!$this->order->getId()) {
+            $this->logging->addDebug('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
+            // try to get order by transaction id on payment.
+            $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
+        }
+    }
+
+    /**
+     * @return int|string
+     */
+    private function getStatusCode()
+    {
+        $transactionType = $this->getTransactionType();
+        $statusCode = 0;
+
+        switch ($transactionType) {
+            case self::BUCK_PUSH_TYPE_TRANSACTION:
+            case self::BUCK_PUSH_TYPE_DATAREQUEST:
+                if (isset($this->postData['brq_statuscode'])) {
+                    $statusCode = $this->postData['brq_statuscode'];
+                }
+                break;
+            case self::BUCK_PUSH_TYPE_INVOICE:
+                if (isset($this->postData['brq_eventparameters_statuscode'])) {
+                    $statusCode = $this->postData['brq_eventparameters_statuscode'];
+                }
+
+                if (isset($this->postData['brq_eventparameters_transactionstatuscode'])) {
+                    $statusCode = $this->postData['brq_eventparameters_transactionstatuscode'];
+                }
+                break;
+        }
+
+        return $statusCode;
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getTransactionType()
+    {
+        if (isset($this->postData['brq_transaction_type'])
+            && $this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE
+        ) {
+            return self::BUCK_PUSH_GROUP_TRANSACTION_TYPE;
+        }
+
+        //If an order has an invoice key, then it should only be processed by invoice pushes
+        $savedInvoiceKey = $this->order->getPayment()->getAdditionalInformation('buckaroo_cm3_invoice_key');
+
+        if (isset($this->postData['brq_invoicekey'])
+            && isset($this->postData['brq_schemekey'])
+            && strlen($savedInvoiceKey) > 0
+        ) {
+            return self::BUCK_PUSH_TYPE_INVOICE;
+        }
+
+        if (isset($this->postData['brq_datarequest'])) {
+            return self::BUCK_PUSH_TYPE_DATAREQUEST;
+        }
+
+        if (!isset($this->postData['brq_invoicekey'])
+            && !isset($this->postData['brq_service_creditmanagement3_invoicekey'])
+            && !isset($this->postData['brq_datarequest'])
+            && strlen($savedInvoiceKey) <= 0
+        ) {
+            return self::BUCK_PUSH_TYPE_TRANSACTION;
+        }
+
+        return false;
     }
 
     /**
@@ -345,6 +440,43 @@ class Push implements PushInterface
                 $this->processPendingPaymentPush($newStatus, $response['message']);
                 break;
         }
+    }
+
+    public function processCm3Push()
+    {
+        $invoiceKey = $this->postData['brq_invoicekey'];
+        $savedInvoiceKey = $this->order->getPayment()->getAdditionalInformation('buckaroo_cm3_invoice_key');
+
+        if ($invoiceKey != $savedInvoiceKey) {
+            return;
+        }
+
+        $isPaid = filter_var(strtolower($this->postData['brq_ispaid']), FILTER_VALIDATE_BOOLEAN);
+        $canInvoice = ($this->order->canInvoice() && !$this->order->hasInvoices());
+        $store = $this->order->getStore();
+
+        $amount = floatval($this->postData['brq_amountdebit']);
+        $amount = $this->order->getBaseCurrency()->formatTxt($amount);
+        $statusMessage = 'Payment push status : Creditmanagement invoice with a total amount of '
+            . $amount . ' has been paid';
+
+        if (!$isPaid && !$canInvoice) {
+            $statusMessage = 'Payment push status : Creditmanagement invoice has been (partially) refunded';
+        }
+
+        if (!$isPaid && $canInvoice) {
+            $statusMessage = 'Payment push status : Waiting for consumer';
+        }
+
+        if ($isPaid && $canInvoice && $this->configAccount->getAutoInvoice($store)) {
+            $originalKey = AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
+            $this->postData['brq_transactions'] = $this->order->getPayment()->getAdditionalInformation($originalKey);
+            $this->postData['brq_amount'] = $this->postData['brq_amountdebit'];
+
+            $this->saveInvoice();
+        }
+
+        $this->updateOrderStatus($this->order->getState(), $this->order->getStatus(), $statusMessage);
     }
 
     /**

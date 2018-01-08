@@ -52,4 +52,7 @@
     <event name="sales_order_invoice_pay">
         <observer name="tig_buckaroo_send_invoice_mail" instance="TIG\Buckaroo\Observer\SendInvoiceMail" />
     </event>
+    <event name="sales_order_payment_cancel">
+        <observer name="tig_buckaroo_void_cm3_payment" instance="TIG\Buckaroo\Observer\VoidCm3Payment" />
+    </event>
 </config>
