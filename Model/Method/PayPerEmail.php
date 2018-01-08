@@ -228,6 +228,27 @@ class PayPerEmail extends AbstractMethod
     }
 
     /**
+     * @param \Magento\Quote\Api\Data\CartInterface|null $quote
+     * @return bool
+     */
+    public function isAvailable(\Magento\Quote\Api\Data\CartInterface $quote = null)
+    {
+        $areaCode = $this->_appState->getAreaCode();
+
+        /** @var \TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail $ppeConfig */
+        $ppeConfig = $this->configProviderMethodFactory->get('payperemail');
+
+        if (!$ppeConfig->isVisibleForAreaCode($areaCode)) {
+            return false;
+        }
+
+        /**
+         * Return the regular isAvailable result
+         */
+        return parent::isAvailable($quote);
+    }
+
+    /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return array
