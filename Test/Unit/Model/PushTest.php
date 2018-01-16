@@ -40,7 +40,10 @@ namespace TIG\Buckaroo\Test\Unit\Model;
 
 use Magento\Payment\Model\MethodInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\Method\AbstractMethod;
 use TIG\Buckaroo\Model\Method\Giftcards;
 use TIG\Buckaroo\Logging\Log;
 use TIG\Buckaroo\Exception;
@@ -92,7 +95,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
         $this->configAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
 
-        $this->orderSender = \Mockery::mock(\Magento\Sales\Model\Order\Email\Sender\OrderSender::class);
+        $this->orderSender = \Mockery::mock(OrderSender::class);
 
         /**
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
@@ -287,6 +290,98 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $result = $instance->getTransactionType();
 
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function sendCm3ConfirmationMailProvider()
+    {
+        return [
+            'mail send via account config' => [
+                false,
+                true,
+                false,
+                ['brq_invoicestatuscode' => 10],
+                1
+            ],
+            'mail send via method config' => [
+                true,
+                false,
+                false,
+                ['brq_invoicestatuscode' => 10],
+                1
+            ],
+            'mail already sent' => [
+                false,
+                true,
+                true,
+                ['brq_invoicestatuscode' => 10],
+                0
+            ],
+            'incorrect post status code' => [
+                false,
+                true,
+                false,
+                ['brq_invoicestatuscode' => 5],
+                0
+            ],
+            'incorrect post parameter' => [
+                false,
+                true,
+                false,
+                ['brq_invoicekey' => 10],
+                0
+            ],
+            'configuration disabled' => [
+                false,
+                false,
+                false,
+                ['brq_invoicestatuscode' => 10],
+                0
+            ],
+        ];
+    }
+
+    /**
+     * @param $configData
+     * @param $accountConfig
+     * @param $emailSent
+     * @param $postData
+     * @param $sendTimesCalled
+     *
+     * @dataProvider sendCm3ConfirmationMailProvider
+     */
+    public function testSendCm3ConfirmationMail($configData, $accountConfig, $emailSent, $postData, $sendTimesCalled)
+    {
+        $methodMock = $this->getMockBuilder(AbstractMethod::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getConfigData'])
+            ->getMockForAbstractClass();
+        $methodMock->method('getConfigData')->with('order_email', 1)->willReturn($configData);
+
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['getStore', 'getPayment', 'getMethodInstance', 'getEmailSent'])
+            ->getMock();
+        $orderMock->expects($this->once())->method('getStore')->willReturn(1);
+        $orderMock->expects($this->once())->method('getPayment')->willReturnSelf();
+        $orderMock->expects($this->once())->method('getMethodInstance')->willReturn($methodMock);
+        $orderMock->expects($this->once())->method('getEmailSent')->willReturn($emailSent);
+
+        $configAccountMock = $this->getFakeMock(Account::class)->setMethods(['getOrderConfirmationEmail'])->getMock();
+        $configAccountMock->expects($this->once())->method('getOrderConfirmationEmail')->with(1)->willReturn($accountConfig);
+
+        $orderSenderMock = $this->getFakeMock(OrderSender::class)->setMethods(['send'])->getMock();
+        $orderSenderMock->expects($this->exactly($sendTimesCalled))->method('send')->with($orderMock);
+
+        $instance = $this->getInstance([
+            'order' => $orderMock,
+            'orderSender' => $orderSenderMock,
+            'configAccount' => $configAccountMock
+        ]);
+        $instance->postData = $postData;
+
+        $this->invoke('sendCm3ConfirmationMail', $instance);
     }
 
     /**
