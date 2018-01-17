@@ -454,6 +454,12 @@ class Push implements PushInterface
             return;
         }
 
+        $this->updateCm3InvoiceStatus();
+        $this->sendCm3ConfirmationMail();
+    }
+
+    private function updateCm3InvoiceStatus()
+    {
         $isPaid = filter_var(strtolower($this->postData['brq_ispaid']), FILTER_VALIDATE_BOOLEAN);
         $canInvoice = ($this->order->canInvoice() && !$this->order->hasInvoices());
         $store = $this->order->getStore();
@@ -480,6 +486,25 @@ class Push implements PushInterface
         }
 
         $this->updateOrderStatus($this->order->getState(), $this->order->getStatus(), $statusMessage);
+    }
+
+    private function sendCm3ConfirmationMail()
+    {
+        $store = $this->order->getStore();
+        $cm3StatusCode = 0;
+
+        if (isset($this->postData['brq_invoicestatuscode'])) {
+            $cm3StatusCode = $this->postData['brq_invoicestatuscode'];
+        }
+
+        /** @var \Magento\Payment\Model\MethodInterface $paymentMethod */
+        $paymentMethod = $this->order->getPayment()->getMethodInstance();
+        $configOrderMail = $this->configAccount->getOrderConfirmationEmail($store)
+            || $paymentMethod->getConfigData('order_email', $store);
+
+        if (!$this->order->getEmailSent() && $cm3StatusCode == 10 && $configOrderMail) {
+            $this->orderSender->send($this->order);
+        }
     }
 
     /**
