@@ -156,4 +156,42 @@ class PayPerEmailTest extends BaseTest
 
         $this->assertEquals($expected, $result);
     }
+
+    /**
+     *
+     */
+    public function isVisibleForAreaCodeProvider()
+    {
+        return [
+            "visibleFrontBack is null" => [null, null, false],
+            "visibleFrontBack is frontend areacode adminhtml" => ['frontend', 'adminhtml', false],
+            "visibleFrontBack is frontend areacode frontend"  => ['frontend', 'frontend', true],
+            "visibleFrontBack is backend areacode adminhtml"  => ['backend', 'adminhtml', true],
+            "visibleFrontBack is backend areacode frontend"   => ['backend', 'frontend', false],
+            "visibleFrontBack is both areacode adminhtml"     => ['both', 'adminhtml', true],
+            "visibleFrontBack is both areacode frontend"      => ['both', 'frontend', true],
+        ];
+    }
+
+    /**
+     * @param $visibleFrontBack
+     * @param $areaCode
+     * @param $expected
+     *
+     * @dataProvider isVisibleForAreaCodeProvider
+     */
+    public function testIsVisibleForAreaCode($visibleFrontBack, $areaCode, $expected)
+    {
+        $scopeConfigMock = $this->getMockBuilder(ScopeConfigInterface::class)->getMock();
+        $scopeConfigMock->expects($this->atMost(5))
+            ->method('getValue')
+            ->with(PayPerEmail::XPATH_PAYPEREMAIL_VISIBLE_FRONT_BACK, ScopeInterface::SCOPE_STORE)
+            ->willReturn($visibleFrontBack);
+
+        $instance = $this->getInstance(['scopeConfig' => $scopeConfigMock]);
+
+        $result = $instance->isVisibleForAreaCode($areaCode);
+
+        $this->assertEquals($expected, $result);
+    }
 }

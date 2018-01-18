@@ -307,4 +307,30 @@ class PayPerEmailTest extends BaseTest
         $services = $result->getServices();
         $this->assertEquals($serviceParametersResult, $services);
     }
+
+    /**
+     *
+     */
+    public function testIsAvailable()
+    {
+
+        $configMock = $this->getFakeMock(PayPerEmailConfig::class)->setMethods(['isVisibleForAreaCode'])->getMock();
+        $configMock->expects($this->once())
+            ->method('isVisibleForAreaCode')
+            ->willReturn(false);
+
+        $configFactoryMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configFactoryMock->expects($this->once())
+            ->method('get')
+            ->willReturn($configMock);
+
+        $instance = $this->getInstance([
+            'configProviderMethodFactory' => $configFactoryMock
+        ]);
+
+        $result = $instance->isAvailable();
+
+        $this->assertFalse($result);
+    }
+
 }
