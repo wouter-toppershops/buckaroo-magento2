@@ -325,7 +325,7 @@ class PaymentGuarantee extends AbstractMethod
             ->setAmount($totalAmount)
             ->setMethod('TransactionRequest')
             ->setReturnUrl('')
-            ->setInvoiceId($this->getPartialInvoiceId($order))
+            ->setInvoiceId($this->getPartialId($payment))
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(
                     self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
@@ -412,7 +412,7 @@ class PaymentGuarantee extends AbstractMethod
             ->setServices($services)
             ->setMethod('TransactionRequest')
             ->setReturnUrl('')
-            ->setInvoiceId($this->getPartialCreditmemoId($order))
+            ->setInvoiceId($this->getPartialId($payment))
             ->setOriginalTransactionKey(
                 $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY)
             )
@@ -799,25 +799,24 @@ class PaymentGuarantee extends AbstractMethod
     }
 
     /**
-     * @param \Magento\Sales\Model\Order $order
+     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return string
      */
-    private function getPartialInvoiceId($order)
+    private function getPartialId($payment)
     {
-        return $order->getIncrementId() . '-'
-            . $order->hasInvoices();
-    }
+        /** @var \Magento\Sales\Model\Order $order */
+        $order = $payment->getOrder();
 
-    /**
-     * @param \Magento\Sales\Model\Order $order
-     *
-     * @return string
-     */
-    private function getPartialCreditmemoId($order)
-    {
-        return $order->getIncrementId() . '-'
-        . ($order->hasCreditmemos() + 1);
+        $incrementNumber = $order->hasInvoices() + $order->hasCreditmemos();
+
+        if (null !== $payment->getCreditmemo()) {
+            $incrementNumber += 1;
+        }
+
+        $partialId = $order->getIncrementId() . '-' . $incrementNumber;
+
+        return $partialId;
     }
 
     /**
