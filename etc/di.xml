@@ -46,6 +46,7 @@
     <preference for="TIG\Buckaroo\Api\PushInterface" type="TIG\Buckaroo\Model\Push"/>
     <preference for="TIG\Buckaroo\Api\PaymentInformationManagementInterface" type="TIG\Buckaroo\Model\PaymentInformationManagement"/>
     <preference for="TIG\Buckaroo\Api\GuestPaymentInformationManagementInterface" type="TIG\Buckaroo\Model\GuestPaymentInformationManagement"/>
+    <preference for="Magento\Quote\Model\Cart\CartTotalRepository" type="TIG\Buckaroo\Model\Cart\CartTotalRepository" />
 
     <type name="TIG\Buckaroo\Model\Method\AbstractMethod">
         <arguments>
