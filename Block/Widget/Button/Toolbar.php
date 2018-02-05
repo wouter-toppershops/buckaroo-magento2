@@ -92,6 +92,23 @@ class Toolbar
             $buttonList->update('capture', 'onclick', $onClick);
         }
 
+        $orderKeyCM3 = $orderPayment->getPayment()->getAdditionalInformation('buckaroo_cm3_invoice_key');
+
+        if (isset($orderKeyCM3) && strlen($orderKeyCM3) > 0) {
+            $message = __(
+                'Cannot refund this order via Magento Backend for now, we are working on a solution! ' .
+                'Credit Management orders can only be refunded via the Buckaroo Payment Plaza.' .
+                '<br>' .
+                '<a href="https://plaza.buckaroo.nl" target="_blank">' .
+                'Open a new window to the Buckaroo Payment Plaza</a>.'
+            );
+            $onClick = "confirmSetLocation('{$message}', '#')";
+
+            $buttonList->update('capture', 'onclick', $onClick);
+        }
+
+
+
         return [$context, $buttonList];
     }
 }

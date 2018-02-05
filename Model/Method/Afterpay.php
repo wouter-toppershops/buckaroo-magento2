@@ -1355,7 +1355,8 @@ class Afterpay extends AbstractMethod
             'vat_request_id',
             'vat_is_valid',
             'vat_id',
-            'address_type'
+            'address_type',
+            'extension_attributes',
         ]);
 
         $filteredAddressOne = array_diff_key($addressOne, $keysToExclude);
