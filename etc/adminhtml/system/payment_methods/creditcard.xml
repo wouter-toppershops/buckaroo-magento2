@@ -65,7 +65,7 @@
 
         <field id="allowed_creditcards" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
             <label>Allowed Creditcards</label>
-            <comment><![CDATA[Select payment method specific Creditcards]]></comment>
+            <comment><![CDATA[Select payment method specific Creditcards.]]></comment>
             <config_path>payment/tig_buckaroo_creditcard/allowed_creditcards</config_path>
             <source_model>TIG\Buckaroo\Model\Config\Source\Creditcard</source_model>
         </field>
@@ -186,7 +186,7 @@
 
             <field id="amex_address_verification" translate="label comment" type="select" sortOrder="150" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Verify address</label>
-                <comment><![CDATA[Set true to verify the address at American Express. Set false to disable address verification]]></comment>
+                <comment><![CDATA[Set true to verify the address at American Express. Set false to disable address verification.]]></comment>
                 <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 <config_path>payment/tig_buckaroo_creditcard/limit_by_ip</config_path>
             </field>

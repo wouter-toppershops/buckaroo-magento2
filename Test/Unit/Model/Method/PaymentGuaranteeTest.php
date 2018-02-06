@@ -668,4 +668,97 @@ class PaymentGuaranteeTest extends BaseTest
 
         return $transactionInstance;
     }
+
+    /**
+     * @return array
+     */
+    public function getPartialIdProvider()
+    {
+        return [
+            'no invoices, no creditmemo, is not refunding' => [
+                0,
+                0,
+                null,
+                1,
+                '1-0'
+            ],
+            'no invoices, no creditmemo, is refunding' => [
+                0,
+                0,
+                'creditmemo',
+                2,
+                '2-1'
+            ],
+            'has invoices, no creditmemo, is not refunding' => [
+                3,
+                0,
+                null,
+                4,
+                '4-3'
+            ],
+            'has invoices, no creditmemo, is refunding' => [
+                5,
+                0,
+                'creditmemo',
+                6,
+                '6-6'
+            ],
+            'no invoices, has creditmemo, is not refunding' => [
+                0,
+                7,
+                null,
+                8,
+                '8-7'
+            ],
+            'no invoices, has creditmemo, is refunding' => [
+                0,
+                9,
+                'creditmemo',
+                10,
+                '10-10'
+            ],
+            'has invoices, has creditmemo, is not refunding' => [
+                11,
+                12,
+                null,
+                13,
+                '13-23'
+            ],
+            'has invoices, has creditmemo, is refunding' => [
+                14,
+                15,
+                'creditmemo',
+                16,
+                '16-30'
+            ],
+        ];
+    }
+
+    /**
+     * @param $hasInvoices
+     * @param $hasCreditmemos
+     * @param $creditMemo
+     * @param $id
+     * @param $expected
+     *
+     * @dataProvider getPartialIdProvider
+     */
+    public function testGetPartialId($hasInvoices, $hasCreditmemos, $creditMemo, $id, $expected)
+    {
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['hasInvoices', 'hasCreditmemos', 'getIncrementId'])
+            ->getMock();
+        $orderMock->expects($this->once())->method('hasInvoices')->willReturn($hasInvoices);
+        $orderMock->expects($this->once())->method('hasCreditmemos')->willReturn($hasCreditmemos);
+        $orderMock->expects($this->once())->method('getIncrementId')->willReturn($id);
+
+        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getOrder', 'getCreditmemo'])->getMock();
+        $paymentMock->expects($this->once())->method('getOrder')->willReturn($orderMock);
+        $paymentMock->expects($this->once())->method('getCreditmemo')->willReturn($creditMemo);
+
+        $instance = $this->getInstance();
+        $result = $this->invokeArgs('getPartialId', [$paymentMock], $instance);
+
+        $this->assertEquals($expected, $result);
+    }
 }

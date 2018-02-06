@@ -38,12 +38,15 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
 use TIG\Buckaroo\Test\BaseTest;
 
 class OrderTest extends BaseTest
 {
+    protected $instanceClass = Order::class;
+
     /**
-     * @var \TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order
+     * @var Order
      */
     protected $object;
 
@@ -59,7 +62,7 @@ class OrderTest extends BaseTest
         $this->configProviderAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class,
+            Order::class,
             ['configProviderAccount' => $this->configProviderAccount]
         );
     }
@@ -97,6 +100,7 @@ class OrderTest extends BaseTest
         $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $order->shouldReceive('getStore')->once();
+        $order->shouldReceive('setState')->once();
         $order->shouldReceive('setStatus')->once();
         $order->shouldReceive('save');
 
@@ -112,5 +116,117 @@ class OrderTest extends BaseTest
 
             $this->assertEquals($valueToTest, $result[$key]);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function filterBodyProvider()
+    {
+        return [
+            'no service name and action' => [
+                [],
+                [
+                    'Invoice' => '#1234',
+                    'AmountCredit' => '5.00',
+                    'OriginalTransactionKey' => 'abc1234',
+                ],
+                [
+                    'Invoice' => '#1234',
+                    'AmountCredit' => '5.00',
+                    'OriginalTransactionKey' => 'abc1234',
+                ]
+            ],
+            'no service name' => [
+                [
+                    'Action' => 'Order'
+                ],
+                [
+                    'Invoice' => '#5678',
+                    'AmountCredit' => '10.00',
+                    'OriginalTransactionKey' => 'def5678',
+                ],
+                [
+                    'Invoice' => '#5678',
+                    'AmountCredit' => '10.00',
+                    'OriginalTransactionKey' => 'def5678',
+                ]
+            ],
+            'no service action' => [
+                [
+                    'Name' => 'paymentguarantee'
+                ],
+                [
+                    'Invoice' => '#9012',
+                    'AmountCredit' => '15.00',
+                    'OriginalTransactionKey' => 'ghi9012',
+                ],
+                [
+                    'Invoice' => '#9012',
+                    'AmountCredit' => '15.00',
+                    'OriginalTransactionKey' => 'ghi9012',
+                ]
+            ],
+            'filtered paymentguarantee order' => [
+                [
+                    'Name' => 'paymentguarantee',
+                    'Action' => 'Order'
+                ],
+                [
+                    'Invoice' => '#3456',
+                    'AmountCredit' => '20.00',
+                    'OriginalTransactionKey' => 'jkl3456',
+                ],
+                [
+                    'AmountCredit' => '20.00',
+                    'OriginalTransactionKey' => 'jkl3456',
+                ]
+            ],
+            'filtered paymentguarantee partialinvoice' => [
+                [
+                    'Name' => 'paymentguarantee',
+                    'Action' => 'PartialInvoice'
+                ],
+                [
+                    'Invoice' => '#7890',
+                    'AmountCredit' => '25.00',
+                    'OriginalTransactionKey' => 'mno7890',
+                ],
+                [
+                    'Invoice' => '#7890',
+                    'AmountCredit' => '25.00',
+                ]
+            ],
+            'filtered creditmanagement3 createcreditnote' => [
+                [
+                    'Name' => 'CreditManagement3',
+                    'Action' => 'CreateCreditNote'
+                ],
+                [
+                    'Invoice' => '#3571',
+                    'AmountCredit' => '30.00',
+                    'OriginalTransactionKey' => 'pqr3571',
+                ],
+                [
+                    'Invoice' => '#3571',
+                ]
+            ],
+        ];
+    }
+
+    /**
+     * @param $service
+     * @param $body
+     * @param $expected
+     *
+     * @dataProvider filterBodyProvider
+     */
+    public function testFilterBody($service, $body, $expected)
+    {
+        $instance = $this->getInstance();
+        $instance->setServices($service);
+
+        $result = $this->invokeArgs('filterBody', [$body], $instance);
+        $this->assertEquals($expected, $result);
     }
 }

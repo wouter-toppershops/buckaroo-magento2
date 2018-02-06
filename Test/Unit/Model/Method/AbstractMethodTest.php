@@ -37,6 +37,7 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
+use Magento\Sales\Model\Order\Payment;
 
 /**
  * Class AbstractMethodTest
@@ -47,6 +48,8 @@ namespace TIG\Buckaroo\Test\Unit\Model\Method;
 class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 // @codingStandardsIgnoreEnd
 {
+    protected $instanceClass = AbstractMethodMock::class;
+
     /**
      * @var \Mockery\MockInterface
      */
@@ -1331,5 +1334,26 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             ->andReturn($extraFields);
 
         $this->assertEquals($expectedServices, $this->object->addExtraFields($this->object->getCode()));
+    }
+
+    public function testCreateCreditNoteRequest()
+    {
+        $infoInstanceMock = $this->getFakeMock(Payment::class)
+            ->setMethods(['getAdditionalInformation', 'setAdditionalInformation'])
+            ->getMock();
+        $infoInstanceMock->expects($this->exactly(3))
+            ->method('getAdditionalInformation')
+            ->withConsecutive(
+                ['buckaroo_cm3_invoice_key'],
+                [AbstractMethodMock::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY],
+                ['buckaroo_failed_authorize']
+            )
+            ->willReturnOnConsecutiveCalls('abc', 'def', 1);
+        $infoInstanceMock->expects($this->once())
+            ->method('setAdditionalInformation')
+            ->with(AbstractMethodMock::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, 'def');
+
+        $result = $this->object->createCreditNoteRequest($infoInstanceMock);
+        $this->assertInstanceOf(AbstractMethodMock::class, $result);
     }
 }

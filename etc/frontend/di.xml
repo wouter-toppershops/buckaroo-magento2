@@ -54,6 +54,7 @@
                 <item name="buckaroo_config_provider_giropay" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Giropay</item>
                 <item name="buckaroo_config_provider_afterpay" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay</item>
                 <item name="buckaroo_config_provider_afterpay2" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Afterpay2</item>
+                <item name="buckaroo_config_provider_payperemail" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\PayPerEmail</item>
                 <item name="buckaroo_config_provider_eps" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Eps</item>
                 <item name="buckaroo_config_provider_giftcards" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\Giftcards</item>
                 <item name="buckaroo_config_provider_paymentguarantee" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Method\PaymentGuarantee</item>
