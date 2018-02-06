@@ -183,8 +183,7 @@ class PayPerEmailTest extends BaseTest
     public function testIsVisibleForAreaCode($visibleFrontBack, $areaCode, $expected)
     {
         $scopeConfigMock = $this->getMockBuilder(ScopeConfigInterface::class)->getMock();
-        $scopeConfigMock->expects($this->atMost(5))
-            ->method('getValue')
+        $scopeConfigMock->method('getValue')
             ->with(PayPerEmail::XPATH_PAYPEREMAIL_VISIBLE_FRONT_BACK, ScopeInterface::SCOPE_STORE)
             ->willReturn($visibleFrontBack);
 
