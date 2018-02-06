@@ -70,7 +70,6 @@ class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
-    const BUCK_PUSH_ACCEPT_PAY_TYPE        = 'C016';
     const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
     const BUCK_PUSH_TYPE_TRANSACTION = 'transaction_push';
