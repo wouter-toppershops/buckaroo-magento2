@@ -78,9 +78,6 @@
                 <comment><![CDATA[Select which paymethod must be used at Afterpay.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\Business</source_model>
                 <config_path>payment/tig_buckaroo_afterpay/business</config_path>
-                <depends>
-                    <field id="payment_method">2</field>
-                </depends>
             </field>
 
             <field id="high_tax" translate="label comment" type="multiselect" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
