@@ -291,9 +291,7 @@ class Push implements PushInterface
         if (!$this->order->getId()) {
             $this->logging->addDebug('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
             // try to get order by transaction id on payment.
-            if (isset($this->postData['brq_transactions'])) {
-                $this->order = $this->getOrderByTransactionKey($this->postData['brq_transactions']);
-            }
+                $this->order = $this->getOrderByTransactionKey($this->postData);
         }
     }
 
@@ -581,8 +579,8 @@ class Push implements PushInterface
      */
     protected function getOrderByTransactionKey($transactionId)
     {
-        if ($transactionId) {
-            $this->transaction->load($transactionId, 'txn_id');
+        if (isset($transactionId['brq_transactions'])) {
+            $this->transaction->load($transactionId['brq_transactions'], 'txn_id');
             $order = $this->transaction->getOrder();
 
             if ($order) {
