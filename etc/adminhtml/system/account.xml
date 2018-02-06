@@ -181,7 +181,7 @@
 
             <field id="debug_email" translate="label comment" type="text" sortOrder="130" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Debug email</label>
-                <comment><![CDATA[Debug information will be sent to these comma-separated email addresses]]></comment>
+                <comment><![CDATA[Debug information will be sent to these comma-separated email addresses.]]></comment>
                 <config_path>tig_buckaroo/account/debug_email</config_path>
             </field>
 

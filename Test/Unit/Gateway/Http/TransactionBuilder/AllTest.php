@@ -95,6 +95,7 @@ class AllTest extends BaseTest
         $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->order->shouldReceive('getStore')->once();
+        $this->order->shouldReceive('setState');
         $this->order->shouldReceive('setStatus');
         $this->object->setOrder($this->order);
 

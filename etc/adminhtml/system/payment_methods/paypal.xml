@@ -75,7 +75,7 @@
 
             <field id="sellers_protection_eligible" translate="label comment" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Seller protection eligible</label>
-                <comment><![CDATA[Seller protection for unauthorized payment and item not received]]></comment>
+                <comment><![CDATA[Seller protection for unauthorized payment and item not received.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
                 <config_path>payment/tig_buckaroo_paypal/sellers_protection_eligible</config_path>
                 <depends>
@@ -85,7 +85,7 @@
 
             <field id="sellers_protection_itemnotreceived_eligible" translate="label comment" type="select" sortOrder="30" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Seller protection item not received</label>
-                <comment><![CDATA[Seller protection for item not received]]></comment>
+                <comment><![CDATA[Seller protection for item not received.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
                 <config_path>payment/tig_buckaroo_paypal/sellers_protection_itemnotreceived_eligible</config_path>
                 <depends>
@@ -95,7 +95,7 @@
 
             <field id="sellers_protection_unauthorizedpayment_eligible" translate="label comment" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Seller protection unauthorized payment</label>
-                <comment><![CDATA[Seller protection for unauthorized payment]]></comment>
+                <comment><![CDATA[Seller protection for unauthorized payment.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
                 <config_path>payment/tig_buckaroo_paypal/sellers_protection_unauthorizedpayment_eligible</config_path>
                 <depends>
@@ -105,7 +105,7 @@
 
             <field id="sellers_protection_ineligible" translate="label comment" type="select" sortOrder="50" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Seller protection ineligible</label>
-                <comment><![CDATA[Merchant is not protected by Seller Protection]]></comment>
+                <comment><![CDATA[Merchant is not protected by Seller Protection.]]></comment>
                 <source_model>TIG\Buckaroo\Model\Config\Source\StatusesSuccess</source_model>
                 <config_path>payment/tig_buckaroo_paypal/sellers_protection_ineligible</config_path>
                 <depends>

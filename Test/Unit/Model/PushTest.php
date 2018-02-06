@@ -40,14 +40,21 @@ namespace TIG\Buckaroo\Test\Unit\Model;
 
 use Magento\Payment\Model\MethodInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Email\Sender\OrderSender;
 use Magento\Sales\Model\Order\Payment;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\Method\AbstractMethod;
 use TIG\Buckaroo\Model\Method\Giftcards;
+use TIG\Buckaroo\Logging\Log;
+use TIG\Buckaroo\Exception;
+use TIG\Buckaroo\Model\Push;
 
 class PushTest extends \TIG\Buckaroo\Test\BaseTest
 {
+    protected $instanceClass = Push::class;
+
     /**
-     * @var \TIG\Buckaroo\Model\Push
+     * @var Push
      */
     protected $object;
 
@@ -74,11 +81,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     /**
      * @var \Mockery\MockInterface
      */
-    public $debugger;
-
-    /**
-     * @var \Mockery\MockInterface
-     */
     public $orderSender;
 
     /**
@@ -92,27 +94,20 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $this->request = \Mockery::mock(\Magento\Framework\Webapi\Rest\Request::class);
         $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
         $this->configAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
-        $this->debugger = \Mockery::mock(\TIG\Buckaroo\Debug\Debugger::class);
 
-        /**
-         * Needed to deal with __destruct
-         */
-        $this->debugger->shouldReceive('log')->andReturnSelf();
-
-        $this->orderSender = \Mockery::mock(\Magento\Sales\Model\Order\Email\Sender\OrderSender::class);
+        $this->orderSender = \Mockery::mock(OrderSender::class);
 
         /**
          * We are using the temporary class declared above, but it could be any class extending from the AbstractMethod
          * class.
          */
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Push::class,
+            Push::class,
             [
                 'objectManager' => $this->objectManager,
                 'request' => $this->request,
                 'helper' => $this->helper,
                 'configAccount' => $this->configAccount,
-                'debugger' => $this->debugger,
                 'orderSender' => $this->orderSender,
             ]
         );
@@ -156,6 +151,93 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
     }
 
     /**
+     * @return array
+     */
+    public function loadOrderProvider()
+    {
+        return [
+            'by invoicenumber' => [
+                ['brq_invoicenumber' => '#1234'],
+                321
+            ],
+            'by ordernumber' => [
+                ['brq_ordernumber' => '#5678'],
+                765
+            ],
+        ];
+    }
+
+    /**
+     * @param $postData
+     * @param $orderId
+     *
+     * @dataProvider loadOrderProvider
+     */
+    public function testLoadOrder($postData, $orderId)
+    {
+        $orderMock = $this->getFakeMock(Order::class)->setMethods(['loadByIncrementId'])->getMock();
+        $orderMock->expects($this->once())
+            ->method('loadByIncrementId')
+            ->willReturnCallback(
+                function () use ($orderMock, $orderId) {
+                    $orderMock->setId($orderId);
+                }
+            );
+
+        $instance = $this->getInstance(['order' => $orderMock]);
+        $instance->postData = $postData;
+        $this->invoke('loadOrder', $instance);
+        $this->assertEquals($orderId, $orderMock->getId());
+    }
+
+    public function testLoadOrderWillThrowException()
+    {
+        $debuggerMock = $this->getFakeMock(Log::class)->setMethods(['addDebug', '__destruct'])->getMock();
+        $debuggerMock->expects($this->once())
+            ->method('addDebug')
+            ->with('Order could not be loaded by brq_invoicenumber or brq_ordernumber');
+
+        $instance = $this->getInstance(['logging' => $debuggerMock]);
+
+        $this->setExpectedException(Exception::class, 'There was no order found by transaction Id');
+        $this->invoke('loadOrder', $instance);
+    }
+
+    /**
+     * @return array
+     */
+    public function getTransactionTypeProvider()
+    {
+        return [
+            'invalid type' => [
+                ['brq_service_creditmanagement3_invoicekey' => 'key'],
+                null,
+                false
+            ],
+            'grouped type' => [
+                ['brq_transaction_type' => Push::BUCK_PUSH_GROUP_TRANSACTION_TYPE],
+                null,
+                Push::BUCK_PUSH_GROUP_TRANSACTION_TYPE
+            ],
+            'invoice type' => [
+                ['brq_invoicekey' => 'send key', 'brq_schemekey' => 'scheme key'],
+                'saved key',
+                Push::BUCK_PUSH_TYPE_INVOICE
+            ],
+            'datarequest type' => [
+                ['brq_datarequest' => 'request push'],
+                null,
+                Push::BUCK_PUSH_TYPE_DATAREQUEST
+            ],
+            'transaction type' => [
+                [],
+                null,
+                Push::BUCK_PUSH_TYPE_TRANSACTION
+            ],
+        ];
+    }
+
+    /**
      * @param $methodCode
      * @param $orderAmount
      * @param $pushAmount
@@ -185,6 +267,121 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $result = $this->invoke('giftcardPartialPayment', $this->object);
 
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @param $postData
+     * @param $savedInvoiceKey
+     * @param $expected
+     *
+     * @dataProvider getTransactionTypeProvider
+     */
+    public function testGetTransactionType($postData, $savedInvoiceKey, $expected)
+    {
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['getPayment', 'getAdditionalInformation'])
+            ->getMock();
+        $orderMock->method('getPayment')->willReturnSelf();
+        $orderMock->method('getAdditionalInformation')->with('buckaroo_cm3_invoice_key')->willReturn($savedInvoiceKey);
+
+        $instance = $this->getInstance(['order' => $orderMock]);
+        $instance->postData = $postData;
+
+        $result = $instance->getTransactionType();
+
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function sendCm3ConfirmationMailProvider()
+    {
+        return [
+            'mail send via account config' => [
+                false,
+                true,
+                false,
+                ['brq_invoicestatuscode' => 10],
+                1
+            ],
+            'mail send via method config' => [
+                true,
+                false,
+                false,
+                ['brq_invoicestatuscode' => 10],
+                1
+            ],
+            'mail already sent' => [
+                false,
+                true,
+                true,
+                ['brq_invoicestatuscode' => 10],
+                0
+            ],
+            'incorrect post status code' => [
+                false,
+                true,
+                false,
+                ['brq_invoicestatuscode' => 5],
+                0
+            ],
+            'incorrect post parameter' => [
+                false,
+                true,
+                false,
+                ['brq_invoicekey' => 10],
+                0
+            ],
+            'configuration disabled' => [
+                false,
+                false,
+                false,
+                ['brq_invoicestatuscode' => 10],
+                0
+            ],
+        ];
+    }
+
+    /**
+     * @param $configData
+     * @param $accountConfig
+     * @param $emailSent
+     * @param $postData
+     * @param $sendTimesCalled
+     *
+     * @dataProvider sendCm3ConfirmationMailProvider
+     */
+    public function testSendCm3ConfirmationMail($configData, $accountConfig, $emailSent, $postData, $sendTimesCalled)
+    {
+        $methodMock = $this->getMockBuilder(AbstractMethod::class)
+            ->disableOriginalConstructor()
+            ->setMethods(['getConfigData'])
+            ->getMockForAbstractClass();
+        $methodMock->method('getConfigData')->with('order_email', 1)->willReturn($configData);
+
+        $orderMock = $this->getFakeMock(Order::class)
+            ->setMethods(['getStore', 'getPayment', 'getMethodInstance', 'getEmailSent'])
+            ->getMock();
+        $orderMock->expects($this->once())->method('getStore')->willReturn(1);
+        $orderMock->expects($this->once())->method('getPayment')->willReturnSelf();
+        $orderMock->expects($this->once())->method('getMethodInstance')->willReturn($methodMock);
+        $orderMock->expects($this->once())->method('getEmailSent')->willReturn($emailSent);
+
+        $configAccountMock = $this->getFakeMock(Account::class)->setMethods(['getOrderConfirmationEmail'])->getMock();
+        $configAccountMock->expects($this->once())->method('getOrderConfirmationEmail')->with(1)->willReturn($accountConfig);
+
+        $orderSenderMock = $this->getFakeMock(OrderSender::class)->setMethods(['send'])->getMock();
+        $orderSenderMock->expects($this->exactly($sendTimesCalled))->method('send')->with($orderMock);
+
+        $instance = $this->getInstance([
+            'order' => $orderMock,
+            'orderSender' => $orderSenderMock,
+            'configAccount' => $configAccountMock
+        ]);
+        $instance->postData = $postData;
+
+        $this->invoke('sendCm3ConfirmationMail', $instance);
     }
 
     /**
@@ -248,7 +445,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->configAccount->shouldReceive('getCancelOnFailed')->andReturn($cancelOnFailed);
 
-        $orderMock = $this->getFakeMock(\Magento\Sales\Model\Order::class)
+        $orderMock = $this->getFakeMock(Order::class)
             ->setMethods(['getState', 'getStore', 'addStatusHistoryComment', 'canCancel', 'getPayment', 'cancel', 'save'])
             ->getMock();
         $orderMock->expects($this->atLeastOnce())->method('getState')->willReturn($state);
@@ -275,9 +472,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
             $orderMock->expects($this->exactly((int)$canCancel))->method('getPayment')->willReturn($paymentMock);
 
             if ($canCancel) {
-                $this->debugger->shouldReceive('addToMessage')->withAnyArgs()->andReturnSelf();
-                $this->debugger->shouldReceive('log')->andReturnSelf();
-
                 $orderMock->expects($this->once())->method('cancel')->willReturnSelf();
                 $orderMock->expects($this->once())->method('save')->willReturnSelf();
             }
@@ -423,6 +617,8 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getPayment')->andReturn($paymentMock);
         $orderMock->shouldReceive('getBaseCurrency')->andReturn($currencyMock);
 
+        $forced = false;
+
         /**
          * If no auto invoicing is required, or if auto invoice is required and the order can be invoiced and
          *  has no invoices, expect a status update
@@ -435,12 +631,13 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 $expectedDescription = 'Authorization status : <strong>' . $message . "</strong><br/>";
                 $expectedDescription .= 'Total amount of ' . $textAmount . ' has been ' .
                     'authorized. Please create an invoice to capture the authorized amount.';
+                $forced = true;
             }
 
             /**
              * Only orders with the success state should have their status updated
              */
-            if ($state == $successPaymentState) {
+            if ($state == $successPaymentState || $forced) {
                 $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription, $status);
             } else {
                 $orderMock->shouldReceive('addStatusHistoryComment')->once()->with($expectedDescription);
@@ -458,8 +655,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * If order cannot be invoiced or if order already has invoices, expect an exception
                  */
-                $this->setExpectedException(\TIG\Buckaroo\Exception::class);
-                $this->debugger->shouldReceive('addToMessage')->withAnyArgs();
+                $this->setExpectedException(Exception::class);
             } else {
 
                 /**
