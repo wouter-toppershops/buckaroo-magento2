@@ -42,6 +42,7 @@ namespace TIG\Buckaroo\Model\Method;
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
+    const BUCKAROO_ALL_TRANSACTIONS = 'buckaroo_all_transactions';
 
     /**
      * The regex used to validate the entered BIC number
