@@ -526,7 +526,35 @@ class Push implements PushInterface
             $this->postData['brq_relatedtransaction_partialpayment']
         );
 
+        $this->addGiftcardPartialPaymentToPaymentInformation();
+
         return true;
+    }
+
+    protected function addGiftcardPartialPaymentToPaymentInformation()
+    {
+        $payment = $this->order->getPayment();
+
+        $transactionAmount =  (isset($this->postData['brq_amount'])) ? $this->postData['brq_amount'] : 0;
+        $transactionKey =  (isset($this->postData['brq_transactions'])) ? $this->postData['brq_transactions'] : '';
+        $transactionMethod = (isset($this->postData['brq_transaction_method'])) ? $this->postData['brq_transaction_method'] : '';
+
+        $transactionData = $payment->getAdditionalInformation(AbstractMethod::BUCKAROO_ALL_TRANSACTIONS);
+
+        $transactionArray = [];
+        if (count($transactionData) > 0) {
+            $transactionArray = $transactionData;
+        }
+
+        if (!empty($transactionKey) && $transactionAmount > 0) {
+            $transactionArray[$transactionKey] = [$transactionMethod, $transactionAmount];
+
+            $payment->setAdditionalInformation(
+                AbstractMethod::BUCKAROO_ALL_TRANSACTIONS,
+                $transactionArray
+            );
+        }
+
     }
 
     /**
