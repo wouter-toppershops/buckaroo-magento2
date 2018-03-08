@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  *                  ___________       __            __
  *                  \__    ___/____ _/  |_ _____   |  |
@@ -34,28 +33,50 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
- * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
+ * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
- -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
-    <event name="sales_order_payment_place_end">
-        <observer name="tig_buckaroo_update_order_status" instance="TIG\Buckaroo\Observer\UpdateOrderStatus" />
-        <observer name="tig_buckaroo_send_order_confirmation" instance="TIG\Buckaroo\Observer\SendOrderConfirmation" />
-    </event>
-    <event name="sales_model_service_quote_submit_before">
-        <observer name="tig_buckaroo_fee_set" instance="TIG\Buckaroo\Observer\SetBuckarooFee" />
-    </event>
-    <event name="sales_model_service_quote_submit_failure">
-        <observer name="tig_failed_quote_order" instance="TIG\Buckaroo\Observer\HandleFailedQuoteOrder"/>
-    </event>
-    <event name="sales_order_invoice_register">
-        <observer name="tig_buckaroo_fee_invoice" instance="TIG\Buckaroo\Observer\InvoiceRegister" />
-    </event>
-    <event name="sales_order_invoice_pay">
-        <observer name="tig_buckaroo_send_invoice_mail" instance="TIG\Buckaroo\Observer\SendInvoiceMail" />
-    </event>
-    <event name="sales_order_payment_cancel">
-        <observer name="tig_buckaroo_void_cm3_payment" instance="TIG\Buckaroo\Observer\VoidCm3Payment" />
-    </event>
-</config>
+
+namespace TIG\Buckaroo\Observer;
+
+class HandleFailedQuoteOrder implements \Magento\Framework\Event\ObserverInterface
+{
+    /**
+     * @param \Magento\Framework\Event\Observer $observer
+     * @return void
+     */
+    public function execute(\Magento\Framework\Event\Observer $observer)
+    {
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        /* @var $order \Magento\Sales\Model\Order */
+        $order = $observer->getEvent()->getOrder();
+        /**
+         * @noinspection PhpUndefinedMethodInspection
+         */
+        /**
+         * @var $quote \Magento\Quote\Model\Quote $quote
+         */
+        $quote = $observer->getEvent()->getQuote();
+
+
+        if ($order->canCancel()) {
+            //$this->logging->addDebug('Buckaroo push failed : '.$message.' : Cancel order.');
+
+            // BUCKM2-78: Never automatically cancelauthorize via push for afterpay
+            // setting parameter which will cause to stop the cancel process on
+            // Buckaroo/Model/Method/AbstractMethod.php:880
+            $payment = $order->getPayment();
+            if ($payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay'
+                || $payment->getMethodInstance()->getCode() == 'tig_buckaroo_afterpay2'
+            ) {
+                $payment->setAdditionalInformation('buckaroo_failed_authorize', 1);
+                $payment->save();
+            }
+
+            $order->cancel()->save();
+        }
+
+    }
+}
