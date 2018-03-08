@@ -75,7 +75,10 @@ class Transfer extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        if (!$this->scopeConfig->getValue(self::XPATH_TRANSFER_ACTIVE)) {
+        if (!$this->scopeConfig->getValue(
+            self::XPATH_TRANSFER_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )) {
             return [];
         }
 
