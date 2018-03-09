@@ -344,4 +344,10 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilder">
+        <arguments>
+            <argument name="urlBuilder" xsi:type="object">Magento\Framework\Url</argument>
+        </arguments>
+    </type>
 </config>
