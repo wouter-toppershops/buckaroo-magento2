@@ -164,7 +164,7 @@ class CartTotalRepository extends MagentoTotalRepository
     {
         $currentVersion = $this->productMetadata->getVersion();
 
-        if ('2.2.2' == $currentVersion) {
+        if (in_array($currentVersion, ['2.2.2', '2.2.3'])) {
             return true;
         }
 
