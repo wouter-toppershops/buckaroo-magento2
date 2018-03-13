@@ -57,7 +57,6 @@ use TIG\Buckaroo\Model\Method\Transfer;
 use TIG\Buckaroo\Model\Method\Paypal;
 use TIG\Buckaroo\Model\Method\SepaDirectDebit;
 use TIG\Buckaroo\Model\Method\Sofortbanking;
-use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 
@@ -70,7 +69,6 @@ class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
-    const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
     const BUCK_PUSH_TYPE_TRANSACTION = 'transaction_push';
     const BUCK_PUSH_TYPE_INVOICE     = 'invoice_push';
@@ -209,12 +207,7 @@ class Push implements PushInterface
 
         $this->loadOrder();
 
-        //Skip informational messages for group processing giftcards
         $transactionType = $this->getTransactionType();
-
-        if ($transactionType == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
-            return;
-        }
 
         //Validate status code and return response
         $postDataStatusCode = $this->getStatusCode();
@@ -329,12 +322,6 @@ class Push implements PushInterface
      */
     public function getTransactionType()
     {
-        if (isset($this->postData['brq_transaction_type'])
-            && $this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE
-        ) {
-            return self::BUCK_PUSH_GROUP_TRANSACTION_TYPE;
-        }
-
         //If an order has an invoice key, then it should only be processed by invoice pushes
         $savedInvoiceKey = $this->order->getPayment()->getAdditionalInformation('buckaroo_cm3_invoice_key');
 
