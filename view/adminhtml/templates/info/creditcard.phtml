@@ -33,7 +33,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
@@ -51,7 +51,7 @@
 <div class="tig_buckaroo_payment_card_<?php echo $block->getCardCode(); ?>">
     <?php if ($block->getInfo()->getAdditionalInformation()): ?>
         <?php if ($block->getCardType()): ?>
-            <!--<br />--><?php echo $block->escapeHtml(__('Selected card: %1', $block->getCardType())); ?>
+            <?php echo $block->escapeHtml(__('Selected card: %1', $block->getCardType())); ?>
         <?php endif; ?>
     <?php endif; ?>
 </div>

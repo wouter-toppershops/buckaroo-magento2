@@ -33,7 +33,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
@@ -42,6 +42,7 @@ namespace TIG\Buckaroo\Model\Method;
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
+    const BUCKAROO_ALL_TRANSACTIONS = 'buckaroo_all_transactions';
 
     /**
      * The regex used to validate the entered BIC number

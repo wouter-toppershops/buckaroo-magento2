@@ -22,12 +22,12 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:TIG_Buckaroo:etc/tig_module.xsd">
-    <module name="TIG_Buckaroo" setup_version="1.6.0" build_number="1322" stability="stable">
+    <module name="TIG_Buckaroo" setup_version="1.6.3" build_number="1325" stability="alpha">
         <sequence>
             <module name="Magento_Payment"/>
         </sequence>

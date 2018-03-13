@@ -75,6 +75,7 @@ class CartTotalRepository extends MagentoTotalRepository
      * @param CouponManagementInterface $couponService
      * @param TotalsConverter $totalsConverter
      * @param ItemConverter $converter
+     * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
         Api\Data\TotalsInterfaceFactory $totalsFactory,
@@ -163,7 +164,7 @@ class CartTotalRepository extends MagentoTotalRepository
     {
         $currentVersion = $this->productMetadata->getVersion();
 
-        if ('2.2.2' == $currentVersion) {
+        if (in_array($currentVersion, ['2.2.2', '2.2.3'])) {
             return true;
         }
 

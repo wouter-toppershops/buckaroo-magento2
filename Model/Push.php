@@ -34,7 +34,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
@@ -70,6 +70,7 @@ class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
+    const BUCK_PUSH_ACCEPT_PAY_TYPE        = 'C016';
     const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
     const BUCK_PUSH_TYPE_TRANSACTION = 'transaction_push';
@@ -526,7 +527,35 @@ class Push implements PushInterface
             $this->postData['brq_relatedtransaction_partialpayment']
         );
 
+        $this->addGiftcardPartialPaymentToPaymentInformation();
+
         return true;
+    }
+
+    protected function addGiftcardPartialPaymentToPaymentInformation()
+    {
+        $payment = $this->order->getPayment();
+
+        $transactionAmount =  (isset($this->postData['brq_amount'])) ? $this->postData['brq_amount'] : 0;
+        $transactionKey =  (isset($this->postData['brq_transactions'])) ? $this->postData['brq_transactions'] : '';
+        $transactionMethod = (isset($this->postData['brq_transaction_method'])) ? $this->postData['brq_transaction_method'] : '';
+
+        $transactionData = $payment->getAdditionalInformation(AbstractMethod::BUCKAROO_ALL_TRANSACTIONS);
+
+        $transactionArray = [];
+        if (count($transactionData) > 0) {
+            $transactionArray = $transactionData;
+        }
+
+        if (!empty($transactionKey) && $transactionAmount > 0) {
+            $transactionArray[$transactionKey] = [$transactionMethod, $transactionAmount];
+
+            $payment->setAdditionalInformation(
+                AbstractMethod::BUCKAROO_ALL_TRANSACTIONS,
+                $transactionArray
+            );
+        }
+
     }
 
     /**
