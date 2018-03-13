@@ -126,7 +126,10 @@ class Creditcard extends AbstractConfigProvider
     public function formatIssuers()
     {
         $issuers = parent::formatIssuers();
-        $allowed = explode(',', $this->scopeConfig->getValue(self::XPATH_CREDITCARD_ALLOWED_CREDITCARDS));
+        $allowed = explode(',', $this->scopeConfig->getValue(
+            self::XPATH_CREDITCARD_ALLOWED_CREDITCARDS,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+        );
 
         foreach ($issuers as $key => $issuer) {
             $issuers[$key]['active'] = in_array($issuer['code'], $allowed);

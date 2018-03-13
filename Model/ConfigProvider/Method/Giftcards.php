@@ -67,7 +67,10 @@ class Giftcards extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        if (!$this->scopeConfig->getValue(static::XPATH_GIFTCARDS_ACTIVE)) {
+        if (!$this->scopeConfig->getValue(
+            static::XPATH_GIFTCARDS_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )) {
             return [];
         }
 

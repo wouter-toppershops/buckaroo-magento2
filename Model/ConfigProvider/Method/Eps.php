@@ -65,7 +65,10 @@ class Eps extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        if (!$this->scopeConfig->getValue(self::XPATH_EPS_ACTIVE)) {
+        if (!$this->scopeConfig->getValue(
+            static::XPATH_EPS_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )) {
             return [];
         }
 
