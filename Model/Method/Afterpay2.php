@@ -252,8 +252,6 @@ class Afterpay2 extends AbstractMethod
             ) {
                 $this->getInfoInstance()->setAdditionalInformation('COCNumber', $additionalData['COCNumber']);
                 $this->getInfoInstance()->setAdditionalInformation('CompanyName', $additionalData['CompanyName']);
-                $this->getInfoInstance()->setAdditionalInformation('CostCenter', $additionalData['CostCenter']);
-                $this->getInfoInstance()->setAdditionalInformation('VATNumber', $additionalData['VATNumber']);
                 $this->getInfoInstance()->setAdditionalInformation(
                     'selectedBusiness',
                     $additionalData['selectedBusiness']
@@ -596,14 +594,6 @@ class Afterpay2 extends AbstractMethod
                 [
                     '_'    => $payment->getAdditionalInformation('CompanyName'),
                     'Name' => 'CompanyName'
-                ],
-                [
-                    '_'    => $payment->getAdditionalInformation('CostCenter'),
-                    'Name' => 'CostCentre'
-                ],
-                [
-                    '_'    => $payment->getAdditionalInformation('VATNumber'),
-                    'Name' => 'VatNumber'
                 ],
             ];
         } else {

@@ -57,8 +57,8 @@ class Business implements \Magento\Framework\Option\ArrayInterface
 
         // Business options
         $options[] = ['value' => '1', 'label' => __('B2C')];
-        //$options[] = ['value' => '2', 'label' => __('B2B')];//@todo implement in future release
-        //$options[] = ['value' => '3', 'label' => __('Both')];//@todo implement in future release
+        $options[] = ['value' => '2', 'label' => __('B2B')];
+        $options[] = ['value' => '3', 'label' => __('Both')];
 
         return $options;
     }

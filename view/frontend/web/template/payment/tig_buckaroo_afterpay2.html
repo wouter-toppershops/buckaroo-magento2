@@ -107,9 +107,9 @@
                         </div>
                     </div>
 
-                    <!-- Show IBAN field when Acceptgiro (paymentMethod: 1) is activated in the backend (B2C only - businessMethod: 1) -->
+                    <!-- Show IBAN field when Acceptgiro (paymentMethod: 1) is activated in the backend-->
 
-                    <!-- ko if: paymentMethod == '1' && businessMethod == '1' -->
+                    <!-- ko if: paymentMethod == '1' -->
                     <div class="field required">
                         <label class="label" for="tig_buckaroo_afterpay2_IBAN"> <span data-bind="i18n: 'Bank Account Number:'"> </span> </label>
                         <div class="control">
@@ -182,36 +182,6 @@
                                        value: CompanyName,
                                        attr: { 'data-validate': JSON.stringify({ 'required': true, 'min-words': 1 })
                                         }">
-                        </div>
-                    </div>
-
-                    <div class="field required b2b-fields" >
-                        <label class="label" for="tig_buckaroo_afterpay2_CostCenter"> <span data-bind="i18n: 'Cost Center:'"> </span> </label>
-                        <div class="control">
-                            <input id="tig_buckaroo_afterpay2_CostCenter"
-                                   name="payment[tig_buckaroo_afterpay2][CostCenter]"
-                                   class="input-text field"
-                                   type="text"
-                                   data-bind="
-                                       valueUpdate: 'keyup',
-                                       value: CostCenter,
-                                       attr: { 'data-validate': JSON.stringify({ 'required': true , 'min-words': 1})
-                                        }">
-                        </div>
-                    </div>
-
-                    <div class="field required b2b-fields" >
-                        <label class="label" for="tig_buckaroo_afterpay2_VATNumber"> <span data-bind="i18n: 'VAT Number:'"> </span> </label>
-                        <div class="control">
-                            <input id="tig_buckaroo_afterpay2_VATNumber"
-                                   name="payment[tig_buckaroo_afterpay2][VATNumber]"
-                                   class="input-text field"
-                                   type="text"
-                                   data-bind="
-                                       valueUpdate: 'keyup',
-                                       value: VATNumber,
-                                       attr: { 'data-validate': JSON.stringify({ 'required': true, 'minlength': 14 })
-                                       }">
                         </div>
                     </div>
                     <!-- /ko -->
