@@ -75,6 +75,7 @@ class CartTotalRepository extends MagentoTotalRepository
      * @param CouponManagementInterface $couponService
      * @param TotalsConverter $totalsConverter
      * @param ItemConverter $converter
+     * @param ProductMetadataInterface $productMetadata
      */
     public function __construct(
         Api\Data\TotalsInterfaceFactory $totalsFactory,
