@@ -38,6 +38,7 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\Url;
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
@@ -61,6 +62,11 @@ class AllTest extends BaseTest
     protected $configProviderAccount;
 
     /**
+     * @var Url|\Mockery\MockInterface
+     */
+    protected $urlBuilderMock;
+
+    /**
      * Setup the required dependencies
      */
     public function setUp()
@@ -70,11 +76,13 @@ class AllTest extends BaseTest
         $this->order = m::mock('Magento\Sales\Model\Order');
         $this->order->shouldReceive('save');
         $this->configProviderAccount = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
+        $this->urlBuilderMock = m::mock(Url::class);
 
         $this->object = $this->objectManagerHelper->getObject(
             Order::class,
             [
-            'configProviderAccount' => $this->configProviderAccount,
+                'configProviderAccount' => $this->configProviderAccount,
+                'urlBuilder' => $this->urlBuilderMock
             ]
         );
     }
@@ -92,11 +100,16 @@ class AllTest extends BaseTest
         $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
         $this->configProviderAccount->shouldReceive('getOrderStatusNew')->andReturn(1);
 
+        $this->urlBuilderMock->shouldReceive('setScope')->andReturnSelf();
+        $this->urlBuilderMock->shouldReceive('getRouteUrl')->andReturnSelf();
+        $this->urlBuilderMock->shouldReceive('getDirectUrl')->andReturnSelf();
+
         $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->order->shouldReceive('getStore')->once();
         $this->order->shouldReceive('setState');
         $this->order->shouldReceive('setStatus');
+        $this->order->shouldReceive('getStoreId')->andReturn(1);
         $this->object->setOrder($this->order);
 
         return $this;
@@ -168,7 +181,8 @@ class AllTest extends BaseTest
         $this->object = $this->objectManagerHelper->getObject(
             Refund::class,
             [
-            'configProviderAccount' => $this->configProviderAccount,
+                'configProviderAccount' => $this->configProviderAccount,
+                'urlBuilder' => $this->urlBuilderMock
             ]
         );
 

@@ -388,7 +388,8 @@ abstract class AbstractTransactionBuilder implements \TIG\Buckaroo\Gateway\Http\
     public function getReturnUrl()
     {
         if ($this->returnUrl === null) {
-            $url = $this->urlBuilder->getRouteUrl('buckaroo/redirect/process');
+            $url = $this->urlBuilder->setScope($this->order->getStoreId());
+            $url = $url->getRouteUrl('buckaroo/redirect/process');
 
             $this->setReturnUrl($url);
         }
