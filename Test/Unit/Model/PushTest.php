@@ -214,11 +214,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 null,
                 false
             ],
-            'grouped type' => [
-                ['brq_transaction_type' => Push::BUCK_PUSH_GROUP_TRANSACTION_TYPE],
-                null,
-                Push::BUCK_PUSH_GROUP_TRANSACTION_TYPE
-            ],
             'invoice type' => [
                 ['brq_invoicekey' => 'send key', 'brq_schemekey' => 'scheme key'],
                 'saved key',
