@@ -36,13 +36,42 @@
                         <span class="text">
                             <?php echo $block->escapeHtml(__('Magento Commerce'));?>:
                         </span>
-                        <span class="version"> 2.0.17, 2.1.11, 2.2.2 </span>
+                        <span class="version"> 2.0.18, 2.1.12, 2.2.3 </span>
                     </li>
                     <li>
                         <span class="text">
                             <?php echo $block->escapeHtml(__('Magento Open Source'));?>:
                         </span>
-                        <span class="version"> 2.0.17, 2.1.11, 2.2.2 </span>
+                        <span class="version"> 2.0.18, 2.1.12, 2.2.3 </span>
+                    </li>
+
+                    <li>
+                        <span class="text"><?php echo $block->escapeHtml(__('Your PHP version'));?>:</span>
+                        <span class="version">
+                            <a href="http://devdocs.magento.com/guides/v<?php echo $this->getMagentoVersionTidyString() ;?>/install-gde/system-requirements-tech.html"
+                               target="_blank">
+                                <?php echo $block->escapeHtml(implode('.', $this->getPhpVersionArray())); ?>
+                                </a>
+                                &nbsp;
+                                <?php switch ($this->phpVersionCheck()) {
+                                    case 1:
+                                        echo '<img src="' . $this->getViewFileUrl(
+                                                'TIG_Buckaroo::images/green-ok.png'
+                                            ) . '" alt="">';
+                                        break;
+                                    case 0:
+                                        echo '<img src="' . $this->getViewFileUrl(
+                                                'TIG_Buckaroo::images/red-nok.png'
+                                            ) . '" alt="">';
+                                        break;
+                                    default:
+                                        echo '<img src="' . $this->getViewFileUrl(
+                                                'TIG_Buckaroo::images/orange-unknown.png'
+                                            ) . '" alt="">';
+                                        break;
+                                }
+                                ?>
+                        </span>
                     </li>
                     <li>
                         <span class="text"><?php echo $block->escapeHtml(__('Buckaroo version'));?>:</span>
