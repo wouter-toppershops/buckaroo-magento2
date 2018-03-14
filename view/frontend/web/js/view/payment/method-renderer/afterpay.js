@@ -123,12 +123,14 @@ define(
                     lastName: '',
                     CustomerName: null,
                     BillingName: null,
+                    country: '',
                     dateValidate: null,
                     CocNumber: null,
                     CompanyName:null,
                     CostCenter:null,
                     VATNumber:null,
                     bankaccountnumber: '',
+                    termsUrl: 'https://www.afterpay.nl/nl/klantenservice/betalingsvoorwaarden/',
                     termsValidate: false,
                     genderValidate: null
                 },
@@ -160,12 +162,14 @@ define(
                             'lastname',
                             'CustomerName',
                             'BillingName',
+                            'country',
                             'dateValidate',
                             'CocNumber',
                             'CompanyName',
                             'CostCenter',
                             'VATNumber',
                             'bankaccountnumber',
+                            'termsUrl',
                             'termsValidate',
                             'genderValidate',
                             'dummy'
@@ -193,18 +197,84 @@ define(
                         this.BillingName(this.CustomerName());
                     };
 
+                    this.updateTermsUrl = function(country) {
+                        this.country = country;
+                        var newUrl = '';
+
+                        switch (this.paymentMethod) {
+                            case PAYMENT_METHOD_ACCEPTGIRO:
+                                newUrl = getAcceptgiroUrl();
+                                break;
+                            case PAYMENT_METHOD_DIGIACCEPT:
+                                newUrl = getDigiacceptUrl();
+                                break;
+                            default:
+                                newUrl = 'https://www.afterpay.nl/nl/algemeen/betalen-met-afterpay/betalingsvoorwaarden';
+                                break;
+                        }
+
+                        this.termsUrl(newUrl);
+                    };
+
+                    var getAcceptgiroUrl = function() {
+                        if (this.country === 'NL') {
+                            return 'https://www.afterpay.nl/nl/algemeen/betalen-met-afterpay/betalingsvoorwaarden';
+                        }
+
+                        return 'https://www.afterpay.nl/nl/algemeen/betalen-met-afterpay/betalingsvoorwaarden';
+                    }.bind(this);
+
+                    var getDigiacceptUrl = function() {
+                        var businessMethod = getBusinessMethod();
+                        var url = 'https://www.afterpay.nl/nl/algemeen/betalen-met-afterpay/betalingsvoorwaarden';
+
+                        if (this.country === 'BE' && businessMethod == BUSINESS_METHOD_B2C) {
+                            url = 'https://www.afterpay.be/be/footer/betalen-met-afterpay/betalingsvoorwaarden';
+                        }
+
+                        if (this.country === 'NL' && businessMethod == BUSINESS_METHOD_B2C) {
+                            url = 'https://www.afterpay.nl/nl/algemeen/betalen-met-afterpay/betalingsvoorwaarden';
+                        }
+
+                        if (this.country === 'NL' && businessMethod == BUSINESS_METHOD_B2B) {
+                            url = 'https://www.afterpay.nl/nl/algemeen/zakelijke-partners/betalingsvoorwaarden-zakelijk';
+                        }
+
+                        return url;
+                    }.bind(this);
+
+                    var getBusinessMethod = function() {
+                        var businessMethod = BUSINESS_METHOD_B2C;
+
+                        if (this.businessMethod == BUSINESS_METHOD_B2B
+                            || (this.businessMethod == BUSINESS_METHOD_BOTH && this.selectedBusiness() == BUSINESS_METHOD_B2B)
+                        ) {
+                            businessMethod = BUSINESS_METHOD_B2B;
+                        }
+
+                        return businessMethod;
+                    }.bind(this);
+
                     if (quote.billingAddress()) {
                         this.updateBillingName(quote.billingAddress().firstname, quote.billingAddress().lastname);
+                        this.updateTermsUrl(quote.billingAddress().countryId);
                     }
 
                     quote.billingAddress.subscribe(
                         function(newAddress) {
-                            if (this.getCode() === this.isChecked() &&
-                                newAddress &&
-                                newAddress.getKey() &&
-                                (newAddress.firstname !== this.firstName || newAddress.lastname !== this.lastName)
+                            if (this.getCode() !== this.isChecked() ||
+                                !newAddress ||
+                                !newAddress.getKey()
                             ) {
+                                return;
+                            }
+
+                            if (newAddress.firstname !== this.firstName || newAddress.lastname !== this.lastName) {
                                 this.updateBillingName(newAddress.firstname, newAddress.lastname);
+                            }
+
+                            if (newAddress.countryId !== this.country) {
+                                this.updateTermsUrl(newAddress.countryId);
                             }
                         }.bind(this)
                     );
@@ -218,6 +288,12 @@ define(
                         self.selectedGender(value);
                         return true;
                     };
+
+                    var updateSelectedBusiness = function () {
+                        this.updateTermsUrl(this.country);
+                    };
+
+                    this.selectedBusiness.subscribe(updateSelectedBusiness, this);
 
                     /**
                      * Check if TelephoneNumber is filled in. If not - show field
@@ -395,6 +471,7 @@ define(
 
                     if (quote.billingAddress()) {
                         this.updateBillingName(quote.billingAddress().firstname, quote.billingAddress().lastname);
+                        this.updateTermsUrl(quote.billingAddress().countryId);
                     }
 
                     return true;
