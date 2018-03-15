@@ -78,7 +78,10 @@ class PayPerEmail extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        if (!$this->scopeConfig->getValue(self::XPATH_PAYPEREMAIL_ACTIVE)) {
+        if (!$this->scopeConfig->getValue(
+            static::XPATH_PAYPEREMAIL_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )) {
             return [];
         }
 

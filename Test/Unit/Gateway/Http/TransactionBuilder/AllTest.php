@@ -25,19 +25,20 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ * to servicedesk@tig.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\Url;
 use Mockery as m;
 use TIG\Buckaroo\Test\BaseTest;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
@@ -61,6 +62,11 @@ class AllTest extends BaseTest
     protected $configProviderAccount;
 
     /**
+     * @var Url|\Mockery\MockInterface
+     */
+    protected $urlBuilderMock;
+
+    /**
      * Setup the required dependencies
      */
     public function setUp()
@@ -70,11 +76,13 @@ class AllTest extends BaseTest
         $this->order = m::mock('Magento\Sales\Model\Order');
         $this->order->shouldReceive('save');
         $this->configProviderAccount = m::mock('\TIG\Buckaroo\Model\ConfigProvider\Account');
+        $this->urlBuilderMock = m::mock(Url::class);
 
         $this->object = $this->objectManagerHelper->getObject(
             Order::class,
             [
-            'configProviderAccount' => $this->configProviderAccount,
+                'configProviderAccount' => $this->configProviderAccount,
+                'urlBuilder' => $this->urlBuilderMock
             ]
         );
     }
@@ -92,11 +100,16 @@ class AllTest extends BaseTest
         $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
         $this->configProviderAccount->shouldReceive('getOrderStatusNew')->andReturn(1);
 
+        $this->urlBuilderMock->shouldReceive('setScope')->andReturnSelf();
+        $this->urlBuilderMock->shouldReceive('getRouteUrl')->andReturnSelf();
+        $this->urlBuilderMock->shouldReceive('getDirectUrl')->andReturnSelf();
+
         $this->order->shouldReceive('getIncrementId')->atLeast()->times(1)->andReturn($expected['Invoice']);
         $this->order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $this->order->shouldReceive('getStore')->once();
         $this->order->shouldReceive('setState');
         $this->order->shouldReceive('setStatus');
+        $this->order->shouldReceive('getStoreId')->andReturn(1);
         $this->object->setOrder($this->order);
 
         return $this;
@@ -168,7 +181,8 @@ class AllTest extends BaseTest
         $this->object = $this->objectManagerHelper->getObject(
             Refund::class,
             [
-            'configProviderAccount' => $this->configProviderAccount,
+                'configProviderAccount' => $this->configProviderAccount,
+                'urlBuilder' => $this->urlBuilderMock
             ]
         );
 

@@ -25,19 +25,22 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ * to servicedesk@tig.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 
+use Magento\Framework\Url;
+use Magento\Framework\UrlInterface;
+use Magento\Sales\Model\Order as MagentoOrder;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
 use TIG\Buckaroo\Test\BaseTest;
 
@@ -55,15 +58,24 @@ class OrderTest extends BaseTest
      */
     protected $configProviderAccount;
 
+    /**
+     * @var Url|\Mockery\MockInterface
+     */
+    protected $urlBuilderMock;
+
     public function setUp()
     {
         parent::setUp();
 
         $this->configProviderAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
+        $this->urlBuilderMock = \Mockery::mock(Url::class);
 
         $this->object = $this->objectManagerHelper->getObject(
             Order::class,
-            ['configProviderAccount' => $this->configProviderAccount]
+            [
+                'configProviderAccount' => $this->configProviderAccount,
+                'urlBuilder' => $this->urlBuilderMock
+            ]
         );
     }
 
@@ -96,12 +108,17 @@ class OrderTest extends BaseTest
         $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
         $this->configProviderAccount->shouldReceive('getOrderStatusNew')->andReturn(1);
 
-        $order = \Mockery::mock(\Magento\Sales\Model\Order::class);
+        $this->urlBuilderMock->shouldReceive('setScope')->andReturnSelf();
+        $this->urlBuilderMock->shouldReceive('getRouteUrl')->andReturnSelf();
+        $this->urlBuilderMock->shouldReceive('getDirectUrl')->andReturnSelf();
+
+        $order = \Mockery::mock(MagentoOrder::class);
         $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
         $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
         $order->shouldReceive('getStore')->once();
         $order->shouldReceive('setState')->once();
         $order->shouldReceive('setStatus')->once();
+        $order->shouldReceive('getStoreId')->andReturn(1);
         $order->shouldReceive('save');
 
         $this->object->setOrder($order);
@@ -227,6 +244,56 @@ class OrderTest extends BaseTest
         $instance->setServices($service);
 
         $result = $this->invokeArgs('filterBody', [$body], $instance);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * @return array
+     */
+    public function getReturnUrlProvider()
+    {
+        return [
+            'instance has no return url' => [
+                null,
+                'tig.nl',
+                'tig.nl'
+            ],
+            'instance has return url' => [
+                'magento.com',
+                'google.com',
+                'magento.com'
+            ]
+        ];
+    }
+
+    /**
+     * @param $existingUrl
+     * @param $generatedUrl
+     * @param $expected
+     *
+     * @dataProvider getReturnUrlProvider
+     */
+    public function testGetReturnUrl($existingUrl, $generatedUrl, $expected)
+    {
+        $methodIsCalled = (int)!((bool)$existingUrl);
+
+        $orderMock = $this->getFakeMock(MagentoOrder::class)->setMethods(['getStoreId'])->getMock();
+        $orderMock->expects($this->exactly($methodIsCalled))->method('getStoreId')->willReturn(1);
+
+        $urlBuilderMock = $this->getFakeMock(UrlInterface::class)
+            ->setMethods(['setScope', 'getRouteUrl'])
+            ->getMockForAbstractClass();
+        $urlBuilderMock->expects($this->exactly($methodIsCalled))->method('setScope')->with(1)->willReturnSelf();
+        $urlBuilderMock->expects($this->exactly($methodIsCalled*2))
+            ->method('getRouteUrl')
+            ->withConsecutive(['buckaroo/redirect/process'], [$generatedUrl])
+            ->willReturn($generatedUrl);
+
+        $instance = $this->getInstance(['urlBuilder' => $urlBuilderMock]);
+        $this->setProperty('order', $orderMock, $instance);
+        $this->setProperty('returnUrl', $existingUrl, $instance);
+
+        $result = $instance->getReturnUrl();
         $this->assertEquals($expected, $result);
     }
 }

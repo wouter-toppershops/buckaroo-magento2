@@ -25,19 +25,22 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ * to servicedesk@tig.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
+
+use TIG\Buckaroo\Model\Config\Source\AfterpayPaymentMethods;
+use TIG\Buckaroo\Model\Config\Source\Business;
 
 /**
  * @method getDueDate()
@@ -73,7 +76,10 @@ class Afterpay extends AbstractConfigProvider
      */
     public function getConfig()
     {
-        if (!$this->scopeConfig->getValue(self::XPATH_AFTERPAY_ACTIVE)) {
+        if (!$this->scopeConfig->getValue(
+            static::XPATH_AFTERPAY_ACTIVE,
+            \Magento\Store\Model\ScopeInterface::SCOPE_STORE
+        )) {
             return [];
         }
 
@@ -108,6 +114,13 @@ class Afterpay extends AbstractConfigProvider
             self::XPATH_AFTERPAY_BUSINESS,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+
+        $paymentMethod = $this->getPaymentMethod();
+
+        // Acceptgiro payment method is ALWAYS B2C
+        if ($paymentMethod == AfterpayPaymentMethods::PAYMENT_METHOD_ACCEPTGIRO) {
+            $business = Business::BUSINESS_B2C;
+        }
 
         return $business ? $business : false;
     }

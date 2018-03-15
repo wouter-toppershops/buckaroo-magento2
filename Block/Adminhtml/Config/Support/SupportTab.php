@@ -25,15 +25,15 @@
  * It is available through the world-wide-web at this URL:
  * http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  * If you are unable to obtain it through the world-wide-web, please send an email
- * to servicedesk@totalinternetgroup.nl so we can send you a copy immediately.
+ * to servicedesk@tig.nl so we can send you a copy immediately.
  *
  * DISCLAIMER
  *
  * Do not edit or add to this file if you wish to upgrade this module to newer
  * versions in the future. If you wish to customize this module for your
- * needs please contact servicedesk@totalinternetgroup.nl for more information.
+ * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.totalinternetgroup.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Block\Adminhtml\Config\Support;
 
 use Magento\Framework\Data\Form\Element\AbstractElement;
 use Magento\Framework\Data\Form\Element\Renderer\RendererInterface;
+use Magento\Framework\App\ProductMetadataInterface;
 
 class SupportTab extends \Magento\Framework\View\Element\Template implements RendererInterface
 {
@@ -48,26 +49,41 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
     protected $_template = 'supportTab.phtml';
     // @codingStandardsIgnoreEnd
 
+    /** @var array  */
+    protected $phpVersionSupport = ['2.0' => ['5.5' => ['22','+'],'5.6' => ['+'],'7.0' => ['2', '6', '+']],
+                                    '2.1' => ['5.6' => ['5', '+'],'7.0' => ['2', '5', '6', '+']],
+                                    '2.2' => ['7.0' => ['2', '5', '6', '+'],'7.1' => ['+']],
+                                    '2.3' => ['7.0' => ['2', '5', '6', '+'],'7.1' => ['+']]
+                                ];
+
     /**
      * @var \Magento\Framework\Setup\ModuleContextInterface
      */
     protected $moduleContext;
 
     /**
+     * @var \Magento\Framework\App\ProductMetadataInterface
+     */
+    protected $productMetadata;
+
+    /**
      * Override the parent constructor to require our own dependencies.
      *
      * @param \Magento\Framework\View\Element\Template\Context $context
      * @param \Magento\Framework\Module\ModuleResource         $moduleContext
+     * @param ProductMetadataInterface                         $productMetadata
      * @param array                                            $data
      */
     public function __construct(
         \Magento\Framework\View\Element\Template\Context $context,
         \Magento\Framework\Module\ModuleResource $moduleContext,
+        ProductMetadataInterface $productMetadata,
         array $data = []
     ) {
         parent::__construct($context, $data);
 
         $this->moduleContext = $moduleContext;
+        $this->productMetadata = $productMetadata;
     }
 
     /**
@@ -95,5 +111,85 @@ class SupportTab extends \Magento\Framework\View\Element\Template implements Ren
         $version = $this->moduleContext->getDbVersion('TIG_Buckaroo');
 
         return $version;
+    }
+
+    /**
+     * @return bool|int
+     */
+    public function phpVersionCheck()
+    {
+        $magentoVersion = $this->getMagentoVersionArray();
+        $phpVersion = $this->getPhpVersionArray();
+
+        if (!is_array($magentoVersion) || !is_array($phpVersion)) {
+            return -1;
+        }
+
+        $magentoMajorMinor = $magentoVersion[0] . '.' . $magentoVersion[1];
+        $phpMajorMinor = $phpVersion[0] . '.' . $phpVersion[1];
+        $phpPatch = (int) $phpVersion[2];
+
+        if (!isset($this->phpVersionSupport[$magentoMajorMinor]) ||
+            !isset($this->phpVersionSupport[$magentoMajorMinor][$phpMajorMinor])) {
+            return 0;
+        }
+
+        $currentVersion = $this->phpVersionSupport[$magentoMajorMinor][$phpMajorMinor];
+        if (isset($currentVersion)) {
+
+            if (in_array($phpPatch, $currentVersion)) {
+                return true;
+            }
+            elseif(in_array('+', $currentVersion) && $phpPatch >= max($currentVersion)){
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        return -1;
+    }
+
+    public function getPhpVersionArray()
+    {
+        $version = false;
+        if (defined('PHP_VERSION')) {
+            $version = explode('.', PHP_VERSION);
+        }
+        elseif (function_exists('phpversion')){
+            $version = explode('.', phpversion());
+        }
+
+        return $version;
+    }
+
+    /**
+     * @return array|bool
+     */
+    public function getMagentoVersionArray()
+    {
+        $version = false;
+        $currentVersion = $this->productMetadata->getVersion();
+
+        if (isset($currentVersion)) {
+            $version = explode('.', $currentVersion);
+        }
+
+        return $version;
+    }
+
+    /**
+     * @return array|bool
+     */
+    public function getMagentoVersionTidyString()
+    {
+        $magentoVersion = $this->getMagentoVersionArray();
+
+        if (is_array($magentoVersion)) {
+            return $magentoVersion[0] . '.' . $magentoVersion[1];
+        }
+
+        return false;
     }
 }

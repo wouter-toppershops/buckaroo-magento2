@@ -33,7 +33,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2016 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model;
@@ -214,11 +214,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 null,
                 false
             ],
-            'grouped type' => [
-                ['brq_transaction_type' => Push::BUCK_PUSH_GROUP_TRANSACTION_TYPE],
-                null,
-                Push::BUCK_PUSH_GROUP_TRANSACTION_TYPE
-            ],
             'invoice type' => [
                 ['brq_invoicekey' => 'send key', 'brq_schemekey' => 'scheme key'],
                 'saved key',
@@ -255,7 +250,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $paymentMock->method('setAdditionalInformation');
 
         $orderMock = $this->getFakeMock(Order::class)->setMethods(['getPayment', 'getGrandTotal'])->getMock();
-        $orderMock->expects($this->once())->method('getPayment')->willReturn($paymentMock);
+        $orderMock->expects($this->atLeastOnce())->method('getPayment')->willReturn($paymentMock);
         $orderMock->method('getGrandTotal')->willReturn($orderAmount);
 
         $this->object->order = $orderMock;

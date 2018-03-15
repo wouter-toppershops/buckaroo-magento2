@@ -33,7 +33,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
@@ -252,8 +252,6 @@ class Afterpay2 extends AbstractMethod
             ) {
                 $this->getInfoInstance()->setAdditionalInformation('COCNumber', $additionalData['COCNumber']);
                 $this->getInfoInstance()->setAdditionalInformation('CompanyName', $additionalData['CompanyName']);
-                $this->getInfoInstance()->setAdditionalInformation('CostCenter', $additionalData['CostCenter']);
-                $this->getInfoInstance()->setAdditionalInformation('VATNumber', $additionalData['VATNumber']);
                 $this->getInfoInstance()->setAdditionalInformation(
                     'selectedBusiness',
                     $additionalData['selectedBusiness']
@@ -596,14 +594,6 @@ class Afterpay2 extends AbstractMethod
                 [
                     '_'    => $payment->getAdditionalInformation('CompanyName'),
                     'Name' => 'CompanyName'
-                ],
-                [
-                    '_'    => $payment->getAdditionalInformation('CostCenter'),
-                    'Name' => 'CostCentre'
-                ],
-                [
-                    '_'    => $payment->getAdditionalInformation('VATNumber'),
-                    'Name' => 'VatNumber'
                 ],
             ];
         } else {

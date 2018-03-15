@@ -36,13 +36,41 @@
                         <span class="text">
                             <?php echo $block->escapeHtml(__('Magento Commerce'));?>:
                         </span>
-                        <span class="version"> 2.0.17, 2.1.11, 2.2.2 </span>
+                        <span class="version"> 2.0.18, 2.1.12, 2.2.3 </span>
                     </li>
                     <li>
                         <span class="text">
                             <?php echo $block->escapeHtml(__('Magento Open Source'));?>:
                         </span>
-                        <span class="version"> 2.0.17, 2.1.11, 2.2.2 </span>
+                        <span class="version"> 2.0.18, 2.1.12, 2.2.3 </span>
+                    </li>
+
+                    <li>
+                        <span class="text"><?php echo $block->escapeHtml(__('Your PHP version'));?>:</span>
+                        <span class="version">
+                            <a href="http://devdocs.magento.com/guides/v<?php echo $this->getMagentoVersionTidyString() ;?>/install-gde/system-requirements-tech.html"
+                               target="_blank">
+                                <?php echo $block->escapeHtml(implode('.', $this->getPhpVersionArray())); ?>
+                                </a>
+                                <?php switch ($this->phpVersionCheck()) {
+                                    case 1:
+                                        echo '<img class="php-check-icon" src="' . $this->getViewFileUrl(
+                                                'TIG_Buckaroo::images/green-ok.png'
+                                            ) . '" alt="">';
+                                        break;
+                                    case 0:
+                                        echo '<img class="php-check-icon" src="' . $this->getViewFileUrl(
+                                                'TIG_Buckaroo::images/red-nok.png'
+                                            ) . '" alt="">';
+                                        break;
+                                    default:
+                                        echo '<img class="php-check-icon" src="' . $this->getViewFileUrl(
+                                                'TIG_Buckaroo::images/orange-unknown.png'
+                                            ) . '" alt="">';
+                                        break;
+                                }
+                                ?>
+                        </span>
                     </li>
                     <li>
                         <span class="text"><?php echo $block->escapeHtml(__('Buckaroo version'));?>:</span>
@@ -109,8 +137,20 @@
 
                 <li class="tig_logo">
                     <a href="http://www.tig.nl/" target="_blank">
-                        <img src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/logo_tig.png'); ?>" alt="" />
+                        <img class="tig_logo_img" src="<?php echo $this->getViewFileUrl('TIG_Buckaroo::images/logo_tig.png'); ?>" alt="" />
                     </a>
+                    <div class="tig_logo_link_container">
+                        <a class="tig_logo_link" target="_blank" href="https://www.tig.nl/extensies"><?php echo __('Extensions'); ?></a>
+                        <a class="tig_logo_link" target="_blank" href="https://www.tig.nl/webshops"><?php echo __('Webshops'); ?> </a>
+                        <a class="tig_logo_link" target="_blank" href="https://www.tig.nl/commerce"><?php echo __('Commerce'); ?></a>
+                    </div>
+                    <div style="clear:both"></div>
+
+                    <style>
+                        .tig_logo_img { float:left; }
+                        .tig_logo_link_container { float:left; width: calc(100% - 50px); }
+                        .tig_logo_link { line-height: 50px; margin-left: 15px; }
+                    </style>
                 </li>
                 <li class="first"><?php echo $block->escapeHtml(__('Online documentation and FAQ:'));?></li>
                 <li class="last">
@@ -128,12 +168,8 @@
                 </li>
             </ul>
             <ul>
-                <li class="first"><?php echo $block->escapeHtml(__('Support by email:'));?></li>
-                <li class="last"><a href="mailto:servicedesk@tig.nl">servicedesk@tig.nl</a></li>
-            </ul>
-            <ul>
                 <li class="first"><?php echo $block->escapeHtml(__('Website'));?></li>
-                <li class="last"><a href="https://www.tig.nl/" target="_blank">www.tig.nl</a></li>
+                <li class="last"><a href="https://www.tig.nl/" target="_blank">tig.nl</a></li>
             </ul>
         </div>
     </div>
