@@ -39,6 +39,9 @@
 
 namespace TIG\Buckaroo\Model\ConfigProvider\Method;
 
+use TIG\Buckaroo\Model\Config\Source\Afterpay2PaymentMethods;
+use TIG\Buckaroo\Model\Config\Source\Business;
+
 /**
  * @method getDueDate()
  * @method getSendEmail()
@@ -111,6 +114,13 @@ class Afterpay2 extends AbstractConfigProvider
             self::XPATH_AFTERPAY2_BUSINESS,
             \Magento\Store\Model\ScopeInterface::SCOPE_STORE
         );
+
+        $paymentMethod = $this->getPaymentMethod();
+
+        // Acceptgiro payment method is ALWAYS B2C
+        if ($paymentMethod == Afterpay2PaymentMethods::PAYMENT_METHOD_ACCEPTGIRO) {
+            $business = Business::BUSINESS_B2C;
+        }
 
         return $business ? $business : false;
     }

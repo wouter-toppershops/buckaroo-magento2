@@ -83,7 +83,8 @@ class CreditcardTest extends BaseTest
             ->once()
             ->withArgs(
                 [
-                    Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS
+                    Creditcard::XPATH_CREDITCARD_ALLOWED_CREDITCARDS,
+                    \Magento\Store\Model\ScopeInterface::SCOPE_STORE
                 ]
             )
             ->andReturn($issuers);

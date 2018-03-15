@@ -46,6 +46,9 @@ namespace TIG\Buckaroo\Model\Config\Source;
  */
 class Afterpay2PaymentMethods implements \Magento\Framework\Option\ArrayInterface
 {
+    const PAYMENT_METHOD_ACCEPTGIRO = 1;
+    const PAYMENT_METHOD_DIGIACCEPT = 2;
+
     /**
      * Options getter
      *
@@ -56,8 +59,8 @@ class Afterpay2PaymentMethods implements \Magento\Framework\Option\ArrayInterfac
         $options = [];
 
         // These are the paymethods available at Afterpay
-        $options[] = ['value' => '1', 'label' => __('Acceptgiro')];
-        $options[] = ['value' => '2', 'label' => __('Digiaccept')];
+        $options[] = ['value' => self::PAYMENT_METHOD_ACCEPTGIRO, 'label' => __('Acceptgiro')];
+        $options[] = ['value' => self::PAYMENT_METHOD_DIGIACCEPT, 'label' => __('Digiaccept')];
 
         return $options;
     }

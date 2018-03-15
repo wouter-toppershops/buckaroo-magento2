@@ -80,7 +80,9 @@ class GiftcardsTest extends BaseTest
      */
     public function testGetConfig()
     {
-        $this->scopeConfig->shouldReceive('getValue')->with('payment/tig_buckaroo_giftcards/active')->andReturn(true);
+        $this->scopeConfig->shouldReceive('getValue')
+            ->with('payment/tig_buckaroo_giftcards/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE)
+            ->andReturn(true);
         $this->scopeConfig->shouldReceive('getValue')->andReturn(false);
 
         $result = $this->object->getConfig();

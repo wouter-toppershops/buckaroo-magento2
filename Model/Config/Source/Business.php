@@ -46,6 +46,10 @@ namespace TIG\Buckaroo\Model\Config\Source;
  */
 class Business implements \Magento\Framework\Option\ArrayInterface
 {
+    const BUSINESS_B2C = 1;
+    const BUSINESS_B2B = 2;
+    const BUSINESS_BOTH = 3;
+
     /**
      * Options getter
      *
@@ -56,9 +60,9 @@ class Business implements \Magento\Framework\Option\ArrayInterface
         $options = [];
 
         // Business options
-        $options[] = ['value' => '1', 'label' => __('B2C')];
-        $options[] = ['value' => '2', 'label' => __('B2B')];
-        $options[] = ['value' => '3', 'label' => __('Both')];
+        $options[] = ['value' => self::BUSINESS_B2C, 'label' => __('B2C')];
+        $options[] = ['value' => self::BUSINESS_B2B, 'label' => __('B2B')];
+        $options[] = ['value' => self::BUSINESS_BOTH, 'label' => __('Both')];
 
         return $options;
     }
