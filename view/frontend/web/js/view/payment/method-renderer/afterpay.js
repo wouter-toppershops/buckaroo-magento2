@@ -32,7 +32,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 /*browser:true*/
@@ -126,8 +126,6 @@ define(
                     dateValidate: null,
                     CocNumber: null,
                     CompanyName:null,
-                    CostCenter:null,
-                    VATNumber:null,
                     bankaccountnumber: '',
                     termsValidate: false,
                     genderValidate: null
@@ -163,8 +161,6 @@ define(
                             'dateValidate',
                             'CocNumber',
                             'CompanyName',
-                            'CostCenter',
-                            'VATNumber',
                             'bankaccountnumber',
                             'termsValidate',
                             'genderValidate',
@@ -246,8 +242,6 @@ define(
                     this.dateValidate.subscribe(runValidation,this);
                     this.CocNumber.subscribe(runValidation,this);
                     this.CompanyName.subscribe(runValidation,this);
-                    this.CostCenter.subscribe(runValidation,this);
-                    this.VATNumber.subscribe(runValidation,this);
                     this.bankaccountnumber.subscribe(runValidation,this);
                     this.termsValidate.subscribe(runValidation,this);
                     this.genderValidate.subscribe(runValidation,this);
@@ -284,8 +278,6 @@ define(
                         this.dateValidate() !== null &&
                         this.CocNumber() !== null &&
                         this.CompanyName() !== null &&
-                        this.CostCenter() !== null &&
-                        this.VATNumber() !== null &&
                         this.termsValidate() !== false &&
                         this.genderValidate() !== null &&
                         this.validate()
@@ -304,8 +296,6 @@ define(
                             this.termsValidate();
                             this.CocNumber();
                             this.CompanyName();
-                            this.CostCenter();
-                            this.VATNumber();
                             this.genderValidate();
                             this.dummy();
                             additionalValidators.validate();
@@ -412,6 +402,12 @@ define(
                 },
 
                 getData: function () {
+                    var business = this.businessMethod;
+
+                    if (business == BUSINESS_METHOD_BOTH) {
+                        business = this.selectedBusiness();
+                    }
+
                     return {
                         "method": this.item.method,
                         "po_number": null,
@@ -421,11 +417,9 @@ define(
                             "customer_DoB" : this.dateValidate(),
                             "customer_iban": this.bankaccountnumber(),
                             "termsCondition" : this.termsValidate(),
-                            "VATNumber" : this.VATNumber(),
-                            "CostCenter" : this.CostCenter(),
                             "CompanyName" : this.CompanyName(),
                             "COCNumber" : this.CocNumber(),
-                            "selectedBusiness" : this.selectedBusiness()
+                            "selectedBusiness" : business
                         }
                     };
                 }

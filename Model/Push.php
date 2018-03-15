@@ -34,7 +34,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license   http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 
@@ -57,7 +57,6 @@ use TIG\Buckaroo\Model\Method\Transfer;
 use TIG\Buckaroo\Model\Method\Paypal;
 use TIG\Buckaroo\Model\Method\SepaDirectDebit;
 use TIG\Buckaroo\Model\Method\Sofortbanking;
-use TIG\Buckaroo\Model\OrderStatusFactory;
 use TIG\Buckaroo\Model\Refund\Push as RefundPush;
 use TIG\Buckaroo\Model\Validator\Push as ValidatorPush;
 
@@ -70,7 +69,6 @@ class Push implements PushInterface
 {
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
-    const BUCK_PUSH_GROUP_TRANSACTION_TYPE = 'I150';
 
     const BUCK_PUSH_TYPE_TRANSACTION = 'transaction_push';
     const BUCK_PUSH_TYPE_INVOICE     = 'invoice_push';
@@ -209,12 +207,7 @@ class Push implements PushInterface
 
         $this->loadOrder();
 
-        //Skip informational messages for group processing giftcards
         $transactionType = $this->getTransactionType();
-
-        if ($transactionType == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE) {
-            return;
-        }
 
         //Validate status code and return response
         $postDataStatusCode = $this->getStatusCode();
@@ -329,12 +322,6 @@ class Push implements PushInterface
      */
     public function getTransactionType()
     {
-        if (isset($this->postData['brq_transaction_type'])
-            && $this->postData['brq_transaction_type'] == self::BUCK_PUSH_GROUP_TRANSACTION_TYPE
-        ) {
-            return self::BUCK_PUSH_GROUP_TRANSACTION_TYPE;
-        }
-
         //If an order has an invoice key, then it should only be processed by invoice pushes
         $savedInvoiceKey = $this->order->getPayment()->getAdditionalInformation('buckaroo_cm3_invoice_key');
 
@@ -526,7 +513,35 @@ class Push implements PushInterface
             $this->postData['brq_relatedtransaction_partialpayment']
         );
 
+        $this->addGiftcardPartialPaymentToPaymentInformation();
+
         return true;
+    }
+
+    protected function addGiftcardPartialPaymentToPaymentInformation()
+    {
+        $payment = $this->order->getPayment();
+
+        $transactionAmount =  (isset($this->postData['brq_amount'])) ? $this->postData['brq_amount'] : 0;
+        $transactionKey =  (isset($this->postData['brq_transactions'])) ? $this->postData['brq_transactions'] : '';
+        $transactionMethod = (isset($this->postData['brq_transaction_method'])) ? $this->postData['brq_transaction_method'] : '';
+
+        $transactionData = $payment->getAdditionalInformation(AbstractMethod::BUCKAROO_ALL_TRANSACTIONS);
+
+        $transactionArray = [];
+        if (count($transactionData) > 0) {
+            $transactionArray = $transactionData;
+        }
+
+        if (!empty($transactionKey) && $transactionAmount > 0) {
+            $transactionArray[$transactionKey] = [$transactionMethod, $transactionAmount];
+
+            $payment->setAdditionalInformation(
+                AbstractMethod::BUCKAROO_ALL_TRANSACTIONS,
+                $transactionArray
+            );
+        }
+
     }
 
     /**

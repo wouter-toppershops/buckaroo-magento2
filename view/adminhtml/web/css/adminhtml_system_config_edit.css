@@ -243,6 +243,13 @@
     width: 100%;
 }
 
+.php-check-icon {
+    height: 16px;
+    width: 16px;
+    position: absolute;
+    right: 15px;
+    margin-top: 5px;
+}
 
 @media screen and (min-width: 1200px){
     .block-version {

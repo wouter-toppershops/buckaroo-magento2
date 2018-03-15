@@ -34,7 +34,7 @@
  * versions in the future. If you wish to customize this module for your
  * needs please contact servicedesk@tig.nl for more information.
  *
- * @copyright   Copyright (c) 2015 Total Internet Group B.V. (http://www.tig.nl)
+ * @copyright   Copyright (c) Total Internet Group B.V. https://tig.nl/copyright
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
  -->
@@ -342,6 +342,12 @@
                 <item name="tig_buckaroo_configprovider_refund" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\Refund</item>
                 <item name="tig_buckaroo_configprovider_states" xsi:type="object">TIG\Buckaroo\Model\ConfigProvider\States</item>
             </argument>
+        </arguments>
+    </type>
+
+    <type name="TIG\Buckaroo\Gateway\Http\TransactionBuilder\AbstractTransactionBuilder">
+        <arguments>
+            <argument name="urlBuilder" xsi:type="object">Magento\Framework\Url</argument>
         </arguments>
     </type>
 </config>
