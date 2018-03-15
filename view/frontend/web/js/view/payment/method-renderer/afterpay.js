@@ -402,6 +402,12 @@ define(
                 },
 
                 getData: function () {
+                    var business = this.businessMethod;
+
+                    if (business == BUSINESS_METHOD_BOTH) {
+                        business = this.selectedBusiness();
+                    }
+
                     return {
                         "method": this.item.method,
                         "po_number": null,
@@ -413,7 +419,7 @@ define(
                             "termsCondition" : this.termsValidate(),
                             "CompanyName" : this.CompanyName(),
                             "COCNumber" : this.CocNumber(),
-                            "selectedBusiness" : this.selectedBusiness()
+                            "selectedBusiness" : business
                         }
                     };
                 }
