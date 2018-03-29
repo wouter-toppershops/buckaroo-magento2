@@ -121,6 +121,7 @@ define(
                     bankaccountholder: '',
                     bankaccountnumber: '',
                     bicnumber: '',
+                    isnl: false,
                     minimumWords: 2
                 },
                 paymentFeeLabel : window.checkoutConfig.payment.buckaroo.sepadirectdebit.paymentFeeLabel,
@@ -140,22 +141,34 @@ define(
                 },
 
                 initObservable: function () {
-                    this._super().observe(['bankaccountholder', 'bankaccountnumber', 'bicnumber', 'minimumWords']);
+                    this._super().observe(['bankaccountholder', 'bankaccountnumber', 'bicnumber', 'minimumWords', 'isnl']);
 
                     /**
                      * check if country is NL, if so load: bank account number | ifnot load: bicnumber
                      */
-                    this.isnl = ko.computed(
-                        function () {
-                            var address = quote.billingAddress();
+                    this.updateIsNl = function(address) {
+                        var isnlComputed = ko.computed(
+                            function () {
+                                if (address === null) {
+                                    return false;
+                                }
 
-                            if (address === null) {
-                                return false;
+                                return address.countryId == 'NL';
+                            },
+                            this
+                        );
+
+                        this.isnl(isnlComputed());
+                    };
+
+                    this.updateIsNl(quote.billingAddress());
+
+                    quote.billingAddress.subscribe(
+                        function (newAddress) {
+                            if (this.getCode() === this.isChecked() && newAddress && newAddress.getKey()) {
+                                this.updateIsNl(newAddress);
                             }
-
-                            return address.countryId == 'NL';
-                        },
-                        this
+                        }.bind(this)
                     );
 
                     /**
