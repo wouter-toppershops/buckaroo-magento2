@@ -257,6 +257,13 @@ class Afterpay2 extends AbstractMethod
                     $additionalData['selectedBusiness']
                 );
             }
+
+            if (isset($additionalData['customer_telephone'])) {
+                $this->getInfoInstance()->setAdditionalInformation(
+                    'customer_telephone',
+                    $additionalData['customer_telephone']
+                );
+            }
         }
 
         return $this;
@@ -1120,6 +1127,8 @@ class Afterpay2 extends AbstractMethod
         $streetFormat   = $this->formatStreet($billingAddress->getStreet());
 
         $birthDayStamp = str_replace('/', '-', $payment->getAdditionalInformation('customer_DoB'));
+        $telephone = $payment->getAdditionalInformation('customer_telephone');
+        $telephone = (empty($telephone) ? $billingAddress->getTelephone() : $telephone);
 
         $billingData = [
             [
@@ -1163,7 +1172,7 @@ class Afterpay2 extends AbstractMethod
                 'Name' => 'BillingEmail',
             ],
             [
-                '_'    => $billingAddress->getTelephone(),
+                '_'    => $telephone,
                 'Name' => 'BillingPhoneNumber',
             ],
             [
