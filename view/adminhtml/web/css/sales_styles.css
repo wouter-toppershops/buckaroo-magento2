@@ -40,6 +40,7 @@
 
 .tig_buckaroo_payment_paypal,
 .tig_buckaroo_payment_ideal,
+.tig_buckaroo_payment_idealprocessing,
 .tig_buckaroo_payment_creditcard,
 .tig_buckaroo_payment_sepadirectdebit,
 .tig_buckaroo_payment_transfer,
@@ -92,7 +93,8 @@
 }
 
 /* iDeal */
-.tig_buckaroo_payment_ideal:before {
+.tig_buckaroo_payment_ideal:before,
+.tig_buckaroo_payment_idealprocessing:before {
     background: url(../images/tig_buckaroo_ideal_title.png) no-repeat;
     float: left;
     margin-right: 10px;

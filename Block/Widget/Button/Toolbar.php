@@ -52,6 +52,7 @@ class Toolbar
         'tig_buckaroo_payperemail',
         'tig_buckaroo_creditcard',
         'tig_buckaroo_ideal',
+        'tig_buckaroo_idealprocessing',
         'tig_buckaroo_mrcash',
         'tig_buckaroo_paypal',
         'tig_buckaroo_sepadirectdebit',

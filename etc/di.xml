@@ -172,6 +172,10 @@
                     <item name="type" xsi:type="string">ideal</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Ideal</item>
                 </item>
+                <item name="idealprocessing" xsi:type="array">
+                    <item name="type" xsi:type="string">idealprocessing</item>
+                    <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\IdealProcessing</item>
+                </item>
                 <item name="creditcard" xsi:type="array">
                     <item name="type" xsi:type="string">creditcard</item>
                     <item name="model" xsi:type="string">TIG\Buckaroo\Model\ConfigProvider\Method\Creditcard</item>
