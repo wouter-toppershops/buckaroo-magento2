@@ -10,9 +10,10 @@ define(
         'mage/url',
         'Magento_Checkout/js/model/error-processor',
         'Magento_Customer/js/model/customer',
-        'Magento_Checkout/js/model/full-screen-loader'
+        'Magento_Checkout/js/model/full-screen-loader',
+        'Magento_CheckoutAgreements/js/model/agreements-assigner'
     ],
-    function (quote, urlBuilder, storage, url, errorProcessor, customer, fullScreenLoader) {
+    function (quote, urlBuilder, storage, url, errorProcessor, customer, fullScreenLoader, agreementsAssigner) {
         'use strict';
 
         return function (paymentData, redirectOnSuccess, messageContainer) {
@@ -20,6 +21,7 @@ define(
                 payload;
 
             redirectOnSuccess = redirectOnSuccess !== false;
+            agreementsAssigner(paymentData);
 
             /**
              * Checkout for guest and registered customer.
