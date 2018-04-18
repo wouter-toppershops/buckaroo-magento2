@@ -193,11 +193,7 @@ class Push implements PushInterface
      */
     public function receivePush()
     {
-        //Set original postdata before setting it to case lower.
-        $this->originalPostData = $this->request->getParams();
-
-        //Create post data array, change key values to lower case.
-        $this->postData = array_change_key_case($this->request->getParams(), CASE_LOWER);
+        $this->getPostData();
 
         //Start debug mailing/logging with the postdata.
         $this->logging->addDebug(print_r($this->originalPostData, true));
@@ -261,6 +257,25 @@ class Push implements PushInterface
         $this->order->save();
 
         return true;
+    }
+
+    /**
+     * Get and store the postdata parameters
+     */
+    private function getPostData()
+    {
+        $postData = $this->request->getPostValue();
+
+        /** Magento may adds the SID session parameter, depending on the store configuration.
+         * We don't need or want to use this parameter, so remove it from the retrieved post data. */
+        unset($postData['SID']);
+
+        //Set original postdata before setting it to case lower.
+        $this->originalPostData = $postData;
+
+        //Create post data array, change key values to lower case.
+        $postDataLowerCase = array_change_key_case($postData, CASE_LOWER);
+        $this->postData = $postDataLowerCase;
     }
 
     /**
