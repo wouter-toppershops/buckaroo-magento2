@@ -315,6 +315,7 @@ define(
                         additionalValidators.validate();
                     };
 
+                    this.telephoneNumber.subscribe(runValidation,this);
                     this.dateValidate.subscribe(runValidation,this);
                     this.CocNumber.subscribe(runValidation,this);
                     this.CompanyName.subscribe(runValidation,this);
@@ -331,6 +332,7 @@ define(
 
                     var checkB2C = function () {
                         return (
+                        (this.telephoneNumber() !== null || this.hasTelephoneNumber) &&
                         this.selectedGender() !== null &&
                         this.BillingName() !== null &&
                         this.dateValidate() !== null &&
@@ -349,6 +351,7 @@ define(
 
                     var checkB2B = function () {
                         return (
+                        (this.telephoneNumber() !== null || this.hasTelephoneNumber) &&
                         this.selectedGender() !== null &&
                         this.BillingName() !== null &&
                         this.dateValidate() !== null &&
@@ -365,6 +368,7 @@ define(
                      */
                     this.buttoncheck = ko.computed(
                         function () {
+                            this.telephoneNumber();
                             this.selectedGender();
                             this.BillingName();
                             this.dateValidate();
@@ -489,6 +493,7 @@ define(
                         "method": this.item.method,
                         "po_number": null,
                         "additional_data": {
+                            "customer_telephone" : this.telephoneNumber(),
                             "customer_gender" : this.genderValidate(),
                             "customer_billingName" : this.BillingName(),
                             "customer_DoB" : this.dateValidate(),
