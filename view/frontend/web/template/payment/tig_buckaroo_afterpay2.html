@@ -199,8 +199,11 @@
                                    attr: { 'data-validate': JSON.stringify({ 'required': true})}"
                                    name="payment[tig_buckaroo_afterpay2][termsCondition]">
                             <span>
-                                <a target="_blank" href="https://www.afterpay.nl/nl/klantenservice/betalingsvoorwaarden/"
-                                   data-bind="i18n: 'Yes, I accept the terms and condition for the use of Afterpay.'">
+                                <a target="_blank"
+                                   data-bind="
+                                       i18n: 'Yes, I accept the terms and condition for the use of Afterpay.',
+                                       attr: { 'href': termsUrl }
+                                   ">
                                 </a>
                             </span>
                             <div for="tig_buckaroo_afterpay2_TermsCondition" generated="true" class="mage-error" id="tig_buckaroo_afterpay2_TermsCondition-error" style="display: none;"><span data-bind="i18n: 'This is a required field.' "></span></div>
