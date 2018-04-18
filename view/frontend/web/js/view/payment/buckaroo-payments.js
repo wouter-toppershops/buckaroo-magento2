@@ -65,6 +65,10 @@ define(
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/ideal'
             },
             {
+                type: 'tig_buckaroo_idealprocessing',
+                component: 'TIG_Buckaroo/js/view/payment/method-renderer/idealprocessing'
+            },
+            {
                 type: 'tig_buckaroo_afterpay',
                 component: 'TIG_Buckaroo/js/view/payment/method-renderer/afterpay'
             },

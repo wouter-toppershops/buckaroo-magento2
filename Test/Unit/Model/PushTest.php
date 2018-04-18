@@ -38,6 +38,7 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model;
 
+use Magento\Framework\Webapi\Rest\Request;
 use Magento\Payment\Model\MethodInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Email\Sender\OrderSender;
@@ -91,7 +92,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->request = \Mockery::mock(\Magento\Framework\Webapi\Rest\Request::class);
+        $this->request = \Mockery::mock(Request::class);
         $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
         $this->configAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
 
@@ -148,6 +149,59 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 false
             ],
         ];
+    }
+
+    /**
+     * @return array
+     */
+    public function getPostDataProvider()
+    {
+        return [
+            'valid post data' => [
+                [],
+                ['brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_invoicenumber' => '0001', 'brq_statuscode' => 190]
+            ],
+            'sid in post' => [
+                ['SID' => '123ABC'],
+                ['brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_invoicenumber' => '0001', 'brq_statuscode' => 190]
+            ],
+            'sid in get' => [
+                [],
+                ['brq_INVOICENUMBER' => '0001', 'SID' => '123ABC', 'brq_STATUSCODE' => 190],
+                ['brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_invoicenumber' => '0001', 'brq_statuscode' => 190]
+            ],
+            'mixed post and get data' => [
+                ['brq_CURRENCY' => 'EUR', 'getData' => 'DEF456'],
+                ['SID' => '789GHI', 'brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_INVOICENUMBER' => '0001', 'brq_STATUSCODE' => 190],
+                ['brq_invoicenumber' => '0001', 'brq_statuscode' => 190]
+            ]
+        ];
+    }
+
+    /**
+     * @param $getData
+     * @param $postData
+     * @param $expectedPost
+     * @param $expectedPostLowerCase
+     *
+     * @dataProvider getPostDataProvider
+     */
+    public function testGetPostData($getData, $postData, $expectedPost, $expectedPostLowerCase)
+    {
+        $requestMock = $this->getFakeMock(Request::class)->setMethods(null)->getMock();
+        $requestMock->setQueryValue($getData);
+        $requestMock->setPostValue($postData);
+
+        $instance = $this->getInstance(['request' => $requestMock]);
+        $this->invoke('getPostData', $instance);
+        $this->assertEquals($expectedPost, $instance->originalPostData);
+        $this->assertEquals($expectedPostLowerCase, $instance->postData);
     }
 
     /**
