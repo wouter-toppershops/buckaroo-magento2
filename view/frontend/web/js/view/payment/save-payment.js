@@ -69,6 +69,29 @@ define(
                     payload.billingAddress = quote.billingAddress();
 
                     /**
+                     * The standard Magento flow expects only checked agreements to be added. However,
+                     * set-payment-information expects and validates if all required agreements are checked as well. Which
+                     * isn't possible right after selecting a payment method. Therefore we simply send all agreements in
+                     * order to pass the validation. The agreements will be validated properly when the order is being placed.
+                     */
+                    var agreementsConfig = window.checkoutConfig.checkoutAgreements;
+
+                    if (agreementsConfig.isEnabled) {
+                        var agreementData = $('.payment-method._active div[data-role=checkout-agreements] input');
+                        var agreementIds = [];
+
+                        agreementData.each(function (index, item) {
+                            agreementIds.push(item.value);
+                        });
+
+                        if (payload.paymentMethod.extension_attributes === undefined) {
+                            payload.paymentMethod.extension_attributes = {};
+                        }
+
+                        payload.paymentMethod.extension_attributes.agreement_ids = agreementIds;
+                    }
+
+                    /**
                      * Send the selected payment method, along with a cart identifier, the billing address and a 'skip
                      * validation' flag to the save payment method API.
                      */
