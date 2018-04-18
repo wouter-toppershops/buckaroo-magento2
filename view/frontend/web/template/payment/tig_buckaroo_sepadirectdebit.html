@@ -56,8 +56,8 @@
                         </div>
                     </div>
 
+                    <!-- ko if: isnl() != true -->
                     <div class="field required">
-                        <!-- ko ifnot: isnl -->
                         <label for="bicnumber" class="label">
                             <span data-bind="i18n: 'BIC Number'"> </span>
                         </label>
@@ -72,8 +72,8 @@
                                    "
                                    name="payment[tig_buckaroo_sepadirectdebit][customer_bic]">
                         </div>
-                        <!-- /ko -->
                     </div>
+                    <!-- /ko -->
 
                     <span data-bind="i18n: 'Please enter these fields as they appear on your bank account.' "></span>
 
