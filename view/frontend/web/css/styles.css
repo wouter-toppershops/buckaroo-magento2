@@ -48,6 +48,7 @@
     }
 
     .tig_buckaroo_ideal .payment-method-second-col,
+    .tig_buckaroo_idealprocessing .payment-method-second-col,
     .tig_buckaroo_creditcard .payment-method-second-col,
     .tig_buckaroo_transfer .payment-method-second-col,
     .tig_buckaroo_afterpay .payment-method-second-col,
@@ -64,6 +65,7 @@
     }
 
     .tig_buckaroo_ideal .payment-method-billing-address,
+    .tig_buckaroo_idealprocessing .payment-method-billing-address,
     .tig_buckaroo_creditcard .payment-method-billing-address,
     .tig_buckaroo_transfer .payment-method-billing-address,
     .tig_buckaroo_afterpay .payment-method-billing-address,
@@ -83,6 +85,7 @@
 
 @media screen and (min-width: 768px){
     .magento-blank .tig_buckaroo_ideal .fieldset > .field:not(.choice) > .label,
+    .magento-blank .tig_buckaroo_idealprocessing .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_creditcard .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_transfer .fieldset > .field:not(.choice) > .label,
     .magento-blank .tig_buckaroo_afterpay .fieldset > .field:not(.choice) > .label,
@@ -100,6 +103,7 @@
     }
 
     .magento-blank .tig_buckaroo_ideal .fieldset > .field:not(.choice) > .control,
+    .magento-blank .tig_buckaroo_idealprocessing .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_creditcard .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_transfer .fieldset > .field:not(.choice) > .control,
     .magento-blank .tig_buckaroo_afterpay .fieldset > .field:not(.choice) > .control,
@@ -115,6 +119,7 @@
     }
 
     .magento-blank .tig_buckaroo_ideal .fieldset > .field.choice:before,
+    .magento-blank .tig_buckaroo_idealprocessing .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_creditcard .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_transfer .fieldset > .field.choice:before,
     .magento-blank .tig_buckaroo_afterpay .fieldset > .field.choice:before,
@@ -153,18 +158,22 @@
 }
 
 /* ===================== iDeal ================================ */
-.tig_buckaroo_ideal .payment-method-second-col .bank-types{
+.tig_buckaroo_ideal .payment-method-second-col .bank-types,
+.tig_buckaroo_idealprocessing .payment-method-second-col .bank-types{
     float:left; width: 100%;
 }
-.tig_buckaroo_ideal .payment-method-second-col .bank-types-img{
+.tig_buckaroo_ideal .payment-method-second-col .bank-types-img,
+.tig_buckaroo_idealprocessing .payment-method-second-col .bank-types-img{
     vertical-align:middle;
     margin-right:10px;
 }
-.tig_buckaroo_ideal .payment-method-second-col .bank-types-input{
+.tig_buckaroo_ideal .payment-method-second-col .bank-types-input,
+.tig_buckaroo_idealprocessing .payment-method-second-col .bank-types-input{
     margin-top:10px;
 }
 
-.tig_buckaroo_ideal .tig_buckaroo_image_title:after {
+.tig_buckaroo_ideal .tig_buckaroo_image_title:after,
+.tig_buckaroo_idealprocessing .tig_buckaroo_image_title:after {
     background: url(../images/tig_buckaroo_ideal_title.png) no-repeat;
     float: right;
     margin-right: 10px;
@@ -278,7 +287,7 @@
     margin-right: 10px;
     margin-top: 5px;
     background-size: auto 16px;
-    width: 49px;
+    width: 79px;
     height: 25px;
     content: ' ';
 }
@@ -368,7 +377,8 @@
     }
 
     /* iDeal */
-    .tig_buckaroo_ideal .tig_buckaroo_image_title:before {
+    .tig_buckaroo_ideal .tig_buckaroo_image_title:before,
+    .tig_buckaroo_idealprocessing .tig_buckaroo_image_title:before {
         background: url(../images/tig_buckaroo_ideal_title.png) no-repeat;
         float: left;
         margin-right: 10px;
@@ -430,10 +440,10 @@
     /* Sofort */
     .tig_buckaroo_sofortbanking .tig_buckaroo_image_title:before {
         background: url(../images/tig_buckaroo_sofort_title.png) no-repeat;
-        margin-top: 5px;
+        margin-top: -1px;
         float:left;
         margin-right: 10px;
-        background-size: auto 12px;
+        background-size: auto 24px;
         width: 40px;
         height: 30px;
         content: ' ';
@@ -470,7 +480,7 @@
         margin-top: 6px;
         float: left;
         margin-right: 10px;
-        background-size: auto 13px;
+        background-size: auto 8px;
         width: 40px;
         height: 30px;
         content: ' ';

@@ -38,23 +38,32 @@
  */
 namespace TIG\Buckaroo\Block\Config\Form\Field;
 
-class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
+use Magento\Config\Block\System\Config\Form\Fieldset as MagentoFieldset;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Store\Model\ScopeInterface;
+
+class Fieldset extends MagentoFieldset
 {
-    // @codingStandardsIgnoreStart
     /**
      * {@inheritdoc}
+     *
      */
+    // @codingStandardsIgnoreLine
     protected function _getFrontendClass($element)
     {
+        $value = $this->getElementValue($element);
         $class = 'payment_method_';
-        $group = $element->getData('group');
-        $value = $this->_scopeConfig->getValue($group['children']['active']['config_path']);
-        if ($value == '0') {
-            $class .= 'payment_method_inactive';
-        } elseif ($value == '1') {
-            $class .= 'payment_method_active payment_method_test';
-        } else {
-            $class .= 'payment_method_active payment_method_live';
+
+        switch ($value) {
+            case '0':
+                $class .= 'payment_method_inactive';
+                break;
+            case '1':
+                $class .= 'payment_method_active payment_method_test';
+                break;
+            default:
+                $class .= 'payment_method_active payment_method_live';
+                break;
         }
 
         $classes = parent::_getFrontendClass($element);
@@ -62,5 +71,49 @@ class Fieldset extends \Magento\Config\Block\System\Config\Form\Fieldset
 
         return $classes;
     }
-    // @codingStandardsIgnoreStart
+
+    /**
+     * @param $element
+     *
+     * @return string
+     */
+    private function getElementValue($element)
+    {
+        $scopeValues = $this->getScopeValue();
+
+        $group = $element->getData('group');
+        $value = $this->_scopeConfig->getValue(
+            $group['children']['active']['config_path'],
+            $scopeValues['scope'],
+            $scopeValues['scopevalue']
+        );
+
+        return $value;
+    }
+
+    /**
+     * @return array
+     */
+    private function getScopeValue()
+    {
+        $scopeValues = [
+            'scope' => ScopeConfigInterface::SCOPE_TYPE_DEFAULT,
+            'scopevalue' => null
+        ];
+
+        $store = $this->getRequest()->getParam('store');
+        $website = $this->getRequest()->getParam('website');
+
+        if (!empty($website)) {
+            $scopeValues['scope'] = ScopeInterface::SCOPE_WEBSITE;
+            $scopeValues['scopevalue'] = $website;
+        }
+
+        if (!empty($store)) {
+            $scopeValues['scope'] = ScopeInterface::SCOPE_STORE;
+            $scopeValues['scopevalue'] = $store;
+        }
+
+        return $scopeValues;
+    }
 }
