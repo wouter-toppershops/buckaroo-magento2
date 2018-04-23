@@ -638,7 +638,7 @@ class Afterpay extends AbstractMethod
             // Child objects of configurable products should not be requested because afterpay will fail on unit prices.
             if (empty($item)
                 || $this->calculateProductPrice($item, $includesTax) == 0
-                | $item->getProductType() == Type::TYPE_BUNDLE
+                || $item->getProductType() == Type::TYPE_BUNDLE
             ) {
                 continue;
             }
