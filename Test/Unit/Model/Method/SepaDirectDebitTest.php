@@ -39,6 +39,8 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+use Magento\Framework\DataObject;
+use Magento\Payment\Model\InfoInterface;
 use Magento\Sales\Model\Order;
 use Magento\Sales\Model\Order\Payment;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory;
@@ -114,15 +116,31 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testAssignData()
     {
-        $this->markTestSkipped('Needs revision');
+        $data = $this->getObject(DataObject::class);
+        $data->setBuckarooSkipValidation(0);
+        $data->setAdditionalData([
+            'buckaroo_skip_validation' => 1,
+            'customer_bic' => 'NL32INGB',
+            'customer_iban' => '0000012345',
+            'customer_account_name' => 'TIG TEST'
+        ]);
 
-        $fixture = [
-            'customer_bic'          => 'bicc',
-            'customer_iban'         => 'ibann',
-            'customer_account_name' => 'myname',
-        ];
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)
+            ->setMethods(['setAdditionalInformation'])
+            ->getMockForAbstractClass();
+        $infoInstanceMock->expects($this->exactly(5))->method('setAdditionalInformation')->withConsecutive(
+            ['buckaroo_skip_validation', 0],
+            ['buckaroo_skip_validation', 1],
+            ['customer_bic', 'NL32INGB'],
+            ['customer_iban', '0000012345'],
+            ['customer_account_name', 'TIG TEST']
+        );
 
-        $this->assignDataTest($fixture);
+        $instance = $this->getInstance();
+        $instance->setData('info_instance', $infoInstanceMock);
+
+        $result = $instance->assignData($data);
+        $this->assertInstanceOf(SepaDirectDebit::class, $result);
     }
 
     /**
@@ -138,7 +156,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $payment = \Mockery::mock(
-            \Magento\Payment\Model\InfoInterface::class,
+            InfoInterface::class,
             \Magento\Sales\Api\Data\OrderPaymentInterface::class
         );
 
@@ -162,7 +180,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
-        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+        $infoInterface = \Mockery::mock(InfoInterface::class)->makePartial();
         $infoInterface->shouldReceive('getAdditionalInformation')
             ->with('customer_account_name')
             ->andReturn($fixture['customer_account_name']);
@@ -342,7 +360,7 @@ class SepaDirectDebitTest extends \TIG\Buckaroo\Test\BaseTest
     public function testGetRefundTransactionBuilder()
     {
         $payment = \Mockery::mock(
-            \Magento\Payment\Model\InfoInterface::class,
+            InfoInterface::class,
             \Magento\Sales\Api\Data\OrderPaymentInterface::class
         );
 

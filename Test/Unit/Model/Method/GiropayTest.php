@@ -39,10 +39,16 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+use Magento\Framework\DataObject;
+use Magento\Payment\Model\InfoInterface;
+use TIG\Buckaroo\Model\Method\Giropay;
+
 class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
 {
+    protected $instanceClass = Giropay::class;
+
     /**
-     * @var \TIG\Buckaroo\Model\Method\Giropay
+     * @var Giropay
      */
     protected $object;
 
@@ -72,7 +78,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $this->transactionBuilderFactory = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderFactory::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Giropay::class,
+            Giropay::class,
             [
             'objectManager' => $this->objectManager,
             'transactionBuilderFactory' => $this->transactionBuilderFactory,
@@ -85,13 +91,25 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testAssignData()
     {
-        $this->markTestSkipped('Needs revision');
+        $data = $this->getObject(DataObject::class);
+        $data->setBuckarooSkipValidation(0);
+        $data->setAdditionalData([
+            'customer_bic' => 'NL32INGB'
+        ]);
 
-        $this->assignDataTest(
-            [
-            'customer_bic' => 'bicbic',
-            ]
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)
+            ->setMethods(['setAdditionalInformation'])
+            ->getMockForAbstractClass();
+        $infoInstanceMock->expects($this->exactly(2))->method('setAdditionalInformation')->withConsecutive(
+            ['buckaroo_skip_validation', 0],
+            ['customer_bic', 'NL32INGB']
         );
+
+        $instance = $this->getInstance();
+        $instance->setData('info_instance', $infoInstanceMock);
+
+        $result = $instance->assignData($data);
+        $this->assertInstanceOf(Giropay::class, $result);
     }
 
     /**
@@ -105,7 +123,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         ];
 
         $payment = \Mockery::mock(
-            \Magento\Payment\Model\InfoInterface::class,
+            InfoInterface::class,
             \Magento\Sales\Api\Data\OrderPaymentInterface::class
         );
 
@@ -127,7 +145,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
-        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+        $infoInterface = \Mockery::mock(InfoInterface::class)->makePartial();
 
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($payment));
@@ -155,13 +173,13 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
     public function testGetRefundTransactionBuilder()
     {
         $payment = \Mockery::mock(
-            \Magento\Payment\Model\InfoInterface::class,
+            InfoInterface::class,
             \Magento\Sales\Api\Data\OrderPaymentInterface::class
         );
 
         $payment->shouldReceive('getOrder')->andReturn('orderr');
         $payment->shouldReceive('getAdditionalInformation')->with(
-            \TIG\Buckaroo\Model\Method\Giropay::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+            Giropay::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();
@@ -196,7 +214,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testValidate()
     {
-        $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        $paymentInfo = \Mockery::mock(InfoInterface::class);
         $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->andReturnSelf();
         $paymentInfo->shouldReceive('getCountryId')->andReturn(4);
 
@@ -206,7 +224,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
         $this->object->setData('info_instance', $paymentInfo);
         $result = $this->object->validate();
 
-        $this->assertInstanceOf(\TIG\Buckaroo\Model\Method\Giropay::class, $result);
+        $this->assertInstanceOf(Giropay::class, $result);
     }
 
     /**
@@ -214,7 +232,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testValidateInvalidBic()
     {
-        $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        $paymentInfo = \Mockery::mock(InfoInterface::class);
         $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->andReturnSelf();
         $paymentInfo->shouldReceive('getCountryId')->andReturn(4);
 
@@ -237,7 +255,7 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testValidateSkipValidation()
     {
-        $paymentInfo = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class);
+        $paymentInfo = \Mockery::mock(InfoInterface::class);
         $paymentInfo->shouldReceive('getQuote', 'getBillingAddress')->once()->andReturnSelf();
         $paymentInfo->shouldReceive('getCountryId')->once()->andReturn(4);
         $paymentInfo->shouldReceive('getAdditionalInformation')
@@ -249,6 +267,6 @@ class GiropayTest extends \TIG\Buckaroo\Test\BaseTest
 
         $result = $this->object->validate();
 
-        $this->assertInstanceOf(\TIG\Buckaroo\Model\Method\Giropay::class, $result);
+        $this->assertInstanceOf(Giropay::class, $result);
     }
 }
