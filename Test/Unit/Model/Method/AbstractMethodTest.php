@@ -37,7 +37,17 @@
  * @license     http://creativecommons.org/licenses/by-nc-nd/3.0/nl/deed.en_US
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
+
+use Magento\Developer\Helper\Data;
+use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\State;
+use Magento\Framework\Event\ManagerInterface;
+use Magento\Framework\Model\Context;
+use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Model\Order\Payment;
+use Magento\Store\Model\ScopeInterface;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Factory;
 
 /**
  * Class AbstractMethodTest
@@ -81,7 +91,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     protected $scopeConfig;
 
     /**
-     * @var \Mockery\MockInterface|\Magento\Developer\Helper\Data
+     * @var \Mockery\MockInterface|Data
      */
     protected $developmentHelper;
 
@@ -118,10 +128,10 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
-        $this->developmentHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $this->account = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
-        $this->configProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Factory::class);
+        $this->scopeConfig = \Mockery::mock(ScopeConfigInterface::class);
+        $this->developmentHelper = \Mockery::mock(Data::class);
+        $this->account = \Mockery::mock(Account::class);
+        $this->configProvider = \Mockery::mock(Factory::class);
         $this->configMethodProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
         $this->validatorFactory = \Mockery::mock(\TIG\Buckaroo\Model\ValidatorFactory::class);
@@ -172,21 +182,21 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $allowedCurrencies = 'ABC,DEF'
     ) {
         $this->scopeConfig->shouldReceive('getValue')
-            ->with('payment/tig_buckaroo_test/active', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)
+            ->with('payment/tig_buckaroo_test/active', ScopeInterface::SCOPE_STORE, 1)
             ->andReturn($active);
         $this->scopeConfig->shouldReceive('getValue')
-            ->with('payment/tig_buckaroo_test/max_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)
+            ->with('payment/tig_buckaroo_test/max_amount', ScopeInterface::SCOPE_STORE, 1)
             ->andReturn($maxAmount);
         $this->scopeConfig->shouldReceive('getValue')
-            ->with('payment/tig_buckaroo_test/min_amount', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, 1)
+            ->with('payment/tig_buckaroo_test/min_amount', ScopeInterface::SCOPE_STORE, 1)
             ->andReturn($minAmount);
         $this->scopeConfig->shouldReceive('getValue')
-            ->with('payment/tig_buckaroo_test/limit_by_ip', \Magento\Store\Model\ScopeInterface::SCOPE_STORE, null)
+            ->with('payment/tig_buckaroo_test/limit_by_ip', ScopeInterface::SCOPE_STORE, null)
             ->andReturn($limitByIp);
         $this->scopeConfig->shouldReceive('getValue')
             ->with(
                 'payment/tig_buckaroo_test/allowed_currencies',
-                \Magento\Store\Model\ScopeInterface::SCOPE_STORE,
+                ScopeInterface::SCOPE_STORE,
                 null
             )
             ->andReturn($allowedCurrencies);
@@ -203,9 +213,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     public function testIsAvailableDisabled()
     {
         /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
+         * @var CartInterface|\Mockery\MockInterface $quote
          */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+        $quote = \Mockery::mock(CartInterface::class);
 
         $this->account->shouldReceive('getActive')->once()->andReturn(0);
         $result = $this->object->isAvailable($quote);
@@ -218,34 +228,33 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableAdminhtmlDisabled()
     {
-        $this->markTestSkipped();
-        
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
+        $quoteMock = $this->getFakeMock(CartInterface::class, true);
 
-        $this->account->shouldReceive('getActive')->once()->andReturn(1);
+        $accountConfigMock = $this->getFakeMock(Account::class)->setMethods(['getActive'])->getMock();
+        $accountConfigMock->expects($this->once())->method('getActive')->willReturn(1);
 
-        $this->objectManager->shouldReceive('get')->with('Magento\Framework\App\State')->andReturnSelf();
-        $this->objectManager->shouldReceive('getAreaCode')->andReturn('adminhtml');
+        $configProviderMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configProviderMock->expects($this->once())->method('get')->with('account')->willReturn($accountConfigMock);
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [
-                'objectManager' => $this->objectManager,
-                'configProviderFactory' => $this->configProvider,
-            ],
-            array('getConfigData','isAvailable')
-        );
+        $appStateMock = $this->getFakeMock(State::class)->setMethods(['getAreaCode'])->getMock();
+        $appStateMock->expects($this->once())->method('getAreaCode')->willReturn('adminhtml');
 
-        $partialMock->expects($this->exactly(2))->method('getConfigData')->with('available_in_backend')->willReturn(0);
+        $contextMock = $this->getFakeMock(Context::class)->setMethods(['getAppState'])->getMock();
+        $contextMock->expects($this->once())->method('getAppState')->willReturn($appStateMock);
 
-        /**
-         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
-         */
-        $result = $partialMock->isAvailable($quote);
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->exactly(2))->method('getValue')
+            ->with('payment/tig_buckaroo_test/available_in_backend', ScopeInterface::SCOPE_STORE, null)
+            ->willReturn(0);
 
+        $instance = $this->getInstance([
+            'context' => $contextMock,
+            'scopeConfig' => $scopeConfigMock,
+            'configProviderFactory' => $configProviderMock
+        ]);
+        $result = $instance->isAvailable($quoteMock);
         $this->assertFalse($result);
     }
 
@@ -254,72 +263,31 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableInvalidIp()
     {
-        $this->markTestSkipped();
-        
-        $this->getValues();
+        $quoteMock = $this->getFakeMock(CartInterface::class, true);
 
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->once()->andReturn(1);
+        $accountConfigMock = $this->getFakeMock(Account::class)->setMethods(['getActive', 'getLimitByIp'])->getMock();
+        $accountConfigMock->expects($this->once())->method('getActive')->willReturn(1);
+        $accountConfigMock->expects($this->once())->method('getLimitByIp')->willReturn(1);
 
-        $this->scopeConfig->shouldReceive('getValue');
+        $configProviderMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configProviderMock->expects($this->once())->method('get')->with('account')->willReturn($accountConfigMock);
 
-        $this->developmentHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(false);
+        $appStateMock = $this->getFakeMock(State::class)->setMethods(['getAreaCode'])->getMock();
+        $appStateMock->expects($this->once())->method('getAreaCode')->willReturn('frontend');
 
-        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
-        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+        $contextMock = $this->getFakeMock(Context::class)->setMethods(['getAppState'])->getMock();
+        $contextMock->expects($this->once())->method('getAppState')->willReturn($appStateMock);
 
-        $this->objectManager->shouldReceive('get')
-            ->once()
-            ->with(\Magento\Framework\App\State::class)
-            ->andReturn($stateMock);
+        $developmentHelperMock = $this->getFakeMock(Data::class)->setMethods(['isDevAllowed'])->getMock();
+        $developmentHelperMock->expects($this->once())->method('isDevAllowed')->with(null)->willReturn(false);
 
-        $result = $this->object->isAvailable($quote);
-
+        $instance = $this->getInstance([
+            'context' => $contextMock,
+            'developmentHelper' => $developmentHelperMock,
+            'configProviderFactory' => $configProviderMock
+        ]);
+        $result = $instance->isAvailable($quoteMock);
         $this->assertFalse($result);
-    }
-
-    /**
-     * Test what happens if the allow by ip option is on, and our ip is in the list.
-     */
-    public function testIsAvailableValidIp()
-    {
-        $this->markTestSkipped('Needs revision');
-
-        $this->getValues(1, null, null);
-
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->andReturn(1);
-        $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
-        $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
-        $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('ABC');
-        $quote->shouldReceive('getQuoteCurrencyCode')->once()->andReturn('ABC');
-
-        $this->scopeConfig->shouldReceive('getValue')->andReturn(1);
-
-        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
-
-        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
-        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
-
-        $this->objectManager->shouldReceive('create')
-            ->once()
-            ->with(\Magento\Developer\Helper\Data::class)
-            ->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')
-            ->once()
-            ->with(\Magento\Framework\App\State::class)
-            ->andReturn($stateMock);
-
-        $result = $this->object->isAvailable($quote);
-
-        $this->assertTrue($result);
     }
 
     /**
@@ -327,29 +295,38 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableExceedsMaximum()
     {
-        $this->markTestSkipped();
-        
-        $this->getValues();
+        $quoteMock = $this->getFakeMock(CartInterface::class)->setMethods(['getGrandTotal'])->getMockForAbstractClass();
+        $quoteMock->expects($this->once())->method('getGrandTotal')->willReturn(25);
 
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->andReturn(1);
-        $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
+        $accountConfigMock = $this->getFakeMock(Account::class)->setMethods(['getActive'])->getMock();
+        $accountConfigMock->expects($this->once())->method('getActive')->willReturn(1);
 
-        $this->developmentHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+        $configProviderMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configProviderMock->expects($this->once())->method('get')->with('account')->willReturn($accountConfigMock);
 
-        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
-        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+        $appStateMock = $this->getFakeMock(State::class)->setMethods(['getAreaCode'])->getMock();
+        $appStateMock->expects($this->once())->method('getAreaCode')->willReturn('frontend');
 
-        $this->objectManager->shouldReceive('get')
-            ->once()
-            ->with(\Magento\Framework\App\State::class)
-            ->andReturn($stateMock);
+        $contextMock = $this->getFakeMock(Context::class)->setMethods(['getAppState'])->getMock();
+        $contextMock->expects($this->once())->method('getAppState')->willReturn($appStateMock);
 
-        $result = $this->object->isAvailable($quote);
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->exactly(3))->method('getValue')
+            ->withConsecutive(
+                ['payment/tig_buckaroo_test/limit_by_ip', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/max_amount', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/min_amount', ScopeInterface::SCOPE_STORE, null]
+            )
+            ->willReturnOnConsecutiveCalls(0, 20, 10);
 
+        $instance = $this->getInstance([
+            'context' => $contextMock,
+            'scopeConfig' => $scopeConfigMock,
+            'configProviderFactory' => $configProviderMock
+        ]);
+        $result = $instance->isAvailable($quoteMock);
         $this->assertFalse($result);
     }
 
@@ -358,29 +335,38 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableExceedsMinimum()
     {
-        $this->markTestSkipped();
-        
-        $this->getValues();
+        $quoteMock = $this->getFakeMock(CartInterface::class)->setMethods(['getGrandTotal'])->getMockForAbstractClass();
+        $quoteMock->expects($this->once())->method('getGrandTotal')->willReturn(5);
 
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->andReturn(1);
-        $quote->shouldReceive('getGrandTotal')->once()->andReturn(60);
+        $accountConfigMock = $this->getFakeMock(Account::class)->setMethods(['getActive'])->getMock();
+        $accountConfigMock->expects($this->once())->method('getActive')->willReturn(1);
 
-        $this->developmentHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+        $configProviderMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configProviderMock->expects($this->once())->method('get')->with('account')->willReturn($accountConfigMock);
 
-        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
-        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+        $appStateMock = $this->getFakeMock(State::class)->setMethods(['getAreaCode'])->getMock();
+        $appStateMock->expects($this->once())->method('getAreaCode')->willReturn('frontend');
 
-        $this->objectManager->shouldReceive('get')
-            ->once()
-            ->with(\Magento\Framework\App\State::class)
-            ->andReturn($stateMock);
+        $contextMock = $this->getFakeMock(Context::class)->setMethods(['getAppState'])->getMock();
+        $contextMock->expects($this->once())->method('getAppState')->willReturn($appStateMock);
 
-        $result = $this->object->isAvailable($quote);
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->exactly(3))->method('getValue')
+            ->withConsecutive(
+                ['payment/tig_buckaroo_test/limit_by_ip', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/max_amount', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/min_amount', ScopeInterface::SCOPE_STORE, null]
+            )
+            ->willReturnOnConsecutiveCalls(0, 20, 10);
 
+        $instance = $this->getInstance([
+            'context' => $contextMock,
+            'scopeConfig' => $scopeConfigMock,
+            'configProviderFactory' => $configProviderMock
+        ]);
+        $result = $instance->isAvailable($quoteMock);
         $this->assertFalse($result);
     }
 
@@ -389,74 +375,93 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testIsAvailableNotAllowedCurrency()
     {
-        $this->markTestSkipped('Needs revision');
+        $quoteMock = $this->getFakeMock(CartInterface::class)
+            ->setMethods(['getGrandTotal', 'getCurrency', 'getQuoteCurrencyCode'])
+            ->getMockForAbstractClass();
+        $quoteMock->expects($this->once())->method('getGrandTotal')->willReturn(15);
+        $quoteMock->expects($this->once())->method('getCurrency')->willReturnSelf();
+        $quoteMock->expects($this->once())->method('getQuoteCurrencyCode')->willReturn('GBP');
 
-        $this->getValues(1, null, null);
+        $accountConfigMock = $this->getFakeMock(Account::class)->setMethods(['getActive'])->getMock();
+        $accountConfigMock->expects($this->once())->method('getActive')->willReturn(1);
 
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->andReturn(1);
-        $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
-        $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
-        $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('EUR');
+        $configProviderMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configProviderMock->expects($this->once())->method('get')->with('account')->willReturn($accountConfigMock);
 
-        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+        $appStateMock = $this->getFakeMock(State::class)->setMethods(['getAreaCode'])->getMock();
+        $appStateMock->expects($this->once())->method('getAreaCode')->willReturn('frontend');
 
-        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
-        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+        $contextMock = $this->getFakeMock(Context::class)->setMethods(['getAppState'])->getMock();
+        $contextMock->expects($this->once())->method('getAppState')->willReturn($appStateMock);
 
-        $this->objectManager->shouldReceive('create')
-            ->once()
-            ->with(\Magento\Developer\Helper\Data::class)
-            ->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')
-            ->once()
-            ->with(\Magento\Framework\App\State::class)
-            ->andReturn($stateMock);
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->exactly(4))->method('getValue')
+            ->withConsecutive(
+                ['payment/tig_buckaroo_test/limit_by_ip', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/max_amount', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/min_amount', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/allowed_currencies', ScopeInterface::SCOPE_STORE, null]
+            )
+            ->willReturnOnConsecutiveCalls(0, 20, 10, 'EUR,USD');
 
-        $result = $this->object->isAvailable($quote);
-
+        $instance = $this->getInstance([
+            'context' => $contextMock,
+            'scopeConfig' => $scopeConfigMock,
+            'configProviderFactory' => $configProviderMock
+        ]);
+        $result = $instance->isAvailable($quoteMock);
         $this->assertFalse($result);
     }
 
     /**
-     * Test what happens if we exceed the minimum amount. The method should be hidden.
+     * Test what happens if the method is available
      */
-    public function testIsAvailableAllowedCurrency()
+    public function testIsAvailableValid()
     {
-        $this->markTestSkipped('Needs revision');
+        $quoteMock = $this->getFakeMock(CartInterface::class)
+            ->setMethods(['getGrandTotal', 'getCurrency', 'getQuoteCurrencyCode'])
+            ->getMockForAbstractClass();
+        $quoteMock->expects($this->once())->method('getGrandTotal')->willReturn(15);
+        $quoteMock->expects($this->once())->method('getCurrency')->willReturnSelf();
+        $quoteMock->expects($this->once())->method('getQuoteCurrencyCode')->willReturn('EUR');
 
-        $this->getValues(1, null, null);
+        $accountConfigMock = $this->getFakeMock(Account::class)->setMethods(['getActive'])->getMock();
+        $accountConfigMock->expects($this->once())->method('getActive')->willReturn(1);
 
-        /**
-         * @var \Magento\Quote\Api\Data\CartInterface|\Mockery\MockInterface $quote
-         */
-        $quote = \Mockery::mock(\Magento\Quote\Api\Data\CartInterface::class);
-        $quote->shouldReceive('getStoreId')->andReturn(1);
-        $quote->shouldReceive('getGrandTotal')->once()->andReturn(90);
-        $quote->shouldReceive('getCurrency')->once()->andReturnSelf();
-        $quote->shouldReceive('getStoreCurrencyCode')->once()->andReturn('ABC');
+        $configProviderMock = $this->getFakeMock(Factory::class)->setMethods(['get'])->getMock();
+        $configProviderMock->expects($this->once())->method('get')->with('account')->willReturn($accountConfigMock);
 
-        $developerHelper = \Mockery::mock(\Magento\Developer\Helper\Data::class);
-        $developerHelper->shouldReceive('isDevAllowed')->once()->with(1)->andReturn(true);
+        $appStateMock = $this->getFakeMock(State::class)->setMethods(['getAreaCode'])->getMock();
+        $appStateMock->expects($this->once())->method('getAreaCode')->willReturn('frontend');
 
-        $stateMock = \Mockery::mock(\Magento\Framework\App\State::class);
-        $stateMock->shouldReceive('getAreaCode')->once()->andReturn('frontend');
+        $eventManagerMock = $this->getFakeMock(ManagerInterface::class)->setMethods(['dispatch'])->getMock();
+        $eventManagerMock->expects($this->once())->method('dispatch');
 
-        $this->objectManager->shouldReceive('create')
-            ->once()
-            ->with(\Magento\Developer\Helper\Data::class)
-            ->andReturn($developerHelper);
-        $this->objectManager->shouldReceive('get')
-            ->once()
-            ->with(\Magento\Framework\App\State::class)
-            ->andReturn($stateMock);
+        $contextMock = $this->getFakeMock(Context::class)->setMethods(['getAppState', 'getEventDispatcher'])->getMock();
+        $contextMock->expects($this->once())->method('getAppState')->willReturn($appStateMock);
+        $contextMock->expects($this->once())->method('getEventDispatcher')->willReturn($eventManagerMock);
 
-        $result = $this->object->isAvailable($quote);
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->exactly(5))->method('getValue')
+            ->withConsecutive(
+                ['payment/tig_buckaroo_test/limit_by_ip', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/max_amount', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/min_amount', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/allowed_currencies', ScopeInterface::SCOPE_STORE, null],
+                ['payment/tig_buckaroo_test/active', ScopeInterface::SCOPE_STORE, null]
+            )
+            ->willReturnOnConsecutiveCalls(0, 20, 10, 'EUR,USD', true);
 
+        $instance = $this->getInstance([
+            'context' => $contextMock,
+            'scopeConfig' => $scopeConfigMock,
+            'configProviderFactory' => $configProviderMock
+        ]);
+        $result = $instance->isAvailable($quoteMock);
         $this->assertTrue($result);
     }
 
@@ -914,7 +919,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             $stubbedMethods[] = $canMethod;
         }
 
-        $eventManagerMock = \Mockery::mock(\Magento\Framework\Event\ManagerInterface::class);
+        $eventManagerMock = \Mockery::mock(ManagerInterface::class);
         $eventManagerMock->shouldReceive('dispatch')->once()->with(
             $afterMethodEvent,
             [
