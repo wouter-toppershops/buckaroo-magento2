@@ -43,11 +43,13 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\State;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\Context;
+use Magento\Framework\Pricing\Helper\Data as PriceHelperData;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Model\Order\Payment;
 use Magento\Store\Model\ScopeInterface;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Factory;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
 
 /**
  * Class AbstractMethodTest
@@ -132,7 +134,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->developmentHelper = \Mockery::mock(Data::class);
         $this->account = \Mockery::mock(Account::class);
         $this->configProvider = \Mockery::mock(Factory::class);
-        $this->configMethodProvider = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Method\Factory::class);
+        $this->configMethodProvider = \Mockery::mock(MethodFactory::class);
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
         $this->validatorFactory = \Mockery::mock(\TIG\Buckaroo\Model\ValidatorFactory::class);
         $this->gateway = \Mockery::mock(\TIG\Buckaroo\Gateway\GatewayInterface::class);
@@ -609,30 +611,27 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testGetTitleNoConfigProvider()
     {
-        $this->markTestSkipped();
-        
         $method = 'tig_buckaroo_abstract_test';
         $expectedTitle = 'tig_buckaroo_abstract_test_title';
-        $this->configMethodProvider->shouldReceive('has')->with($method)->andReturn(false);
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [
-                'objectManager' => $this->objectManager,
-                'configProviderFactory' => $this->configProvider,
-                'configProviderMethodFactory' => $this->configMethodProvider,
-            ],
-            array('getConfigData', 'getTitle')
-        );
+        $configProviderFactoryMock = $this->getFakeMock(MethodFactory::class)->setMethods(['has'])->getMock();
+        $configProviderFactoryMock->expects($this->once())->method('has')->with($method)->willReturn(false);
 
-        $partialMock->expects($this->once())->method('getConfigData')->with('title')->willReturn($expectedTitle);
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->once())->method('getValue')
+            ->with('payment/tig_buckaroo_test/title', ScopeInterface::SCOPE_STORE, null)
+            ->willReturn($expectedTitle);
 
-        /**
-         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
-         */
-        $partialMock->buckarooPaymentMethodCode = $method;
+        $instance = $this->getInstance([
+            'configProviderMethodFactory' => $configProviderFactoryMock,
+            'scopeConfig' => $scopeConfigMock
+        ]);
+        $instance->buckarooPaymentMethodCode = $method;
 
-        $this->assertEquals($expectedTitle, $partialMock->getTitle());
+        $result = $instance->getTitle();
+        $this->assertEquals($expectedTitle, $result);
     }
 
     /**
@@ -642,54 +641,52 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      * @param $expectedTitle
      * @param $fee
      */
-    public function testGetTitleNoPaymentFee($title, $expectedTitle, $fee)
+    public function testGetTitlePaymentFee($title, $expectedTitle, $fee)
     {
-        $this->markTestSkipped();
-        
         $method = 'tig_buckaroo_abstract_test';
 
-        $this->configMethodProvider->shouldReceive('has')->with($method)->andReturn(true);
-        $this->configMethodProvider->shouldReceive('get')->with($method)->andReturnSelf();
-        $this->configMethodProvider->shouldReceive('getPaymentFee')->andReturn($fee);
+        $configProviderFactoryMock = $this->getFakeMock(MethodFactory::class)
+            ->setMethods(['has', 'get', 'getPaymentFee'])
+            ->getMock();
+        $configProviderFactoryMock->expects($this->once())->method('has')->with($method)->willReturn(true);
+        $configProviderFactoryMock->expects($this->once())->method('get')->with($method)->willReturnSelf();
+        $configProviderFactoryMock->expects($this->once())->method('getPaymentFee')->willReturn($fee);
 
-        $priceHelperMock = \Mockery::mock(\Magento\Framework\Pricing\Helper\Data::class);
-        $priceHelperMock->shouldReceive('currency')->with($fee, true, false)->andReturn($fee);
+        $priceHelperMock = $this->getFakeMock(PriceHelperData::class)->setMethods(['currency'])->getMock();
+        $priceHelperMock->method('currency')->with($fee, true, false)->willReturn($fee);
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [
-                'objectManager' => $this->objectManager,
-                'configProviderFactory' => $this->configProvider,
-                'configProviderMethodFactory' => $this->configMethodProvider,
-                'priceHelper' => $priceHelperMock,
-            ],
-            array('getConfigData', 'getTitle')
-        );
+        $scopeConfigMock = $this->getFakeMock(ScopeConfigInterface::class)
+            ->setMethods(['getValue'])
+            ->getMockForAbstractClass();
+        $scopeConfigMock->expects($this->once())->method('getValue')
+            ->with('payment/tig_buckaroo_test/title', ScopeInterface::SCOPE_STORE, null)
+            ->willReturn($title);
 
-        $partialMock->expects($this->once())->method('getConfigData')->with('title')->willReturn($title);
-        /**
-         * @var \TIG\Buckaroo\Model\Method\AbstractMethod $partialMock
-         */
+        $instance = $this->getInstance([
+            'configProviderMethodFactory' => $configProviderFactoryMock,
+            'priceHelper' => $priceHelperMock,
+            'scopeConfig' => $scopeConfigMock
+        ]);
+        $instance->buckarooPaymentMethodCode = $method;
 
-        $partialMock->buckarooPaymentMethodCode = $method;
-
-        $this->assertEquals($expectedTitle, $partialMock->getTitle());
+        $result = $instance->getTitle();
+        $this->assertEquals($expectedTitle, $result);
     }
 
     public function getTitleNoPaymentFeeDataProvider()
     {
         return [
-            [
+            'no fee' => [
                 'tig_buckaroo_abstract_test_title',
                 'tig_buckaroo_abstract_test_title',
                 false,
             ],
-            [
+            'fixed fee' => [
                 'tig_buckaroo_abstract_test_title',
                 'tig_buckaroo_abstract_test_title + 5.00',
                 '5.00',
             ],
-            [
+            'percentage fee' => [
                 'tig_buckaroo_abstract_test_title',
                 'tig_buckaroo_abstract_test_title + 5%',
                 '5%',
