@@ -44,9 +44,14 @@ use Magento\Framework\App\State;
 use Magento\Framework\Event\ManagerInterface;
 use Magento\Framework\Model\Context;
 use Magento\Framework\Pricing\Helper\Data as PriceHelperData;
+use Magento\Framework\Registry;
 use Magento\Quote\Api\Data\CartInterface;
 use Magento\Sales\Model\Order\Payment;
+use Magento\Sales\Model\Order\Payment\Transaction as PaymentTransaction;
 use Magento\Store\Model\ScopeInterface;
+use TIG\Buckaroo\Gateway\Http\Transaction;
+use TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface;
+use TIG\Buckaroo\Helper\Data as HelperData;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Factory;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
@@ -138,11 +143,11 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $this->configProvider->shouldReceive('get')->with('account')->andReturn($this->account);
         $this->validatorFactory = \Mockery::mock(\TIG\Buckaroo\Model\ValidatorFactory::class);
         $this->gateway = \Mockery::mock(\TIG\Buckaroo\Gateway\GatewayInterface::class);
-        $this->helper = \Mockery::mock(\TIG\Buckaroo\Helper\Data::class);
+        $this->helper = \Mockery::mock(HelperData::class);
         $this->request = \Mockery::mock(\Magento\Framework\App\RequestInterface::class);
         $this->refundFieldsFactory = \Mockery::mock(\TIG\Buckaroo\Model\RefundFieldsFactory::class);
 
-        $mode = \TIG\Buckaroo\Helper\Data::MODE_TEST;
+        $mode = HelperData::MODE_TEST;
         $this->helper->shouldReceive('getMode')->andReturn($mode);
         $this->gateway->shouldReceive('setMode')->with($mode);
 
@@ -553,8 +558,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testCantProcess($method, $canMethod)
     {
-        $this->markTestSkipped('Check why dataset #4 causes issues with void() sometimes');
-
         $this->setExpectedException(\Magento\Framework\Exception\LocalizedException::class);
         $mockClass = \Magento\Payment\Model\InfoInterface::class
             . ','
@@ -590,11 +593,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             [
                 'refund',
                 'setCanRefund',
-            ],
-            [
-                'void',
-                'setCanVoid',
-            ],
+            ]
         ];
     }
 
@@ -705,58 +704,27 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testTransactionBuilderFalse($method, $setCanMethod, $methodTransactionBuilder, $canMethod = false)
     {
-        $this->markTestSkipped();
-        
-        $this->setExpectedException(\LogicException::class);
-        $mockClass = \Magento\Payment\Model\InfoInterface::class
-            . ','
-            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
-        $payment = \Mockery::mock($mockClass);
-        /**
-         * @var \Magento\Payment\Model\InfoInterface $payment
-         */
+        $exceptionMessage = ucfirst($method) . ' action is not implemented for this payment method.';
+        $this->setExpectedException(\LogicException::class, $exceptionMessage);
 
-        $stubbedMethods = [$method, $setCanMethod, $methodTransactionBuilder];
+        $payment = $this->getFakeMock(Payment::class, true);
+
+        $stubbedMethods = [$methodTransactionBuilder];
 
         if ($canMethod) {
             $stubbedMethods[] = $canMethod;
         }
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [
-                'objectManager' => $this->objectManager,
-                'configProviderFactory' => $this->configProvider,
-                'configProviderMethodFactory' => $this->configMethodProvider,
-            ],
-            $stubbedMethods
-        );
-
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
+        $partialMock = $this->getFakeMock(AbstractMethodMock::class)->setMethods($stubbedMethods)->getMock();
         $partialMock->$setCanMethod(true);
-
-        $partialMock->expects($this->once())
-            ->method($methodTransactionBuilder)
-            ->with($payment)
-            ->willReturn(false);
+        $partialMock->expects($this->once())->method($methodTransactionBuilder)->with($payment)->willReturn(false);
 
         if ($canMethod) {
-            $partialMock->expects($this->any())
-                ->method($canMethod)
-                ->withAnyParameters()
-                ->willReturn(true);
+            $partialMock->method($canMethod)->withAnyParameters()->willReturn(true);
         }
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $partialMock->$method($payment, 0);
 
-        /**
-         * @noinspection PhpUndefinedFieldInspection
-         */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -803,41 +771,17 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testTransactionBuilderTrue($method, $setCanMethod, $methodTransactionBuilder, $canMethod = false)
     {
-        $this->markTestSkipped();
-        
-        $mockClass = \Magento\Payment\Model\InfoInterface::class
-            . ','
-            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
-        $payment = \Mockery::mock($mockClass);
-        /**
-         * @var \Magento\Payment\Model\InfoInterface $payment
-         */
+        $payment = $this->getFakeMock(Payment::class, true);
 
-        $stubbedMethods = [$method, $setCanMethod, $methodTransactionBuilder];
+        $stubbedMethods = [$methodTransactionBuilder];
 
         if ($canMethod) {
             $stubbedMethods[] = $canMethod;
         }
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [
-                'objectManager' => $this->objectManager,
-                'configProviderFactory' => $this->configProvider,
-                'configProviderMethodFactory' => $this->configMethodProvider,
-            ],
-            $stubbedMethods
-        );
-
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
+        $partialMock = $this->getFakeMock(AbstractMethodMock::class)->setMethods($stubbedMethods)->getMock();
         $partialMock->$setCanMethod(true);
-
-        $partialMock->expects($this->once())
-            ->method($methodTransactionBuilder)
-            ->with($payment)
-            ->willReturn(true);
+        $partialMock->expects($this->once())->method($methodTransactionBuilder)->with($payment)->willReturn(true);
 
         if ($canMethod) {
             $partialMock->expects($this->any())
@@ -846,12 +790,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 ->willReturn(true);
         }
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $this->assertEquals($partialMock, $partialMock->$method($payment, 0));
-
-        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -861,12 +800,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      * @param      $methodTransactionBuilder
      * @param      $methodTransaction
      * @param      $afterMethodEvent
-     *
      * @param bool $canMethod
-     *
-     * @param bool $closeTransaction
-     *
-     * @param bool $saveId
      *
      * @dataProvider fullFlowDataProvider
      */
@@ -876,70 +810,62 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
         $methodTransactionBuilder,
         $methodTransaction,
         $afterMethodEvent,
-        $canMethod = false,
-        $closeTransaction = true,
-        $saveId = true
+        $canMethod = false
     ) {
-        $this->markTestSkipped('Check why dataset #4 causes issues with saveTransactionData() sometimes');
-
         $amount = 0;
 
         $responseObject = new \stdClass();
         $response = [$responseObject];
 
-        $mockClass = \Magento\Payment\Model\InfoInterface::class
-            . ','
-            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
-        $payment = \Mockery::mock($mockClass);
-        /**
-         * @var \Magento\Payment\Model\InfoInterface $payment
-         */
-
-        $transaction = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
-
-        $registryMock = \Mockery::mock(\Magento\Framework\Registry::class);
+        $payment = $this->getFakeMock(Payment::class)->setMethods(['getCurrencyCode', 'setIsFraudDetected'])->getMock();
+        $transaction = $this->getFakeMock(Transaction::class, true);
+        $registryMock = $this->getFakeMock(Registry::class)->setMethods(['register'])->getMock();
 
         if ($method != 'refund' && $method != 'void') {
-            $registryMock->shouldReceive('register')->once()->with('buckaroo_response', $response);
+            $registryMock->expects($this->once())->method('register')->with('buckaroo_response', $response);
         }
 
-        $transactionBuilderMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface::class);
+        $transactionBuilderMock = $this->getFakeMock(TransactionBuilderInterface::class)
+            ->setMethods(['setAmount', 'build'])
+            ->getMockForAbstractClass();
 
         if ($method == 'refund') {
-            $transactionBuilderMock->shouldReceive('setAmount')->with($amount)->once()->andReturn($transaction);
+            $transactionBuilderMock->expects($this->once())
+                ->method('setAmount')
+                ->with($amount)
+                ->willReturn($transaction);
         }
-        $transactionBuilderMock->shouldReceive('build')->once()->andReturn($transaction);
+        $transactionBuilderMock->expects($this->once())->method('build')->willReturn($transaction);
 
-        $stubbedMethods = [$methodTransaction, 'saveTransactionData', $methodTransactionBuilder];
+        $stubbedMethods = [$methodTransaction, $methodTransactionBuilder];
 
         if ($canMethod) {
             $stubbedMethods[] = $canMethod;
         }
 
-        $eventManagerMock = \Mockery::mock(ManagerInterface::class);
-        $eventManagerMock->shouldReceive('dispatch')->once()->with(
-            $afterMethodEvent,
-            [
-                'payment' => $payment,
-                'response' => $response
-            ]
-        );
+        $eventManagerMock = $this->getFakeMock(ManagerInterface::class)
+            ->setMethods(['dispatch'])
+            ->getMockForAbstractClass();
+        $eventManagerMock->expects($this->once())
+            ->method('dispatch')
+            ->with($afterMethodEvent, ['payment' => $payment, 'response' => $response]);
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [
-                'objectManager' => $this->objectManager,
-                'configProviderFactory' => $this->configProvider,
-                'configProviderMethodFactory' => $this->configMethodProvider,
-                'registry' => $registryMock
-            ],
-            $stubbedMethods
-        );
+        $configMethodProviderMock = $this->getFakeMock(MethodFactory::class)
+            ->setMethods(['get', 'getAllowedCurrencies'])
+            ->getMock();
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $partialMock->setEventManager($eventManagerMock);
+        if ($method == 'authorize') {
+            $configMethodProviderMock->method('get')->willReturnSelf();
+            $configMethodProviderMock->expects($this->once())->method('getAllowedCurrencies')->willReturnSelf();
+
+            $payment->expects($this->once())->method('getCurrencyCode')->willReturn(false);
+            $payment->expects($this->once())->method('setIsFraudDetected')->with(false);
+        }
+
+        $partialMock = $this->getFakeMock(AbstractMethodMock::class)->setMethods($stubbedMethods)->getMock();
+        $partialMock->configProviderMethodFactory = $configMethodProviderMock;
+        $this->setProperty('_registry', $registryMock, $partialMock);
+        $this->setProperty('_eventManager', $eventManagerMock, $partialMock);
 
         $partialMock->$setCanMethod(true);
 
@@ -953,38 +879,13 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
             ->with($transaction)
             ->willReturn($response);
 
-        $partialMock->expects($this->once())
-            ->method('saveTransactionData')
-            ->with($response[0], $payment, $partialMock->$closeTransaction, $saveId);
-
         if ($canMethod) {
-            $partialMock->expects($this->any())
-                ->method($canMethod)
-                ->withAnyParameters()
-                ->willReturn(true);
-        }
-
-        if ($method == 'authorize') {
-            $this->configMethodProvider->shouldReceive('get')->withAnyArgs()->andReturnSelf();
-            $this->configMethodProvider->shouldReceive('getAllowedCurrencies')->once()->withAnyArgs()->andReturnSelf();
-
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $payment->shouldReceive('getCurrencyCode')->once()->andReturn(false);
-            /**
-             * @noinspection PhpUndefinedMethodInspection
-             */
-            $payment->shouldReceive('setIsFraudDetected')->once()->with(false);
+            $partialMock->method($canMethod)->withAnyParameters()->willReturn(true);
         }
 
         $result = $partialMock->$method($payment, $amount);
 
         $this->assertEquals($partialMock, $result);
-
-        /**
-         * @noinspection PhpUndefinedFieldInspection
-         */
         $this->assertSame($payment, $partialMock->payment);
     }
 
@@ -998,7 +899,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'orderTransaction',
                 'tig_buckaroo_method_order_after',
                 false,
-                'closeOrderTransaction',
             ],
             [
                 'authorize',
@@ -1007,7 +907,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'authorizeTransaction',
                 'tig_buckaroo_method_authorize_after',
                 false,
-                'closeAuthorizeTransaction',
             ],
             [
                 'capture',
@@ -1016,7 +915,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'captureTransaction',
                 'tig_buckaroo_method_capture_after',
                 false,
-                'closeCaptureTransaction',
             ],
             [
                 'refund',
@@ -1025,8 +923,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'refundTransaction',
                 'tig_buckaroo_method_refund_after',
                 'canRefund',
-                'closeRefundTransaction',
-                false,
             ],
             [
                 'void',
@@ -1034,8 +930,6 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
                 'getVoidTransactionBuilder',
                 'VoidTransaction',
                 'tig_buckaroo_method_void_after',
-                false,
-                'closeCancelTransaction',
                 false,
             ],
         ];
@@ -1054,9 +948,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $response = [];
 
-        $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
+        $transactionMock = \Mockery::mock(Transaction::class);
         /**
-         * @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock
+         * @var Transaction $transactionMock
          */
 
         $this->gateway->shouldReceive($gatewayMethod)
@@ -1113,9 +1007,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
         $response = [];
 
-        $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
+        $transactionMock = \Mockery::mock(Transaction::class);
         /**
-         * @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock
+         * @var Transaction $transactionMock
          */
 
         $this->gateway->shouldReceive($gatewayMethod)
@@ -1150,9 +1044,9 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         $response = ['test_response'];
 
-        $transactionMock = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\Transaction::class);
+        $transactionMock = \Mockery::mock(Transaction::class);
         /**
-         * @var \TIG\Buckaroo\Gateway\Http\Transaction $transactionMock
+         * @var Transaction $transactionMock
          */
 
         $this->gateway->shouldReceive($gatewayMethod)
@@ -1178,27 +1072,13 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
 
     public function testCancel()
     {
-        $this->markTestSkipped();
-              
-        $mockClass = \Magento\Payment\Model\InfoInterface::class
-            . ','
-            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
-        $payment = \Mockery::mock($mockClass);
-        /**
-         * @var \Magento\Payment\Model\InfoInterface $payment
-         */
+        $payment = $this->getFakeMock(Payment::class, true);
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [],
-            ['void', 'cancel']
-        );
+        $partialMock = $this->getFakeMock(AbstractMethodMock::class)
+            ->setMethods(['getVoidTransactionBuilder'])
+            ->getMock();
+        $partialMock->expects($this->once())->method('getVoidTransactionBuilder')->with($payment)->willReturn(true);
 
-        $partialMock->expects($this->once())->method('void')->with($payment)->willReturnSelf();
-
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
         $this->assertSame($partialMock, $partialMock->cancel($payment));
     }
 
@@ -1233,52 +1113,47 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testSaveTransactionData($close, $saveId)
     {
-        $this->markTestSkipped();
-        
         $response = new \stdClass();
         $key = 'test_transaction_key';
         $response->Key = $key;
 
         $arrayResponse = json_decode(json_encode($response), true);
-        $mockClass = \Magento\Payment\Model\InfoInterface::class
-            . ','
-            . \Magento\Sales\Api\Data\OrderPaymentInterface::class;
-        $payment = \Mockery::mock($mockClass);
 
-        $payment->shouldReceive('setTransactionAdditionalInfo')
-            ->once()
-            ->with(
-                \Magento\Sales\Model\Order\Payment\Transaction::RAW_DETAILS,
-                $arrayResponse
-            );
+        $payment = $this->getFakeMock(Payment::class)
+            ->setMethods([
+                'setTransactionAdditionalInfo',
+                'setIsTransactionClosed',
+                'setTransactionId',
+                'setAdditionalInformation'
+            ])
+            ->getMock();
 
-        $payment->shouldReceive('setIsTransactionClosed')->once()->with($close);
-        $payment->shouldReceive('setTransactionId')->once()->with($key);
+        $payment->expects($this->once())
+            ->method('setTransactionAdditionalInfo')
+            ->with(PaymentTransaction::RAW_DETAILS, $arrayResponse);
+
+        $payment->expects($this->once())->method('setIsTransactionClosed')->with($close);
+        $payment->expects($this->once())->method('setTransactionId')->with($key);
 
         if ($saveId) {
-            $payment->shouldReceive('setAdditionalInformation')
-                ->once()
+            $payment->expects($this->once())
+                ->method('setAdditionalInformation')
                 ->with(AbstractMethodMock::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY, $key);
         }
-        /**
-         * @var \Magento\Payment\Model\InfoInterface $payment
-         */
 
-        $partialMock = $this->getPartialObject(
-            AbstractMethodMock::class,
-            [],
-            ['getTransactionAdditionalInfo','saveTransactionData']
-        );
-
-        $partialMock->expects($this->once())
+        $helperMock = $this->getFakeMock(HelperData::class)
+            ->setMethods(['getMode', 'getTransactionAdditionalInfo'])
+            ->getMock();
+        $helperMock->expects($this->once())
             ->method('getTransactionAdditionalInfo')
             ->with($arrayResponse)
             ->willReturn($arrayResponse);
+        $helperMock->expects($this->once())->method('getMode')->willReturn(0);
 
-        /**
-         * @noinspection PhpUndefinedMethodInspection
-         */
-        $partialMock->saveTransactionData($response, $payment, $close, $saveId);
+        $instance = $this->getInstance(['helper' => $helperMock]);
+
+        $result = $instance->saveTransactionData($response, $payment, $close, $saveId);
+        $this->assertInstanceOf(Payment::class, $result);
     }
 
     public function saveTransactionDataDataProvider()
