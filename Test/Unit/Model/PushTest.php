@@ -616,7 +616,6 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
          */
         $this->configAccount->shouldReceive('getOrderConfirmationEmail')
             ->andReturn($sendOrderConfirmationEmail);
-        $this->configAccount->shouldReceive('getAutoInvoice')->andReturn($autoInvoice);
         $this->configAccount->shouldReceive('getInvoiceEmail');
 
         /**
@@ -956,7 +955,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -998,7 +997,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -1040,7 +1039,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -1082,7 +1081,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -1511,7 +1510,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -1553,7 +1552,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -1595,7 +1594,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */
@@ -1637,7 +1636,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
                 /**
                  * $autoInvoice
                  */
-                false,
+                true,
                 /**
                  * $orderCanInvoice
                  */

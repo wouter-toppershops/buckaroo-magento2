@@ -38,15 +38,23 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Config\Backend;
 
+use Magento\Framework\Filesystem\DriverPool;
+use Magento\Framework\Filesystem\File\ReadFactory;
+use TIG\Buckaroo\Model\Certificate as CertificateModel;
+use TIG\Buckaroo\Model\CertificateFactory;
+use TIG\Buckaroo\Model\Config\Backend\Certificate;
+
 class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
 {
+    protected $instanceClass = Certificate::class;
+
     /**
      * @var \Mockery\MockInterface|\Magento\Framework\ObjectManagerInterface
      */
     protected $objectManager;
 
     /**
-     * @var \Mockery\MockInterface|\Magento\Framework\Filesystem\File\ReadFactory
+     * @var \Mockery\MockInterface|ReadFactory
      */
     protected $scopeConfig;
 
@@ -56,7 +64,7 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
     protected $readFactory;
 
     /**
-     * @var \TIG\Buckaroo\Model\Config\Backend\Certificate
+     * @var Certificate
      */
     protected $object;
 
@@ -75,11 +83,11 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         parent::setUp();
 
         $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
-        $this->readFactory = \Mockery::mock(\Magento\Framework\Filesystem\File\ReadFactory::class);
+        $this->readFactory = \Mockery::mock(ReadFactory::class);
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Config\Backend\Certificate::class,
+            Certificate::class,
             [
             'objectManager' => $this->objectManager,
             'readFactory' => $this->readFactory,
@@ -95,7 +103,7 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testNoValue()
     {
-        $this->assertInstanceOf(\TIG\Buckaroo\Model\Config\Backend\Certificate::class, $this->object->save());
+        $this->assertInstanceOf(Certificate::class, $this->object->save());
     }
 
     /**
@@ -130,47 +138,38 @@ class CertificateTest extends \TIG\Buckaroo\Test\BaseTest
         }
     }
 
-    protected function uploadMock()
+    public function testSave()
     {
-        $certificateModel = \Mockery::mock('TIG\Buckaroo\Model\Certificate')->makePartial();
-        $certificateModel->shouldReceive('setCertificate')->with($this->uploadFixture['content']);
-        $certificateModel->shouldReceive('setName')->once()->with($this->uploadFixture['label']);
-        $certificateModel->shouldReceive('save')->once();
+        $readFactoryMock = $this->getFakeMock(ReadFactory::class)->setMethods(['create', 'readAll'])->getMock();
+        $readFactoryMock->expects($this->once())
+            ->method('create')
+            ->with($this->uploadFixture['tmp_name'], DriverPool::FILE)
+            ->willReturnSelf();
+        $readFactoryMock->expects($this->once())->method('readAll')->willReturn($this->uploadFixture['content']);
 
-        $this->objectManager
-            ->shouldReceive('create')
-            ->once()
-            ->with('TIG\Buckaroo\Model\Certificate')
-            ->andReturn($certificateModel);
+        $certificateMock = $this->getFakeMock(CertificateModel::class)
+            ->setMethods(['setCertificate', 'setName'])
+            ->getMock();
+        $certificateMock->expects($this->once())->method('setCertificate')->with($this->uploadFixture['content']);
+        $certificateMock->expects($this->once())->method('setName')->with($this->uploadFixture['label']);
 
-        $this->readFactory
-            ->shouldReceive('create')
-            ->with($this->uploadFixture['tmp_name'], \Magento\Framework\Filesystem\DriverPool::FILE)
-            ->andReturnSelf();
-        $this->readFactory->shouldReceive('readAll')->andReturn($this->uploadFixture['content']);
-    }
+        $certificateFactoryMock = $this->getFakeMock(CertificateFactory::class)->setMethods(['create'])->getMock();
+        $certificateFactoryMock->expects($this->once())->method('create')->willReturn($certificateMock);
 
-    public function testCertificateUpload()
-    {
-        $this->markTestSkipped('Needs revision');
+        $instance = $this->getInstance([
+            'readFactory' => $readFactoryMock,
+            'certificateFactory' => $certificateFactoryMock
+        ]);
 
-        $this->object->setData(
+        $instance->setData(
             'fieldset_data',
             [
-            'certificate_upload'=> $this->uploadFixture,
-            'certificate_label' => $this->uploadFixture['label'],
+                'certificate_upload'=> $this->uploadFixture,
+                'certificate_label' => $this->uploadFixture['label'],
             ]
         );
 
-        $this->uploadMock();
-
-        $this->objectManager
-            ->shouldReceive('get')
-            ->with('\Magento\Framework\App\Config\Storage\WriterInterface')
-            ->andReturnSelf();
-
-        $this->objectManager->shouldReceive('save')->once();
-
-        $this->object->save();
+        $result = $instance->save();
+        $this->assertInstanceOf(Certificate::class, $result);
     }
 }

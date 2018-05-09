@@ -50,8 +50,6 @@ use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
  * @method mixed getCertificateFile()
  * @method mixed getOrderConfirmationEmail()
  * @method mixed getInvoiceEmail()
- * @method mixed getAutoInvoice()
- * @method mixed getAutoInvoiceStatus()
  * @method mixed getSuccessRedirect()
  * @method mixed getFailureRedirect()
  * @method mixed getCancelOnFailed()
@@ -77,8 +75,6 @@ class Account extends AbstractConfigProvider
     const XPATH_ACCOUNT_CERTIFICATE_FILE                = 'tig_buckaroo/account/certificate_file';
     const XPATH_ACCOUNT_ORDER_CONFIRMATION_EMAIL        = 'tig_buckaroo/account/order_confirmation_email';
     const XPATH_ACCOUNT_INVOICE_EMAIL                   = 'tig_buckaroo/account/invoice_email';
-    const XPATH_ACCOUNT_AUTO_INVOICE                    = 'tig_buckaroo/account/auto_invoice';
-    const XPATH_ACCOUNT_AUTO_INVOICE_STATUS             = 'tig_buckaroo/account/auto_invoice_status';
     const XPATH_ACCOUNT_SUCCESS_REDIRECT                = 'tig_buckaroo/account/success_redirect';
     const XPATH_ACCOUNT_FAILURE_REDIRECT                = 'tig_buckaroo/account/failure_redirect';
     const XPATH_ACCOUNT_CANCEL_ON_FAILED                = 'tig_buckaroo/account/cancel_on_failed';
@@ -130,8 +126,6 @@ class Account extends AbstractConfigProvider
             'certificate_file'                  => $this->getCertificateFile($store),
             'order_confirmation_email'          => $this->getOrderConfirmationEmail($store),
             'invoice_email'                     => $this->getInvoiceEmail($store),
-            'auto_invoice'                      => $this->getAutoInvoice($store),
-            'auto_invoice_status'               => $this->getAutoInvoiceStatus($store),
             'success_redirect'                  => $this->getSuccessRedirect($store),
             'failure_redirect'                  => $this->getFailureRedirect($store),
             'cancel_on_failed'                  => $this->getCancelOnFailed($store),

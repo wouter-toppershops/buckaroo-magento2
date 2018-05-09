@@ -137,22 +137,6 @@
                 <config_path>tig_buckaroo/account/invoice_email</config_path>
             </field>
 
-            <field id="auto_invoice" translate="label comment" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Create invoice after success</label>
-                <comment><![CDATA[If set to 'No' the order is not invoiced.]]></comment>
-                <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                <config_path>tig_buckaroo/account/auto_invoice</config_path>
-            </field>
-
-            <field id="auto_invoice_status" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="1">
-                <label>Payment success status without invoice</label>
-                <source_model>TIG\Buckaroo\Model\Config\Source\StatusesPending</source_model>
-                <config_path>tig_buckaroo/account/auto_invoice_status</config_path>
-                <depends>
-                    <field id="auto_invoice">0</field>
-                </depends>
-            </field>
-
             <field id="success_redirect" translate="label comment" type="text" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="1">
                 <label>Redirect url after 'Success'</label>
                 <comment><![CDATA[Redirect after successful payments.]]></comment>
