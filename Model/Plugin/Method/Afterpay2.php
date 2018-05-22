@@ -73,8 +73,9 @@ class Afterpay2
     ) {
         $payment = $subject->getPayment();
         $orderIsCanceled = $payment->getOrder()->isCanceled();
+        $orderIsVoided = ($payment->getAdditionalInformation('voided_by_buckaroo') === true);
 
-        if ($payment->getMethod() !== self::AFTERPAY_METHOD_NAME || $orderIsCanceled) {
+        if ($payment->getMethod() !== self::AFTERPAY_METHOD_NAME || $orderIsCanceled || $orderIsVoided) {
             return $subject;
         }
 

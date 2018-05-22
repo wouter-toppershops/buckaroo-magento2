@@ -472,6 +472,8 @@ class Afterpay2 extends AbstractMethod
             'Version'          => 1,
         ];
 
+        $originalTrxKey = $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY);
+
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
@@ -480,11 +482,13 @@ class Afterpay2 extends AbstractMethod
             ->setType('void')
             ->setServices($services)
             ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey(
-                $payment->getAdditionalInformation(
-                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
-                )
-            );
+            ->setOriginalTransactionKey($originalTrxKey);
+
+        $parentTrxKey = $payment->getParentTransactionId();
+
+        if ($parentTrxKey && strlen($parentTrxKey) > 0 && $parentTrxKey != $originalTrxKey) {
+            $transactionBuilder->setOriginalTransactionKey($parentTrxKey);
+        }
 
         return $transactionBuilder;
     }

@@ -929,6 +929,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
         $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, true);
 
+        $payment->setAdditionalInformation('voided_by_buckaroo', true);
+
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);
 
