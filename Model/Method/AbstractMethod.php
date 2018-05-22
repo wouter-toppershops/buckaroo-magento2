@@ -560,7 +560,9 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $responseCode = $transactionResponse->Status->Code->Code;
         $billingCountry = $this->payment->getOrder()->getBillingAddress()->getCountryId();
 
-        if ($billingCountry == 'NL' && $responseCode == 490) {
+        $allowedResponseCodes = [490, 690];
+
+        if ($billingCountry == 'NL' && in_array($responseCode, $allowedResponseCodes)) {
             $methodMessage = $this->getFailureMessageFromMethod($transactionResponse);
             $message = strlen($methodMessage) > 0 ? $methodMessage : $message;
         }
@@ -928,6 +930,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         $response = $this->voidTransaction($transaction);
 
         $this->saveTransactionData($response[0], $payment, $this->closeCancelTransaction, true);
+
+        $payment->setAdditionalInformation('voided_by_buckaroo', true);
 
         // SET REGISTRY BUCKAROO REDIRECT
         $this->_registry->register('buckaroo_response', $response);

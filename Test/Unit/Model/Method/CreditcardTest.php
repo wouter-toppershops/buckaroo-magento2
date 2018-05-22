@@ -39,10 +39,16 @@
  */
 namespace TIG\Buckaroo\Test\Unit\Model\Method;
 
+use Magento\Framework\DataObject;
+use Magento\Payment\Model\InfoInterface;
+use TIG\Buckaroo\Model\Method\Creditcard;
+
 class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
 {
+    protected $instanceClass = Creditcard::class;
+
     /**
-     * @var \TIG\Buckaroo\Model\Method\Creditcard
+     * @var Creditcard
      */
     protected $object;
 
@@ -57,7 +63,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
     protected $objectManager;
 
     /**
-     * @var \Magento\Payment\Model\InfoInterface|\Magento\Sales\Api\Data\OrderPaymentInterface|\Mockery\MockInterface
+     * @var InfoInterface|\Magento\Sales\Api\Data\OrderPaymentInterface|\Mockery\MockInterface
      */
     protected $paymentInterface;
 
@@ -83,7 +89,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         $this->scopeConfig = \Mockery::mock(\Magento\Framework\App\Config\ScopeConfigInterface::class);
 
         $this->object = $this->objectManagerHelper->getObject(
-            \TIG\Buckaroo\Model\Method\Creditcard::class,
+            Creditcard::class,
             [
             'scopeConfig' => $this->scopeConfig,
             'objectManager' => $this->objectManager,
@@ -92,7 +98,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
         );
 
         $this->paymentInterface = \Mockery::mock(
-            \Magento\Payment\Model\InfoInterface::class,
+            InfoInterface::class,
             \Magento\Sales\Api\Data\OrderPaymentInterface::class
         );
     }
@@ -102,13 +108,27 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
      */
     public function testAssignData()
     {
-        $this->markTestSkipped('Needs revision');
+        $data = $this->getObject(DataObject::class);
+        $data->setBuckarooSkipValidation(0);
+        $data->setAdditionalData([
+            'buckaroo_skip_validation' => 1,
+            'card_type' => 'maestro'
+        ]);
 
-        $this->assignDataTest(
-            [
-            'card_type' => 'fooname',
-            ]
+        $infoInstanceMock = $this->getFakeMock(InfoInterface::class)
+            ->setMethods(['setAdditionalInformation'])
+            ->getMockForAbstractClass();
+        $infoInstanceMock->expects($this->exactly(3))->method('setAdditionalInformation')->withConsecutive(
+            ['buckaroo_skip_validation', 0],
+            ['buckaroo_skip_validation', 1],
+            ['card_type', 'maestro']
         );
+
+        $instance = $this->getInstance();
+        $instance->setData('info_instance', $infoInstanceMock);
+
+        $result = $instance->assignData($data);
+        $this->assertInstanceOf(Creditcard::class, $result);
     }
 
     /**
@@ -162,7 +182,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
-        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+        $infoInterface = \Mockery::mock(InfoInterface::class)->makePartial();
 
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getOrderTransactionBuilder($this->paymentInterface));
@@ -184,7 +204,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('card_type')
             ->andReturn($fixture['card_type']);
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
-            \TIG\Buckaroo\Model\Method\Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+            Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn($fixture['transaction_key']);
 
         $order = \Mockery::mock(\TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order::class);
@@ -204,7 +224,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
-        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+        $infoInterface = \Mockery::mock(InfoInterface::class)->makePartial();
 
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getCaptureTransactionBuilder($this->paymentInterface));
@@ -241,7 +261,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('order')->andReturn($order);
 
-        $infoInterface = \Mockery::mock(\Magento\Payment\Model\InfoInterface::class)->makePartial();
+        $infoInterface = \Mockery::mock(InfoInterface::class)->makePartial();
 
         $this->object->setData('info_instance', $infoInterface);
         $this->assertEquals($order, $this->object->getAuthorizeTransactionBuilder($this->paymentInterface));
@@ -262,7 +282,7 @@ class CreditcardTest extends \TIG\Buckaroo\Test\BaseTest
             ->with('card_type')
             ->andReturn($fixture['card_type']);
         $this->paymentInterface->shouldReceive('getAdditionalInformation')->with(
-            \TIG\Buckaroo\Model\Method\Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
+            Creditcard::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
         )->andReturn('getAdditionalInformation');
 
         $this->transactionBuilderFactory->shouldReceive('get')->with('refund')->andReturnSelf();

@@ -63,20 +63,32 @@ class IdealProcessing extends AbstractConfigProvider
             'code' => 'ASNBNL21',
         ],
         [
+            'name' => 'Bunq Bank',
+            'code' => 'BUNQNL2A',
+        ],
+        [
             'name' => 'ING',
             'code' => 'INGBNL2A',
+        ],
+        [
+            'name' => 'Knab Bank',
+            'code' => 'KNABNL2H',
+        ],
+        [
+            'name' => 'Moneyou',
+            'code' => 'MOYONL21',
         ],
         [
             'name' => 'Rabobank',
             'code' => 'RABONL2U',
         ],
         [
-            'name' => 'SNS Bank',
-            'code' => 'SNSBNL2A',
-        ],
-        [
             'name' => 'RegioBank',
             'code' => 'RBRBNL21',
+        ],
+        [
+            'name' => 'SNS Bank',
+            'code' => 'SNSBNL2A',
         ],
         [
             'name' => 'Triodos Bank',
@@ -85,14 +97,6 @@ class IdealProcessing extends AbstractConfigProvider
         [
             'name' => 'Van Lanschot',
             'code' => 'FVLBNL22',
-        ],
-        [
-            'name' => 'Knab Bank',
-            'code' => 'KNABNL2H',
-        ],
-        [
-            'name' => 'Bunq Bank',
-            'code' => 'BUNQNL2A',
         ],
     ];
 

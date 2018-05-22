@@ -472,6 +472,8 @@ class Afterpay extends AbstractMethod
             'Version'          => 1,
         ];
 
+        $originalTrxKey = $payment->getAdditionalInformation(self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY);
+
         /**
          * @noinspection PhpUndefinedMethodInspection
          */
@@ -480,11 +482,13 @@ class Afterpay extends AbstractMethod
             ->setType('void')
             ->setServices($services)
             ->setMethod('TransactionRequest')
-            ->setOriginalTransactionKey(
-                $payment->getAdditionalInformation(
-                    self::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY
-                )
-            );
+            ->setOriginalTransactionKey($originalTrxKey);
+
+        $parentTrxKey = $payment->getParentTransactionId();
+
+        if ($parentTrxKey && strlen($parentTrxKey) > 0 && $parentTrxKey != $originalTrxKey) {
+            $transactionBuilder->setOriginalTransactionKey($parentTrxKey);
+        }
 
         return $transactionBuilder;
     }
@@ -638,7 +642,7 @@ class Afterpay extends AbstractMethod
             // Child objects of configurable products should not be requested because afterpay will fail on unit prices.
             if (empty($item)
                 || $this->calculateProductPrice($item, $includesTax) == 0
-                | $item->getProductType() == Type::TYPE_BUNDLE
+                || $item->getProductType() == Type::TYPE_BUNDLE
             ) {
                 continue;
             }
