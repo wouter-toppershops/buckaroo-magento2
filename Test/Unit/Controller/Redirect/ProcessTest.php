@@ -281,6 +281,8 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('getPayment')->once()->andReturnSelf();
         $this->order->shouldReceive('getMethodInstance')->once()->andReturnSelf();
 
+        $this->messageManager->shouldReceive('addSuccessMessage')->once();
+
         $this->redirect->shouldReceive('redirect')->once()->with(\Mockery::any(), 'success_url', []);
 
         $this->controller->execute();
