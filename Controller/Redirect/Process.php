@@ -69,11 +69,6 @@ class Process extends \Magento\Framework\App\Action\Action
     protected $cart;
 
     /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Factory
-     */
-    protected $configProviderFactory;
-
-    /**
      * @var \Magento\Checkout\Model\ConfigProviderInterface
      */
     protected $accountConfig;
@@ -118,16 +113,15 @@ class Process extends \Magento\Framework\App\Action\Action
         \TIG\Buckaroo\Model\OrderStatusFactory $orderStatusFactory
     ) {
         parent::__construct($context);
-        $this->helper                   = $helper;
-        $this->cart                     = $cart;
-        $this->order                    = $order;
-        $this->quote                    = $quote;
-        $this->logger                   = $logger;
-        $this->configProviderFactory    = $configProviderFactory;
-        $this->orderSender              = $orderSender;
-        $this->orderStatusFactory       = $orderStatusFactory;
+        $this->helper             = $helper;
+        $this->cart               = $cart;
+        $this->order              = $order;
+        $this->quote              = $quote;
+        $this->logger             = $logger;
+        $this->orderSender        = $orderSender;
+        $this->orderStatusFactory = $orderStatusFactory;
 
-        $this->accountConfig = $this->configProviderFactory->get('account');
+        $this->accountConfig = $configProviderFactory->get('account');
     }
 
     /**
@@ -343,6 +337,8 @@ class Process extends \Magento\Framework\App\Action\Action
          * @noinspection PhpUndefinedMethodInspection
          */
         $url = $this->accountConfig->getSuccessRedirect($store);
+
+        $this->messageManager->addSuccessMessage(__('Your order has been placed succesfully.'));
 
         return $this->_redirect($url);
     }

@@ -479,7 +479,7 @@ class Push implements PushInterface
             $statusMessage = 'Payment push status : Waiting for consumer';
         }
 
-        if ($isPaid && $canInvoice && $this->configAccount->getAutoInvoice($store)) {
+        if ($isPaid && $canInvoice) {
             $originalKey = AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY;
             $this->postData['brq_transactions'] = $this->order->getPayment()->getAdditionalInformation($originalKey);
             $this->postData['brq_amount'] = $this->postData['brq_amountdebit'];
@@ -731,7 +731,7 @@ class Push implements PushInterface
             $forceState = true;
         }
 
-        if ($paymentMethod->getConfigData('payment_action') != 'authorize' && $this->configAccount->getAutoInvoice($store)) {
+        if ($paymentMethod->getConfigData('payment_action') != 'authorize') {
             $this->saveInvoice();
         }
 

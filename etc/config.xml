@@ -107,6 +107,11 @@
                 <title>TIG Buckaroo PayPal</title>
                 <allowspecific>0</allowspecific>
                 <sort_order>90</sort_order>
+                <sellers_protection>1</sellers_protection>
+                <sellers_protection_eligible>processing</sellers_protection_eligible>
+                <sellers_protection_itemnotreceived_eligible>processing</sellers_protection_itemnotreceived_eligible>
+                <sellers_protection_unauthorizedpayment_eligible>processing</sellers_protection_unauthorizedpayment_eligible>
+                <sellers_protection_ineligible>processing</sellers_protection_ineligible>
                 <order_email>1</order_email>
                 <payment_fee_label>Fee</payment_fee_label>
                 <group>tig_buckaroo</group>
@@ -292,8 +297,6 @@
                 <transaction_label>Magento Buckaroo</transaction_label>
                 <order_confirmation_email>1</order_confirmation_email>
                 <invoice_email>1</invoice_email>
-                <auto_invoice>1</auto_invoice>
-                <auto_invoice_status>tig_buckaroo_pending_payment</auto_invoice_status>
                 <success_redirect>checkout/onepage/success</success_redirect>
                 <failure_redirect>checkout/cart</failure_redirect>
                 <cancel_on_failed>1</cancel_on_failed>
