@@ -39,6 +39,9 @@
 
 namespace TIG\Buckaroo\Model\Method;
 
+use Magento\Payment\Model\InfoInterface;
+use Magento\Sales\Api\Data\OrderPaymentInterface;
+
 abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMethod
 {
     const BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY = 'buckaroo_original_transaction_key';
@@ -80,7 +83,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     public $priceHelper;
 
     /**
-     * @var \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
+     * @var OrderPaymentInterface|InfoInterface
      */
     public $payment;
 
@@ -407,6 +410,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array                               $postData
+     *
+     * @return bool
+     */
+    public function canProcessPostData($payment, $postData)
+    {
+        return true;
+    }
+
+    /**
      * Retrieve information from payment configuration
      *
      * @param string                                     $field
@@ -485,17 +499,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param float                                                                              $amount
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param float                                                       $amount
      *
      * @return $this
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function order(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    public function order(InfoInterface $payment, $amount)
     {
-        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
-            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        if (!$payment instanceof OrderPaymentInterface
+            || !$payment instanceof InfoInterface
         ) {
             throw new \InvalidArgumentException(
                 'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
@@ -600,17 +614,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param float                                                                              $amount
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param float                                                       $amount
      *
      * @return $this
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function authorize(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    public function authorize(InfoInterface $payment, $amount)
     {
-        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
-            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        if (!$payment instanceof OrderPaymentInterface
+            || !$payment instanceof InfoInterface
         ) {
             throw new \InvalidArgumentException(
                 'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
@@ -693,17 +707,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param float                                                                              $amount
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param float                                                       $amount
      *
      * @return $this
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function capture(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    public function capture(InfoInterface $payment, $amount)
     {
-        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
-            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        if (!$payment instanceof OrderPaymentInterface
+            || !$payment instanceof InfoInterface
         ) {
             throw new \InvalidArgumentException(
                 'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
@@ -769,17 +783,17 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param float                                                                              $amount
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param float                                                       $amount
      *
      * @return $this
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function refund(\Magento\Payment\Model\InfoInterface $payment, $amount)
+    public function refund(InfoInterface $payment, $amount)
     {
-        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
-            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        if (!$payment instanceof OrderPaymentInterface
+            || !$payment instanceof InfoInterface
         ) {
             throw new \InvalidArgumentException(
                 'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
@@ -819,7 +833,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return $this
      */
@@ -874,29 +888,29 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return $this
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function cancel(\Magento\Payment\Model\InfoInterface $payment)
+    public function cancel(InfoInterface $payment)
     {
         parent::cancel($payment);
         return $this->void($payment);
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return $this
      *
      * @throws \TIG\Buckaroo\Exception|\LogicException|\InvalidArgumentException
      */
-    public function void(\Magento\Payment\Model\InfoInterface $payment)
+    public function void(InfoInterface $payment)
     {
-        if (!$payment instanceof \Magento\Sales\Api\Data\OrderPaymentInterface
-            || !$payment instanceof \Magento\Payment\Model\InfoInterface
+        if (!$payment instanceof OrderPaymentInterface
+            || !$payment instanceof InfoInterface
         ) {
             throw new \InvalidArgumentException(
                 'Buckaroo requires the payment to be an instance of "\Magento\Sales\Api\Data\OrderPaymentInterface"' .
@@ -971,8 +985,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param array|\StdCLass                                                                    $response
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array|\StdCLass                                             $response
      *
      * @return $this
      */
@@ -982,8 +996,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param array|\StdCLass                                                                    $response
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array|\StdCLass                                             $response
      *
      * @return $this
      */
@@ -993,8 +1007,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param array|\StdCLass                                                                    $response
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array|\StdCLass                                             $response
      *
      * @return $this
      */
@@ -1004,8 +1018,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param array|\StdCLass                                                                    $response
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array|\StdCLass                                             $response
      *
      * @return $this
      */
@@ -1015,8 +1029,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param array|\StdCLass                                                                    $response
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array|\StdCLass                                             $response
      *
      * @return $this
      */
@@ -1025,8 +1039,8 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
         return $this->afterVoid($payment, $response);
     }
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
-     * @param array|\StdCLass                                                                    $response
+     * @param OrderPaymentInterface|InfoInterface $payment
+     * @param array|\StdCLass                                             $response
      *
      * @return $this
      */
@@ -1057,15 +1071,15 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
 
     /**
      * @param \StdClass                                                                          $response
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface                        $payment
      * @param                                                                                    $close
      * @param bool                                                                               $saveId
      *
-     * @return \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface
+     * @return OrderPaymentInterface|InfoInterface
      */
     public function saveTransactionData(
         \StdClass $response,
-        \Magento\Payment\Model\InfoInterface $payment,
+        InfoInterface $payment,
         $close,
         $saveId = false
     ) {
@@ -1163,35 +1177,35 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
     }
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
     abstract public function getOrderTransactionBuilder($payment);
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
     abstract public function getAuthorizeTransactionBuilder($payment);
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
     abstract public function getCaptureTransactionBuilder($payment);
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */
     abstract public function getRefundTransactionBuilder($payment);
 
     /**
-     * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
+     * @param OrderPaymentInterface|InfoInterface $payment
      *
      * @return \TIG\Buckaroo\Gateway\Http\TransactionBuilderInterface|bool
      */

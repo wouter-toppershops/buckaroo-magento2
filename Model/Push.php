@@ -390,12 +390,16 @@ class Push implements PushInterface
     public function processPush($response)
     {
         $this->logging->addDebug('RESPONSE STATUS: '.$response['status']);
+        $payment = $this->order->getPayment();
+
+        if (!$payment->getMethodInstance()->canProcessPostData($payment, $this->postData)) {
+            return;
+        }
 
         if ($this->giftcardPartialPayment()) {
             return;
         }
 
-        $payment = $this->order->getPayment();
         $skipFirstPush = $payment->getAdditionalInformation('skip_push');
 
         /**
