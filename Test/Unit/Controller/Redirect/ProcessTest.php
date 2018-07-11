@@ -41,6 +41,7 @@ namespace TIG\Buckaroo\Test\Unit\Controller\Redirect;
 use Magento\Framework\App\Response\RedirectInterface;
 use Magento\Framework\Message\ManagerInterface;
 use Magento\Sales\Model\Order;
+use Magento\Sales\Model\Order\Payment;
 use Mockery as m;
 use TIG\Buckaroo\Exception;
 use TIG\Buckaroo\Test\BaseTest;
@@ -167,14 +168,13 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteUnableToCreateQuote()
     {
-        $this->request->shouldReceive('getParams')->andReturn(
-            [
+        $params = [
             'brq_ordernumber' => null,
             'brq_invoicenumber' => null,
             'brq_statuscode' => null
-            ]
-        );
+        ];
 
+        $this->request->shouldReceive('getParams')->andReturn($params);
         $failureStatus = 'failure';
 
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
@@ -184,6 +184,12 @@ class ProcessTest extends BaseTest
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(false);
 
+        $payment = $this->getFakeMock(Payment::class)
+            ->setMethods(['getMethodInstance', 'canProcessPostData'])
+            ->getMock();
+        $payment->expects($this->once())->method('getMethodInstance')->willReturnSelf();
+        $payment->expects($this->once())->method('canProcessPostData')->with($payment, $params)->willReturn(true);
+
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturnNull();
         $this->order->shouldReceive('getState')->once()->andReturn('!canceled');
@@ -192,6 +198,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('setStatus')->once()->with($failureStatus)->andReturnSelf();
         $this->order->shouldReceive('getStore')->andReturnSelf();
         $this->order->shouldReceive('save')->once()->andReturnSelf();
+        $this->order->shouldReceive('getPayment')->once()->andReturn($payment);
 
         $this->orderStatusFactory
             ->shouldReceive('get')
@@ -213,13 +220,13 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteUnableToCancelOrder()
     {
-        $this->request->shouldReceive('getParams')->andReturn(
-            [
+        $params = [
             'brq_ordernumber' => null,
             'brq_invoicenumber' => null,
             'brq_statuscode' => null
-            ]
-        );
+        ];
+
+        $this->request->shouldReceive('getParams')->andReturn($params);
 
         $this->configProviderFactory->shouldReceive('getFailureRedirect')->andReturn('failure_url');
         $this->configProviderFactory->shouldReceive('getCancelOnFailed')->andReturn(true);
@@ -227,11 +234,18 @@ class ProcessTest extends BaseTest
         $this->cart->shouldReceive('setQuote')->once()->andReturnSelf();
         $this->cart->shouldReceive('save')->once()->andReturn(true);
 
+        $payment = $this->getFakeMock(Payment::class)
+            ->setMethods(['getMethodInstance', 'canProcessPostData'])
+            ->getMock();
+        $payment->expects($this->atLeastOnce())->method('getMethodInstance')->willReturnSelf();
+        $payment->expects($this->once())->method('canProcessPostData')->with($payment, $params)->willReturn(true);
+
         $this->order->makePartial();
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturnNull();
         $this->order->shouldReceive('canCancel')->once()->andReturn(false);
         $this->order->shouldReceive('getStore')->andReturnSelf();
+        $this->order->shouldReceive('getPayment')->andReturn($payment);
 
         $this->messageManager->shouldReceive('addErrorMessage');
 
@@ -252,14 +266,13 @@ class ProcessTest extends BaseTest
      */
     public function testExecuteSuccessStatus()
     {
-        $this->request->shouldReceive('getParams')->andReturn(
-            [
+        $params = [
             'brq_ordernumber' => null,
             'brq_invoicenumber' => null,
             'brq_statuscode' => $this->helper->getStatusCode('TIG_BUCKAROO_STATUSCODE_SUCCESS'),
-            ]
-        );
+        ];
 
+        $this->request->shouldReceive('getParams')->andReturn($params);
         $successStatus = 'success';
 
         $this->configProviderFactory->shouldReceive('getOrderStatusPending')->andReturn('tig_buckaroo_new');
@@ -270,6 +283,12 @@ class ProcessTest extends BaseTest
             ->shouldReceive('get')
             ->andReturn($successStatus);
 
+        $payment = $this->getFakeMock(Payment::class)
+            ->setMethods(['getMethodInstance', 'canProcessPostData'])
+            ->getMock();
+        $payment->expects($this->atLeastOnce())->method('getMethodInstance')->willReturnSelf();
+        $payment->expects($this->once())->method('canProcessPostData')->with($payment, $params)->willReturn(true);
+
         $this->order->shouldReceive('loadByIncrementId')->with(null)->andReturnSelf();
         $this->order->shouldReceive('getId')->andReturn(true);
         $this->order->shouldReceive('canInvoice')->once()->andReturn(true);
@@ -278,8 +297,7 @@ class ProcessTest extends BaseTest
         $this->order->shouldReceive('save')->once()->andReturnSelf();
         $this->order->shouldReceive('getEmailSent')->once()->andReturn(1);
         $this->order->shouldReceive('getStore')->andReturnSelf();
-        $this->order->shouldReceive('getPayment')->once()->andReturnSelf();
-        $this->order->shouldReceive('getMethodInstance')->once()->andReturnSelf();
+        $this->order->shouldReceive('getPayment')->andReturn($payment);
 
         $this->messageManager->shouldReceive('addSuccessMessage')->once();
 
