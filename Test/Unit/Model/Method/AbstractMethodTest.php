@@ -55,6 +55,7 @@ use TIG\Buckaroo\Helper\Data as HelperData;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Factory;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
+use Magento\TestFramework\ObjectManager;
 
 /**
  * Class AbstractMethodTest
