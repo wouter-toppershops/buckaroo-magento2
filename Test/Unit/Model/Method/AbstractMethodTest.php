@@ -135,7 +135,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->objectManager = ObjectManager::getInstance();
+        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
         $this->scopeConfig = \Mockery::mock(ScopeConfigInterface::class);
         $this->developmentHelper = \Mockery::mock(Data::class);
         $this->account = \Mockery::mock(Account::class);
