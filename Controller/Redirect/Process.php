@@ -40,6 +40,7 @@
 namespace TIG\Buckaroo\Controller\Redirect;
 
 use TIG\Buckaroo\Logging\Log;
+use TIG\Buckaroo\Model\Method\AbstractMethod;
 
 class Process extends \Magento\Framework\App\Action\Action
 {
@@ -156,6 +157,12 @@ class Process extends \Magento\Framework\App\Action\Action
             $statusCode = $this->helper->getStatusCode('TIG_BUCKAROO_ORDER_FAILED');
         } else {
             $this->quote->load($this->order->getQuoteId());
+        }
+
+        $payment = $this->order->getPayment();
+
+        if (!$payment->getMethodInstance()->canProcessPostData($payment, $this->response)) {
+            return $this->_redirect('/');
         }
 
         switch ($statusCode) {

@@ -249,6 +249,19 @@ class PayPerEmail extends AbstractMethod
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function canProcessPostData($payment, $postData)
+    {
+        $transactionKey = $payment->getAdditionalInformation(AbstractMethod::BUCKAROO_ORIGINAL_TRANSACTION_KEY_KEY);
+        if ($transactionKey != $postData['brq_transactions']) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * @param \Magento\Sales\Api\Data\OrderPaymentInterface|\Magento\Payment\Model\InfoInterface $payment
      *
      * @return array
