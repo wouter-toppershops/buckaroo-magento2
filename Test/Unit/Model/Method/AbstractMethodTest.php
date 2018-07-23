@@ -55,6 +55,7 @@ use TIG\Buckaroo\Helper\Data as HelperData;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Model\ConfigProvider\Factory;
 use TIG\Buckaroo\Model\ConfigProvider\Method\Factory as MethodFactory;
+use Magento\TestFramework\ObjectManager;
 
 /**
  * Class AbstractMethodTest
@@ -134,7 +135,7 @@ class AbstractMethodTest extends \TIG\Buckaroo\Test\BaseTest
     {
         parent::setUp();
 
-        $this->objectManager = \Mockery::mock(\Magento\Framework\ObjectManagerInterface::class);
+        $this->objectManager = ObjectManager::getInstance();
         $this->scopeConfig = \Mockery::mock(ScopeConfigInterface::class);
         $this->developmentHelper = \Mockery::mock(Data::class);
         $this->account = \Mockery::mock(Account::class);
