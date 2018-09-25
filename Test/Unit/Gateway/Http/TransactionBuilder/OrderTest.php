@@ -42,42 +42,12 @@ use Magento\Framework\Url;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
+use TIG\Buckaroo\Model\ConfigProvider\Account;
 use TIG\Buckaroo\Test\BaseTest;
 
 class OrderTest extends BaseTest
 {
     protected $instanceClass = Order::class;
-
-    /**
-     * @var Order
-     */
-    protected $object;
-
-    /**
-     * @var \TIG\Buckaroo\Model\ConfigProvider\Account|\Mockery\MockInterface
-     */
-    protected $configProviderAccount;
-
-    /**
-     * @var Url|\Mockery\MockInterface
-     */
-    protected $urlBuilderMock;
-
-    public function setUp()
-    {
-        parent::setUp();
-
-        $this->configProviderAccount = \Mockery::mock(\TIG\Buckaroo\Model\ConfigProvider\Account::class);
-        $this->urlBuilderMock = \Mockery::mock(Url::class);
-
-        $this->object = $this->objectManagerHelper->getObject(
-            Order::class,
-            [
-                'configProviderAccount' => $this->configProviderAccount,
-                'urlBuilder' => $this->urlBuilderMock
-            ]
-        );
-    }
 
     public function testGetBody()
     {
@@ -98,32 +68,44 @@ class OrderTest extends BaseTest
             ],
         ];
 
-        $this->object->amount = 50;
-        $this->object->currency = 'EUR';
-        $this->object->invoiceId = $expected['Invoice'];
-        $this->object->setStartRecurrent($expected['StartRecurrent']);
-        $this->object->setServices($expected['Services']['Service']);
+        $orderMock = $this->getFakeMock(MagentoOrder::class)
+            ->setMethods(['getIncrementId', 'getRemoteIp', 'getStore', 'setState', 'setStatus', 'getStoreId', 'save'])
+            ->getMock();
+        $orderMock->expects($this->once())->method('getIncrementId')->willReturn($expected['Invoice']);
+        $orderMock->method('getRemoteIp')->willReturn($expected['ClientIP']['_']);
+        $orderMock->expects($this->once())->method('getStore');
+        $orderMock->expects($this->once())->method('setState');
+        $orderMock->expects($this->once())->method('setStatus');
+        $orderMock->method('getStoreId')->willReturn(1);
+        $orderMock->method('save');
 
-        $this->configProviderAccount->shouldReceive('getTransactionLabel')->andReturn($expected['Description']);
-        $this->configProviderAccount->shouldReceive('getCreateOrderBeforeTransaction')->andReturn(1);
-        $this->configProviderAccount->shouldReceive('getOrderStatusNew')->andReturn(1);
+        $configProviderAccountMock = $this->getFakeMock(Account::class)
+            ->setMethods(['getTransactionLabel', 'getCreateOrderBeforeTransaction', 'getOrderStatusNew'])
+            ->getMock();
+        $configProviderAccountMock->method('getTransactionLabel')->willReturn($expected['Description']);
+        $configProviderAccountMock->method('getCreateOrderBeforeTransaction')->willReturn(1);
+        $configProviderAccountMock->method('getOrderStatusNew')->willReturn(1);
 
-        $this->urlBuilderMock->shouldReceive('setScope')->andReturnSelf();
-        $this->urlBuilderMock->shouldReceive('getRouteUrl')->andReturnSelf();
-        $this->urlBuilderMock->shouldReceive('getDirectUrl')->andReturnSelf();
+        $urlBuilderMock = $this->getFakeMock(Url::class)
+            ->setMethods(['setScope', 'getRouteUrl', 'getDirectUrl'])
+            ->getMock();
+        $urlBuilderMock->method('setScope')->willReturnSelf();
+        $urlBuilderMock->method('getRouteUrl')->willReturnSelf();
+        $urlBuilderMock->method('getDirectUrl')->willReturnSelf();
 
-        $order = \Mockery::mock(MagentoOrder::class);
-        $order->shouldReceive('getIncrementId')->once()->andReturn($expected['Invoice']);
-        $order->shouldReceive('getRemoteIp')->andReturn($expected['ClientIP']['_']);
-        $order->shouldReceive('getStore')->once();
-        $order->shouldReceive('setState')->once();
-        $order->shouldReceive('setStatus')->once();
-        $order->shouldReceive('getStoreId')->andReturn(1);
-        $order->shouldReceive('save');
+        $instance = $this->getInstance([
+            'configProviderAccount' => $configProviderAccountMock,
+            'urlBuilder' => $urlBuilderMock
+        ]);
+        $instance->setAmount(50);
+        $instance->setCurrency('EUR');
+        $instance->setInvoiceId($expected['Invoice']);
+        $instance->setStartRecurrent($expected['StartRecurrent']);
+        $instance->setServices($expected['Services']['Service']);
+        $instance->setOrder($orderMock);
 
-        $this->object->setOrder($order);
+        $result = $instance->getBody();
 
-        $result = $this->object->getBody();
         foreach ($expected as $key => $value) {
             $valueToTest = $value;
 
