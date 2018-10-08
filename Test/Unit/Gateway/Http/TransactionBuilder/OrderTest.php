@@ -41,8 +41,10 @@ namespace TIG\Buckaroo\Test\Unit\Gateway\Http\TransactionBuilder;
 use Magento\Framework\Url;
 use Magento\Framework\UrlInterface;
 use Magento\Sales\Model\Order as MagentoOrder;
+use Magento\Sales\Model\Order\Payment;
 use TIG\Buckaroo\Gateway\Http\TransactionBuilder\Order;
 use TIG\Buckaroo\Model\ConfigProvider\Account;
+use TIG\Buckaroo\Model\ConfigProvider\Method\Factory;
 use TIG\Buckaroo\Test\BaseTest;
 
 class OrderTest extends BaseTest
@@ -277,5 +279,73 @@ class OrderTest extends BaseTest
 
         $result = $instance->getReturnUrl();
         $this->assertEquals($expected, $result);
+    }
+
+    public function testGetAllowedCurrencies()
+    {
+        $paymentMethod = 'tig_payment_method';
+        $paymentMock = $this->getFakeMock(Payment::class)->setMethods(['getMethodInstance'])->getMock();
+        $paymentMock->expects($this->once())->method('getMethodInstance')->willReturnSelf();
+        $paymentMock->buckarooPaymentMethodCode = $paymentMethod;
+
+        $orderMock = $this->getFakeMock(MagentoOrder::class)->setMethods(['getPayment'])->getMock();
+        $orderMock->expects($this->once())->method('getPayment')->willReturn($paymentMock);
+
+        $configFactoryMock = $this->getFakeMock(Factory::class)->setMethods(['get', 'getAllowedCurrencies'])->getMock();
+        $configFactoryMock->expects($this->once())->method('get')->with($paymentMethod)->willReturnSelf();
+        $configFactoryMock->expects($this->once())->method('getAllowedCurrencies')->willReturn(['EUR']);
+
+        $instance = $this->getInstance(['configProviderMethodFactory' => $configFactoryMock]);
+        $instance->setOrder($orderMock);
+
+        $result = $this->invoke('getAllowedCurrencies', $instance);
+        $this->assertEquals(['EUR'], $result);
+    }
+
+    public function setOrderAmountProvider()
+    {
+        return [
+            'same currency' => [
+                'EUR',
+                'EUR',
+                '10',
+                '15',
+                '10'
+            ],
+            'different currency' => [
+                'USD',
+                'EUR',
+                '25',
+                '30',
+                '30'
+            ],
+        ];
+    }
+
+    /**
+     * @param $orderCurrency
+     * @param $trxCurrency
+     * @param $total
+     * @param $baseTotal
+     * @param $expected
+     *
+     * @dataProvider setOrderAmountProvider
+     */
+    public function testSetOrderAmount($orderCurrency, $trxCurrency, $total, $baseTotal, $expected)
+    {
+        $orderMock = $this->getFakeMock(MagentoOrder::class)
+            ->setMethods(['getOrderCurrencyCode', 'getGrandTotal', 'getBaseGrandTotal'])
+            ->getMock();
+        $orderMock->expects($this->once())->method('getOrderCurrencyCode')->willReturn($orderCurrency);
+        $orderMock->method('getGrandTotal')->willReturn($total);
+        $orderMock->method('getBaseGrandTotal')->willReturn($baseTotal);
+
+        $instance = $this->getInstance();
+        $instance->setCurrency($trxCurrency);
+        $instance->setOrder($orderMock);
+
+        $result = $this->invoke('setOrderAmount', $instance);
+        $this->assertInstanceOf(Order::class, $result);
+        $this->assertEquals($expected, $instance->getAmount());
     }
 }
