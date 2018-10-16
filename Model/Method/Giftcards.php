@@ -202,7 +202,7 @@ class Giftcards extends AbstractMethod
         $capturePartial = false;
         $order = $payment->getOrder();
         $totalOrder = $order->getBaseGrandTotal();
-        $numberOfInvoices = $order->hasInvoices();
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
 
         // loop through invoices to get the last one (=current invoice)
         if ($numberOfInvoices) {

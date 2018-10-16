@@ -696,14 +696,16 @@ class PaymentGuarantee extends AbstractMethod
     {
         $invoiceAmount = 0;
 
-        if (!$order->hasInvoices()) {
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+
+        if ($numberOfInvoices > 0) {
             return $invoiceAmount;
         }
 
         $i = 0;
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         foreach ($order->getInvoiceCollection() as $invoice) {
-            if (++$i !== $order->hasInvoices()) {
+            if (++$i !== $numberOfInvoices) {
                 continue;
             }
             $invoiceAmount = $invoice->getBaseGrandTotal();
@@ -725,15 +727,17 @@ class PaymentGuarantee extends AbstractMethod
 
         $taxAmount = $order->getBaseTaxAmount();
 
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+
         /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
         $creditmemo = $payment->getCreditmemo();
 
         // if there's an invoice but no creditmemo, it means a capture is in progress.
-        if ($order->hasInvoices() && !$creditmemo) {
+        if ($numberOfInvoices && !$creditmemo) {
             $i = 0;
             /** @var \Magento\Sales\Model\Order\Invoice $invoice */
             foreach ($order->getInvoiceCollection() as $invoice) {
-                if (++$i !== $order->hasInvoices()) {
+                if (++$i !== $numberOfInvoices) {
                     continue;
                 }
 
@@ -809,7 +813,10 @@ class PaymentGuarantee extends AbstractMethod
         /** @var \Magento\Sales\Model\Order $order */
         $order = $payment->getOrder();
 
-        $incrementNumber = $order->hasInvoices() + $order->hasCreditmemos();
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+        $numberOfCreditmemos = $order->getCreditmemosCollection()->count();
+
+        $incrementNumber = $numberOfInvoices + $numberOfCreditmemos;
 
         if (null !== $payment->getCreditmemo()) {
             $incrementNumber += 1;
@@ -826,7 +833,9 @@ class PaymentGuarantee extends AbstractMethod
      */
     private function setCaptureType($order, $invoiceAmount)
     {
-        $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $order->hasInvoices() == 1);
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+
+        $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $numberOfInvoices == 1);
     }
 
     /**

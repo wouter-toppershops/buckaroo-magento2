@@ -354,7 +354,8 @@ class Afterpay2 extends AbstractMethod
         $order_id = $order->getId();
 
         $totalOrder = $order->getBaseGrandTotal();
-        $numberOfInvoices = $order->hasInvoices();
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+        $currentInvoiceTotal = 0;
 
         // loop through invoices to get the last one (=current invoice)
         if ($numberOfInvoices) {
@@ -386,7 +387,10 @@ class Afterpay2 extends AbstractMethod
         ];
 
         // always get articles from invoice
-        $articles = $this->getInvoiceArticleData($currentInvoice);
+        $articles = '';
+        if (isset($currentInvoice)) {
+            $articles = $this->getInvoiceArticleData($currentInvoice);
+        }
 
         // For the first invoice possible add payment fee
         if (is_array($articles) && $numberOfInvoices == 1) {
@@ -818,9 +822,9 @@ class Afterpay2 extends AbstractMethod
             $count++;
         }
 
-        // hasCreditmemos only counts actually saved creditmemos.
+        // hasCreditmemos returns since 2.2.6 true or false.
         // The current creditmemo is still "in progress" and thus has yet to be saved.
-        if (count($articles) > 0 && $payment->getOrder()->hasCreditmemos() == 0) {
+        if (count($articles) > 0 && !$payment->getOrder()->hasCreditmemos()) {
             $serviceLine = $this->getServiceCostLine($count, $creditmemo, $includesTax);
             $articles = array_merge($articles, $serviceLine);
         }
