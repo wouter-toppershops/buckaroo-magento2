@@ -698,7 +698,7 @@ class PaymentGuarantee extends AbstractMethod
 
         $numberOfInvoices = $order->getInvoiceCollection()->count();
 
-        if ($numberOfInvoices > 0) {
+        if (!$numberOfInvoices) {
             return $invoiceAmount;
         }
 
