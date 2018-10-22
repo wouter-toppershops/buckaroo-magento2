@@ -1128,7 +1128,7 @@ abstract class AbstractMethod extends \Magento\Payment\Model\Method\AbstractMeth
              * @todo when buckaroo changes the push / response order this can be removed
              */
             if ($skipFirstPush > 0) {
-                $payment->unsAdditionalInformation('skip_push');
+                $payment->setAdditionalInformation($skipFirstPush - 1);
                 $payment->save();
             }
         }
