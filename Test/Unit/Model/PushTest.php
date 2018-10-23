@@ -627,6 +627,7 @@ class PushTest extends \TIG\Buckaroo\Test\BaseTest
         $orderMock->shouldReceive('getBaseGrandTotal')->andReturn($amount);
         $orderMock->shouldReceive('getTotalDue')->andReturn($amount);
         $orderMock->shouldReceive('getStore')->andReturnSelf();
+        $orderMock->shouldReceive('setIsInProcess');
 
         /**
          * The order state has to be checked at least once
