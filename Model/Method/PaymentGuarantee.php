@@ -161,7 +161,6 @@ class PaymentGuarantee extends AbstractMethod
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
      * @param array                                                   $data
-     * @param \Magento\Directory\Helper\Data                          $directory
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -188,8 +187,7 @@ class PaymentGuarantee extends AbstractMethod
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
-        array $data = [],
-        \Magento\Directory\Helper\Data $directory = null
+        array $data = []
     ) {
         parent::__construct(
             $objectManager,
@@ -212,8 +210,7 @@ class PaymentGuarantee extends AbstractMethod
             $configProviderFactory,
             $configProviderMethodFactory,
             $priceHelper,
-            $data,
-            $directory
+            $data
         );
 
         $this->invoiceFactory = $invoiceFactory;
@@ -699,14 +696,16 @@ class PaymentGuarantee extends AbstractMethod
     {
         $invoiceAmount = 0;
 
-        if (!$order->hasInvoices()) {
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+
+        if (!$numberOfInvoices) {
             return $invoiceAmount;
         }
 
         $i = 0;
         /** @var \Magento\Sales\Model\Order\Invoice $invoice */
         foreach ($order->getInvoiceCollection() as $invoice) {
-            if (++$i !== $order->hasInvoices()) {
+            if (++$i !== $numberOfInvoices) {
                 continue;
             }
             $invoiceAmount = $invoice->getBaseGrandTotal();
@@ -728,15 +727,17 @@ class PaymentGuarantee extends AbstractMethod
 
         $taxAmount = $order->getBaseTaxAmount();
 
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+
         /** @var \Magento\Sales\Model\Order\Creditmemo $creditmemo */
         $creditmemo = $payment->getCreditmemo();
 
         // if there's an invoice but no creditmemo, it means a capture is in progress.
-        if ($order->hasInvoices() && !$creditmemo) {
+        if ($numberOfInvoices && !$creditmemo) {
             $i = 0;
             /** @var \Magento\Sales\Model\Order\Invoice $invoice */
             foreach ($order->getInvoiceCollection() as $invoice) {
-                if (++$i !== $order->hasInvoices()) {
+                if (++$i !== $numberOfInvoices) {
                     continue;
                 }
 
@@ -812,7 +813,10 @@ class PaymentGuarantee extends AbstractMethod
         /** @var \Magento\Sales\Model\Order $order */
         $order = $payment->getOrder();
 
-        $incrementNumber = $order->hasInvoices() + $order->hasCreditmemos();
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+        $numberOfCreditmemos = $order->getCreditmemosCollection()->count();
+
+        $incrementNumber = $numberOfInvoices + $numberOfCreditmemos;
 
         if (null !== $payment->getCreditmemo()) {
             $incrementNumber += 1;
@@ -829,7 +833,9 @@ class PaymentGuarantee extends AbstractMethod
      */
     private function setCaptureType($order, $invoiceAmount)
     {
-        $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $order->hasInvoices() == 1);
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+
+        $this->_isPartialCapture = !($order->getBaseGrandTotal() == $invoiceAmount && $numberOfInvoices == 1);
     }
 
     /**

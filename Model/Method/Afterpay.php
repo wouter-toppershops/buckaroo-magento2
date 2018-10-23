@@ -173,7 +173,6 @@ class Afterpay extends AbstractMethod
      * @param \TIG\Buckaroo\Model\ConfigProvider\Method\Factory       $configProviderMethodFactory
      * @param \Magento\Framework\Pricing\Helper\Data                  $priceHelper
      * @param array                                                   $data
-     * @param \Magento\Directory\Helper\Data                          $directory
      */
     public function __construct(
         \Magento\Framework\ObjectManagerInterface $objectManager,
@@ -197,8 +196,7 @@ class Afterpay extends AbstractMethod
         \TIG\Buckaroo\Model\ConfigProvider\Factory $configProviderFactory = null,
         \TIG\Buckaroo\Model\ConfigProvider\Method\Factory $configProviderMethodFactory = null,
         \Magento\Framework\Pricing\Helper\Data $priceHelper = null,
-        array $data = [],
-        \Magento\Directory\Helper\Data $directory = null
+        array $data = []
     ) {
         parent::__construct(
             $objectManager,
@@ -221,8 +219,7 @@ class Afterpay extends AbstractMethod
             $configProviderFactory,
             $configProviderMethodFactory,
             $priceHelper,
-            $data,
-            $directory
+            $data
         );
 
         $this->configProviderBuckarooFee = $configProviderBuckarooFee;
@@ -357,7 +354,9 @@ class Afterpay extends AbstractMethod
         $order_id = $order->getId();
 
         $totalOrder = $order->getBaseGrandTotal();
-        $numberOfInvoices = $order->hasInvoices();
+
+        $numberOfInvoices = $order->getInvoiceCollection()->count();
+        $currentInvoiceTotal = 0;
 
         // loop through invoices to get the last one (=current invoice)
         if ($numberOfInvoices) {
@@ -389,7 +388,10 @@ class Afterpay extends AbstractMethod
         ];
 
         // always get articles from invoice
-        $articles = $this->getInvoiceArticleData($currentInvoice);
+        $articles = '';
+        if (isset($currentInvoice)) {
+            $articles = $this->getInvoiceArticleData($currentInvoice);
+        }
 
         // For the first invoice possible add payment fee
         if (is_array($articles) && $numberOfInvoices == 1) {
@@ -821,9 +823,9 @@ class Afterpay extends AbstractMethod
             $count++;
         }
 
-        // hasCreditmemos only counts actually saved creditmemos.
+        // hasCreditmemos only returns true by actually saved creditmemos.
         // The current creditmemo is still "in progress" and thus has yet to be saved.
-        if (count($articles) > 0 && $payment->getOrder()->hasCreditmemos() == 0) {
+        if (count($articles) > 0 && !$payment->getOrder()->hasCreditmemos()) {
             $serviceLine = $this->getServiceCostLine($count, $creditmemo, $includesTax);
             $articles = array_merge($articles, $serviceLine);
         }

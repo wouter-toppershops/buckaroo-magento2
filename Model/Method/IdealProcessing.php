@@ -84,7 +84,7 @@ class IdealProcessing extends AbstractMethod
     /**
      * @var bool
      */
-    protected $_canRefund               = true;
+    protected $_canRefund               = false;
 
     /**
      * @var bool
