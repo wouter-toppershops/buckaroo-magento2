@@ -70,9 +70,10 @@ class Push implements PushInterface
     const BUCK_PUSH_CANCEL_AUTHORIZE_TYPE  = 'I014';
     const BUCK_PUSH_ACCEPT_AUTHORIZE_TYPE  = 'I013';
 
-    const BUCK_PUSH_TYPE_TRANSACTION = 'transaction_push';
-    const BUCK_PUSH_TYPE_INVOICE     = 'invoice_push';
-    const BUCK_PUSH_TYPE_DATAREQUEST = 'datarequest_push';
+    const BUCK_PUSH_TYPE_TRANSACTION            = 'transaction_push';
+    const BUCK_PUSH_TYPE_INVOICE                = 'invoice_push';
+    const BUCK_PUSH_TYPE_INVOICE_INCOMPLETE     = 'incomplete_invoice_push';
+    const BUCK_PUSH_TYPE_DATAREQUEST            = 'datarequest_push';
 
     const BUCKAROO_RECEIVED_TRANSACTIONS = 'buckaroo_received_transactions';
 
@@ -252,6 +253,11 @@ class Push implements PushInterface
             case self::BUCK_PUSH_TYPE_INVOICE:
                 $this->processCm3Push();
                 break;
+            case self::BUCK_PUSH_TYPE_INVOICE_INCOMPLETE:
+                throw new \TIG\Buckaroo\Exception(
+                    __('Skipped handling this invoice push because it is too soon.')
+                );
+                break;
         }
 
         $this->order->save();
@@ -319,6 +325,7 @@ class Push implements PushInterface
                 }
                 break;
             case self::BUCK_PUSH_TYPE_INVOICE:
+            case self::BUCK_PUSH_TYPE_INVOICE_INCOMPLETE:
                 if (isset($this->postData['brq_eventparameters_statuscode'])) {
                     $statusCode = $this->postData['brq_eventparameters_statuscode'];
                 }
@@ -345,6 +352,13 @@ class Push implements PushInterface
             && strlen($savedInvoiceKey) > 0
         ) {
             return self::BUCK_PUSH_TYPE_INVOICE;
+        }
+
+        if (isset($this->postData['brq_invoicekey'])
+            && isset($this->postData['brq_schemekey'])
+            && strlen($savedInvoiceKey) == 0
+        ) {
+            return self::BUCK_PUSH_TYPE_INVOICE_INCOMPLETE;
         }
 
         if (isset($this->postData['brq_datarequest'])) {
