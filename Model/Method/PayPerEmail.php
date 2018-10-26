@@ -213,6 +213,10 @@ class PayPerEmail extends AbstractMethod
         $cmService = $this->serviceParameters->getCreateCombinedInvoice($payment, 'payperemail');
         if (count($cmService) > 0) {
             $services[] = $cmService;
+
+            $payment->setAdditionalInformation(
+                'skip_push', 2
+            );
         }
 
         $transactionBuilder = $this->transactionBuilderFactory->get('order');
