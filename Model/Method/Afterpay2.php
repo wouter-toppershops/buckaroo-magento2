@@ -657,7 +657,7 @@ class Afterpay2 extends AbstractMethod
                 $item->getProductId(),
                 1,
                 $this->calculateProductPrice($item, $includesTax),
-                $this->getTaxCategory($item->getTaxClassId())
+                $this->getTaxCategory($item->getTaxClassId(), $payment->getOrder()->getStore())
             );
 
             /*
@@ -735,7 +735,7 @@ class Afterpay2 extends AbstractMethod
                 $item->getProductId(),
                 1,
                 $this->calculateProductPrice($item, $includesTax),
-                $this->getTaxCategory($itemTaxClassId)
+                $this->getTaxCategory($itemTaxClassId, $invoice->getOrder()->getStore())
             );
 
             $articles = array_merge($articles, $article);
@@ -749,7 +749,7 @@ class Afterpay2 extends AbstractMethod
                     $item->getProductId(),
                     1,
                     number_format(($item->getDiscountAmount()*-1), 2),
-                    $this->getTaxCategory($item->getTaxClassId())
+                    $this->getTaxCategory($item->getTaxClassId(), $invoice->getOrder()->getStore())
                 );
                 $articles = array_merge($articles, $article);
             }
@@ -802,7 +802,7 @@ class Afterpay2 extends AbstractMethod
                 $item->getProductId(),
                 1,
                 $this->calculateProductPrice($item, $includesTax) - $item->getDiscountAmount(),
-                $this->getTaxCategory($itemTaxClassId)
+                $this->getTaxCategory($itemTaxClassId, $payment->getOrder()->getStore())
             );
 
             $articles = array_merge($articles, $article);
@@ -914,7 +914,7 @@ class Afterpay2 extends AbstractMethod
                 1,
                 1,
                 round($buckarooFeeLine, 2),
-                $this->getTaxCategory($this->configProviderBuckarooFee->getTaxClass($storeId))
+                $this->getTaxCategory($this->configProviderBuckarooFee->getTaxClass($storeId), $storeId)
             );
         }
 
@@ -1082,12 +1082,12 @@ class Afterpay2 extends AbstractMethod
     }
 
     /**
-     * @param $taxClassId
+     * @param      $taxClassId
+     * @param null|int $storeId
      *
      * @return int
-     * @throws \TIG\Buckaroo\Exception
      */
-    public function getTaxCategory($taxClassId)
+    public function getTaxCategory($taxClassId, $storeId = null)
     {
         $taxCategory = 4;
 
@@ -1100,10 +1100,10 @@ class Afterpay2 extends AbstractMethod
         $afterPayConfig = $this->configProviderMethodFactory
             ->get(\TIG\Buckaroo\Model\Method\Afterpay2::PAYMENT_METHOD_CODE);
 
-        $highClasses   = explode(',', $afterPayConfig->getHighTaxClasses());
-        $middleClasses = explode(',', $afterPayConfig->getMiddleTaxClasses());
-        $lowClasses    = explode(',', $afterPayConfig->getLowTaxClasses());
-        $zeroClasses   = explode(',', $afterPayConfig->getZeroTaxClasses());
+        $highClasses   = explode(',', $afterPayConfig->getHighTaxClasses($storeId));
+        $middleClasses = explode(',', $afterPayConfig->getMiddleTaxClasses($storeId));
+        $lowClasses    = explode(',', $afterPayConfig->getLowTaxClasses($storeId));
+        $zeroClasses   = explode(',', $afterPayConfig->getZeroTaxClasses($storeId));
 
         if (in_array($taxClassId, $highClasses)) {
             $taxCategory = 1;
